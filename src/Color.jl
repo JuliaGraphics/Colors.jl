@@ -21,7 +21,7 @@ typealias ColourValue ColorValue
 
 
 # sRGB (standard Red-Green-Blue)
-type RGB <: ColorValue
+immutable RGB <: ColorValue
     r::Float64 # Red in [0,1]
     g::Float64 # Green in [0,1]
     b::Float64 # Blue in [0,1]
@@ -37,7 +37,7 @@ copy(c::RGB) = RGB(c.r, c.g, b)
 
 
 # HSV (Hue-Saturation-Value)
-type HSV <: ColorValue
+immutable HSV <: ColorValue
     h::Float64 # Hue in [0,360]
     s::Float64 # Saturation in [0,1]
     v::Float64 # Value in [0,1]
@@ -55,7 +55,7 @@ HSB(h, s, b) = HSV(h, s, b)
 
 
 # HSL (Hue-Lightness-Saturation)
-type HSL <: ColorValue
+immutable HSL <: ColorValue
     h::Float64 # Hue in [0,360]
     s::Float64 # Saturation in [0,1]
     l::Float64 # Lightness in [0,1]
@@ -73,7 +73,7 @@ HLS(h, l, s) = HSL(h, s, l)
 
 
 # XYZ (CIE 1931)
-type XYZ <: ColorValue
+immutable XYZ <: ColorValue
     x::Float64
     y::Float64
     z::Float64
@@ -89,7 +89,7 @@ copy(c::XYZ) = XYZ(c.x, c.y, z)
 
 
 # LAB (CIELAB)
-type LAB <: ColorValue
+immutable LAB <: ColorValue
     l::Float64 # Luminance in [0,1]
     a::Float64 # Red/Green in [-1,1]
     b::Float64 # Blue/Yellow in [-1,1]
@@ -105,7 +105,7 @@ copy(c::LAB) = LAB(c.l, c.a, c.b)
 
 
 # LCHab (Luminance-Chroma-Hue, Polar-LAB)
-type LCHab <: ColorValue
+immutable LCHab <: ColorValue
     l::Float64 # Luminance
     c::Float64 # Chroma
     h::Float64 # Hue
@@ -121,7 +121,7 @@ copy(c::LCHab) = LCHab(c.l, c.c, c.h)
 
 
 # LUV (CIELUV)
-type LUV <: ColorValue
+immutable LUV <: ColorValue
     l::Float64 # Luminance in [0,1]
     u::Float64 # Red/Green in [-1,1]
     v::Float64 # Blue/Yellow in [-1,1]
@@ -137,7 +137,7 @@ copy(c::LUV) = LUV(c.l, c.u, c.v)
 
 
 # LCHuv (Luminance-Chroma-Hue, Polar-LUV)
-type LCHuv <: ColorValue
+immutable LCHuv <: ColorValue
     l::Float64 # Luminance
     c::Float64 # Chroma
     h::Float64 # Hue
@@ -153,7 +153,7 @@ copy(c::LCHuv) = LUV(c.l, c.c, c.h)
 
 
 # LMS (Long Medium Short)
-type LMS <: ColorValue
+immutable LMS <: ColorValue
     l::Float64 # Long
     m::Float64 # Medium
     s::Float64 # Short
@@ -773,8 +773,8 @@ function colordiff(a::ColorValue, b::ColorValue)
     ac, bc = sqrt(a.a^2 + a.b^2), sqrt(b.a^2 + b.b^2)
     mc = (ac + bc)/2
     g = (1 - sqrt(mc^7 / (mc^7 + 25^7))) / 2
-    a.a *= 1 + g
-    b.a *= 1 + g
+    a = LAB(a.l, a.a * (1 + g), a.b)
+    b = LAB(b.l, b.a * (1 + g), b.b)
 
     a = convert(LCHab, a)
     b = convert(LCHab, b)
