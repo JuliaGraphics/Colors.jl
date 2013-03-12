@@ -680,7 +680,7 @@ tritanopic(c::ColorValue)   = tritanopic(c, 1.0)
 # ColorValue Parsing
 # -------------
 
-include("x11_color_names.jl")
+include("color_names.jl")
 
 const col_pat_hex1 = r"(#|0x)([[:xdigit:]])([[:xdigit:]])([[:xdigit:]])"
 const col_pat_hex2 = r"(#|0x)([[:xdigit:]]{2})([[:xdigit:]]{2})([[:xdigit:]]{2})"
@@ -744,11 +744,11 @@ function color(desc::String)
     end
 
     desc_ = lowercase(desc_)
-    if !has(x11_color_names, desc_)
+    if !has(color_names, desc_)
         error("Unknown color: ", desc)
     end
 
-    c = x11_color_names[desc_]
+    c = color_names[desc_]
     return RGB(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
