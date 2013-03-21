@@ -219,11 +219,11 @@ const M_XYZ_RGB = [ 3.2404542 -1.5371385 -0.4985314
 
 
 function correct_gamut(c::RGB)
-    c.r = min(1.0, max(0.0, c.r))
-    c.g = min(1.0, max(0.0, c.g))
-    c.b = min(1.0, max(0.0, c.b))
-    c
+    RGB(min(1.0, max(0.0, c.r)),
+        min(1.0, max(0.0, c.g)),
+        min(1.0, max(0.0, c.b)))
 end
+
 
 function srgb_compand(v::Float64)
     v <= 0.0031308 ? 12.92v : 1.055v^(1/2.4) - 0.055
