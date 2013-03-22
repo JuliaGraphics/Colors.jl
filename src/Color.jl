@@ -2,7 +2,6 @@
 module Color
 
 import Base.convert, Base.hex, Base.@deprecate
-import Iterators
 
 export ColorValue, color,
        ColourValue, colour,
@@ -865,7 +864,7 @@ function distinguishable_colors(n::Integer,
 
     for i in 2:n
         d_best = 0
-        for (l, c, h) in Iterators.product(ls, cs, hs)
+        for h in hs, c in cs, l in ls
             candidate = LCHab(l, c, h)
             trans_candidate = transform(candidate)
             for j in 1:(i-1)
