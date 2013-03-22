@@ -32,8 +32,6 @@ immutable RGB <: ColorValue
     RGB() = RGB(0, 0, 0)
 end
 
-copy(c::RGB) = RGB(c.r, c.g, b)
-
 
 # HSV (Hue-Saturation-Value)
 immutable HSV <: ColorValue
@@ -47,8 +45,6 @@ immutable HSV <: ColorValue
 
     HSV() = HSV(0, 0, 0)
 end
-
-copy(c::HSV) = HSV(c.h, c.s, v)
 
 HSB(h, s, b) = HSV(h, s, b)
 
@@ -66,8 +62,6 @@ immutable HSL <: ColorValue
     HSL() = HSL(0, 0, 0)
 end
 
-copy(c::HSL) = HSL(c.h, c.s, c.l)
-
 HLS(h, l, s) = HSL(h, s, l)
 
 
@@ -84,8 +78,6 @@ immutable XYZ <: ColorValue
     XYZ() = XYZ(0, 0, 0)
 end
 
-copy(c::XYZ) = XYZ(c.x, c.y, z)
-
 
 # LAB (CIELAB)
 immutable LAB <: ColorValue
@@ -99,8 +91,6 @@ immutable LAB <: ColorValue
 
     LAB() = LAB(0, 0, 0)
 end
-
-copy(c::LAB) = LAB(c.l, c.a, c.b)
 
 
 # LCHab (Luminance-Chroma-Hue, Polar-LAB)
@@ -116,8 +106,6 @@ immutable LCHab <: ColorValue
     LCHab() = LCHab(0, 0, 0)
 end
 
-copy(c::LCHab) = LCHab(c.l, c.c, c.h)
-
 
 # LUV (CIELUV)
 immutable LUV <: ColorValue
@@ -131,8 +119,6 @@ immutable LUV <: ColorValue
 
     LUV() = LUV(0, 0, 0)
 end
-
-copy(c::LUV) = LUV(c.l, c.u, c.v)
 
 
 # LCHuv (Luminance-Chroma-Hue, Polar-LUV)
@@ -148,8 +134,6 @@ immutable LCHuv <: ColorValue
     LCHuv() = LCHuv(0, 0, 0)
 end
 
-copy(c::LCHuv) = LUV(c.l, c.c, c.h)
-
 
 # LMS (Long Medium Short)
 immutable LMS <: ColorValue
@@ -163,8 +147,6 @@ immutable LMS <: ColorValue
 
     LMS() = LMS(0, 0, 0)
 end
-
-copy(c::LMS) = LMS(c.l, c.m, c.s)
 
 
 # Everything to RGB
