@@ -40,7 +40,7 @@ immutable HSV <: ColorValue
     v::Float64 # Value in [0,1]
 
     function HSV(h::Number, s::Number, v::Number)
-        new(h, s, n)
+        new(h, s, v)
     end
 
     HSV() = HSV(0, 0, 0)
@@ -81,9 +81,9 @@ end
 
 # LAB (CIELAB)
 immutable LAB <: ColorValue
-    l::Float64 # Luminance in [0,1]
-    a::Float64 # Red/Green in [-1,1]
-    b::Float64 # Blue/Yellow in [-1,1]
+    l::Float64 # Luminance in approximately [0,100]
+    a::Float64 # Red/Green
+    b::Float64 # Blue/Yellow
 
     function LAB(l::Number, a::Number, b::Number)
         new(l, a, b)
@@ -95,9 +95,9 @@ end
 
 # LCHab (Luminance-Chroma-Hue, Polar-LAB)
 immutable LCHab <: ColorValue
-    l::Float64 # Luminance
+    l::Float64 # Luminance in [0,100]
     c::Float64 # Chroma
-    h::Float64 # Hue
+    h::Float64 # Hue in [0,360]
 
     function LCHab(l::Number, c::Number, h::Number)
         new(l, c, h)
@@ -109,9 +109,9 @@ end
 
 # LUV (CIELUV)
 immutable LUV <: ColorValue
-    l::Float64 # Luminance in [0,1]
-    u::Float64 # Red/Green in [-1,1]
-    v::Float64 # Blue/Yellow in [-1,1]
+    l::Float64 # Luminance
+    u::Float64 # Red/Green
+    v::Float64 # Blue/Yellow
 
     function LUV(l::Number, u::Number, v::Number)
         new(l, u, v)
@@ -231,6 +231,7 @@ convert(::Type{RGB}, c::LUV)   = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LCHuv) = convert(RGB, convert(LUV, c))
 convert(::Type{RGB}, c::LMS)   = convert(RGB, convert(XYZ, c))
 
+convert(::Type{RGB}, c::RGB24) = RGB((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
 # Everything to HSV
 # -----------------
@@ -480,17 +481,13 @@ end
 convert(::Type{LMS}, c::ColorValue) = convert(LMS, convert(XYZ, c))
 
 
-# All RGB24 conversions
-# ---------------------
+# Everything to RGB24
+# -------------------
 
 convert(::Type{RGB24}, c::RGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
     iround(Uint32, 255*c.g)<<8 + iround(Uint32, 255*c.b))
 
 convert(::Type{RGB24}, c::ColorValue) = convert(RGB24, convert(RGB, c))
-
-convert(::Type{RGB24}, c::RGB24) = c
-
-convert(::Type{RGB}, c::RGB24) = RGB((c.color>>>16)/255, ((c.color&0x0000ffff)>>>8)/255, (c.color&0x000000ff)/255)
 
 
 # Miscellaneous
