@@ -6,7 +6,7 @@ import Base.convert, Base.hex, Base.@deprecate
 export ColorValue, color,
        ColourValue, colour,
        weighted_color_mean, hex,
-       RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS,
+       RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24,
        protanopic, deuteranopic, tritanopic,
        cie_color_match, colordiff, distinguishable_colors
 
@@ -146,6 +146,14 @@ immutable LMS <: ColorValue
     end
 
     LMS() = LMS(0, 0, 0)
+end
+
+# 24 bit RGB (used by Cairo)
+immutable RGB24 <: ColorValue
+    color::Uint32
+    
+    RGB24(c::Unsigned) = new(c)
+    RGB24() = RGB24(0)
 end
 
 
@@ -470,6 +478,19 @@ function convert(::Type{LMS}, c::XYZ)
 end
 
 convert(::Type{LMS}, c::ColorValue) = convert(LMS, convert(XYZ, c))
+
+
+# All RGB24 conversions
+# ---------------------
+
+convert(::Type{RGB24}, c::RGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
+    iround(Uint32, 255*c.g)<<8 + iround(Uint32, 255*c.b))
+
+convert(::Type{RGB24}, c::ColorValue) = convert(RGB24, convert(RGB, c))
+
+convert(::Type{RGB24}, c::RGB24) = c
+
+convert(::Type{RGB}, c::RGB24) = RGB((c.color>>>16)/255, ((c.color&0x0000ffff)>>>8)/255, (c.color&0x000000ff)/255)
 
 
 # Miscellaneous
