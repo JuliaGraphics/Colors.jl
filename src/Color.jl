@@ -157,6 +157,16 @@ immutable RGB24 <: ColorValue
 end
 
 
+# Conversions
+# -----------
+
+# no-op conversions
+for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24)
+    @eval begin
+        convert(::Type{$CV}, c::$CV) = c
+    end
+end
+
 # Everything to RGB
 # -----------------
 
@@ -765,9 +775,9 @@ end
 # Returns:
 #   The CIEDE2000 color difference metric evaluated between a and b.
 #
-function colordiff(a::ColorValue, b::ColorValue)
-    a = convert(LAB, a)
-    b = convert(LAB, b)
+function colordiff(ai::ColorValue, bi::ColorValue)
+    a = convert(LAB, ai)
+    b = convert(LAB, bi)
 
     ac, bc = sqrt(a.a^2 + a.b^2), sqrt(b.a^2 + b.b^2)
     mc = (ac + bc)/2
@@ -854,30 +864,39 @@ function distinguishable_colors(n::Integer,
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})
 
-    # Distances of the current color to each previously selected color.
-    ds = zeros(Float64, n)
-    colors = Array(ColorValue, n)
-    trans_colors = Array(ColorValue, n)
+    # Candidate colors
+    N = length(ls)*length(cs)*length(hs)
+    candidate = Array(typeof(seed), N)
+    j = 0
+    for h in hs, c in cs, l in ls
+        candidate[j+=1] = LCHab(l, c, h)
+    end
 
+    # Transformed colors
+    tc = transform(candidate[1])
+    candidate_t = Array(typeof(tc), N)
+    candidate_t[1] = tc
+    for i = 2:N
+        candidate_t[i] = transform(candidate[i])
+    end
+
+    colors = Array(typeof(seed), n)
     colors[1] = seed
-    trans_colors[1] = transform(seed)
+
+    # Minimum distances of the current color to each previously selected color.
+    ds = zeros(Float64, N)
+    ts = transform(seed)
+    for i = 1:N
+        ds[i] = colordiff(ts, candidate_t[i])
+    end
 
     for i in 2:n
-        d_best = 0
-        for h in hs, c in cs, l in ls
-            candidate = LCHab(l, c, h)
-            trans_candidate = transform(candidate)
-            for j in 1:(i-1)
-                ds[j] = min(colordiff(trans_candidate, trans_colors[j]),
-                            colordiff(candidate, colors[j]))
-            end
-            d = min(ds[1:(i-1)])
-
-            if d > d_best
-                d_best = d
-                colors[i] = candidate
-                trans_colors[i] = trans_candidate
-            end
+        j = indmax(ds)
+        colors[i] = candidate[j]
+        tc = candidate_t[j]
+        for k = 1:N
+            d = colordiff(tc, candidate_t[k])
+            ds[k] = min(ds[k], d)
         end
     end
 
