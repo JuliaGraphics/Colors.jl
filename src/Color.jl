@@ -1,7 +1,7 @@
 
 module Color
 
-import Base.convert, Base.hex, Base.@deprecate
+import Base.convert, Base.hex, Base.isless
 
 export ColorValue, color,
        ColourValue, colour,
