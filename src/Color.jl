@@ -603,7 +603,7 @@ function whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::C
 end
 
 
-# Simulation of ColorValueblindness
+# Simulation of Colorblindness
 # ----------------------------
 
 # This method is due to:
@@ -686,7 +686,7 @@ deuteranopic(c::ColorValue) = deuteranopic(c, 1.0)
 tritanopic(c::ColorValue)   = tritanopic(c, 1.0)
 
 
-# ColorValue Parsing
+# Color Parsing
 # -------------
 
 include("color_names.jl")
@@ -710,7 +710,7 @@ end
 #
 # This parses subset of HTML/CSS color specifications. In particular, everything
 # is supported but: "hsla()", "rgba()" (since there is no notion of transparency
-# in this library) "currentColorValue", and "transparent".
+# in this library) "currentColor", and "transparent".
 #
 # It does support named colors (though it uses X11 named colors, which are
 # slightly different than W3C named colors in some cases), "rgb()", "hsl()",
