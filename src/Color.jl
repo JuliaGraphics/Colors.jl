@@ -1,6 +1,7 @@
 module Color
 
-import Base.convert, Base.hex, Base.isless
+import Base: convert, hex, isless
+import Base.Graphics: set_source_rgb, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
@@ -525,6 +526,11 @@ end
 
 hex(c::ColorValue) = hex(convert(RGB, c))
 
+# set source color as a ColorValue
+function set_source_rgb(gc::GraphicsContext, c::ColorValue)
+    rgb = convert(RGB, c)
+    set_source_rgb(gc, rgb.r, rgb.g, rgb.b)
+end
 
 # CIE Color Matching
 # ------------------
