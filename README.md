@@ -1,4 +1,3 @@
-
 # Color
 
 This library provides a wide array of functions for dealing with color. This
@@ -127,7 +126,7 @@ immutable LCHuv <: ColorValue
 ### LMS
 
 Long-Medium-Short cone response values. Multiple methods of converting to LMS
-space have been defined. Here the CAT02 chromatic adaptation matrix is used.
+space have been defined. Here the [CAT02](https://en.wikipedia.org/wiki/CIECAM02#CAT02) chromatic adaptation matrix is used.
 
 ```
 immutable LMS <: ColorValue
@@ -170,7 +169,7 @@ The CIE defines a standard observer, defining typical frequency response curve
 for each of the three human cones. This function returns an XYZ color
 corresponding to a wavelength specified in nanometers.  
 
-## Chromatic Adaptation (Whitebalance)
+## Chromatic Adaptation (white balance)
 
 `whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::ColorValue)`
 
@@ -235,24 +234,27 @@ formula (see `colordiff`), after first applying a transformation function
 
 What perceptually uniform colorspaces are and why you should be using them:
 
-* Ihaka R (2003). Colour for Presentation Graphics." In K Hornik, F Leisch, A
-  Zeileis (eds.), Proceedings of the 3rd International Workshop on Distributed
-  Statistical Computing, Vienna, Austria. ISSN 1609-395X
-* Zeileis, A., Hornik, K., and Murrell, P. (2009). Escaping RGBland: Selecting
-  colors for statistical graphics. Computational Statistics and Data Analysis,
+* Ihaka, R. (2003).
+  [Colour for Presentation Graphics](http://www.stat.auckland.ac.nz/~ihaka/downloads/DSC-Color.pdf).
+  In K Hornik, F Leisch, A Zeileis (eds.),
+  Proceedings of the 3rd International Workshop on Distributed Statistical Computing,
+  Vienna, Austria. ISSN 1609-395X
+* Zeileis, A., Hornik, K., and Murrell, P. (2009).
+  [Escaping RGBland: Selecting colors for statistical graphics](http://epub.wu.ac.at/1692/1/document.pdf).
+  Computational Statistics and Data Analysis,
   53(9), 3259–3270. doi:10.1016/j.csda.2008.11.033
 
 Functions in this library were mostly implemented according to:
 
- * Schanda, János, ed. Colorimetry: Understanding the CIE system.
-   Wiley-Interscience, 2007.
- * Sharma, G., Wu, W., & Dalal, E. N. (2005). The CIEDE2000 color‐difference
-   formula: Implementation notes, supplementary test data, and mathematical
-   observations. Color Research & Application, 30(1), 21–30. doi:10.1002/col
- * Ross Ihaka, Paul Murrell, Kurt Hornik, Jason C. Fisher, Achim Zeileis (2013).
-   colorspace: Color Space Manipulation. R package version 1.2-1. URL
-   http://CRAN.R-project.org/package=colorspace
- * Lindbloom, Bruce (2013). Useful Color Equations. URL
-   http://www.brucelindbloom.com/index.html?ColorCalculator.html
-
-
+* Schanda, J., ed.
+  [Colorimetry: Understanding the CIE system](http://books.google.pt/books?id=uZadszSGe9MC).
+  Wiley-Interscience, 2007.
+* Sharma, G., Wu, W., and Dalal, E. N. (2005).
+  [The CIEDE2000 color‐difference formula](http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf):
+  Implementation notes, supplementary test data, and mathematical observations.
+  Color Research & Application, 30(1), 21–30. doi:10.1002/col
+* Ihaka, R., Murrel, P., Hornik, K., Fisher, J. C., and Zeileis, A. (2013).
+  [colorspace: Color Space Manipulation](http://CRAN.R-project.org/package=colorspace).
+  R package version 1.2-1.
+* Lindbloom, B. (2013).
+  [Useful Color Equations](http://www.brucelindbloom.com/index.html?ColorCalculator.html)
