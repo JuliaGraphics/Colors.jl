@@ -1,7 +1,7 @@
 module Color
 
 import Base: convert, hex, isless
-import Base.Graphics: set_source_rgb, GraphicsContext
+import Base.Graphics: set_source, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
@@ -277,8 +277,8 @@ convert(::Type{HSV}, c::ColorValue) = convert(HSV, convert(RGB, c))
 # -----------------
 
 function convert(::Type{HSL}, c::RGB)
-    c_min = min([c.r, c.g, c.b])
-    c_max = max([c.r, c.g, c.b])
+    c_min = min(c.r, c.g, c.b)
+    c_max = max(c.r, c.g, c.b)
     l = (c_max - c_min) / 2
 
     if c_max == c_min
@@ -527,7 +527,7 @@ end
 hex(c::ColorValue) = hex(convert(RGB, c))
 
 # set source color as a ColorValue
-function set_source_rgb(gc::GraphicsContext, c::ColorValue)
+function set_source(gc::GraphicsContext, c::ColorValue)
     rgb = convert(RGB, c)
     set_source_rgb(gc, rgb.r, rgb.g, rgb.b)
 end
