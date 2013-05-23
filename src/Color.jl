@@ -759,7 +759,7 @@ function color(desc::String)
     end
 
     desc_ = lowercase(desc_)
-    if !has(color_names, desc_)
+    if !haskey(color_names, desc_)
         error("Unknown color: ", desc)
     end
 
