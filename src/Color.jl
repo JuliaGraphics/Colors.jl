@@ -1,7 +1,7 @@
 module Color
 
 import Base: convert, hex, isless
-import Base.Graphics: set_source, GraphicsContext
+import Base.Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
