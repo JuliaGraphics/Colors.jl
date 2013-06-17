@@ -705,9 +705,9 @@ const col_pat_hsl  = r"hsl\((\d+%?),(\d+%?),(\d+%?)\)"
 # Parse a number used in the "rgb()" or "hsl()" color.
 function parse_rgb_hsl_num(num::String)
     if num[end] == '%'
-        return parse_int(num[1:end-1], 10) / 100
+        return parseint(num[1:end-1], 10) / 100
     else
-        return parse_int(num, 10) / 255
+        return parseint(num, 10) / 255
     end
 end
 
@@ -732,16 +732,16 @@ function color(desc::String)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
-        return RGB(parse_int(mat.captures[2], 16) / 255,
-                   parse_int(mat.captures[3], 16) / 255,
-                   parse_int(mat.captures[4], 16) / 255)
+        return RGB(parseint(mat.captures[2], 16) / 255,
+                   parseint(mat.captures[3], 16) / 255,
+                   parseint(mat.captures[4], 16) / 255)
     end
 
     mat = match(col_pat_hex1, desc_)
     if mat != nothing
-        return RGB((16 * parse_int(mat.captures[2], 16)) / 255,
-                   (16 * parse_int(mat.captures[3], 16)) / 255,
-                   (16 * parse_int(mat.captures[4], 16)) / 255)
+        return RGB((16 * parseint(mat.captures[2], 16)) / 255,
+                   (16 * parseint(mat.captures[3], 16)) / 255,
+                   (16 * parseint(mat.captures[4], 16)) / 255)
     end
 
     mat = match(col_pat_rgb, desc_)
