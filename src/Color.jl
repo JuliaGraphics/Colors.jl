@@ -768,6 +768,9 @@ function color(desc::String)
 end
 
 
+color(c::ColorValue) = c
+
+
 # Color Difference Metrics
 # ------------------------
 
