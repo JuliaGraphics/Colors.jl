@@ -850,34 +850,37 @@ end
 # Generate n maximally distinguishable colors.
 #
 # This uses a greedy brute-force approach to choose n colors that are maximally
-# distinguishable. Given a seed color, and a set of possible hue, chroma, and
+# distinguishable. Given seed color(s), and a set of possible hue, chroma, and
 # lightness values (in LCHab space), it repeatedly chooses the next color as the
 # one that maximizes the minimum pairwise distance to any of the colors already
 # in the palette.
 #
 # Args:
 #   n: Number of colors to generate.
+#   seed: Initial color(s) included in the palette.
 #   transform: Transform applied to colors before measuring distance.
-#   seed: Initial color included in the palette.
-#   ls: Possible lightness values.
-#   cs: Possible chroma values.
-#   hs: Possible hue values.
+#   lchoices: Possible lightness values.
+#   cchoices: Possible chroma values.
+#   hchoices: Possible hue values.
 #
 # Returns:
 #   A Vector{ColorValue} of length n.
 #
-function distinguishable_colors(n::Integer,
-                                transform::Function,
-                                seed::ColorValue,
-                                ls::Vector{Float64},
-                                cs::Vector{Float64},
-                                hs::Vector{Float64})
+function distinguishable_colors{T<:ColorValue}(n::Integer,
+                            seed::Vector{T};
+                            transform::Function = identity,
+                            lchoices::Vector{Float64} = linspace(0,100,15),
+                            cchoices::Vector{Float64} = linspace(-100,100,15),
+                            hchoices::Vector{Float64} = linspace(0, 340, 20))
+    if n <= length(seed)
+        return seed[1:n]
+    end
 
     # Candidate colors
-    N = length(ls)*length(cs)*length(hs)
-    candidate = Array(typeof(seed), N)
+    N = length(lchoices)*length(cchoices)*length(hchoices)
+    candidate = Array(T, N)
     j = 0
-    for h in hs, c in cs, l in ls
+    for h in hchoices, c in cchoices, l in lchoices
         candidate[j+=1] = LCHab(l, c, h)
     end
 
@@ -889,17 +892,20 @@ function distinguishable_colors(n::Integer,
         candidate_t[i] = transform(candidate[i])
     end
 
-    colors = Array(typeof(seed), n)
-    colors[1] = seed
+    # Start with the seed colors
+    colors = Array(T, n)
+    copy!(colors, seed)
 
     # Minimum distances of the current color to each previously selected color.
-    ds = zeros(Float64, N)
-    ts = transform(seed)
-    for i = 1:N
-        ds[i] = colordiff(ts, candidate_t[i])
+    ds = infs(Float64, N)
+    for i = 1:length(seed)
+        ts = transform(seed[i])
+        for k = 1:N
+            ds[k] = min(ds[k], colordiff(ts, candidate_t[k]))
+        end
     end
-
-    for i in 2:n
+    
+    for i in length(seed)+1:n
         j = indmax(ds)
         colors[i] = candidate[j]
         tc = candidate_t[j]
@@ -911,5 +917,15 @@ function distinguishable_colors(n::Integer,
 
     colors
 end
+
+distinguishable_colors(n::Integer, seed::ColorValue; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
+distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB,0); kwargs...)
+
+@deprecate distinguishable_colors(n::Integer,
+                                transform::Function,
+                                seed::ColorValue,
+                                ls::Vector{Float64},
+                                cs::Vector{Float64},
+                                hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)
 
 end # module
