@@ -1,6 +1,6 @@
 module Color
 
-import Base: convert, hex, isless
+import Base: convert, hex, isless, writemime
 import Base.Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
@@ -151,7 +151,7 @@ end
 # 24 bit RGB (used by Cairo)
 immutable RGB24 <: ColorValue
     color::Uint32
-    
+
     RGB24(c::Unsigned) = new(c)
     RGB24() = RGB24(0)
 end
@@ -904,7 +904,7 @@ function distinguishable_colors{T<:ColorValue}(n::Integer,
             ds[k] = min(ds[k], colordiff(ts, candidate_t[k]))
         end
     end
-    
+
     for i in length(seed)+1:n
         j = indmax(ds)
         colors[i] = candidate[j]
@@ -927,5 +927,50 @@ distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(
                                 ls::Vector{Float64},
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)
+
+
+# Displaying color swatches
+# -------------------------
+
+function writemime(io::IO, ::@MIME("image/svg+xml"), c::ColorValue)
+    write(io,
+        """
+        <?xml version"1.0" encoding="UTF-8"?>
+        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+         "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+             width="25mm" height="25mm" viewBox="0 0 1 1">
+             <rect width="1" height="1"
+                   fill="#$(hex(c))" stroke="none"/>
+        </svg>
+        """)
+end
+
+
+function writemime{T <: ColorValue}(io::IO, ::@MIME("image/svg+xml"), cs::Array{T})
+    n = length(cs)
+    width=15
+    pad=1
+    write(io,
+        """
+        <?xml version"1.0" encoding="UTF-8"?>
+        <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+         "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+             width="$(n*width)mm" height="25mm"
+             shape-rendering="crispEdges">
+        """)
+
+    for (i, c) in enumerate(cs)
+        write(io,
+            """
+            <rect x="$((i-1)*width)mm" width="$(width - pad)mm" height="100%"
+                  fill="#$(hex(c))" stroke="none" />
+            """)
+    end
+
+    write(io, "</svg>")
+end
+
 
 end # module
