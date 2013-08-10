@@ -230,6 +230,16 @@ formula (see `colordiff`), after first applying a transformation function
 `colordiff(transform(a), transform(b))`.
 
 
+`linspace(c1::ColorValue, c2::ColorValue, n=100)`
+
+Generates `n` colors in a linearly interpolated ramp from `c1` to
+`c2`, inclusive, returning an `Array` of colors
+
+`weighted_color_mean(w1::Real, c1::ColorValue, c2::ColorValue)`
+
+Returns a color that is the weighted mean of `c1` and `c2`, where `c1`
+has a weight 0 ≤ `w1` ≤ 1.
+
 # References
 
 What perceptually uniform colorspaces are and why you should be using them:
