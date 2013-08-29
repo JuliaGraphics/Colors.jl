@@ -964,7 +964,7 @@ end
 # Displaying color swatches
 # -------------------------
 
-function writemime(io::IO, ::@MIME("image/svg+xml"), c::ColorValue)
+function writemime(io::IO, ::MIME"image/svg+xml", c::ColorValue)
     write(io,
         """
         <?xml version"1.0" encoding="UTF-8"?>
@@ -979,7 +979,7 @@ function writemime(io::IO, ::@MIME("image/svg+xml"), c::ColorValue)
 end
 
 
-function writemime{T <: ColorValue}(io::IO, ::@MIME("image/svg+xml"), cs::Array{T})
+function writemime{T <: ColorValue}(io::IO, ::MIME"image/svg+xml", cs::Array{T})
     n = length(cs)
     width=15
     pad=1
