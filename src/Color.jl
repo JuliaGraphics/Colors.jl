@@ -8,7 +8,8 @@ export ColorValue, color,
        weighted_color_mean, hex,
        RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24,
        protanopic, deuteranopic, tritanopic,
-       cie_color_match, colordiff, distinguishable_colors
+       cie_color_match, colordiff, distinguishable_colors,
+       MSC, sequential_palette, diverging_palette, colormap
 
 
 abstract ColorValue
@@ -961,6 +962,336 @@ function linspace{T<:ColorValue}(c1::T, c2::T, n=100)
 end
 
 
+
+# Colormaps & related functions
+# ---------------------
+
+
+# MSC - Most Saturated Color for given hue h
+# ---------------------
+# Calculates the most saturated color for any given hue by 
+# finding the corresponding corner in LCHuv space
+
+function MSC(h)
+
+    #Corners of RGB cube
+    const h0 = 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
+    const h1 = 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
+    const h2 = 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
+    const h3 = 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
+    const h4 = 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
+    const h5 = 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
+
+    p=0 #variable
+    o=0 #min
+    t=0 #max
+
+    #Selecting edge of RGB cube; R=1 G=2 B=3
+    if h0 <= h < h1
+        p=2; o=3; t=1 
+    elseif h1 <= h < h2
+        p=1; o=3; t=2
+    elseif h2 <= h < h3
+        p=3; o=1; t=2
+    elseif h3 <= h < h4
+        p=2; o=1; t=3
+    elseif h4 <= h < h5
+        p=1; o=2; t=3
+    elseif h5 <= h || h < h0
+        p=3; o=2; t=1
+    end
+       
+    alpha=-sind(h)
+    beta=cosd(h)
+
+    #un &vn are calculated based on reference white (D65)
+    #X=0.95047; Y=1.0000; Z=1.08883
+    const un=0.19783982482140777 #4.0X/(X+15.0Y+3.0Z)
+    const vn=0.46833630293240970 #9.0Y/(X+15.0Y+3.0Z)
+
+    #sRGB matrix
+    const M=[0.4124564  0.3575761  0.1804375;
+             0.2126729  0.7151522  0.0721750;
+             0.0193339  0.1191920  0.9503041]'
+    g=2.4
+
+    m_tx=M[t,1]
+    m_ty=M[t,2]
+    m_tz=M[t,3]
+    m_px=M[p,1]
+    m_py=M[p,2]
+    m_pz=M[p,3]
+
+    f1=(4alpha*m_px+9beta*m_py)
+    a1=(4alpha*m_tx+9beta*m_ty)
+    f2=(m_px+15m_py+3m_pz)
+    a2=(m_tx+15m_ty+3m_tz)
+
+    cp=((alpha*un+beta*vn)*a2-a1)/(f1-(alpha*un+beta*vn)*f2)
+
+    #gamma inversion
+#    cp = cp <= 0.003 ? 12.92cp : 1.055cp^(1.0/g)-0.05
+    cp = 1.055cp^(1.0/g)-0.05
+
+    col=zeros(3)
+    col[p]=clamp(cp,0.0,1.0)
+    col[o]=0.0
+    col[t]=1.0
+
+    convert(LCHuv, RGB(col[1],col[2],col[3])) 
+end
+
+# Maximum saturation for given lightness and hue
+# ----------------------
+# Maximally saturated color for a specific hue and lightness 
+# is found by looking for the edge of LCHuv space.
+
+function MSC(h,l)
+    pmid=MSC(h)
+    
+    if l <= pmid.l
+        pend=LCHuv(0,0,0)
+    elseif l > pmid.l
+        pend=LCHuv(100,0,0)
+    end
+
+    a=(pend.l-l)/(pend.l-pmid.l)
+    a*(pmid.c-pend.c)+pend.c
+end
+
+#Double quadratic Beziere curve
+function Beziere(t,p0,p2,q0,q1,q2)
+    function B(t,a,b,c)
+    a*(1.0-t)^2.0+2.0*b*(1.0-t)*t+c*t^2.0
+    end
+
+    if t <= 0.5
+        return B(2.0t, p0, q0, q1)
+    elseif t > 0.5
+        return B(2.0(t-0.5), q1, q2, p2)
+    end
+
+    NaN
+end
+
+#Inverse double quadratic Beziere curve
+function invBeziere(t,p0,p2,q0,q1,q2)
+    function invB(t,a,b,c)
+        (a-b+sqrt(b^2.0-a*c+(a-2.0b+c)*t))/(a-2.0b+c)
+    end
+
+    if t < q1
+        return 0.5*invB(t,p0,q0,q1)
+    elseif t >= q1
+        return 0.5*invB(t,q1,q2,p2)+0.5
+    end
+
+    NaN
+end
+
+# Small definitions to make color computations more clear
+
++(x::LCHuv, y::LCHuv) = LCHuv(x.l+y.l,x.c+y.c,x.h+y.h)
+*(x::Real, y::LCHuv) = LCHuv(x*y.l,x*y.c,x*y.h)
+
+
+# Sequential palette
+# ----------------------
+# Sequential_palette implements the color palette creation technique by 
+# Wijffelaars, M., et al. (2008)
+# http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf
+#
+# Colormaps are formed using Beziere curves in LCHuv colorspace 
+# with some constant hue. In addition, start and end points can be given 
+# that are then blended to the original hue smoothly.
+#
+# The arguments are:
+# N        - number of colors
+# h        - the main hue [0,360]
+# c        - the overall lightness contrast [0,1]
+# s        - saturation [0,1]
+# b        - brightness [0,1]
+# w        - cold/warm parameter, i.e. the strength of the starting color [0,1]
+# d        - depth of the ending color [0,1]
+# wcolor   - starting color (warmness)
+# dcolor   - ending color (depth)
+# logscale - true/false for toggling logspacing
+
+function sequential_palette(h, 
+                            N::Int=100;
+                            c=0.88,
+                            s=0.6,
+                            b=0.75,
+                            w=0.15,
+                            d=0.0,
+                            wcolor=RGB(1,1,0),
+                            dcolor=RGB(0,0,1),
+                            logscale=false)
+
+    function MixHue(a,h0,h1)
+        M=mod(180.0+h1-h0, 360)-180.0
+        mod(h0+a*M, 360)
+    end
+    
+    pstart=convert(LCHuv, wcolor)
+    p1=MSC(h)
+#    p0=LCHuv(0,0,h) #original end point
+    pend=convert(LCHuv, dcolor)
+
+    #multi-hue start point
+    p2l=100*(1.-w)+w*pstart.l
+    p2h=MixHue(w,h,pstart.h)
+    p2c=min(MSC(p2h,p2l), w*s*pstart.c)
+    p2=LCHuv(p2l,p2c,p2h)
+
+    #multi-hue ending point
+    p0l=20.0*d
+    p0h=MixHue(d,h,pend.h)
+    p0c=min(MSC(p0h,p0l), d*s*pend.c)
+    p0=LCHuv(p0l,p0c,p0h)
+
+    q0=(1.0-s)*p0+s*p1    
+    q2=(1.0-s)*p2+s*p1
+    q1=0.5*(q0+q2)
+
+    pal = RGB[]
+    
+    if logscale
+        absc = logspace(-2.,0.,N)
+    else
+        absc = linspace(0.,1.,N)
+    end
+
+    for t in absc 
+        u=1.0-t
+
+        #Change grid to favor light colors and to be uniform along the curve
+        u = (125.0-125.0*0.2^((1.0-c)*b+u*c))
+        u = invBeziere(u,p0.l,p2.l,q0.l,q1.l,q2.l)
+
+        #Get color components from Beziere curves
+        ll = Beziere(u, p0.l, p2.l, q0.l, q1.l, q2.l)
+        cc = Beziere(u, p0.c, p2.c, q0.c, q1.c, q2.c)
+        hh = Beziere(u, p0.h, p2.h, q0.h, q1.h, q2.h)
+
+        push!(pal, convert(RGB, LCHuv(ll,cc,hh)))
+    end
+
+    pal
+end
+
+# Diverging palettes
+# ----------------------
+# Create diverging palettes by combining 2 sequential palettes
+#
+# The arguments are:
+# N        - number of colors
+# h1       - the main hue of the left side [0,360]
+# h2       - the main hue of the right side [0,360]
+# c        - the overall lightness contrast [0,1]
+# s        - saturation [0,1]
+# b        - brightness [0,1]
+# w        - cold/warm parameter, i.e. the strength of the starting color [0,1]
+# d1       - depth of the ending color in the left side [0,1]
+# d2       - depth of the ending color in the right side [0,1]
+# wcolor   - starting color (warmness)
+# dcolor1  - ending color of the left side (depth)
+# dcolor2  - ending color of the right side (depth)
+# logscale - true/false for toggling logspacing
+
+function diverging_palette(h1,
+                           h2,
+                           N::Int=100;
+                           mid=0.5,
+                           c=0.88,
+                           s=0.6,
+                           b=0.75,
+                           w=0.15,
+                           d1=0.0,
+                           d2=0.0,
+                           wcolor=RGB(1,1,0),
+                           dcolor1=RGB(1,0,0),
+                           dcolor2=RGB(0,0,1),
+                           logscale=false)
+
+    if isodd(N)
+        n=N-1
+    else
+        n=N
+    end
+    N1 = int(max(ceil(mid*n), 1))
+    N2 = int(max(n-N1, 1))
+
+    pal1 = sequential_palette(h1, N1+1, w=w, d=d1, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor1, logscale=logscale)
+    pal1 = flipud(pal1)
+
+    pal2 = sequential_palette(h2, N2+1, w=w, d=d2, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor2, logscale=logscale)
+
+    if isodd(N)
+        midcol = weighted_color_mean(0.5, pal1[end], pal2[1])
+        return [pal1[1:end-1], midcol, pal2[2:end]]
+    else
+        return [pal1[1:end-1], pal2[2:end]]
+    end
+end
+
+
+# Colormap
+# ----------------------
+# Main function to handle different predefined colormaps
+
+function colormap(cname::String, N::Int=100; mid=0.5, logscale=false, kvs...)
+
+    cname = lowercase(cname)
+    if haskey(colormaps_sequential, cname)
+        vals = colormaps_sequential[cname]
+
+        #XXX: fix me
+        #setindex does not work for tuples with mixed types
+        #-> change into array(Any)
+        p=Array(Any,8)
+        for i in 1:8
+            p[i] = vals[i]
+        end
+
+        for (k,v) in kvs
+            ind = findfirst([:h, :w, :d, :c, :s, :b, :wcolor, :dcolor], k)
+            if ind > 0
+                p[ind] = v
+            end
+            #Better way to write this, but does not work?
+            #if k in [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
+            #    @eval $k = $v
+            #end
+        end
+
+        return sequential_palette(p[1], N, w=p[2], d=p[3], c=p[4], s=p[5], b=p[6], wcolor=p[7], dcolor=p[8], logscale=logscale)
+
+    elseif haskey(colormaps_diverging, cname)
+        vals = colormaps_diverging[cname]
+
+        p=Array(Any,11)
+        for i in 1:11
+            p[i] = vals[i]
+        end
+
+        for (k,v) in kvs
+            ind = findfirst([:h, :h2, :w, :d1, :d2, :c, :s, :b, :wcolor, :dcolor1, :dcolor2], k)
+            if ind > 0
+                p[ind] = v
+            end
+        end
+
+        return diverging_palette(p[1], p[2], N, w=p[3], d1=p[4], d2=p[5], c=p[6], s=p[7], b=p[8], wcolor=p[9], dcolor1=p[10], dcolor2=p[11], mid=mid, logscale=logscale)
+
+    else
+        error("Unknown colormap: ", cname)
+    end
+
+end
+
+
+
 # Displaying color swatches
 # -------------------------
 
@@ -1003,6 +1334,7 @@ function writemime{T <: ColorValue}(io::IO, ::MIME"image/svg+xml", cs::Array{T})
 
     write(io, "</svg>")
 end
+
 
 
 end # module
