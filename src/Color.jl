@@ -404,7 +404,7 @@ end
 convert(::Type{LAB}, c::XYZ) = convert(LAB, c, WP_DEFAULT)
 
 function convert(::Type{LAB}, c::LCHab)
-    hr = degrees2radians(c.h)
+    hr = deg2rad(c.h)
     LAB(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
@@ -434,7 +434,7 @@ end
 convert(::Type{LUV}, c::XYZ) = convert(LUV, c, WP_DEFAULT)
 
 function convert(::Type{LUV}, c::LCHuv)
-    hr = degrees2radians(c.h)
+    hr = deg2rad(c.h)
     LUV(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
@@ -445,7 +445,7 @@ convert(::Type{LUV}, c::ColorValue) = convert(LUV, convert(XYZ, c))
 # -------------------
 
 function convert(::Type{LCHuv}, c::LUV)
-    h = radians2degrees(atan2(c.v, c.u))
+    h = rad2deg(atan2(c.v, c.u))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
     LCHuv(c.l, sqrt(c.u^2 + c.v^2), h)
@@ -458,7 +458,7 @@ convert(::Type{LCHuv}, c::ColorValue) = convert(LCHuv, convert(LUV, c))
 # -------------------
 
 function convert(::Type{LCHab}, c::LAB)
-    h = radians2degrees(atan2(c.b, c.a))
+    h = rad2deg(atan2(c.b, c.a))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
     LCHab(c.l, sqrt(c.a^2 + c.b^2), h)
