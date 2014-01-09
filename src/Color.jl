@@ -15,6 +15,10 @@ export ColorValue, color,
 abstract ColorValue
 typealias ColourValue ColorValue
 
+# Delete once 0.2 is no longer supported:
+if !isdefined(:rad2deg)
+  const rad2deg = radians2degrees
+end
 
 # Common Colorspaces
 # ------------------
