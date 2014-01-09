@@ -18,6 +18,7 @@ typealias ColourValue ColorValue
 # Delete once 0.2 is no longer supported:
 if !isdefined(:rad2deg)
   const rad2deg = radians2degrees
+  const deg2rad = degrees2radians
 end
 
 # Common Colorspaces
