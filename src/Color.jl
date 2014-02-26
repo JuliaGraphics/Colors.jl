@@ -5,8 +5,10 @@ import Base.Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
+       AlphaColorValue,
        weighted_color_mean, hex,
        RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24,
+       RGBA, HSVA, HSLA, XYZA, LABA, LUVA, LCHabA, LCHuvA, LMSA, RGBA32,
        protanopic, deuteranopic, tritanopic,
        cie_color_match, colordiff, distinguishable_colors,
        MSC, sequential_palette, diverging_palette, colormap
@@ -15,11 +17,22 @@ export ColorValue, color,
 abstract ColorValue
 typealias ColourValue ColorValue
 
+immutable AlphaColorValue{T <: ColorValue}
+    c::T
+    alpha::Float64
+
+    function AlphaColorValue(x1, x2, x3, alpha=1.0)
+        new(T(x1, x2, x3), alpha)
+    end
+    AlphaColorValue(c::T, alpha=1.0) = new(c, alpha)
+end
+
 # Delete once 0.2 is no longer supported:
 if !isdefined(:rad2deg)
   const rad2deg = radians2degrees
   const deg2rad = degrees2radians
 end
+
 
 # Common Colorspaces
 # ------------------
@@ -163,6 +176,19 @@ immutable RGB24 <: ColorValue
 end
 
 
+# Versions with transparency
+
+typealias RGBA AlphaColorValue{RGB}
+typealias HSVA AlphaColorValue{HSV}
+typealias HSLA AlphaColorValue{HSL}
+typealias XYZA AlphaColorValue{XYZ}
+typealias LABA AlphaColorValue{LAB}
+typealias LCHabA AlphaColorValue{LCHab}
+typealias LUVA AlphaColorValue{LUV}
+typealias LCHuvA AlphaColorValue{LCHuv}
+typealias LMSA AlphaColorValue{LMS}
+typealias RGBA32 AlphaColorValue{RGB24}
+
 # Conversions
 # -----------
 
@@ -171,6 +197,10 @@ for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24)
     @eval begin
         convert(::Type{$CV}, c::$CV) = c
     end
+end
+
+function convert{T,U}(::Type{AlphaColorValue{T}}, c::AlphaColorValue{U})
+    AlphaColorValue{T}(convert(T, c.c), c.alpha)
 end
 
 # Everything to RGB
@@ -505,7 +535,14 @@ convert(::Type{RGB24}, c::RGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
 
 convert(::Type{RGB24}, c::ColorValue) = convert(RGB24, convert(RGB, c))
 
+
+# To Uint32
+# ----------------
+
 convert(::Type{Uint32}, c::RGB24) = c.color
+
+convert(::Type{Uint32}, ac::RGBA32) = convert(Uint32, ac.c) | iround(Uint32, 255*ac.alpha)<<24
+
 
 # Miscellaneous
 # -------------
