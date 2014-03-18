@@ -7,10 +7,10 @@ export ColorValue, color,
        ColourValue, colour,
        AlphaColorValue,
        weighted_color_mean, hex,
-       RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24,
-       RGBA, HSVA, HSLA, XYZA, LABA, LUVA, LCHabA, LCHuvA, LMSA, RGBA32,
+       RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, LMS, RGB24,
+       RGBA, HSVA, HSLA, XYZA, LABA, LUVA, LCHabA, LCHuvA, DIN99A, LMSA, RGBA32,
        protanopic, deuteranopic, tritanopic,
-       cie_color_match, colordiff, distinguishable_colors,
+       cie_color_match, colordiff, colordiff_din99, distinguishable_colors,
        MSC, sequential_palette, diverging_palette, colormap
 
 
@@ -153,6 +153,17 @@ immutable LCHuv <: ColorValue
     LCHuv() = LCHuv(0, 0, 0)
 end
 
+immutable DIN99 <: ColorValue
+    l::Float64 # L99
+    a::Float64 # a99
+    b::Float64 # b99
+
+    function DIN99(l::Number, a::Number, b::Number)
+        new(l, a, b)
+    end
+
+    DIN99() = DIN99(0, 0, 0)
+end
 
 # LMS (Long Medium Short)
 immutable LMS <: ColorValue
@@ -186,6 +197,7 @@ typealias LABA AlphaColorValue{LAB}
 typealias LCHabA AlphaColorValue{LCHab}
 typealias LUVA AlphaColorValue{LUV}
 typealias LCHuvA AlphaColorValue{LCHuv}
+typealias DIN99a AlphaColorValue{DIN99}
 typealias LMSA AlphaColorValue{LMS}
 typealias RGBA32 AlphaColorValue{RGB24}
 
@@ -193,7 +205,7 @@ typealias RGBA32 AlphaColorValue{RGB24}
 # -----------
 
 # no-op conversions
-for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, LMS, RGB24)
+for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, LMS, RGB24)
     @eval begin
         convert(::Type{$CV}, c::$CV) = c
     end
@@ -275,6 +287,7 @@ convert(::Type{RGB}, c::LAB)   = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LCHab) = convert(RGB, convert(LAB, c))
 convert(::Type{RGB}, c::LUV)   = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LCHuv) = convert(RGB, convert(LUV, c))
+convert(::Type{RGB}, c::DIN99) = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LMS)   = convert(RGB, convert(XYZ, c))
 
 convert(::Type{RGB}, c::RGB24) = RGB((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
@@ -390,6 +403,7 @@ end
 
 convert(::Type{XYZ}, c::LAB)   = convert(XYZ, c, WP_DEFAULT)
 convert(::Type{XYZ}, c::LCHab) = convert(XYZ, convert(LAB, c))
+convert(::Type{XYZ}, c::DIN99) = convert(XYZ, convert(LAB, c))
 
 function xyz_to_uv(c::XYZ)
     d = c.x + 15c.y + 3c.z
@@ -441,6 +455,51 @@ convert(::Type{LAB}, c::XYZ) = convert(LAB, c, WP_DEFAULT)
 function convert(::Type{LAB}, c::LCHab)
     hr = deg2rad(c.h)
     LAB(c.l, c.c * cos(hr), c.c * sin(hr))
+end
+
+function convert(::Type{LAB}, c::DIN99)
+
+    # FIXME: right now we assume the adjustment parameters are always 1.
+    kch = 1
+    ke = 1
+    
+    # Calculate Chroma (C99) in the DIN99 space
+    cc = sqrt(c.a^2 + c.b^2)
+
+    # NOTE: This is calculated in degrees, against the standard, to save
+    # computation steps later.
+    if (c.a > 0 && c.b >= 0)
+        h = atand(c.b/c.a)
+    elseif (c.a == 0 && c.b > 0)
+        h = 90
+    elseif (c.a < 0)
+        h = 180+atand(c.b/c.a)
+    elseif (c.a == 0 && c.b < 0)
+        h = 270
+    elseif (c.a > 0 && c.b <= 0)
+        h = 360 + atand(c.b/c.a)
+    else
+        h = 0
+    end
+
+    # Temporary variable for chroma
+    g = (e^(0.045*cc*kch*ke)-1)/0.045
+
+    # Temporary redness
+    ee = g*cosd(h)
+    
+    # Temporary yellowness
+    f = g*sind(h)
+
+    # CIELAB a*b*
+    # FIXME: hard-code the constants.
+    ciea = ee*cosd(16) - (f/0.7)*sind(16)
+    cieb = ee*sind(16) + (f/0.7)*cosd(16)
+
+    # CIELAB L*
+    ciel = (e^(c.l*ke/105.51)-1)/0.0158
+
+    LAB(ciel, ciea, cieb)
 end
 
 convert(::Type{LAB}, c::ColorValue) = convert(LAB, convert(XYZ, c))
@@ -500,6 +559,55 @@ function convert(::Type{LCHab}, c::LAB)
 end
 
 convert(::Type{LCHab}, c::ColorValue) = convert(LCHab, convert(LAB, c))
+
+
+# Everything to DIN99
+# -------------------
+
+function convert(::Type{DIN99}, c::LAB)
+    
+    # FIXME: right now we assume the adjustment parameters are always 1.
+    kch = 1
+    ke = 1
+
+    # Calculate DIN99 L
+    l99 = (1/ke)*105.51*log(1+0.0158*c.l)
+
+    # Temporary value for redness and yellowness
+    # FIXME: hard-code the constants
+    ee = c.a*cosd(16) + c.b*sind(16)
+    f = -0.7*c.a*sind(16) + 0.7*c.b*cosd(16)
+    
+    # Temporary value for chroma
+    g = sqrt(ee^2 + f^2)
+
+    # Hue angle
+    # Calculated in degrees, against the specification.
+    if (ee > 0 && f >= 0)
+        h = atand(f/ee)
+    elseif (ee == 0 && f > 0)
+        h = 90
+    elseif (ee < 0)
+        h = 180+atand(f/ee)
+    elseif (ee == 0 && f < 0)
+        h = 270
+    elseif (ee > 0 && f <= 0)
+        h = 360 + atand(f/ee)
+    else
+        h = 0
+    end
+
+    # DIN99 chroma
+    cc = log(1+0.045*g)/(0.045*kch*ke)
+
+    # DIN99 chromaticities
+    a99, b99 = cc*cosd(h), cc*sind(h)
+
+    DIN99(l99, a99, b99)
+
+end
+
+convert(::Type{DIN99}, c::ColorValue) = convert(DIN99, convert(LAB, c))
 
 
 # Everything to LMS
@@ -886,6 +994,22 @@ function colordiff(ai::ColorValue, bi::ColorValue)
          tr * (dc/sc) * (dh/sh))
 end
 
+# Evaluate the DIN99 color difference formula, implemented according to the
+# DIN 6176 specification.
+#
+# Args:
+#   a, b: Any two colors.
+#
+# Returns:
+#   The DIN99 color difference metric evaluated between a and b.
+function colordiff_din99(ai::ColorValue, bi::ColorValue)
+
+    a = convert(DIN99, ai)
+    b = convert(DIN99, bi)
+
+    sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
+
+end
 
 # Color Scale Generation
 # ----------------------

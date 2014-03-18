@@ -123,6 +123,17 @@ immutable LCHuv <: ColorValue
     h::Float64 # Hue
 ```
 
+### DIN99
+
+The DIN99 uniform colorspace as described in the DIN 6176 specification.
+
+```julia
+immutable DIN99 <: ColorValue
+    l::Float64 # L99 (Lightness)
+    a::Float64 # a99 (Red/Green)
+    b::Float64 # b99 (Blue/Yellow)
+```
+
 ### LMS
 
 Long-Medium-Short cone response values. Multiple methods of converting to LMS
@@ -186,6 +197,9 @@ Evaluate the
 difference formula. This gives an approximate measure of the perceptual
 difference between two colors to a typical viewer. A large number is returned
 for increasingly distinguishable colors.
+
+`colordiff_din99(a::ColorValue, b::ColorValue)`
+Evaluate the DIN99 color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99 uniform color space. Larger numbers indicate a larger perceptual difference.
 
 ## Simulation of color blindness
 
