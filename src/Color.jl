@@ -1147,6 +1147,9 @@ function MSC(h)
     const h4 = 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
     const h5 = 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
 
+    #Wrap h to [0, 360] range
+    h = mod(h, 360)
+
     p=0 #variable
     o=0 #min
     t=0 #max
@@ -1166,6 +1169,18 @@ function MSC(h)
         p=3; o=2; t=1
     end
 
+    col=zeros(3)
+
+    #check if we are directly on the edge of the RGB cube (within some tolerance)
+    for edge in [h0, h1, h2, h3, h4, h5]
+        if edge - 200eps() < h < edge + 200eps()
+            col[p] = edge in [h0, h2, h4] ? 0.0 : 1.0
+            col[o] = 0.0
+            col[t] = 1.0
+            return convert(LCHuv, RGB(col[1],col[2],col[3]))
+        end
+    end
+
     alpha=-sind(h)
     beta=cosd(h)
 
@@ -1178,7 +1193,7 @@ function MSC(h)
     const M=[0.4124564  0.3575761  0.1804375;
              0.2126729  0.7151522  0.0721750;
              0.0193339  0.1191920  0.9503041]'
-    g=2.4
+    const g=2.4
 
     m_tx=M[t,1]
     m_ty=M[t,2]
@@ -1195,15 +1210,14 @@ function MSC(h)
     cp=((alpha*un+beta*vn)*a2-a1)/(f1-(alpha*un+beta*vn)*f2)
 
     #gamma inversion
-#    cp = cp <= 0.003 ? 12.92cp : 1.055cp^(1.0/g)-0.05
-    cp = 1.055cp^(1.0/g)-0.05
+    cp = cp <= 0.003 ? 12.92cp : 1.055cp^(1.0/g)-0.05
+#    cp = 1.055cp^(1.0/g)-0.05
 
-    col=zeros(3)
     col[p]=clamp(cp,0.0,1.0)
     col[o]=0.0
     col[t]=1.0
 
-    convert(LCHuv, RGB(col[1],col[2],col[3]))
+    return convert(LCHuv, RGB(col[1],col[2],col[3]))
 end
 
 # Maximum saturation for given lightness and hue
@@ -1224,8 +1238,8 @@ function MSC(h,l)
     a*(pmid.c-pend.c)+pend.c
 end
 
-#Double quadratic Beziere curve
-function Beziere(t,p0,p2,q0,q1,q2)
+#Double quadratic Bezier curve
+function Bezier(t,p0,p2,q0,q1,q2)
     function B(t,a,b,c)
     a*(1.0-t)^2.0+2.0*b*(1.0-t)*t+c*t^2.0
     end
@@ -1239,8 +1253,8 @@ function Beziere(t,p0,p2,q0,q1,q2)
     NaN
 end
 
-#Inverse double quadratic Beziere curve
-function invBeziere(t,p0,p2,q0,q1,q2)
+#Inverse double quadratic Bezier curve
+function invBezier(t,p0,p2,q0,q1,q2)
     function invB(t,a,b,c)
         (a-b+sqrt(b^2.0-a*c+(a-2.0b+c)*t))/(a-2.0b+c)
     end
@@ -1332,12 +1346,12 @@ function sequential_palette(h,
 
         #Change grid to favor light colors and to be uniform along the curve
         u = (125.0-125.0*0.2^((1.0-c)*b+u*c))
-        u = invBeziere(u,p0.l,p2.l,q0.l,q1.l,q2.l)
+        u = invBezier(u,p0.l,p2.l,q0.l,q1.l,q2.l)
 
-        #Get color components from Beziere curves
-        ll = Beziere(u, p0.l, p2.l, q0.l, q1.l, q2.l)
-        cc = Beziere(u, p0.c, p2.c, q0.c, q1.c, q2.c)
-        hh = Beziere(u, p0.h, p2.h, q0.h, q1.h, q2.h)
+        #Get color components from Bezier curves
+        ll = Bezier(u, p0.l, p2.l, q0.l, q1.l, q2.l)
+        cc = Bezier(u, p0.c, p2.c, q0.c, q1.c, q2.c)
+        hh = Bezier(u, p0.h, p2.h, q0.h, q1.h, q2.h)
 
         push!(pal, convert(RGB, LCHuv(ll,cc,hh)))
     end
@@ -1411,9 +1425,6 @@ function colormap(cname::String, N::Int=100; mid=0.5, logscale=false, kvs...)
     if haskey(colormaps_sequential, cname)
         vals = colormaps_sequential[cname]
 
-        #XXX: fix me
-        #setindex does not work for tuples with mixed types
-        #-> change into array(Any)
         p=Array(Any,8)
         for i in 1:8
             p[i] = vals[i]
@@ -1424,10 +1435,6 @@ function colormap(cname::String, N::Int=100; mid=0.5, logscale=false, kvs...)
             if ind > 0
                 p[ind] = v
             end
-            #Better way to write this, but does not work?
-            #if k in [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
-            #    @eval $k = $v
-            #end
         end
 
         return sequential_palette(p[1], N, w=p[2], d=p[3], c=p[4], s=p[5], b=p[6], wcolor=p[7], dcolor=p[8], logscale=logscale)

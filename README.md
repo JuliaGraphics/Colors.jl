@@ -254,6 +254,70 @@ Generates `n` colors in a linearly interpolated ramp from `c1` to
 Returns a color that is the weighted mean of `c1` and `c2`, where `c1`
 has a weight 0 ≤ `w1` ≤ 1.
 
+`MSC(h)`
+
+Returns the most saturated color for a given hue `h` (defined in LCHuv space, i.e. in range [0, 360]). Optionally the lightness `l` can also be given like `MSC(h, l)`. The color is found by finding the edge of the LCHuv space for a given angle (hue).
+
+## Colormaps
+
+`colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])`
+
+Returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).
+Optional arguments are the number of colors `N`, position of the middle point `mid` and possibility to switch to log scaling with `logscale` keyword.
+
+Colormaps computed by this algorithm are ensured to have an increasing perceived depth or saturation making them ideal for data visualization. This also means that they are (in most cases) colorblind friendly and suitable for black-and-white printing.
+
+Currently supported colormap names are:
+
+#### Sequential
+* `Blues`
+* `Greens`
+* `Grays`
+* `Oranges`
+* `Purples`
+* `Reds`
+
+#### Diverging
+* `RdBu` (from red to blue)
+
+It is also possible to create your own colormaps by using the 
+`sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0, wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])`
+
+function that creates a sequential map for a hue `h` (defined in LCHuv space). Other possible parameters that you can fine-tune are:
+
+* `N` - number of colors
+* `c` - the overall lightness contrast [0,1]
+* `s` - saturation [0,1]
+* `b` - brightness [0,1]
+* `w` - cold/warm parameter, i.e. the strength of the starting color [0,1]
+* `d` - depth of the ending color [0,1]
+* `wcolor` - starting color (usually defined to be yellow)
+* `dcolor` - ending color (depth)
+* `logscale` - true/false for toggling logspacing
+
+Two sequential maps can also be combined into a diverging colormap by using the
+
+`diverging_palette(h1, h2 [, N::Int=100; mid=0.5,c=0.88, s=0.6, b=0.75, w=0.15, d1=0.0, d2=0.0, wcolor=RGB(1,1,0), dcolor1=RGB(1,0,0), dcolor2=RGB(0,0,1), logscale=false])`
+
+where the arguments are
+* `h1` - the main hue of the left side [0,360]
+* `h2` - the main hue of the right side [0,360]
+
+and optional arguments
+* `N` - number of colors
+* `c` - the overall lightness contrast [0,1]
+* `s` - saturation [0,1]
+* `b` - brightness [0,1]
+* `w` - cold/warm parameter, i.e. the strength of the middle color [0,1]
+* `d1` - depth of the ending color in the left side [0,1]
+* `d2` - depth of the ending color in the right side [0,1]
+* `wcolor` - starting color i.e. the middle color (warmness, usually defined to be yellow)
+* `dcolor1` - ending color of the left side (depth)
+* `dcolor2` - ending color of the right side (depth)
+* `logscale` - true/false for toggling logspacing
+
+
+
 # References
 
 What perceptually uniform colorspaces are and why you should be using them:
@@ -282,3 +346,4 @@ Functions in this library were mostly implemented according to:
   R package version 1.2-1.
 * Lindbloom, B. (2013).
   [Useful Color Equations](http://www.brucelindbloom.com/index.html?ColorCalculator.html)
+* Wijffelaars, M., Vliegen, R., van Wijk, J., van der Linden, E-J. (2008). [Generating Color Palettes using Intuitive Parameters](http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf)
