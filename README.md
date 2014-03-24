@@ -230,6 +230,18 @@ Evaluate the DIN99 color difference formula. This is a measure similar to the CI
 `colordiff_din99o(a::ColorValue, b::ColorValue)`
 Evaluate the DIN99o color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99o uniform color space. Larger numbers indicate a larger perceptual difference.
 
+`colordiff` is the preferred color difference formula, and uses the latest CIE standard. However, for some applications, different color difference equations can be used in the LAB space. The following color difference equations (with identical syntax) are also supported:
+
+`colordiff_ab()` - The original Euclidian color difference formula
+`colordiff_94()` - The CIE 1994 color difference specification
+`colordiff_jpc79()` - An antique but relevant color difference equation
+`colordiff_bfd()` - The BFD color difference equation
+`colordiff_cmc()` - The CMC standard color difference
+`colordiff_2000()` - This function is identical to the default `colordiff`.
+
+It should be noted that `colordiff_bfd()` requires calculations in XYZ, and may have unexpected results if used with a white point other than CIE D65.
+
+
 ## Simulation of color deficiency ("color blindness")
 
 ```julia
