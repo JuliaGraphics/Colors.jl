@@ -197,7 +197,7 @@ typealias LABA AlphaColorValue{LAB}
 typealias LCHabA AlphaColorValue{LCHab}
 typealias LUVA AlphaColorValue{LUV}
 typealias LCHuvA AlphaColorValue{LCHuv}
-typealias DIN99a AlphaColorValue{DIN99}
+typealias DIN99A AlphaColorValue{DIN99}
 typealias LMSA AlphaColorValue{LMS}
 typealias RGBA32 AlphaColorValue{RGB24}
 
@@ -462,7 +462,7 @@ function convert(::Type{LAB}, c::DIN99)
     # FIXME: right now we assume the adjustment parameters are always 1.
     kch = 1
     ke = 1
-    
+
     # Calculate Chroma (C99) in the DIN99 space
     cc = sqrt(c.a^2 + c.b^2)
 
@@ -487,7 +487,7 @@ function convert(::Type{LAB}, c::DIN99)
 
     # Temporary redness
     ee = g*cosd(h)
-    
+
     # Temporary yellowness
     f = g*sind(h)
 
@@ -565,7 +565,6 @@ convert(::Type{LCHab}, c::ColorValue) = convert(LCHab, convert(LAB, c))
 # -------------------
 
 function convert(::Type{DIN99}, c::LAB)
-    
     # FIXME: right now we assume the adjustment parameters are always 1.
     kch = 1
     ke = 1
@@ -577,7 +576,7 @@ function convert(::Type{DIN99}, c::LAB)
     # FIXME: hard-code the constants
     ee = c.a*cosd(16) + c.b*sind(16)
     f = -0.7*c.a*sind(16) + 0.7*c.b*cosd(16)
-    
+
     # Temporary value for chroma
     g = sqrt(ee^2 + f^2)
 
@@ -1105,7 +1104,7 @@ for (T,a,b,c) in ((:RGB,:r,:g,:b), (:HSV,:h,:s,:v), (:HSL,:h,:s,:l),
                   (:LUV,:l,:u,:v), (:LCHuv,:l,:c,:h), (:LMS,:l,:m,:s))
     @eval weighted_color_mean(w1::Real, c1::$T, c2::$T) =
       let w2 = w1 >= 0 && w1 <= 1 ? 1 - w1 : throw(DomainError())
-          $T(c1.($(Expr(:quote, a))) * w1 + c2.($(Expr(:quote, a))) * w2, 
+          $T(c1.($(Expr(:quote, a))) * w1 + c2.($(Expr(:quote, a))) * w2,
              c1.($(Expr(:quote, b))) * w1 + c2.($(Expr(:quote, b))) * w2,
              c1.($(Expr(:quote, c))) * w1 + c2.($(Expr(:quote, c))) * w2)
       end
@@ -1135,7 +1134,7 @@ end
 
 # MSC - Most Saturated Color for given hue h
 # ---------------------
-# Calculates the most saturated color for any given hue by 
+# Calculates the most saturated color for any given hue by
 # finding the corresponding corner in LCHuv space
 
 function MSC(h)
@@ -1154,7 +1153,7 @@ function MSC(h)
 
     #Selecting edge of RGB cube; R=1 G=2 B=3
     if h0 <= h < h1
-        p=2; o=3; t=1 
+        p=2; o=3; t=1
     elseif h1 <= h < h2
         p=1; o=3; t=2
     elseif h2 <= h < h3
@@ -1166,7 +1165,7 @@ function MSC(h)
     elseif h5 <= h || h < h0
         p=3; o=2; t=1
     end
-       
+
     alpha=-sind(h)
     beta=cosd(h)
 
@@ -1204,17 +1203,17 @@ function MSC(h)
     col[o]=0.0
     col[t]=1.0
 
-    convert(LCHuv, RGB(col[1],col[2],col[3])) 
+    convert(LCHuv, RGB(col[1],col[2],col[3]))
 end
 
 # Maximum saturation for given lightness and hue
 # ----------------------
-# Maximally saturated color for a specific hue and lightness 
+# Maximally saturated color for a specific hue and lightness
 # is found by looking for the edge of LCHuv space.
 
 function MSC(h,l)
     pmid=MSC(h)
-    
+
     if l <= pmid.l
         pend=LCHuv(0,0,0)
     elseif l > pmid.l
@@ -1263,12 +1262,12 @@ end
 
 # Sequential palette
 # ----------------------
-# Sequential_palette implements the color palette creation technique by 
+# Sequential_palette implements the color palette creation technique by
 # Wijffelaars, M., et al. (2008)
 # http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf
 #
-# Colormaps are formed using Beziere curves in LCHuv colorspace 
-# with some constant hue. In addition, start and end points can be given 
+# Colormaps are formed using Beziere curves in LCHuv colorspace
+# with some constant hue. In addition, start and end points can be given
 # that are then blended to the original hue smoothly.
 #
 # The arguments are:
@@ -1283,7 +1282,7 @@ end
 # dcolor   - ending color (depth)
 # logscale - true/false for toggling logspacing
 
-function sequential_palette(h, 
+function sequential_palette(h,
                             N::Int=100;
                             c=0.88,
                             s=0.6,
@@ -1298,7 +1297,7 @@ function sequential_palette(h,
         M=mod(180.0+h1-h0, 360)-180.0
         mod(h0+a*M, 360)
     end
-    
+
     pstart=convert(LCHuv, wcolor)
     p1=MSC(h)
 #    p0=LCHuv(0,0,h) #original end point
@@ -1316,19 +1315,19 @@ function sequential_palette(h,
     p0c=min(MSC(p0h,p0l), d*s*pend.c)
     p0=LCHuv(p0l,p0c,p0h)
 
-    q0=(1.0-s)*p0+s*p1    
+    q0=(1.0-s)*p0+s*p1
     q2=(1.0-s)*p2+s*p1
     q1=0.5*(q0+q2)
 
     pal = RGB[]
-    
+
     if logscale
         absc = logspace(-2.,0.,N)
     else
         absc = linspace(0.,1.,N)
     end
 
-    for t in absc 
+    for t in absc
         u=1.0-t
 
         #Change grid to favor light colors and to be uniform along the curve

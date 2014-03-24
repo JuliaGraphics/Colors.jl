@@ -13,7 +13,7 @@ const testdata = [
 ((50,  50, -50), (61.43,  17.22, -21.75)),
 (( 0,   0,   0), ( 0,      0,      0)),
 ((100,  0,   0), (100,     0,      0))]
-                 
+
 # A high error threshold has been chosen because converting from DIN99
 # to CIELAB with only two decimal places of accuracy yields fairly inaccurate
 # results due to the exponentiation.
