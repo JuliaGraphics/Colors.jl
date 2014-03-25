@@ -1063,7 +1063,7 @@ function distinguishable_colors{T<:ColorValue}(n::Integer,
     copy!(colors, seed)
 
     # Minimum distances of the current color to each previously selected color.
-    ds = infs(Float64, N)
+    ds = fill(Inf, N)
     for i = 1:length(seed)
         ts = transform(seed[i])
         for k = 1:N
