@@ -1,4 +1,4 @@
-Cairo.jl is licensed under the MIT License:
+Color.jl is licensed under the MIT License:
 
 > Copyright (c) 2012-2013: Daniel Jones, Jeff Bezanson, and other contributors.
 
