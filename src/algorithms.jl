@@ -1,0 +1,212 @@
+# Algorithms relating to color processing and generation
+
+
+# Chromatic Adaptation / Whitebalancing
+# -------------------------------------
+
+# Whitebalance a color.
+#
+# Input a source (adopted) and destination (reference) white. E.g., if you have
+# a photo taken under florencent lighting that you then want to appear correct
+# under regular sunlight, you might do something like
+# `whitebalance(c, WP_F2, WP_D65)`.
+#
+# Args:
+#   c: An observed color.
+#   src_white: Adopted or source white.
+#   ref_white: Reference or destination white.
+#
+# Returns:
+#   A whitebalanced color.
+#
+function whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::ColorValue)
+    c_lms = convert(LMS, c)
+    src_lms = convert(LMS, src_white)
+    dest_lms = convert(LMS, dest_white)
+
+    # This is sort of simplistic, it set's the degree of adaptation term in
+    # CAT02 to 0.
+    ans = LMS(c.l * dest_wp.l / src_wp.l,
+              c.m * dest_wp.m / src_wp.m,
+              c.s * dest_wp.s / src_wp.s)
+
+    convert(T, ans)
+end
+
+
+# Simulation of Colorblindness
+# ----------------------------
+
+# This method is due to:
+# Brettel, H., Viénot, F., & Mollon, J. D. (1997).  Computerized simulation of
+# color appearance for dichromats. Josa A, 14(10), 2647–2655.
+#
+# These functions add to Brettel's method a parameter p in [0, 1] giving the
+# degree of photopigment loss. At p = 1, the complete loss of a particular
+# photopigment is simulated, where 0 < p < 1 represents partial loss.
+
+
+# This is supposed to be "the brightest possible metamer of an equal-energy
+# stimulus". I'm punting a bit and just calling that RGB white.
+const default_brettel_neutral = convert(LMS, RGB(1, 1, 1))
+
+
+# Helper function for Brettel conversions.
+function brettel_abc(neutral::LMS, anchor::LMS)
+    a = neutral.m * anchor.s - neutral.s * anchor.m
+    b = neutral.s * anchor.l - neutral.l * anchor.s
+    c = neutral.l * anchor.m - neutral.m * anchor.l
+    (a, b, c)
+end
+
+
+# Convert a color to simulate protanopic color blindness (lack of the
+# long-wavelength photopigment).
+function protanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
+    q = convert(LMS, q)
+    anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
+    anchor = cie_color_match(anchor_wavelen)
+    anchor = convert(LMS, anchor)
+    (a, b, c) = brettel_abc(neutral, anchor)
+
+    q = LMS((1.0 - p) * q.l + p * (-(b*q.m + c*q.s)/a),
+            q.m,
+            q.s)
+    convert(T, q)
+end
+
+
+# Convert a color to simulate deuteranopic color blindness (lack of the
+# middle-wavelength photopigment.)
+function deuteranopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
+    q = convert(LMS, q)
+    anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
+    anchor = cie_color_match(anchor_wavelen)
+    anchor = convert(LMS, anchor)
+    (a, b, c) = brettel_abc(neutral, anchor)
+
+    q = LMS(q.l,
+            (1.0 - p) * q.m + p * (-(a*q.l + c*q.s)/b),
+            q.s)
+    convert(T, q)
+end
+
+
+# Convert a color to simulato tritanopic color blindness (lack of the
+# short-wavelength photogiment)
+function tritanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
+    q = convert(LMS, q)
+    anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
+    anchor = cie_color_match(anchor_wavelen)
+    anchor = convert(LMS, anchor)
+    (a, b, c) = brettel_abc(neutral, anchor)
+
+    q = LMS(q.l,
+            q.m,
+            (1.0 - p) * q.l + p * (-(a*q.l + b*q.m)/c))
+    convert(T, q)
+end
+
+
+protanopic(c::ColorValue, p::Float64)   = protanopic(c, p, default_brettel_neutral)
+deuteranopic(c::ColorValue, p::Float64) = deuteranopic(c, p, default_brettel_neutral)
+tritanopic(c::ColorValue, p::Float64)   = tritanopic(c, p, default_brettel_neutral)
+
+protanopic(c::ColorValue)   = protanopic(c, 1.0)
+deuteranopic(c::ColorValue) = deuteranopic(c, 1.0)
+tritanopic(c::ColorValue)   = tritanopic(c, 1.0)
+
+
+# MSC - Most Saturated Color for given hue h
+# ---------------------
+# Calculates the most saturated color for any given hue by
+# finding the corresponding corner in LCHuv space
+
+function MSC(h)
+
+    #Corners of RGB cube
+    const h0 = 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
+    const h1 = 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
+    const h2 = 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
+    const h3 = 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
+    const h4 = 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
+    const h5 = 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
+
+    p=0 #variable
+    o=0 #min
+    t=0 #max
+
+    #Selecting edge of RGB cube; R=1 G=2 B=3
+    if h0 <= h < h1
+        p=2; o=3; t=1
+    elseif h1 <= h < h2
+        p=1; o=3; t=2
+    elseif h2 <= h < h3
+        p=3; o=1; t=2
+    elseif h3 <= h < h4
+        p=2; o=1; t=3
+    elseif h4 <= h < h5
+        p=1; o=2; t=3
+    elseif h5 <= h || h < h0
+        p=3; o=2; t=1
+    end
+
+    alpha=-sind(h)
+    beta=cosd(h)
+
+    #un &vn are calculated based on reference white (D65)
+    #X=0.95047; Y=1.0000; Z=1.08883
+    const un=0.19783982482140777 #4.0X/(X+15.0Y+3.0Z)
+    const vn=0.46833630293240970 #9.0Y/(X+15.0Y+3.0Z)
+
+    #sRGB matrix
+    const M=[0.4124564  0.3575761  0.1804375;
+             0.2126729  0.7151522  0.0721750;
+             0.0193339  0.1191920  0.9503041]'
+    g=2.4
+
+    m_tx=M[t,1]
+    m_ty=M[t,2]
+    m_tz=M[t,3]
+    m_px=M[p,1]
+    m_py=M[p,2]
+    m_pz=M[p,3]
+
+    f1=(4alpha*m_px+9beta*m_py)
+    a1=(4alpha*m_tx+9beta*m_ty)
+    f2=(m_px+15m_py+3m_pz)
+    a2=(m_tx+15m_ty+3m_tz)
+
+    cp=((alpha*un+beta*vn)*a2-a1)/(f1-(alpha*un+beta*vn)*f2)
+
+    #gamma inversion
+    #cp = cp <= 0.003 ? 12.92cp : 1.055cp^(1.0/g)-0.05
+    cp = 1.055cp^(1.0/g)-0.05
+
+    col=zeros(3)
+    col[p]=clamp(cp,0.0,1.0)
+    col[o]=0.0
+    col[t]=1.0
+
+    convert(LCHuv, RGB(col[1],col[2],col[3]))
+end
+
+
+# Maximum saturation for given lightness and hue
+# ----------------------
+# Maximally saturated color for a specific hue and lightness
+# is found by looking for the edge of LCHuv space.
+
+function MSC(h,l)
+    pmid=MSC(h)
+
+    if l <= pmid.l
+        pend=LCHuv(0,0,0)
+    elseif l > pmid.l
+        pend=LCHuv(100,0,0)
+    end
+
+    a=(pend.l-l)/(pend.l-pmid.l)
+    a*(pmid.c-pend.c)+pend.c
+end
+
