@@ -2,7 +2,7 @@
 # -----------
 
 # no-op conversions
-for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, LMS, RGB24)
+for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, LMS, RGB24)
     @eval begin
         convert(::Type{$CV}, c::$CV) = c
     end
@@ -240,6 +240,33 @@ convert(::Type{XYZ}, c::LUV)   = convert(XYZ, c, WP_DEFAULT)
 convert(::Type{XYZ}, c::LCHuv) = convert(XYZ, convert(LUV, c))
 
 
+function convert(::Type{XYZ}, c::DIN99d)
+
+    # Go back to C-h space
+    # FIXME: Clean this up (why is there no atan2d?)
+    h = rad2deg(atan2(c.b,c.a)) + 50
+    while h > 360; h -= 360; end
+    while h < 0;   h += 360; end
+
+    C = sqrt(c.a^2 + c.b^2)
+
+    # Intermediate terms
+    G = (exp(C/22.5)-1)/0.06
+    f = G*sind(h - 50)
+    ee = G*cosd(h - 50)
+
+    # FIXME: hard-code constants
+    l = (exp(c.l/325.22)-1)/0.0036
+    a = ee*cosd(50) - f/1.14*sind(50)
+    b = ee*sind(50) - f/1.14*cosd(50)
+
+    adj = convert(XYZ, LAB(l, a, b))
+
+    XYZ((adj.x + 0.12*adj.z)/1.12, adj.y, adj.z)
+
+end
+
+
 function convert(::Type{XYZ}, c::LMS)
     ans = CAT02_INV * [c.l, c.m, c.s]
     XYZ(ans[1], ans[2], ans[3])
@@ -431,6 +458,39 @@ end
 
 
 convert(::Type{DIN99}, c::ColorValue) = convert(DIN99, convert(LAB, c))
+
+
+# Everything to DIN99d
+# --------------------
+
+function convert(::Type{DIN99d}, c::XYZ)
+
+    # Apply tristimulus-space correction term
+    adj_c = XYZ(1.12*c.x - 0.12*c.z, c.y, c.z)
+
+    # Apply L*a*b*-space correction
+    lab = convert(LAB, adj_c)
+    adj_L = 325.22*log(1+0.0036*lab.l)
+
+    # Calculate intermediate parameters
+    # FIXME: Hard-code constants
+    ee = lab.a*cosd(50) + lab.b*sind(50)
+    f = 1.14*(lab.b*cosd(50) - lab.a*sind(50))
+    G = sqrt(ee^2+f^2)
+
+    # Calculate hue/chroma
+    C = 22.5*log(1+0.06*G)
+    # FIXME: Clean this up (why is there no atan2d?)
+    h = rad2deg(atan2(f,ee)) + 50
+    while h > 360; h -= 360; end
+    while h < 0;   h += 360; end
+
+    DIN99d(adj_L, C*cosd(h), C*sind(h))
+
+end
+
+
+convert(::Type{DIN99d}, c::ColorValue) = convert(DIN99d, convert(XYZ, c))
 
 
 # Everything to LMS

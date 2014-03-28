@@ -135,6 +135,7 @@ immutable LCHuv <: ColorValue
     LCHuv() = LCHuv(0, 0, 0)
 end
 
+
 # DIN99 (L99, a99, b99) - adaptation of CIELAB
 immutable DIN99 <: ColorValue
     l::Float64 # L99
@@ -146,6 +147,20 @@ immutable DIN99 <: ColorValue
     end
 
     DIN99() = DIN99(0, 0, 0)
+end
+
+
+# DIN99d (L99d, a99d, b99d) - Improvement on DIN99
+immutable DIN99d <: ColorValue
+    l::Float64 # L99d
+    a::Float64 # a99d
+    b::Float64 # b99d
+
+    function DIN99d(l::Number, a::Number, b::Number)
+        new(l, a, b)
+    end
+
+    DIN99d() = DIN99d(0, 0, 0)
 end
 
 
@@ -182,5 +197,6 @@ typealias LCHabA AlphaColorValue{LCHab}
 typealias LUVA AlphaColorValue{LUV}
 typealias LCHuvA AlphaColorValue{LCHuv}
 typealias DIN99A AlphaColorValue{DIN99}
+typealias DIN99dA AlphaColorValue{DIN99d}
 typealias LMSA AlphaColorValue{LMS}
 typealias RGBA32 AlphaColorValue{RGB24}
