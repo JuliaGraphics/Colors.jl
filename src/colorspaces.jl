@@ -148,6 +148,18 @@ immutable DIN99 <: ColorValue
     DIN99() = DIN99(0, 0, 0)
 end
 
+# DIN99o (L99o, a99o, b99o) - adaptation of CIELAB
+immutable DIN99o <: ColorValue
+    l::Float64 # L99o
+    a::Float64 # a99o
+    b::Float64 # b99o
+
+    function DIN99o(l::Number, a::Number, b::Number)
+        new(l, a, b)
+    end
+
+    DIN99o() = DIN99o(0, 0, 0)
+end
 
 # LMS (Long Medium Short)
 immutable LMS <: ColorValue
