@@ -75,7 +75,7 @@ end
 ### LAB
 
 A percuptually uniform colorpsace standardized by the CIE in 1976. See also LUV,
-a similar colorspace standardized the same year.
+the associated colorspace standardized the same year.
 
 ```julia
 immutable LAB <: ColorValue
@@ -87,7 +87,7 @@ end
 
 ### LUV
 
-A percuptually uniform colorpsace standardized by the CIE in 1976. See also LAB,
+A perceptually uniform colorpsace standardized by the CIE in 1976. See also LAB,
 a similar colorspace standardized the same year.
 
 ```julia
@@ -133,6 +133,20 @@ immutable DIN99 <: ColorValue
     a::Float64 # a99 (Red/Green)
     b::Float64 # b99 (Blue/Yellow)
 ```
+### DIN99o
+
+Revised, actually valid version of the DIN99 uniform colorspace as described in the
+DIN 6176 specification. After the development of DIN99d which introduced the intermediate
+step of XYZ modification Cui, Luo et al. went back to the original concept of the DIN99
+colorspace, with modified coefficients for an improved metric.
+
+```julia
+immutable DIN99o <: ColorValue
+    l::Float64 # L99o (Lightness)
+    a::Float64 # a99o (Red/Green)
+    b::Float64 # b99o (Blue/Yellow)
+```
+
 
 ### LMS
 
@@ -161,7 +175,7 @@ end
 
 `color(desc::String)`
 
-Parse a [CSS color
+Parse a [CSS coloraaa
 specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will
 parse any CSS color syntax with the exception of `transparent`, `rgba()`,
 `hsla()` (since this library has no notion of transparency), and `currentColor`.
@@ -347,3 +361,6 @@ Functions in this library were mostly implemented according to:
 * Lindbloom, B. (2013).
   [Useful Color Equations](http://www.brucelindbloom.com/index.html?ColorCalculator.html)
 * Wijffelaars, M., Vliegen, R., van Wijk, J., van der Linden, E-J. (2008). [Generating Color Palettes using Intuitive Parameters](http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf)
+* Georg A. Klein
+  [Industrial Color Physics](http://http://books.google.de/books?id=WsKOAVCrLnwC).
+  Springer Series in Optical Sciences, 2010. ISSN 0342-4111, ISBN 978-1-4419-1197-1.
