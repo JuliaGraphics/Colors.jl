@@ -175,8 +175,7 @@ end
 
 `color(desc::String)`
 
-Parse a [CSS coloraaa
-specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will
+Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will
 parse any CSS color syntax with the exception of `transparent`, `rgba()`,
 `hsla()` (since this library has no notion of transparency), and `currentColor`.
 
@@ -214,6 +213,9 @@ for increasingly distinguishable colors.
 
 `colordiff_din99(a::ColorValue, b::ColorValue)`
 Evaluate the DIN99 color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99 uniform color space. Larger numbers indicate a larger perceptual difference.
+
+`colordiff_din99o(a::ColorValue, b::ColorValue)`
+Evaluate the DIN99o color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99o uniform color space. Larger numbers indicate a larger perceptual difference.
 
 ## Simulation of color blindness
 
