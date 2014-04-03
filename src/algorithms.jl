@@ -26,6 +26,8 @@ function whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::C
 
     # This is sort of simplistic, it set's the degree of adaptation term in
     # CAT02 to 0.
+    # Setting the degree of adaptation to 0 is rather odd. Wouldn’t setting
+    # it to 1.0 make more sense as a temporary default value?
     ans = LMS(c.l * dest_wp.l / src_wp.l,
               c.m * dest_wp.m / src_wp.m,
               c.s * dest_wp.s / src_wp.s)
@@ -34,7 +36,7 @@ function whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::C
 end
 
 
-# Simulation of Colorblindness
+# Simulation of Color deficiency (color "blindness")
 # ----------------------------
 
 # This method is due to:
@@ -60,7 +62,7 @@ function brettel_abc(neutral::LMS, anchor::LMS)
 end
 
 
-# Convert a color to simulate protanopic color blindness (lack of the
+# Convert a color to simulate protanopic color deficiency (lack of the
 # long-wavelength photopigment).
 function protanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     q = convert(LMS, q)
@@ -76,7 +78,7 @@ function protanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
 end
 
 
-# Convert a color to simulate deuteranopic color blindness (lack of the
+# Convert a color to simulate deuteranopic color deficiency (lack of the
 # middle-wavelength photopigment.)
 function deuteranopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     q = convert(LMS, q)
@@ -92,7 +94,7 @@ function deuteranopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
 end
 
 
-# Convert a color to simulato tritanopic color blindness (lack of the
+# Convert a color to simulato tritanopic color deficiency (lack of the
 # short-wavelength photogiment)
 function tritanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     q = convert(LMS, q)
