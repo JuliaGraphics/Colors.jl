@@ -89,3 +89,14 @@ function colordiff_din99(ai::ColorValue, bi::ColorValue)
     sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
 
 end
+
+
+# A color difference formula for the DIN99d uniform color space
+function colordiff_din99d(ai::ColorValue, bi::ColorValue)
+
+    a = convert(DIN99d, ai)
+    b = convert(DIN99d, bi)
+
+    sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
+
+end

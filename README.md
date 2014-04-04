@@ -134,6 +134,17 @@ immutable DIN99 <: ColorValue
     b::Float64 # b99 (Blue/Yellow)
 ```
 
+### DIN99d
+
+The DIN99d uniform colorspace is an improvement on the DIN99 color space that adds a correction to the X tristimulus value in order to emulate the rotation term present in the DeltaE2000 equation.
+
+```julia
+immutable DIN99d <: ColorValue
+    l::Float64 # L99d (Lightness)
+    a::Float64 # a99d (Redish/Greenish)
+    b::Float64 # b99d (Blueish/Yellowish)
+```
+
 ### LMS
 
 Long-Medium-Short cone response values. Multiple methods of converting to LMS
