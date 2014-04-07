@@ -90,16 +90,17 @@ function colordiff_din99(ai::ColorValue, bi::ColorValue)
 
 end
 
+# A color difference formula for the DIN99d uniform color space
+function colordiff_din99d(ai::ColorValue, bi::ColorValue)
 
-# DIN99o
-# Evaluate the DIN99o color difference formula, implemented according to the
-# DIN 6176 specification.
-#
-# Args:
-#   a, b: Any two colors.
-#
-# Returns:
-#   The DIN99o color difference metric evaluated between a and b.
+    a = convert(DIN99d, ai)
+    b = convert(DIN99d, bi)
+
+    sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
+
+end
+
+# The DIN99o color difference metric evaluated between colors a and b.
 function colordiff_din99o(ai::ColorValue, bi::ColorValue)
 
     a = convert(DIN99o, ai)

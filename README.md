@@ -123,6 +123,7 @@ immutable LCHuv <: ColorValue
     h::Float64 # Hue
 ```
 
+
 ### DIN99
 
 The DIN99 uniform colorspace as described in the DIN 6176 specification.
@@ -133,12 +134,24 @@ immutable DIN99 <: ColorValue
     a::Float64 # a99 (Red/Green)
     b::Float64 # b99 (Blue/Yellow)
 ```
+
+
+### DIN99d
+
+The DIN99d uniform colorspace is an improvement on the DIN99 color space that adds a correction to the X tristimulus value in order to emulate the rotation term present in the DeltaE2000 equation.
+
+```julia
+immutable DIN99d <: ColorValue
+    l::Float64 # L99d (Lightness)
+    a::Float64 # a99d (Redish/Greenish)
+    b::Float64 # b99d (Blueish/Yellowish)
+```
+
+
 ### DIN99o
 
-Revised, actually valid version of the DIN99 uniform colorspace as described in the
-DIN 6176 specification. After the development of DIN99d which introduced the intermediate
-step of XYZ modification Cui, Luo et al. went back to the original concept of the DIN99
-colorspace, with modified coefficients for an improved metric.
+Revised version of the DIN99 uniform colorspace with modified coefficients for an improved metric.
+Similar to DIN99d X correction and the DeltaE2000 rotation term, DIN99o achieves comparable results by optimized a*/b*rotation and chroma compression terms.
 
 ```julia
 immutable DIN99o <: ColorValue
@@ -191,7 +204,7 @@ a `HSL` value.
 
 The CIE defines a standard observer, defining typical frequency response curve
 for each of the three human cones. This function returns an XYZ color
-corresponding to a wavelength specified in nanometers.  
+corresponding to a wavelength specified in nanometers.
 
 ## Chromatic Adaptation (white balance)
 
@@ -217,7 +230,7 @@ Evaluate the DIN99 color difference formula. This is a measure similar to the CI
 `colordiff_din99o(a::ColorValue, b::ColorValue)`
 Evaluate the DIN99o color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99o uniform color space. Larger numbers indicate a larger perceptual difference.
 
-## Simulation of color blindness
+## Simulation of color deficiency ("color blindness")
 
 ```julia
 protanopic(c::ColorValue)
@@ -296,7 +309,7 @@ Currently supported colormap names are:
 #### Diverging
 * `RdBu` (from red to blue)
 
-It is also possible to create your own colormaps by using the 
+It is also possible to create your own colormaps by using the
 `sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0, wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])`
 
 function that creates a sequential map for a hue `h` (defined in LCHuv space). Other possible parameters that you can fine-tune are:
