@@ -213,6 +213,5 @@ typealias LCHuvA AlphaColorValue{LCHuv}
 typealias DIN99A AlphaColorValue{DIN99}
 typealias DIN99dA AlphaColorValue{DIN99d}
 typealias DIN99oA AlphaColorValue{DIN99o}
-typealias DIN99dA AlphaColorValue{DIN99d}
 typealias LMSA AlphaColorValue{LMS}
 typealias RGBA32 AlphaColorValue{RGB24}
