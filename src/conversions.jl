@@ -2,7 +2,8 @@
 # -----------
 
 # no-op conversions
-for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, LMS, RGB24)
+
+for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24)
     @eval begin
         convert(::Type{$CV}, c::$CV) = c
     end
@@ -89,6 +90,7 @@ convert(::Type{RGB}, c::LCHab) = convert(RGB, convert(LAB, c))
 convert(::Type{RGB}, c::LUV)   = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LCHuv) = convert(RGB, convert(LUV, c))
 convert(::Type{RGB}, c::DIN99) = convert(RGB, convert(XYZ, c))
+convert(::Type{RGB}, c::DIN99o) = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LMS)   = convert(RGB, convert(XYZ, c))
 
 convert(::Type{RGB}, c::RGB24) = RGB((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
@@ -212,6 +214,7 @@ end
 convert(::Type{XYZ}, c::LAB)   = convert(XYZ, c, WP_DEFAULT)
 convert(::Type{XYZ}, c::LCHab) = convert(XYZ, convert(LAB, c))
 convert(::Type{XYZ}, c::DIN99) = convert(XYZ, convert(LAB, c))
+convert(::Type{XYZ}, c::DIN99o) = convert(XYZ, convert(LAB, c))
 
 
 function xyz_to_uv(c::XYZ)
@@ -341,6 +344,42 @@ function convert(::Type{LAB}, c::DIN99)
 
     # CIELAB L*
     ciel = (e^(c.l*ke/105.51)-1)/0.0158
+
+    LAB(ciel, ciea, cieb)
+end
+
+
+function convert(::Type{LAB}, c::DIN99o)
+
+    # FIXME: right now we assume the adjustment parameters are always 1.
+    kch = 1
+    ke = 1
+
+    # Calculate Chroma (C99) in the DIN99o space
+    co = sqrt(c.a^2 + c.b^2)
+
+    # hue angle h99o
+    h = atan2(c.b, c.a)
+
+    # revert rotation by 26°
+    ho= rad2deg(h)-26
+
+    # revert logarithmic chroma compression
+    g = (e^(co*kch*ke/23.0)-1)/0.075
+
+    # Temporary redness
+    eo = g*cosd(ho)
+
+    # Temporary yellowness
+    fo = g*sind(ho)
+
+    # CIELAB a*b* (revert b* axis compression)
+    # FIXME: hard-code the constants.
+    ciea = eo*cosd(26) - (fo/0.83)*sind(26)
+    cieb = eo*sind(26) + (fo/0.83)*cosd(26)
+
+    # CIELAB L* (revert logarithmic lightness compression)
+    ciel = (e^(c.l*ke/303.67)-1)/0.0039
 
     LAB(ciel, ciea, cieb)
 end
@@ -491,6 +530,44 @@ end
 
 
 convert(::Type{DIN99d}, c::ColorValue) = convert(DIN99d, convert(XYZ, c))
+
+
+# Everything to DIN99o
+# -------------------
+
+function convert(::Type{DIN99o}, c::LAB)
+    # FIXME: right now we assume the adjustment parameters are always 1.
+    kch = 1
+    ke = 1
+
+    # Calculate DIN99o L (logarithmic compression)
+    l99 = 303.67/ke*log(1+0.0039*c.l)
+
+    # Temporary value for redness and yellowness
+    # including rotation by 26°
+    # FIXME: hard-code the constants
+    eo = c.a*cosd(26) + c.b*sind(26)
+    # compression along the yellowness (blue-yellow) axis
+    fo = 0.83 * (c.b*cosd(26) - c.a*sind(26))
+
+    # Temporary value for chroma
+    go = sqrt(eo^2 + fo^2)
+    ho = atan2(fo,eo)
+    # rotation of the color space by 26°
+    h  = rad2deg(ho) + 26
+
+    # DIN99o chroma (logarithmic compression)
+    cc = 23.0*log(1+0.075*go)/(kch*ke)
+    
+    # DIN99o chromaticities
+    a99, b99 = cc*cosd(h), cc*sind(h)
+
+    DIN99o(l99, a99, b99)
+
+end
+
+
+convert(::Type{DIN99o}, c::ColorValue) = convert(DIN99o, convert(LAB, c))
 
 
 # Everything to LMS

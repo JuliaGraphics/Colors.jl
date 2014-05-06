@@ -7,11 +7,11 @@ export ColorValue, color,
        ColourValue, colour,
        AlphaColorValue,
        weighted_color_mean, hex,
-       RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, LMS, RGB24,
-       RGBA, HSVA, HSLA, XYZA, LABA, LUVA, LCHabA, LCHuvA, DIN99A, DIN99dA, LMSA, RGBA32,
+       RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24,
+       RGBA, HSVA, HSLA, XYZA, LABA, LUVA, LCHabA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA, RGBA32,
        protanopic, deuteranopic, tritanopic,
        cie_color_match, distinguishable_colors,
-       colordiff, colordiff_din99, colordiff_din99d,
+       colordiff, colordiff_din99, colordiff_din99d, colordiff_din99o
        MSC, sequential_palette, diverging_palette, colormap
 
 # Delete once 0.2 is no longer supported:

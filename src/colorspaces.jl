@@ -164,6 +164,20 @@ immutable DIN99d <: ColorValue
 end
 
 
+# DIN99o (L99o, a99o, b99o) - adaptation of CIELAB
+immutable DIN99o <: ColorValue
+    l::Float64 # L99o
+    a::Float64 # a99o
+    b::Float64 # b99o
+
+    function DIN99o(l::Number, a::Number, b::Number)
+        new(l, a, b)
+    end
+
+    DIN99o() = DIN99o(0, 0, 0)
+end
+
+
 # LMS (Long Medium Short)
 immutable LMS <: ColorValue
     l::Float64 # Long
@@ -198,5 +212,6 @@ typealias LUVA AlphaColorValue{LUV}
 typealias LCHuvA AlphaColorValue{LCHuv}
 typealias DIN99A AlphaColorValue{DIN99}
 typealias DIN99dA AlphaColorValue{DIN99d}
+typealias DIN99oA AlphaColorValue{DIN99o}
 typealias LMSA AlphaColorValue{LMS}
 typealias RGBA32 AlphaColorValue{RGB24}
