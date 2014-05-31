@@ -1,3 +1,83 @@
+
+# Define an abstract type to represent color difference metrics
+abstract DifferenceMetric
+
+# CIE Delta E 2000 recommendation
+immutable DE_2000 <: DifferenceMetric
+    kl::Float64
+    kc::Float64
+    kh::Float64
+    DE_2000(kl,kc,kh) = new(kl,kc,kh)
+    DE_2000() = new(1,1,1)
+end
+
+# CIE Delta E 94 recommendation
+immutable DE_94 <: DifferenceMetric
+    kl::Float64
+    kc::Float64
+    kh::Float64
+    DE_94(kl,kc,kh) = new(kl,kc,kh)
+    DE_94() = new(1,1,1)
+end
+
+# McDonald "JP Coates Thread Company" formulation
+immutable DE_JPC79 <: DifferenceMetric
+
+end
+
+# CMC recommendation
+immutable DE_CMC <: DifferenceMetric
+    kl::Float64
+    kc::Float64
+    DE_CMC(kl,kc) = new(kl,kc)
+    DE_CMC() = new(1,1)
+end
+
+# BFD recommendation
+immutable DE_BFD <: DifferenceMetric
+    wp::XYZ
+    kl::Float64
+    kc::Float64
+    DE_BFD(wp,kl,kc) = new(wp,kl,kc)
+    DE_BFD() = new(WP_DEFAULT,1,1)
+    DE_BFD(kl, kc) = new(WP_DEFAULT,kl, kc)
+end
+
+# The original CIE Delta E equation (Euclidian)
+immutable DE_AB <: DifferenceMetric
+
+end
+
+# DIN99 color difference (Euclidian)
+immutable DE_DIN99 <: DifferenceMetric
+
+end
+
+# DIN99d color difference (Euclidian)
+immutable DE_DIN99d <: DifferenceMetric
+
+end
+
+# DIN99o color difference (Euclidian)
+immutable DE_DIN99o <: DifferenceMetric
+
+end
+
+# Compute the mean of two hue angles
+function mean_hue(h1, h2)
+    if abs(h2 - h1) > 180
+        if h1 + h2 < 360
+            mh = (h1 + h2 + 360) / 2
+        else
+            mh = (h1 + h2 - 360) / 2
+        end
+    else
+        mh = (h1 + h2) / 2
+    end
+
+    mh
+end
+
 # Color Difference Metrics
 # ------------------------
 
@@ -12,7 +92,9 @@
 #   The CIEDE2000 color difference metric evaluated between a and b.
 #
 
-function colordiff_2000(ai::ColorValue, bi::ColorValue)
+# Delta E 2000
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_2000)
+
     # Ensure that the input values are in L*a*b* space
     a = convert(LAB, ai)
     b = convert(LAB, bi)
@@ -46,14 +128,8 @@ function colordiff_2000(ai::ColorValue, bi::ColorValue)
     # Calculate mean hue value
     if a.c * b.c == 0
         mh = a.h + b.h
-    elseif abs(b.h - a.h) > 180
-        if a.h + b.h < 360
-            mh = (a.h + b.h + 360) / 2
-        else
-            mh = (a.h + b.h - 360) / 2
-        end
     else
-        mh = (a.h + b.h) / 2
+        mh = mean_hue(a.h, b.h)
     end
 
     # lightness weight
@@ -76,20 +152,12 @@ function colordiff_2000(ai::ColorValue, bi::ColorValue)
     tr = -sind(2*dtheta) * cr
 
     # Final calculation
-    sqrt((dl/sl)^2 + (dc/sc)^2 + (dh/sh)^2 +
-         tr * (dc/sc) * (dh/sh))
+    sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2 +
+         tr * (dc/(m.kc*sc)) * (dh/(m.kh*sh)))
 end
 
-# Leave the default function as-is.
-colordiff = colordiff_2000
-
 # Delta E94
-function colordiff_94(ai::ColorValue, bi::ColorValue)
-
-    # FIXME: Right now, tuning parameters are fixed at 1.
-    kl = 1
-    kc = 1
-    kh = 1
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_94)
 
     a = convert(LCHab, ai)
     b = convert(LCHab, bi)
@@ -114,12 +182,12 @@ function colordiff_94(ai::ColorValue, bi::ColorValue)
     sc = 1+0.045*mc
     sh = 1+0.015*mc
 
-    sqrt((dl/(kl*sl))^2 + (dc/(kc*sc))^2 + (dh/(kh*sh))^2)
+    sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2)
 
 end
 
 # Metric form of jpc79 color difference equation (mostly obsolete)
-function colordiff_jpc79(ai::ColorValue, bi::ColorValue)
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_JPC79)
 
     # Convert directly into LCh
     a = convert(LCHab, ai)
@@ -143,14 +211,8 @@ function colordiff_jpc79(ai::ColorValue, bi::ColorValue)
     # Calculate mean hue value
     if a.c * b.c == 0
         mh = a.h + b.h
-    elseif abs(b.h - a.h) > 180
-        if a.h + b.h < 360
-            mh = (a.h + b.h + 360) / 2
-        else
-            mh = (a.h + b.h - 360) / 2
-        end
     else
-        mh = (a.h + b.h) / 2
+        mh = mean_hue(a.h, b.h)
     end
 
     # L* adjustment term
@@ -175,11 +237,7 @@ end
 
 
 # Metric form of the cmc color difference
-function colordiff_cmc(ai::ColorValue, bi::ColorValue)
-
-    # FIXME: we do not provide user control over these two parameters!
-    l = 1
-    c = 1
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_CMC)
 
     # Convert directly into LCh
     a = convert(LCHab, ai)
@@ -203,14 +261,8 @@ function colordiff_cmc(ai::ColorValue, bi::ColorValue)
     # Calculate mean hue value
     if a.c * b.c == 0
         mh = a.h + b.h
-    elseif abs(b.h - a.h) > 180
-        if a.h + b.h < 360
-            mh = (a.h + b.h + 360) / 2
-        else
-            mh = (a.h + b.h - 360) / 2
-        end
     else
-        mh = (a.h + b.h) / 2
+        mh = mean_hue(a.h, b.h)
     end
 
     # L* adjustment term
@@ -235,27 +287,25 @@ function colordiff_cmc(ai::ColorValue, bi::ColorValue)
     sh = sc*(t*f+1-f)
 
     # Calculate the final difference
-    sqrt((dl/(l*sl))^2 + (dc/(c*sc))^2 + (dh/sh)^2)
+    sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/sh)^2)
 
 end
 
 # The BFD color difference equation
-function colordiff_bfd(ai::ColorValue, bi::ColorValue, wp::XYZ = WP_D65)
-
-    # FIXME: Right now, tuning parameters are fixed at 1.
-    l = 1
-    c = 1
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_BFD)
 
     # We have to start back in XYZ because BFD uses a different L equation
-    a = convert(XYZ, ai, wp)
-    b = convert(XYZ, bi, wp)
+    a = convert(XYZ, ai, m.wp)
+    b = convert(XYZ, bi, m.wp)
 
     la = 54.6*log10(a.y+1.5)-9.6
     lb = 54.6*log10(b.y+1.5)-9.6
 
-    # Convert into LCh
-    a = convert(LCHab, ai)
-    b = convert(LCHab, bi)
+    # Convert into LCh with the proper white point
+    a = convert(LAB, a, m.wp)
+    b = convert(LAB, b, m.wp)
+    a = convert(LCHab, a)
+    b = convert(LCHab, b)
 
     # Substitute in the different L values into the L*C*h values
     a = LCHab(la, a.c, a.h)
@@ -280,17 +330,11 @@ function colordiff_bfd(ai::ColorValue, bi::ColorValue, wp::XYZ = WP_D65)
     # Calculate mean hue value
     if a.c * b.c == 0
         mh = a.h + b.h
-    elseif abs(b.h - a.h) > 180
-        if a.h + b.h < 360
-            mh = (a.h + b.h + 360) / 2
-        else
-            mh = (a.h + b.h - 360) / 2
-        end
     else
-        mh = (a.h + b.h) / 2
+        mh = mean_hue(a.h, b.h)
     end
 
-    # Too many correction terms.....
+    # Correction terms for a variety of nonlinearities in CIELAB.
     g = sqrt(mc^4/(mc^4 + 14000))
 
     t = 0.627 + 0.055*cosd(mh - 245) - 0.04*cosd(2*mh - 136) + 0.07*cosd(3*mh - 32) + 0.049*cosd(4*mh + 114) - 0.015*cosd(5*mh + 103)
@@ -304,12 +348,12 @@ function colordiff_bfd(ai::ColorValue, bi::ColorValue, wp::XYZ = WP_D65)
     rt = rc*rh
 
     # Final calculation
-    a = sqrt((dl/l)^2 + (dc/(c*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
+    a = sqrt((dl/m.kl)^2 + (dc/(m.kc*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
 
 end
 
 # Delta E*ab (the original)
-function colordiff_ab(ai::ColorValue, bi::ColorValue)
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_AB)
 
     # Convert directly into L*a*b*
     a = convert(LAB, ai)
@@ -329,7 +373,7 @@ end
 #
 # Returns:
 #   The DIN99 color difference metric evaluated between a and b.
-function colordiff_din99(ai::ColorValue, bi::ColorValue)
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_DIN99)
 
     a = convert(DIN99, ai)
     b = convert(DIN99, bi)
@@ -339,7 +383,7 @@ function colordiff_din99(ai::ColorValue, bi::ColorValue)
 end
 
 # A color difference formula for the DIN99d uniform color space
-function colordiff_din99d(ai::ColorValue, bi::ColorValue)
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_DIN99d)
 
     a = convert(DIN99d, ai)
     b = convert(DIN99d, bi)
@@ -349,7 +393,7 @@ function colordiff_din99d(ai::ColorValue, bi::ColorValue)
 end
 
 # The DIN99o color difference metric evaluated between colors a and b.
-function colordiff_din99o(ai::ColorValue, bi::ColorValue)
+function colordiff(ai::ColorValue, bi::ColorValue, m::DE_DIN99o)
 
     a = convert(DIN99o, ai)
     b = convert(DIN99o, bi)
@@ -357,3 +401,7 @@ function colordiff_din99o(ai::ColorValue, bi::ColorValue)
     sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
 
 end
+
+# Default to Delta E 2000
+colordiff(ai::ColorValue, bi::ColorValue) = colordiff(ai::ColorValue, bi::ColorValue, DE_2000())
+

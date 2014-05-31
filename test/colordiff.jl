@@ -46,8 +46,11 @@ const abds = [
 
 
 const eps = 0.01
+
+metric = DE_2000()
+
 for (i, (a, b, dexpect)) in enumerate(abds)
-    @assert abs(dexpect - colordiff(LAB(a...), LAB(b...))) < eps
-    @assert abs(dexpect - colordiff(LAB(b...), LAB(a...))) < eps
+    @assert abs(dexpect - colordiff(LAB(a...), LAB(b...), metric)) < eps
+    @assert abs(dexpect - colordiff(LAB(b...), LAB(a...), metric)) < eps
 end
 

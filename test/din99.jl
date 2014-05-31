@@ -36,7 +36,8 @@ for (i, (a, b)) in enumerate(testdata)
 
     # This is not a real test of the color difference metric, but at least
     # makes sure it isn't doing anything really crazy.
-    @assert (abs(colordiff_din99(convert(DIN99, LAB(a...)), DIN99(b...))) < diffeps)
+    metric = DE_DIN99()
+    @assert (abs(colordiff(convert(DIN99, LAB(a...)), DIN99(b...), metric)) < diffeps)
 
 
 end

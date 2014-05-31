@@ -11,7 +11,7 @@ export ColorValue, color,
        RGBA, HSVA, HSLA, XYZA, LABA, LUVA, LCHabA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA, RGBA32,
        protanopic, deuteranopic, tritanopic,
        cie_color_match, distinguishable_colors,
-       colordiff, colordiff_2000, colordiff_94, colordiff_jpc79, colordiff_bfd, colordiff_cmc, colordiff_ab, colordiff_din99, colordiff_din99d, colordiff_din99o,
+       colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
        MSC, sequential_palette, diverging_palette, colormap
 
 # Delete once 0.2 is no longer supported:
