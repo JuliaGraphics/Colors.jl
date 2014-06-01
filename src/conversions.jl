@@ -258,10 +258,11 @@ function convert(::Type{XYZ}, c::DIN99d)
     f = G*sind(h - 50)
     ee = G*cosd(h - 50)
 
-    # FIXME: hard-code constants
     l = (exp(c.l/325.22)-1)/0.0036
-    a = ee*cosd(50) - f/1.14*sind(50)
-    b = ee*sind(50) - f/1.14*cosd(50)
+    # a = ee*cosd(50) - f/1.14*sind(50)
+    a = ee*0.6427876 - f/1.14*0.7660444
+    # b = ee*sind(50) - f/1.14*cosd(50)
+    b = ee*0.7660444 - f/1.14*0.6427876
 
     adj = convert(XYZ, LAB(l, a, b))
 
@@ -305,7 +306,8 @@ end
 
 function convert(::Type{LAB}, c::DIN99)
 
-    # FIXME: right now we assume the adjustment parameters are always 1.
+    # We assume the adjustment parameters are always 1; the standard recommends
+    # that they not be changed from these values.
     kch = 1
     ke = 1
 
@@ -338,9 +340,10 @@ function convert(::Type{LAB}, c::DIN99)
     f = g*sind(h)
 
     # CIELAB a*b*
-    # FIXME: hard-code the constants.
-    ciea = ee*cosd(16) - (f/0.7)*sind(16)
-    cieb = ee*sind(16) + (f/0.7)*cosd(16)
+    # ciea = ee*cosd(16) - (f/0.7)*sind(16)
+    ciea = ee*0.9612617 - (f/0.7)*0.2756374
+    # cieb = ee*sind(16) + (f/0.7)*cosd(16)
+    cieb = ee*0.2756374 + (f/0.7)*0.9612617
 
     # CIELAB L*
     ciel = (e^(c.l*ke/105.51)-1)/0.0158
@@ -351,7 +354,8 @@ end
 
 function convert(::Type{LAB}, c::DIN99o)
 
-    # FIXME: right now we assume the adjustment parameters are always 1.
+    # We assume the adjustment parameters are always 1; the standard recommends
+    # that they not be changed from these values.
     kch = 1
     ke = 1
 
@@ -374,9 +378,10 @@ function convert(::Type{LAB}, c::DIN99o)
     fo = g*sind(ho)
 
     # CIELAB a*b* (revert b* axis compression)
-    # FIXME: hard-code the constants.
-    ciea = eo*cosd(26) - (fo/0.83)*sind(26)
-    cieb = eo*sind(26) + (fo/0.83)*cosd(26)
+    # ciea = eo*cosd(26) - (fo/0.83)*sind(26)
+    ciea = eo*0.8987940 - (fo/0.83)*0.4383711
+    # cieb = eo*sind(26) + (fo/0.83)*cosd(26)
+    cieb = eo*0.4383711 + (fo/0.83)*0.8987940
 
     # CIELAB L* (revert logarithmic lightness compression)
     ciel = (e^(c.l*ke/303.67)-1)/0.0039
@@ -454,7 +459,9 @@ convert(::Type{LCHab}, c::ColorValue) = convert(LCHab, convert(LAB, c))
 # -------------------
 
 function convert(::Type{DIN99}, c::LAB)
-    # FIXME: right now we assume the adjustment parameters are always 1.
+
+    # We assume the adjustment parameters are always 1; the standard recommends
+    # that they not be changed from these values.
     kch = 1
     ke = 1
 
@@ -462,9 +469,10 @@ function convert(::Type{DIN99}, c::LAB)
     l99 = (1/ke)*105.51*log(1+0.0158*c.l)
 
     # Temporary value for redness and yellowness
-    # FIXME: hard-code the constants
-    ee = c.a*cosd(16) + c.b*sind(16)
-    f = -0.7*c.a*sind(16) + 0.7*c.b*cosd(16)
+    # ee = c.a*cosd(16) + c.b*sind(16)
+    ee = c.a*0.9612617 + c.b*0.2756374
+    # f = -0.7*c.a*sind(16) + 0.7*c.b*cosd(16)
+    f = -0.7*c.a*0.2756374 + 0.7*c.b*0.9612617
 
     # Temporary value for chroma
     g = sqrt(ee^2 + f^2)
@@ -512,9 +520,10 @@ function convert(::Type{DIN99d}, c::XYZ)
     adj_L = 325.22*log(1+0.0036*lab.l)
 
     # Calculate intermediate parameters
-    # FIXME: Hard-code constants
-    ee = lab.a*cosd(50) + lab.b*sind(50)
-    f = 1.14*(lab.b*cosd(50) - lab.a*sind(50))
+    # ee = lab.a*cosd(50) + lab.b*sind(50)
+    ee = lab.a*0.6427876 + lab.b*0.7660444
+    # f = 1.14*(lab.b*cosd(50) - lab.a*sind(50))
+    f = 1.14*(lab.b*0.6427876 - lab.a*0.7660444)
     G = sqrt(ee^2+f^2)
 
     # Calculate hue/chroma
@@ -536,7 +545,9 @@ convert(::Type{DIN99d}, c::ColorValue) = convert(DIN99d, convert(XYZ, c))
 # -------------------
 
 function convert(::Type{DIN99o}, c::LAB)
-    # FIXME: right now we assume the adjustment parameters are always 1.
+
+    # We assume the adjustment parameters are always 1; the standard recommends
+    # that they not be changed from these values.
     kch = 1
     ke = 1
 
@@ -545,10 +556,11 @@ function convert(::Type{DIN99o}, c::LAB)
 
     # Temporary value for redness and yellowness
     # including rotation by 26°
-    # FIXME: hard-code the constants
-    eo = c.a*cosd(26) + c.b*sind(26)
+    # eo = c.a*cosd(26) + c.b*sind(26)
+    eo = c.a*0.8987940 + c.b*0.4383711
     # compression along the yellowness (blue-yellow) axis
-    fo = 0.83 * (c.b*cosd(26) - c.a*sind(26))
+    # fo = 0.83 * (c.b*cosd(26) - c.a*sind(26))
+    fo = 0.83 * (c.b*0.8987940 - c.a*0.4383711)
 
     # Temporary value for chroma
     go = sqrt(eo^2 + fo^2)
@@ -558,7 +570,7 @@ function convert(::Type{DIN99o}, c::LAB)
 
     # DIN99o chroma (logarithmic compression)
     cc = 23.0*log(1+0.075*go)/(kch*ke)
-    
+
     # DIN99o chromaticities
     a99, b99 = cc*cosd(h), cc*sind(h)
 
