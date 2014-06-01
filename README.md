@@ -224,11 +224,50 @@ difference formula. This gives an approximate measure of the perceptual
 difference between two colors to a typical viewer. A large number is returned
 for increasingly distinguishable colors.
 
-`colordiff_din99(a::ColorValue, b::ColorValue)`
-Evaluate the DIN99 color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99 uniform color space. Larger numbers indicate a larger perceptual difference.
+`colordiff(a::ColorValue, b::ColorValue, m::DifferenceMetric)`
 
-`colordiff_din99o(a::ColorValue, b::ColorValue)`
-Evaluate the DIN99o color difference formula. This is a measure similar to the CIEDE2000 metric, but is computed in the DIN99o uniform color space. Larger numbers indicate a larger perceptual difference.
+Evaluate the color difference formula specified by the supplied `DifferenceMetric`. Options are as follows:
+
+`DE_2000(kl::Float64, kc::Float64, kh::Float64)`
+`DE_2000()`
+
+Specify the color difference using the recommended CIEDE2000 equation, with weighting parameters `kl`, `kc`, and `kh` as provided for in the recommendation. When not provided, these parameters default to 1.
+
+`DE_94(kl::Float64, kc::Float64, kh::Float64)`
+`DE_94()`
+
+Specify the color difference using the recommended CIEDE94 equation, with weighting parameters `kl`, `kc`, and `kh` as provided for in the recommendation. When not provided, these parameters default to 1.
+
+`DE_JPC79()`
+
+Specify McDonald's "JP Coates Thread Company" color difference formula.
+
+`DE_CMC(kl::Float64, kc::Float64)`
+`DE_CMC()`
+
+Specify the color difference using the CMC equation, with weighting parameters `kl` and `kc`. When not provided, these parameters default to 1.
+
+`DE_BFD(wp::XYZ, kl::Float64, kc::Float64)`
+`DE_BFD(kl::Float64, kc::Float64)`
+`DE_BFD()`
+
+Specify the color difference using the BFD equation, with weighting parameters `kl` and `kc`. Additionally, a white point can be specified, because the BFD equation must convert between `XYZ` and `LAB` during the computation. When not specified, the constants default to 1, and the white point defaults to CIE D65.
+
+`DE_AB()`
+
+Specify the original, Euclidian color difference equation.
+
+`DE_DIN99()`
+
+Specify the Euclidian color difference equation applied in the `DIN99` uniform color space.
+
+`DE_DIN99d()`
+
+Specify the Euclidian color difference equation applied in the `DIN99` uniform color space.
+
+`DE_DIN99o()`
+
+Specify the Euclidian color difference equation applied in the `DIN99` uniform color space.
 
 ## Simulation of color deficiency ("color blindness")
 
