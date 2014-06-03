@@ -72,6 +72,18 @@ immutable XYZ <: ColorValue
 end
 ```
 
+### xyY
+
+The xyY colorspace is another CIE standardized color space, based directly off of a transformation from XYZ. It was developed specifically because the xy chromaticity space is invariant to the lightness of the patch.
+
+```julia
+immutable xyY <: ColorValue
+    x::Float64
+    y::Float64
+    Y::Float64
+end
+```
+
 ### LAB
 
 A percuptually uniform colorpsace standardized by the CIE in 1976. See also LUV,
