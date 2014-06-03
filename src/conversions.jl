@@ -3,7 +3,7 @@
 
 # no-op conversions
 
-for CV in (RGB, HSV, HSL, XYZ, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24)
+for CV in (RGB, HSV, HSL, XYZ, xyY, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24)
     @eval begin
         convert(::Type{$CV}, c::$CV) = c
     end
@@ -85,6 +85,7 @@ function convert(::Type{RGB}, c::XYZ)
                       srgb_compand(ans[3])))
 end
 
+convert(::Type{RGB}, c::xyY)   = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LAB)   = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LCHab) = convert(RGB, convert(LAB, c))
 convert(::Type{RGB}, c::LUV)   = convert(RGB, convert(XYZ, c))
@@ -191,6 +192,17 @@ convert(::Type{XYZ}, c::HSV) = convert(XYZ, convert(RGB, c))
 convert(::Type{XYZ}, c::HSL) = convert(XYZ, convert(RGB, c))
 
 
+function convert(::Type{XYZ}, c::xyY)
+
+    X = c.Y*c.x/c.y
+
+    Z = c.Y*(1-c.x-c.y)/c.y
+
+    XYZ(X, c.Y, Z)
+
+end
+
+
 const xyz_epsilon = 216. / 24389.
 const xyz_kappa   = 24389. / 27.
 
@@ -275,6 +287,21 @@ function convert(::Type{XYZ}, c::LMS)
     ans = CAT02_INV * [c.l, c.m, c.s]
     XYZ(ans[1], ans[2], ans[3])
 end
+
+# Everything to xyY
+# -----------------
+
+function convert(::Type{xyY}, c::XYZ)
+
+    x = c.x/(c.x + c.y + c.z)
+    y = c.y/(c.x + c.y + c.z)
+
+    xyY(x, y, c.y)
+
+end
+
+convert(::Type{xyY}, c::ColorValue) = convert(xyY, convert(XYZ, c))
+
 
 
 # Everything to LAB

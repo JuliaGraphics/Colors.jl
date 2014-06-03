@@ -79,6 +79,19 @@ immutable XYZ <: ColorValue
     XYZ() = XYZ(0, 0, 0)
 end
 
+# CIE 1931 xyY (chromaticity + luminance) space
+immutable xyY <: ColorValue
+    x::Float64
+    y::Float64
+    Y::Float64
+
+    function xyY(x::Number, y::Number, Y::Number)
+        new(x, y, Y)
+    end
+
+    xyY() = xyY(0,0,0)
+end
+
 
 # LAB (CIELAB)
 immutable LAB <: ColorValue
@@ -206,6 +219,7 @@ typealias RGBA AlphaColorValue{RGB}
 typealias HSVA AlphaColorValue{HSV}
 typealias HSLA AlphaColorValue{HSL}
 typealias XYZA AlphaColorValue{XYZ}
+typealias xyYA AlphaColorValue{xyY}
 typealias LABA AlphaColorValue{LAB}
 typealias LCHabA AlphaColorValue{LCHab}
 typealias LUVA AlphaColorValue{LUV}
