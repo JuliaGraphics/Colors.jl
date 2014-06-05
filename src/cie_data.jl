@@ -28,11 +28,11 @@ const WP_DEFAULT = WP_D65
 #
 function cie_color_match(wavelen::Real)
     a = floor(wavelen)
-    ac = 380 <= a <= 780 ? cie_color_match_table[a - 380 + 1,:] : [0,0,0]
+    ac = 380 <= a <= 780 ? cie_color_match_table[a - 380 + 1,:] : [0 0 0]
 
     if wavelen != a
         b = ceil(wavelen)
-        bc = 380 <= b <= 780 ? cie_color_match_table[b - 380 + 1,:] : [0,0,0]
+        bc = 380 <= b <= 780 ? cie_color_match_table[b - 380 + 1,:] : [0 0 0]
         p = wavelen - a
         ac = p * bc + (1.0 - p) * ac
     end
