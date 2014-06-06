@@ -102,7 +102,7 @@ function colordiff(ai::ColorValue, bi::ColorValue, m::DE_2000)
     # Calculate some necessary factors from the L*a*b* values
     ac, bc = sqrt(a.a^2 + a.b^2), sqrt(b.a^2 + b.b^2)
     mc = (ac + bc)/2
-    g = (1 - sqrt(mc^7 / (mc^7 + 25^7))) / 2
+    g = (1 - sqrt(mc^7 / (mc^7 + 25.0^7))) / 2
     a = LAB(a.l, a.a * (1 + g), a.b)
     b = LAB(b.l, b.a * (1 + g), b.b)
 
@@ -148,7 +148,7 @@ function colordiff(ai::ColorValue, bi::ColorValue, m::DE_2000)
 
     # rotation term
     dtheta = 30 * exp(-((mh - 275)/25)^2)
-    cr = 2 * sqrt(mc^7 / (mc^7 + 25^7))
+    cr = 2 * sqrt(mc^7 / (mc^7 + 25.0^7))
     tr = -sind(2*dtheta) * cr
 
     # Final calculation
