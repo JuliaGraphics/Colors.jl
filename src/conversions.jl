@@ -241,7 +241,7 @@ function convert(::Type{XYZ}, c::LUV, wp::XYZ)
     (u_wp, v_wp) = xyz_to_uv(wp)
 
     a = (52 * c.l / (c.u + 13 * c.l * u_wp) - 1) / 3
-    y = c.l > xyz_kappa * xyz_epsilon ? ((c.l + 16) / 116)^3 : c.l / xyz_kappa
+    y = c.l > xyz_kappa * xyz_epsilon ? wp.y * ((c.l + 16) / 116)^3 : wp.y * c.l / xyz_kappa
     b = -5y
     d = y * (39 * c.l / (c.v + 13 * c.l * v_wp) - 5)
     x = (d - b) / (a + (1./3.))
