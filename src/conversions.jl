@@ -3,7 +3,7 @@
 
 # no-op conversions
 
-for CV in (RGB, HSV, HSL, XYZ, xyY, LAB, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24)
+for CV in (RGB, HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24)
     @eval begin
         convert(::Type{$CV}, c::$CV) = c
     end
@@ -86,10 +86,10 @@ function convert(::Type{RGB}, c::XYZ)
 end
 
 convert(::Type{RGB}, c::xyY)   = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::LAB)   = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::LCHab) = convert(RGB, convert(LAB, c))
-convert(::Type{RGB}, c::LUV)   = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::LCHuv) = convert(RGB, convert(LUV, c))
+convert(::Type{RGB}, c::Lab)   = convert(RGB, convert(XYZ, c))
+convert(::Type{RGB}, c::LCHab) = convert(RGB, convert(Lab, c))
+convert(::Type{RGB}, c::Luv)   = convert(RGB, convert(XYZ, c))
+convert(::Type{RGB}, c::LCHuv) = convert(RGB, convert(Luv, c))
 convert(::Type{RGB}, c::DIN99) = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::DIN99o) = convert(RGB, convert(XYZ, c))
 convert(::Type{RGB}, c::LMS)   = convert(RGB, convert(XYZ, c))
@@ -207,7 +207,7 @@ const xyz_epsilon = 216. / 24389.
 const xyz_kappa   = 24389. / 27.
 
 
-function convert(::Type{XYZ}, c::LAB, wp::XYZ)
+function convert(::Type{XYZ}, c::Lab, wp::XYZ)
     fy = (c.l + 16) / 116
     fx = c.a / 500 + fy
     fz = fy - c.b / 200
@@ -223,10 +223,10 @@ function convert(::Type{XYZ}, c::LAB, wp::XYZ)
 end
 
 
-convert(::Type{XYZ}, c::LAB)   = convert(XYZ, c, WP_DEFAULT)
-convert(::Type{XYZ}, c::LCHab) = convert(XYZ, convert(LAB, c))
-convert(::Type{XYZ}, c::DIN99) = convert(XYZ, convert(LAB, c))
-convert(::Type{XYZ}, c::DIN99o) = convert(XYZ, convert(LAB, c))
+convert(::Type{XYZ}, c::Lab)   = convert(XYZ, c, WP_DEFAULT)
+convert(::Type{XYZ}, c::LCHab) = convert(XYZ, convert(Lab, c))
+convert(::Type{XYZ}, c::DIN99) = convert(XYZ, convert(Lab, c))
+convert(::Type{XYZ}, c::DIN99o) = convert(XYZ, convert(Lab, c))
 
 
 function xyz_to_uv(c::XYZ)
@@ -237,7 +237,7 @@ function xyz_to_uv(c::XYZ)
 end
 
 
-function convert(::Type{XYZ}, c::LUV, wp::XYZ)
+function convert(::Type{XYZ}, c::Luv, wp::XYZ)
     (u_wp, v_wp) = xyz_to_uv(wp)
 
     a = (52 * c.l / (c.u + 13 * c.l * u_wp) - 1) / 3
@@ -251,8 +251,8 @@ function convert(::Type{XYZ}, c::LUV, wp::XYZ)
 end
 
 
-convert(::Type{XYZ}, c::LUV)   = convert(XYZ, c, WP_DEFAULT)
-convert(::Type{XYZ}, c::LCHuv) = convert(XYZ, convert(LUV, c))
+convert(::Type{XYZ}, c::Luv)   = convert(XYZ, c, WP_DEFAULT)
+convert(::Type{XYZ}, c::LCHuv) = convert(XYZ, convert(Luv, c))
 
 
 function convert(::Type{XYZ}, c::DIN99d)
@@ -276,7 +276,7 @@ function convert(::Type{XYZ}, c::DIN99d)
     # b = ee*sind(50) - f/1.14*cosd(50)
     b = ee*0.766044443118978 - f/1.14*0.6427876096865393
 
-    adj = convert(XYZ, LAB(l, a, b))
+    adj = convert(XYZ, Lab(l, a, b))
 
     XYZ((adj.x + 0.12*adj.z)/1.12, adj.y, adj.z)
 
@@ -304,34 +304,34 @@ convert(::Type{xyY}, c::ColorValue) = convert(xyY, convert(XYZ, c))
 
 
 
-# Everything to LAB
+# Everything to Lab
 # -----------------
 
-convert(::Type{LAB}, c::RGB) = convert(LAB, convert(XYZ, c))
-convert(::Type{LAB}, c::HSV) = convert(LAB, convert(RGB, c))
-convert(::Type{LAB}, c::HSL) = convert(LAB, convert(RGB, c))
+convert(::Type{Lab}, c::RGB) = convert(Lab, convert(XYZ, c))
+convert(::Type{Lab}, c::HSV) = convert(Lab, convert(RGB, c))
+convert(::Type{Lab}, c::HSL) = convert(Lab, convert(RGB, c))
 
 
-function convert(::Type{LAB}, c::XYZ, wp::XYZ)
+function convert(::Type{Lab}, c::XYZ, wp::XYZ)
     function f(v::Float64)
         v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
     end
 
     fx, fy, fz = f(c.x / wp.x), f(c.y / wp.y), f(c.z / wp.z)
-    LAB(116fy - 16, 500(fx - fy), 200(fy - fz))
+    Lab(116fy - 16, 500(fx - fy), 200(fy - fz))
 end
 
 
-convert(::Type{LAB}, c::XYZ) = convert(LAB, c, WP_DEFAULT)
+convert(::Type{Lab}, c::XYZ) = convert(Lab, c, WP_DEFAULT)
 
 
-function convert(::Type{LAB}, c::LCHab)
+function convert(::Type{Lab}, c::LCHab)
     hr = deg2rad(c.h)
-    LAB(c.l, c.c * cos(hr), c.c * sin(hr))
+    Lab(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
 
-function convert(::Type{LAB}, c::DIN99)
+function convert(::Type{Lab}, c::DIN99)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -375,11 +375,11 @@ function convert(::Type{LAB}, c::DIN99)
     # CIELAB L*
     ciel = (e^(c.l*ke/105.51)-1)/0.0158
 
-    LAB(ciel, ciea, cieb)
+    Lab(ciel, ciea, cieb)
 end
 
 
-function convert(::Type{LAB}, c::DIN99o)
+function convert(::Type{Lab}, c::DIN99o)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -413,22 +413,22 @@ function convert(::Type{LAB}, c::DIN99o)
     # CIELAB L* (revert logarithmic lightness compression)
     ciel = (e^(c.l*ke/303.67)-1)/0.0039
 
-    LAB(ciel, ciea, cieb)
+    Lab(ciel, ciea, cieb)
 end
 
 
-convert(::Type{LAB}, c::ColorValue) = convert(LAB, convert(XYZ, c))
+convert(::Type{Lab}, c::ColorValue) = convert(Lab, convert(XYZ, c))
 
 
-# Everything to LUV
+# Everything to Luv
 # -----------------
 
-convert(::Type{LUV}, c::RGB) = convert(LUV, convert(XYZ, c))
-convert(::Type{LUV}, c::HSV) = convert(LUV, convert(RGB, c))
-convert(::Type{LUV}, c::HSL) = convert(LUV, convert(RGB, c))
+convert(::Type{Luv}, c::RGB) = convert(Luv, convert(XYZ, c))
+convert(::Type{Luv}, c::HSV) = convert(Luv, convert(RGB, c))
+convert(::Type{Luv}, c::HSL) = convert(Luv, convert(RGB, c))
 
 
-function convert(::Type{LUV}, c::XYZ, wp::XYZ)
+function convert(::Type{Luv}, c::XYZ, wp::XYZ)
     (u_wp, v_wp) = xyz_to_uv(wp)
     (u_, v_) = xyz_to_uv(c)
 
@@ -438,26 +438,26 @@ function convert(::Type{LUV}, c::XYZ, wp::XYZ)
     u = 13 * l * (u_ - u_wp)
     v = 13 * l * (v_ - v_wp)
 
-    LUV(l, u, v)
+    Luv(l, u, v)
 end
 
 
-convert(::Type{LUV}, c::XYZ) = convert(LUV, c, WP_DEFAULT)
+convert(::Type{Luv}, c::XYZ) = convert(Luv, c, WP_DEFAULT)
 
 
-function convert(::Type{LUV}, c::LCHuv)
+function convert(::Type{Luv}, c::LCHuv)
     hr = deg2rad(c.h)
-    LUV(c.l, c.c * cos(hr), c.c * sin(hr))
+    Luv(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
 
-convert(::Type{LUV}, c::ColorValue) = convert(LUV, convert(XYZ, c))
+convert(::Type{Luv}, c::ColorValue) = convert(Luv, convert(XYZ, c))
 
 
 # Everything to LCHuv
 # -------------------
 
-function convert(::Type{LCHuv}, c::LUV)
+function convert(::Type{LCHuv}, c::Luv)
     h = rad2deg(atan2(c.v, c.u))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
@@ -465,13 +465,13 @@ function convert(::Type{LCHuv}, c::LUV)
 end
 
 
-convert(::Type{LCHuv}, c::ColorValue) = convert(LCHuv, convert(LUV, c))
+convert(::Type{LCHuv}, c::ColorValue) = convert(LCHuv, convert(Luv, c))
 
 
 # Everything to LCHab
 # -------------------
 
-function convert(::Type{LCHab}, c::LAB)
+function convert(::Type{LCHab}, c::Lab)
     h = rad2deg(atan2(c.b, c.a))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
@@ -479,13 +479,13 @@ function convert(::Type{LCHab}, c::LAB)
 end
 
 
-convert(::Type{LCHab}, c::ColorValue) = convert(LCHab, convert(LAB, c))
+convert(::Type{LCHab}, c::ColorValue) = convert(LCHab, convert(Lab, c))
 
 
 # Everything to DIN99
 # -------------------
 
-function convert(::Type{DIN99}, c::LAB)
+function convert(::Type{DIN99}, c::Lab)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -531,7 +531,7 @@ function convert(::Type{DIN99}, c::LAB)
 end
 
 
-convert(::Type{DIN99}, c::ColorValue) = convert(DIN99, convert(LAB, c))
+convert(::Type{DIN99}, c::ColorValue) = convert(DIN99, convert(Lab, c))
 
 
 # Everything to DIN99d
@@ -543,7 +543,7 @@ function convert(::Type{DIN99d}, c::XYZ)
     adj_c = XYZ(1.12*c.x - 0.12*c.z, c.y, c.z)
 
     # Apply L*a*b*-space correction
-    lab = convert(LAB, adj_c)
+    lab = convert(Lab, adj_c)
     adj_L = 325.22*log(1+0.0036*lab.l)
 
     # Calculate intermediate parameters
@@ -571,7 +571,7 @@ convert(::Type{DIN99d}, c::ColorValue) = convert(DIN99d, convert(XYZ, c))
 # Everything to DIN99o
 # -------------------
 
-function convert(::Type{DIN99o}, c::LAB)
+function convert(::Type{DIN99o}, c::Lab)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -606,7 +606,7 @@ function convert(::Type{DIN99o}, c::LAB)
 end
 
 
-convert(::Type{DIN99o}, c::ColorValue) = convert(DIN99o, convert(LAB, c))
+convert(::Type{DIN99o}, c::ColorValue) = convert(DIN99o, convert(Lab, c))
 
 
 # Everything to LMS

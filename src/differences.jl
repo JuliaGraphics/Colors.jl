@@ -96,15 +96,15 @@ end
 function colordiff(ai::ColorValue, bi::ColorValue, m::DE_2000)
 
     # Ensure that the input values are in L*a*b* space
-    a = convert(LAB, ai)
-    b = convert(LAB, bi)
+    a = convert(Lab, ai)
+    b = convert(Lab, bi)
 
     # Calculate some necessary factors from the L*a*b* values
     ac, bc = sqrt(a.a^2 + a.b^2), sqrt(b.a^2 + b.b^2)
     mc = (ac + bc)/2
     g = (1 - sqrt(mc^7 / (mc^7 + 25.0^7))) / 2
-    a = LAB(a.l, a.a * (1 + g), a.b)
-    b = LAB(b.l, b.a * (1 + g), b.b)
+    a = Lab(a.l, a.a * (1 + g), a.b)
+    b = Lab(b.l, b.a * (1 + g), b.b)
 
     # Convert to L*C*h, where the remainder of the calculations are performed
     a = convert(LCHab, a)
@@ -302,8 +302,8 @@ function colordiff(ai::ColorValue, bi::ColorValue, m::DE_BFD)
     lb = 54.6*log10(b.y+1.5)-9.6
 
     # Convert into LCh with the proper white point
-    a = convert(LAB, a, m.wp)
-    b = convert(LAB, b, m.wp)
+    a = convert(Lab, a, m.wp)
+    b = convert(Lab, b, m.wp)
     a = convert(LCHab, a)
     b = convert(LCHab, b)
 
@@ -356,8 +356,8 @@ end
 function colordiff(ai::ColorValue, bi::ColorValue, m::DE_AB)
 
     # Convert directly into L*a*b*
-    a = convert(LAB, ai)
-    b = convert(LAB, bi)
+    a = convert(Lab, ai)
+    b = convert(Lab, bi)
 
     dl, da, db = (b.l - a.l), (b.a - a.a), (b.b - a.b)
 

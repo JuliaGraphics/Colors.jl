@@ -33,8 +33,8 @@ end
 
 # weighted_color_mean(w1, c1, c2) gives a mean color "w1*c1 + (1-w1)*c2".
 for (T,a,b,c) in ((:RGB,:r,:g,:b), (:HSV,:h,:s,:v), (:HSL,:h,:s,:l),
-                  (:XYZ,:x,:y,:z), (:LAB,:l,:a,:b), (:LCHab,:l,:c,:h),
-                  (:LUV,:l,:u,:v), (:LCHuv,:l,:c,:h), (:LMS,:l,:m,:s))
+                  (:XYZ,:x,:y,:z), (:Lab,:l,:a,:b), (:LCHab,:l,:c,:h),
+                  (:Luv,:l,:u,:v), (:LCHuv,:l,:c,:h), (:LMS,:l,:m,:s))
     @eval weighted_color_mean(w1::Real, c1::$T, c2::$T) =
       let w2 = w1 >= 0 && w1 <= 1 ? 1 - w1 : throw(DomainError())
           $T(c1.($(Expr(:quote, a))) * w1 + c2.($(Expr(:quote, a))) * w2,

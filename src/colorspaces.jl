@@ -93,21 +93,23 @@ immutable xyY <: ColorValue
 end
 
 
-# LAB (CIELAB)
-immutable LAB <: ColorValue
+# Lab (CIELAB)
+immutable Lab <: ColorValue
     l::Float64 # Luminance in approximately [0,100]
     a::Float64 # Red/Green
     b::Float64 # Blue/Yellow
 
-    function LAB(l::Number, a::Number, b::Number)
+    function Lab(l::Number, a::Number, b::Number)
         new(l, a, b)
     end
 
-    LAB() = LAB(0, 0, 0)
+    Lab() = Lab(0, 0, 0)
 end
 
+typealias LAB Lab
 
-# LCHab (Luminance-Chroma-Hue, Polar-LAB)
+
+# LCHab (Luminance-Chroma-Hue, Polar-Lab)
 immutable LCHab <: ColorValue
     l::Float64 # Luminance in [0,100]
     c::Float64 # Chroma
@@ -121,21 +123,23 @@ immutable LCHab <: ColorValue
 end
 
 
-# LUV (CIELUV)
-immutable LUV <: ColorValue
+# Luv (CIELUV)
+immutable Luv <: ColorValue
     l::Float64 # Luminance
     u::Float64 # Red/Green
     v::Float64 # Blue/Yellow
 
-    function LUV(l::Number, u::Number, v::Number)
+    function Luv(u::Number, v::Number)
         new(l, u, v)
     end
 
-    LUV() = LUV(0, 0, 0)
+    Luv() = Luv(0, 0, 0)
 end
 
+typealias LUV Luv
 
-# LCHuv (Luminance-Chroma-Hue, Polar-LUV)
+
+# LCHuv (Luminance-Chroma-Hue, Polar-Luv)
 immutable LCHuv <: ColorValue
     l::Float64 # Luminance
     c::Float64 # Chroma
@@ -220,9 +224,9 @@ typealias HSVA AlphaColorValue{HSV}
 typealias HSLA AlphaColorValue{HSL}
 typealias XYZA AlphaColorValue{XYZ}
 typealias xyYA AlphaColorValue{xyY}
-typealias LABA AlphaColorValue{LAB}
+typealias LabA AlphaColorValue{Lab}
 typealias LCHabA AlphaColorValue{LCHab}
-typealias LUVA AlphaColorValue{LUV}
+typealias LuvA AlphaColorValue{Luv}
 typealias LCHuvA AlphaColorValue{LCHuv}
 typealias DIN99A AlphaColorValue{DIN99}
 typealias DIN99dA AlphaColorValue{DIN99d}
