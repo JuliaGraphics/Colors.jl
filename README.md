@@ -320,7 +320,7 @@ distinguishable_colors(n::Integer,seed::ColorValue)
 distinguishable_colors{T<:ColorValue}(n::Integer,seed::Vector{T})
 ```
 
-A seed color or array of seed colors may be provided to `distinguishable_colors`, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and eachother.
+A seed color or array of seed colors may be provided to `distinguishable_colors`, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
 
 ```julia
 distinguishable_colors{T<:ColorValue}(n::Integer, seed::Vector{T};
