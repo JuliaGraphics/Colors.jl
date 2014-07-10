@@ -310,19 +310,31 @@ and 0.0 is no loss at all.
 
 ## Color Scales
 
-`distinguishable_colors(n::Integer, transform::Function, seed::ColorValue, ls::Vector{Float64}, cs::Vector{Float64}, hs::Vector{Float64})`
+
+`distinguishable_colors(n::Integer)`
 
 Generate `n` maximally distinguishable colors in LCHab space.
 
-The algorithm builds up the palette starting from a color `seed`, and choosing
-the other n-1 over the Cartesian product of provided possible lightness
-(`ls`), chroma (`cs`), and hue (`hs`) values.
+```julia
+distinguishable_colors(n::Integer,seed::ColorValue)
+distinguishable_colors{T<:ColorValue}(n::Integer,seed::Vector{T})
+```
 
-Distinguishability is maximized with respect to the CIEDE2000 color difference
-formula (see `colordiff`), after first applying a transformation function
-(`transform`). I.e. the difference between two colors `a` and `b` is computed as
+A seed color or array of seed colors may be provided to `distinguishable_colors`, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
+
+```julia
+distinguishable_colors{T<:ColorValue}(n::Integer, seed::Vector{T};
+    transform::Function = identity,
+    lchoices::Vector{Float64} = linspace(0, 100, 15),
+    cchoices::Vector{Float64} = linspace(0, 100, 15),
+    hchoices::Vector{Float64} = linspace(0, 340, 20)
+)
+```
+
+By default, `distinguishable_colors` chooses maximally distinguishable colors from the outer product of lightness, chroma and hue values specified by `lchoices = linspace(0, 100, 15)`, `cchoices = linspace(0, 100, 15)`, and `hchoices = linspace(0, 340, 20)`. The set of colors that `distinguishable_colors` chooses from may be specified by passing different choices as keyword arguments.
+
+Distinguishability is maximized with respect to the CIEDE2000 color difference formula (see `colordiff`). If a `transform` function is specified, color difference is instead maximized between colors `a` and `b` according to
 `colordiff(transform(a), transform(b))`.
-
 
 `linspace(c1::ColorValue, c2::ColorValue, n=100)`
 
