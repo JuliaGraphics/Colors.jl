@@ -108,4 +108,5 @@ function color(desc::String)
 end
 
 color(c::ColorValue) = c
+color(c::AlphaColorValue) = c
 

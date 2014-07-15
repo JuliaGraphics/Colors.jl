@@ -129,7 +129,7 @@ immutable Luv <: ColorValue
     u::Float64 # Red/Green
     v::Float64 # Blue/Yellow
 
-    function Luv(u::Number, v::Number)
+    function Luv(l::Number, u::Number, v::Number)
         new(l, u, v)
     end
 
