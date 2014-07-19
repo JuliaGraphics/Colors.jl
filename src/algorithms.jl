@@ -67,7 +67,7 @@ end
 function protanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
-    anchor = cie_color_match(anchor_wavelen)
+    anchor = colormatch(anchor_wavelen)
     anchor = convert(LMS, anchor)
     (a, b, c) = brettel_abc(neutral, anchor)
 
@@ -83,7 +83,7 @@ end
 function deuteranopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
-    anchor = cie_color_match(anchor_wavelen)
+    anchor = colormatch(anchor_wavelen)
     anchor = convert(LMS, anchor)
     (a, b, c) = brettel_abc(neutral, anchor)
 
@@ -99,7 +99,7 @@ end
 function tritanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
-    anchor = cie_color_match(anchor_wavelen)
+    anchor = colormatch(anchor_wavelen)
     anchor = convert(LMS, anchor)
     (a, b, c) = brettel_abc(neutral, anchor)
 
