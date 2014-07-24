@@ -101,8 +101,8 @@ convert(::Type{RGB}, c::RGB24) = RGB((c.color&0x00ff0000>>>16)/255, ((c.color&0x
 # -----------------
 
 function convert(::Type{HSV}, c::RGB)
-    c_min = min([c.r, c.g, c.b])
-    c_max = max([c.r, c.g, c.b])
+    c_min = min(c.r, c.g, c.b)
+    c_max = max(c.r, c.g, c.b)
     if c_min == c_max
         return HSV(0.0, 0.0, c_max)
     end
