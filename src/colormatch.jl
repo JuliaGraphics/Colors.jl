@@ -1165,7 +1165,7 @@ const cie1931jv_cmf_table =
 #               testing of the effect of extrapolation down to 380 nm
 
 function colormatch(::Type{CIE2006_2_CMF}, wavelen::Real)
-    return interpolate_table(cie2006_2deg_xyz_cmf_table, 360.0, 1.0, wavelen)
+    return interpolate_table(cie2006_2deg_xyz_cmf_table, 380.0, 1.0, wavelen)
 end
 
 const cie2006_2deg_xyz_cmftable=
@@ -1579,7 +1579,7 @@ const cie2006_2deg_xyz_cmftable=
 
 
 function colormatch(::Type{CIE2006_10_CMF}, wavelen::Real)
-    return interpolate_table(cie2006_10deg_xyz_cmf_table, 360.0, 1.0, wavelen)
+    return interpolate_table(cie2006_10deg_xyz_cmf_table, 380.0, 1.0, wavelen)
 end
 
 const cie2006_10deg_xyz_cmf_table=
