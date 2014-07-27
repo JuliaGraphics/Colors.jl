@@ -3,22 +3,34 @@
 
 # no-op conversions
 
-for CV in (RGB, HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24)
+for CV in CVparametric
     @eval begin
+        convert{T}(::Type{$CV{T}}, c::$CV{T}) = c
         convert(::Type{$CV}, c::$CV) = c
+    end
+end
+convert(::RGB24, c::RGB24) = c
+
+# changing the datatype without changing the underlying colorspace
+for CV in CVparametric
+    @eval begin
+        convert{T}(::Type{$CV{T}}, c::$CV) = $CV{T}(convert(T, getfield(c, 1)), convert(T, getfield(c, 2)), convert(T, getfield(c, 3)))
     end
 end
 
 
-function convert{T,U}(::Type{AlphaColorValue{T}}, c::AlphaColorValue{U})
-    AlphaColorValue{T}(convert(T, c.c), c.alpha)
+# Conversions where the datatype is not specified (preserves the datatype of the original space)
+for CV in CVparametric
+    @eval begin
+        convert{T}(::Type{$CV}, c::ColorValue{T}) = convert($CV{T}, c)
+    end
 end
 
 
 # Everything to RGB
 # -----------------
 
-function convert(::Type{RGB}, c::HSV)
+function convert{T}(::Type{RGB{T}}, c::HSV)
     h = c.h / 60
     i = floor(h)
     f = h - i
@@ -28,18 +40,17 @@ function convert(::Type{RGB}, c::HSV)
     m = c.v * (1 - c.s)
     n = c.v * (1 - c.s * f)
     i = int(i)
-    if i == 6 || i == 0; RGB(c.v, n, m)
-    elseif i == 1;       RGB(n, c.v, m)
-    elseif i == 2;       RGB(m, c.v, n)
-    elseif i == 3;       RGB(m, n, c.v)
-    elseif i == 4;       RGB(n, m, c.v)
-    else;                RGB(c.v, m, n)
+    if i == 6 || i == 0; RGB{T}(c.v, n, m)
+    elseif i == 1;       RGB{T}(n, c.v, m)
+    elseif i == 2;       RGB{T}(m, c.v, n)
+    elseif i == 3;       RGB{T}(m, n, c.v)
+    elseif i == 4;       RGB{T}(n, m, c.v)
+    else;                RGB{T}(c.v, m, n)
     end
 end
 
-
-function convert(::Type{RGB}, c::HSL)
-    function qtrans(u::Float64, v::Float64, hue::Float64)
+function convert{T}(::Type{RGB{T}}, c::HSL)
+    function qtrans(u, v, hue)
         if     hue > 360; hue -= 360
         elseif hue < 0;   hue += 360
         end
@@ -54,10 +65,10 @@ function convert(::Type{RGB}, c::HSL)
     v = c.l <= 0.5 ? c.l * (1 + c.s) : c.l + c.s - (c.l * c.s)
     u = 2 * c.l - v
 
-    if c.s == 0; RGB(c.l, c.l, c.l)
-    else;        RGB(qtrans(u, v, c.h + 120),
-                     qtrans(u, v, c.h),
-                     qtrans(u, v, c.h - 120))
+    if c.s == 0; RGB{T}(c.l, c.l, c.l)
+    else;        RGB{T}(qtrans(u, v, c.h + 120),
+                        qtrans(u, v, c.h),
+                        qtrans(u, v, c.h - 120))
     end
 end
 
@@ -66,89 +77,90 @@ const M_XYZ_RGB = [ 3.2404542 -1.5371385 -0.4985314
                     0.0556434 -0.2040259  1.0572252 ]
 
 
-function correct_gamut(c::RGB)
-    RGB(min(1.0, max(0.0, c.r)),
-        min(1.0, max(0.0, c.g)),
-        min(1.0, max(0.0, c.b)))
+function correct_gamut{T}(c::RGB{T})
+    RGB{T}(min(one(T), max(zero(T), c.r)),
+        min(one(T), max(zero(T), c.g)),
+        min(one(T), max(zero(T), c.b)))
 end
 
 
-function srgb_compand(v::Float64)
+function srgb_compand(v)
     v <= 0.0031308 ? 12.92v : 1.055v^(1/2.4) - 0.055
 end
 
 
-function convert(::Type{RGB}, c::XYZ)
+function convert{T}(::Type{RGB{T}}, c::XYZ)
     ans = M_XYZ_RGB * [c.x, c.y, c.z]
-    correct_gamut(RGB(srgb_compand(ans[1]),
-                      srgb_compand(ans[2]),
-                      srgb_compand(ans[3])))
+    correct_gamut(RGB{T}(srgb_compand(ans[1]),
+                         srgb_compand(ans[2]),
+                         srgb_compand(ans[3])))
 end
 
-convert(::Type{RGB}, c::xyY)   = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::Lab)   = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::LCHab) = convert(RGB, convert(Lab, c))
-convert(::Type{RGB}, c::Luv)   = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::LCHuv) = convert(RGB, convert(Luv, c))
-convert(::Type{RGB}, c::DIN99) = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::DIN99o) = convert(RGB, convert(XYZ, c))
-convert(::Type{RGB}, c::LMS)   = convert(RGB, convert(XYZ, c))
+convert{T}(::Type{RGB{T}}, c::xyY)   = convert(RGB{T}, convert(XYZ{T}, c))
+convert{T}(::Type{RGB{T}}, c::Lab)   = convert(RGB{T}, convert(XYZ{T}, c))
+convert{T}(::Type{RGB{T}}, c::LCHab) = convert(RGB{T}, convert(Lab{T}, c))
+convert{T}(::Type{RGB{T}}, c::Luv)   = convert(RGB{T}, convert(XYZ{T}, c))
+convert{T}(::Type{RGB{T}}, c::LCHuv) = convert(RGB{T}, convert(Luv{T}, c))
+convert{T}(::Type{RGB{T}}, c::DIN99) = convert(RGB{T}, convert(XYZ{T}, c))
+convert{T}(::Type{RGB{T}}, c::DIN99o) = convert(RGB{T}, convert(XYZ{T}, c))
+convert{T}(::Type{RGB{T}}, c::DIN99d) = convert(RGB{T}, convert(XYZ{T}, c))
+convert{T}(::Type{RGB{T}}, c::LMS)   = convert(RGB{T}, convert(XYZ{T}, c))
 
-convert(::Type{RGB}, c::RGB24) = RGB((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
+convert{T}(::Type{RGB{T}}, c::RGB24) = RGB{T}((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
 
 # Everything to HSV
 # -----------------
 
-function convert(::Type{HSV}, c::RGB)
+function convert{T}(::Type{HSV{T}}, c::RGB)
     c_min = min(c.r, c.g, c.b)
     c_max = max(c.r, c.g, c.b)
     if c_min == c_max
-        return HSV(0.0, 0.0, c_max)
+        return HSV(zero(T), zero(T), c_max)
     end
 
     if c_min == c.r
         f = c.g - c.b
-        i = 3.
+        i = convert(T, 3)
     elseif c_min == c.g
         f = c.b - c.r
-        i = 5.
+        i = convert(T, 5)
     else
         f = c.r - c.g
-        i = 1.
+        i = convert(T, 1)
     end
 
-    HSV(60 * (i - f / (c_max - c_min)),
+    HSV{T}(60 * (i - f / (c_max - c_min)),
         (c_max - c_min) / c_max,
         c_max)
 end
 
 
-convert(::Type{HSV}, c::ColorValue) = convert(HSV, convert(RGB, c))
+convert{T}(::Type{HSV{T}}, c::ColorValue) = convert(HSV{T}, convert(RGB{T}, c))
 
 
 # Everything to HSL
 # -----------------
 
-function convert(::Type{HSL}, c::RGB)
+function convert{T}(::Type{HSL{T}}, c::RGB)
     c_min = min(c.r, c.g, c.b)
     c_max = max(c.r, c.g, c.b)
     l = (c_max - c_min) / 2
 
     if c_max == c_min
-        return HSL(0.0, 0.0, l)
+        return HSL(zero(T), zero(T), l)
     end
 
     if l < 0.5; s = (c_max - c_min) / (c_max + c_min)
-    else;       s = (c_max - c_min) / (2.0 - c_max - c_min)
+    else;       s = (c_max - c_min) / (convert(T, 2) - c_max - c_min)
     end
 
     if c_max == c.r
         h = (c.g - c.b) / (c_max - c_min)
     elseif c_max == c.g
-        h = 2.0 + (c.b - c.r) / (c_max - c_min)
+        h = convert(T, 2) + (c.b - c.r) / (c_max - c_min)
     else
-        h = 4.0 + (c.r - c.g) / (c_max - c_min)
+        h = convert(T, 4) + (c.r - c.g) / (c_max - c_min)
     end
 
     h *= 60
@@ -158,17 +170,17 @@ function convert(::Type{HSL}, c::RGB)
         h -= 360
     end
 
-    HSL(h,s,l)
+    HSL{T}(h,s,l)
 end
 
 
-convert(::Type{HSL}, c::ColorValue) = convert(HSL, convert(RGB, c))
+convert{T}(::Type{HSL{T}}, c::ColorValue) = convert(HSL{T}, convert(RGB{T}, c))
 
 
 # Everything to XYZ
 # -----------------
 
-function invert_rgb_compand(v::Float64)
+function invert_rgb_compand(v)
     v <= 0.04045 ? v/12.92 : ((v+0.055) /1.055)^2.4
 end
 
@@ -179,26 +191,26 @@ const M_RGB_XYZ =
       0.0193339  0.1191920  0.9503041 ]
 
 
-function convert(::Type{XYZ}, c::RGB)
+function convert{T}(::Type{XYZ{T}}, c::RGB)
     v = [invert_rgb_compand(c.r),
          invert_rgb_compand(c.g),
          invert_rgb_compand(c.b)]
     ans = M_RGB_XYZ * v
-    XYZ(ans[1], ans[2], ans[3])
+    XYZ{T}(ans[1], ans[2], ans[3])
 end
 
 
-convert(::Type{XYZ}, c::HSV) = convert(XYZ, convert(RGB, c))
-convert(::Type{XYZ}, c::HSL) = convert(XYZ, convert(RGB, c))
+convert{T}(::Type{XYZ{T}}, c::HSV) = convert(XYZ{T}, convert(RGB{T}, c))
+convert{T}(::Type{XYZ{T}}, c::HSL) = convert(XYZ{T}, convert(RGB{T}, c))
 
 
-function convert(::Type{XYZ}, c::xyY)
+function convert{T}(::Type{XYZ{T}}, c::xyY)
 
     X = c.Y*c.x/c.y
 
     Z = c.Y*(1-c.x-c.y)/c.y
 
-    XYZ(X, c.Y, Z)
+    XYZ{T}(X, c.Y, Z)
 
 end
 
@@ -207,7 +219,7 @@ const xyz_epsilon = 216. / 24389.
 const xyz_kappa   = 24389. / 27.
 
 
-function convert(::Type{XYZ}, c::Lab, wp::XYZ)
+function convert{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
     fy = (c.l + 16) / 116
     fx = c.a / 500 + fy
     fz = fy - c.b / 200
@@ -219,25 +231,25 @@ function convert(::Type{XYZ}, c::Lab, wp::XYZ)
     y = c.l > xyz_kappa * xyz_epsilon ? ((c. l+ 16) / 116)^3 : c.l / xyz_kappa
     z = fz3 > xyz_epsilon ? fz3 : (116fz - 16) / xyz_kappa
 
-    XYZ(x*wp.x, y*wp.y, z*wp.z)
+    XYZ{T}(x*wp.x, y*wp.y, z*wp.z)
 end
 
 
-convert(::Type{XYZ}, c::Lab)   = convert(XYZ, c, WP_DEFAULT)
-convert(::Type{XYZ}, c::LCHab) = convert(XYZ, convert(Lab, c))
-convert(::Type{XYZ}, c::DIN99) = convert(XYZ, convert(Lab, c))
-convert(::Type{XYZ}, c::DIN99o) = convert(XYZ, convert(Lab, c))
+convert{T}(::Type{XYZ{T}}, c::Lab)   = convert(XYZ{T}, c, WP_DEFAULT)
+convert{T}(::Type{XYZ{T}}, c::LCHab) = convert(XYZ{T}, convert(Lab{T}, c))
+convert{T}(::Type{XYZ{T}}, c::DIN99) = convert(XYZ{T}, convert(Lab{T}, c))
+convert{T}(::Type{XYZ{T}}, c::DIN99o) = convert(XYZ{T}, convert(Lab{T}, c))
 
 
 function xyz_to_uv(c::XYZ)
     d = c.x + 15c.y + 3c.z
-    u = (4. * c.x) / d
-    v = (9. * c.y) / d
+    u = (4 * c.x) / d
+    v = (9 * c.y) / d
     return (u,v)
 end
 
 
-function convert(::Type{XYZ}, c::Luv, wp::XYZ)
+function convert{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ)
     (u_wp, v_wp) = xyz_to_uv(wp)
 
     a = (52 * c.l / (c.u + 13 * c.l * u_wp) - 1) / 3
@@ -247,15 +259,15 @@ function convert(::Type{XYZ}, c::Luv, wp::XYZ)
     x = (d - b) / (a + (1./3.))
     z = a * x + b
 
-    XYZ(x, y, z)
+    XYZ{T}(x, y, z)
 end
 
 
-convert(::Type{XYZ}, c::Luv)   = convert(XYZ, c, WP_DEFAULT)
-convert(::Type{XYZ}, c::LCHuv) = convert(XYZ, convert(Luv, c))
+convert{T}(::Type{XYZ{T}}, c::Luv)   = convert(XYZ{T}, c, WP_DEFAULT)
+convert{T}(::Type{XYZ{T}}, c::LCHuv) = convert(XYZ{T}, convert(Luv{T}, c))
 
 
-function convert(::Type{XYZ}, c::DIN99d)
+function convert{T}(::Type{XYZ{T}}, c::DIN99d)
 
     # Go back to C-h space
     # FIXME: Clean this up (why is there no atan2d?)
@@ -278,60 +290,60 @@ function convert(::Type{XYZ}, c::DIN99d)
 
     adj = convert(XYZ, Lab(l, a, b))
 
-    XYZ((adj.x + 0.12*adj.z)/1.12, adj.y, adj.z)
+    XYZ{T}((adj.x + 0.12*adj.z)/1.12, adj.y, adj.z)
 
 end
 
 
-function convert(::Type{XYZ}, c::LMS)
+function convert{T}(::Type{XYZ{T}}, c::LMS)
     ans = CAT02_INV * [c.l, c.m, c.s]
-    XYZ(ans[1], ans[2], ans[3])
+    XYZ{T}(ans[1], ans[2], ans[3])
 end
 
 # Everything to xyY
 # -----------------
 
-function convert(::Type{xyY}, c::XYZ)
+function convert{T}(::Type{xyY{T}}, c::XYZ)
 
     x = c.x/(c.x + c.y + c.z)
     y = c.y/(c.x + c.y + c.z)
 
-    xyY(x, y, c.y)
+    xyY{T}(x, y, convert(typeof(x), c.y))
 
 end
 
-convert(::Type{xyY}, c::ColorValue) = convert(xyY, convert(XYZ, c))
+convert{T}(::Type{xyY{T}}, c::ColorValue) = convert(xyY{T}, convert(XYZ{T}, c))
 
 
 
 # Everything to Lab
 # -----------------
 
-convert(::Type{Lab}, c::RGB) = convert(Lab, convert(XYZ, c))
-convert(::Type{Lab}, c::HSV) = convert(Lab, convert(RGB, c))
-convert(::Type{Lab}, c::HSL) = convert(Lab, convert(RGB, c))
+convert{T}(::Type{Lab{T}}, c::RGB) = convert(Lab{T}, convert(XYZ{T}, c))
+convert{T}(::Type{Lab{T}}, c::HSV) = convert(Lab{T}, convert(RGB{T}, c))
+convert{T}(::Type{Lab{T}}, c::HSL) = convert(Lab{T}, convert(RGB{T}, c))
 
 
-function convert(::Type{Lab}, c::XYZ, wp::XYZ)
-    function f(v::Float64)
+function convert{T}(::Type{Lab{T}}, c::XYZ, wp::XYZ)
+    function f(v)
         v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
     end
 
     fx, fy, fz = f(c.x / wp.x), f(c.y / wp.y), f(c.z / wp.z)
-    Lab(116fy - 16, 500(fx - fy), 200(fy - fz))
+    Lab{T}(116fy - 16, 500(fx - fy), 200(fy - fz))
 end
 
 
-convert(::Type{Lab}, c::XYZ) = convert(Lab, c, WP_DEFAULT)
+convert{T}(::Type{Lab{T}}, c::XYZ{T}) = convert(Lab{T}, c, WP_DEFAULT)
 
 
-function convert(::Type{Lab}, c::LCHab)
+function convert{T}(::Type{Lab{T}}, c::LCHab)
     hr = deg2rad(c.h)
-    Lab(c.l, c.c * cos(hr), c.c * sin(hr))
+    Lab{T}(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
 
-function convert(::Type{Lab}, c::DIN99)
+function convert{T}(::Type{Lab{T}}, c::DIN99)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -375,11 +387,11 @@ function convert(::Type{Lab}, c::DIN99)
     # CIELAB L*
     ciel = (e^(c.l*ke/105.51)-1)/0.0158
 
-    Lab(ciel, ciea, cieb)
+    Lab{T}(ciel, ciea, cieb)
 end
 
 
-function convert(::Type{Lab}, c::DIN99o)
+function convert{T}(::Type{Lab{T}}, c::DIN99o)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -413,22 +425,22 @@ function convert(::Type{Lab}, c::DIN99o)
     # CIELAB L* (revert logarithmic lightness compression)
     ciel = (e^(c.l*ke/303.67)-1)/0.0039
 
-    Lab(ciel, ciea, cieb)
+    Lab{T}(ciel, ciea, cieb)
 end
 
 
-convert(::Type{Lab}, c::ColorValue) = convert(Lab, convert(XYZ, c))
+convert{T}(::Type{Lab{T}}, c::ColorValue) = convert(Lab{T}, convert(XYZ{T}, c))
 
 
 # Everything to Luv
 # -----------------
 
-convert(::Type{Luv}, c::RGB) = convert(Luv, convert(XYZ, c))
-convert(::Type{Luv}, c::HSV) = convert(Luv, convert(RGB, c))
-convert(::Type{Luv}, c::HSL) = convert(Luv, convert(RGB, c))
+convert{T}(::Type{Luv{T}}, c::RGB) = convert(Luv{T}, convert(XYZ{T}, c))
+convert{T}(::Type{Luv{T}}, c::HSV) = convert(Luv{T}, convert(RGB{T}, c))
+convert{T}(::Type{Luv{T}}, c::HSL) = convert(Luv{T}, convert(RGB{T}, c))
 
 
-function convert(::Type{Luv}, c::XYZ, wp::XYZ)
+function convert{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ)
     (u_wp, v_wp) = xyz_to_uv(wp)
     (u_, v_) = xyz_to_uv(c)
 
@@ -438,54 +450,54 @@ function convert(::Type{Luv}, c::XYZ, wp::XYZ)
     u = 13 * l * (u_ - u_wp)
     v = 13 * l * (v_ - v_wp)
 
-    Luv(l, u, v)
+    Luv{T}(l, u, v)
 end
 
 
-convert(::Type{Luv}, c::XYZ) = convert(Luv, c, WP_DEFAULT)
+convert{T}(::Type{Luv{T}}, c::XYZ) = convert(Luv{T}, c, WP_DEFAULT)
 
 
-function convert(::Type{Luv}, c::LCHuv)
+function convert{T}(::Type{Luv{T}}, c::LCHuv)
     hr = deg2rad(c.h)
-    Luv(c.l, c.c * cos(hr), c.c * sin(hr))
+    Luv{T}(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
 
-convert(::Type{Luv}, c::ColorValue) = convert(Luv, convert(XYZ, c))
+convert{T}(::Type{Luv{T}}, c::ColorValue) = convert(Luv{T}, convert(XYZ{T}, c))
 
 
 # Everything to LCHuv
 # -------------------
 
-function convert(::Type{LCHuv}, c::Luv)
+function convert{T}(::Type{LCHuv{T}}, c::Luv)
     h = rad2deg(atan2(c.v, c.u))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
-    LCHuv(c.l, sqrt(c.u^2 + c.v^2), h)
+    LCHuv{T}(c.l, sqrt(c.u^2 + c.v^2), h)
 end
 
 
-convert(::Type{LCHuv}, c::ColorValue) = convert(LCHuv, convert(Luv, c))
+convert{T}(::Type{LCHuv{T}}, c::ColorValue) = convert(LCHuv{T}, convert(Luv{T}, c))
 
 
 # Everything to LCHab
 # -------------------
 
-function convert(::Type{LCHab}, c::Lab)
+function convert{T}(::Type{LCHab{T}}, c::Lab)
     h = rad2deg(atan2(c.b, c.a))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
-    LCHab(c.l, sqrt(c.a^2 + c.b^2), h)
+    LCHab{T}(c.l, sqrt(c.a^2 + c.b^2), h)
 end
 
 
-convert(::Type{LCHab}, c::ColorValue) = convert(LCHab, convert(Lab, c))
+convert{T}(::Type{LCHab{T}}, c::ColorValue) = convert(LCHab{T}, convert(Lab{T}, c))
 
 
 # Everything to DIN99
 # -------------------
 
-function convert(::Type{DIN99}, c::Lab)
+function convert{T}(::Type{DIN99{T}}, c::Lab)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -526,18 +538,18 @@ function convert(::Type{DIN99}, c::Lab)
     # DIN99 chromaticities
     a99, b99 = cc*cosd(h), cc*sind(h)
 
-    DIN99(l99, a99, b99)
+    DIN99{T}(l99, a99, b99)
 
 end
 
 
-convert(::Type{DIN99}, c::ColorValue) = convert(DIN99, convert(Lab, c))
+convert{T}(::Type{DIN99{T}}, c::ColorValue) = convert(DIN99{T}, convert(Lab{T}, c))
 
 
 # Everything to DIN99d
 # --------------------
 
-function convert(::Type{DIN99d}, c::XYZ)
+function convert{T}(::Type{DIN99d{T}}, c::XYZ{T})
 
     # Apply tristimulus-space correction term
     adj_c = XYZ(1.12*c.x - 0.12*c.z, c.y, c.z)
@@ -560,18 +572,18 @@ function convert(::Type{DIN99d}, c::XYZ)
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
 
-    DIN99d(adj_L, C*cosd(h), C*sind(h))
+    DIN99d{T}(adj_L, C*cosd(h), C*sind(h))
 
 end
 
 
-convert(::Type{DIN99d}, c::ColorValue) = convert(DIN99d, convert(XYZ, c))
+convert{T}(::Type{DIN99d{T}}, c::ColorValue) = convert(DIN99d{T}, convert(XYZ{T}, c))
 
 
 # Everything to DIN99o
 # -------------------
 
-function convert(::Type{DIN99o}, c::Lab)
+function convert{T}(::Type{DIN99o{T}}, c::Lab)
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -601,12 +613,12 @@ function convert(::Type{DIN99o}, c::Lab)
     # DIN99o chromaticities
     a99, b99 = cc*cosd(h), cc*sind(h)
 
-    DIN99o(l99, a99, b99)
+    DIN99o{T}(l99, a99, b99)
 
 end
 
 
-convert(::Type{DIN99o}, c::ColorValue) = convert(DIN99o, convert(Lab, c))
+convert{T}(::Type{DIN99o{T}}, c::ColorValue) = convert(DIN99o{T}, convert(Lab{T}, c))
 
 
 # Everything to LMS
@@ -627,23 +639,24 @@ const CAT02 = [ 0.7328 0.4296 -0.1624
 const CAT02_INV = inv(CAT02)
 
 
-function convert(::Type{LMS}, c::XYZ)
+function convert{T}(::Type{LMS{T}}, c::XYZ{T})
     ans = CAT02 * [c.x, c.y, c.z]
-    LMS(ans[1], ans[2], ans[3])
+    LMS{T}(ans[1], ans[2], ans[3])
 end
 
 
-convert(::Type{LMS}, c::ColorValue) = convert(LMS, convert(XYZ, c))
+convert{T}(::Type{LMS{T}}, c::ColorValue) = convert(LMS{T}, convert(XYZ{T}, c))
 
 
 # Everything to RGB24
 # -------------------
 
-convert(::Type{RGB24}, c::RGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
-    iround(Uint32, 255*c.g)<<8 + iround(Uint32, 255*c.b))
+convert(::Type{RGB24}, c::RGB{Ufixed8}) = RGB24(to32(c.r)<<16 + to32(c.g)<<8 + to32(c.b))
+convert{T}(::Type{RGB24}, c::RGB{T}) = RGB24(iround(Uint32, 255*c.r)<<16 +
+                                             iround(Uint32, 255*c.g)<<8 +
+                                             iround(Uint32, 255*c.b))
+to32(x::Ufixed8) = convert(Uint32, asraw(x))
 
-
-convert(::Type{RGB24}, c::ColorValue) = convert(RGB24, convert(RGB, c))
 
 
 # To Uint32
@@ -652,5 +665,13 @@ convert(::Type{RGB24}, c::ColorValue) = convert(RGB24, convert(RGB, c))
 convert(::Type{Uint32}, c::RGB24) = c.color
 
 
-convert(::Type{Uint32}, ac::RGBA32) = convert(Uint32, ac.c) | iround(Uint32, 255*ac.alpha)<<24
+convert(::Type{Uint32}, ac::RGBA32) = convert(Uint32, ac.c) | convert(Uint32, ac.alpha)<<24
 
+
+#### AlphaColorValue
+
+function convert{C,T,D,U}(::Type{AlphaColorValue{C,T}}, c::AlphaColorValue{D,U})
+    AlphaColorValue{T}(convert(C, c.c), c.alpha)
+end
+
+convert(::Type{RGBA32}, c::AlphaColorValue) = AlphaColorValue(convert(RGB24, c.c), iround(Uint8, 255*c.alpha))
