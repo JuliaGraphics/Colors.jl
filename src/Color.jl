@@ -1,8 +1,8 @@
 module Color
 
-using FixedPoint
+using FixedPointNumbers
 
-typealias Fractional Union(FloatingPoint, AbstractFixed)
+typealias Fractional Union(FloatingPoint, FixedPoint)
 
 import Base: convert, eltype, hex, isless, linspace, typemin, typemax, writemime
 import Base.Graphics: set_source, set_source_rgb, GraphicsContext

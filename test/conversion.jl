@@ -1,4 +1,4 @@
-using Color, FixedPoint
+using Color, FixedPointNumbers
 using Base.Test
 
 const red = color("red")
