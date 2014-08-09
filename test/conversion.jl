@@ -14,6 +14,7 @@ end
 @test RGB(1,0,0) == red
 @test RGB(uint8(1),0,0) == red
 @test RGB(uint8(1),uint8(0),uint8(0)) == red
+@test convert(RGB, RGB24(0x00ff0000)) == red
 
 for Cto in Color.CVparametric
     for Cfrom in Color.CVparametric

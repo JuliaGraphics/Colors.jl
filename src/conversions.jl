@@ -19,10 +19,13 @@ for CV in CVparametric
 end
 
 
-# Conversions where the datatype is not specified (preserves the datatype of the original space)
+# Conversions where the datatype is not specified
 for CV in CVparametric
     @eval begin
-        convert{T}(::Type{$CV}, c::ColorValue{T}) = convert($CV{T}, c)
+        # preserves the datatype of the original space
+        convert{T<:Fractional}(::Type{$CV}, c::ColorValue{T}) = convert($CV{T}, c)
+        # fallback is Float64
+        convert(::Type{$CV}, c) = convert($CV{Float64}, c)
     end
 end
 
