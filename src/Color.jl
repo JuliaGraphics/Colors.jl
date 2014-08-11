@@ -1,6 +1,10 @@
 module Color
 
-import Base: convert, hex, isless, writemime, linspace
+using FixedPointNumbers
+
+typealias Fractional Union(FloatingPoint, FixedPoint)
+
+import Base: convert, eltype, hex, isless, linspace, typemin, typemax, writemime
 import Base.Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
@@ -9,6 +13,7 @@ export ColorValue, color,
        weighted_color_mean, hex,
        RGB, HSV, HSL, XYZ, xyY, Lab, LAB, Luv, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24,
        RGBA, HSVA, HSLA, XYZA, xyYA, LabA, LuvA, LCHabA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA, RGBA32,
+       rgba, hsva, hsla, xyza, xyYa, laba, luva, lchaba, lchuva, din99a, din99da, din99oa, lmsa, rgba32,
        protanopic, deuteranopic, tritanopic,
        distinguishable_colors,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
