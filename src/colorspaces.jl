@@ -270,3 +270,7 @@ lmsa{T}(c::ColorValue{T}) = AlphaColorValue(convert(LMS{T},c))
 rgba32{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB24,c))
 
 const CVparametric = (RGB, HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
+
+for CV in CVparametric
+    @eval eltype{T}(::Type{$CV{T}}) = T
+end
