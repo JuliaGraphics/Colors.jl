@@ -4,11 +4,13 @@
 # The base type
 abstract ColorValue{T}
 typealias ColourValue{T} ColorValue{T}
+abstract AbstractRGB{T} <: ColorValue{T} # allow different memory layouts of RGB
 
 eltype{T}(::ColorValue{T}) = T
 
 # Transparency support
-immutable AlphaColorValue{C <: ColorValue, T <: Number}
+abstract AbstractAlphaColorValue{C <: ColorValue, T <: Number}  # allow different memory layouts of AlphaColorValues
+immutable AlphaColorValue{C <: ColorValue, T <: Number} <: AbstractAlphaColorValue{C, T}
     c::C
     alpha::T
 
@@ -20,7 +22,7 @@ end
 AlphaColorValue{T<:Fractional}(c::ColorValue{T}, alpha::T = one(T)) = AlphaColorValue{typeof(c),T}(c, alpha)
 
 # sRGB (standard Red-Green-Blue)
-immutable RGB{T<:Fractional} <: ColorValue{T}
+immutable RGB{T<:Fractional} <: AbstractRGB{T}
     r::T # Red [0,1]
     g::T # Green [0,1]
     b::T # Blue [0,1]
@@ -269,7 +271,8 @@ din99oa{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99o{T},c))
 lmsa{T}(c::ColorValue{T}) = AlphaColorValue(convert(LMS{T},c))
 rgba32{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB24,c))
 
-const CVparametric = (RGB, HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
+const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
+const CVparametric = tuple(RGB, CVconcrete...)
 
 for CV in CVparametric
     @eval eltype{T}(::Type{$CV{T}}) = T
