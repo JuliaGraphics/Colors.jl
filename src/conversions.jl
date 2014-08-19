@@ -671,7 +671,7 @@ to32(x::Ufixed8) = convert(Uint32, asraw(x))
 convert(::Type{Uint32}, c::RGB24) = c.color
 
 
-convert(::Type{Uint32}, ac::RGBA32) = convert(Uint32, ac.c) | convert(Uint32, ac.alpha)<<24
+convert(::Type{Uint32}, ac::ARGB32) = convert(Uint32, ac.c) | convert(Uint32, ac.alpha)<<24
 
 
 #### AlphaColorValue
@@ -681,4 +681,6 @@ function convert{C,T,D,U}(::Type{AlphaColorValue{C,T}}, c::AbstractAlphaColorVal
     AlphaColorValue{T}(convert(C, c.c), c.alpha)
 end
 
-convert(::Type{RGBA32}, c::AlphaColorValue) = AlphaColorValue(convert(RGB24, c.c), iround(Uint8, 255*c.alpha))
+convert(::Type{ARGB32}, c::ARGB32) = c
+convert(::Type{ARGB32}, c::AlphaColorValue) = AlphaColorValue(convert(RGB24, c.c), iround(Uint8, 255*c.alpha))
+convert(::Type{ARGB32}, c::AbstractAlphaColorValue) = AlphaColorValue(convert(RGB24, c.c), iround(Uint8, 255*c.alpha))

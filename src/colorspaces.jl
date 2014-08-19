@@ -254,7 +254,7 @@ typealias DIN99A{T} AlphaColorValue{DIN99{T},T}
 typealias DIN99dA{T} AlphaColorValue{DIN99d{T},T}
 typealias DIN99oA{T} AlphaColorValue{DIN99o{T},T}
 typealias LMSA{T} AlphaColorValue{LMS{T},T}
-typealias RGBA32 AlphaColorValue{RGB24,Uint8}
+typealias ARGB32 AlphaColorValue{RGB24,Uint8}
 
 rgba{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB{T},c))
 hsva{T}(c::ColorValue{T}) = AlphaColorValue(convert(HSV{T},c))
@@ -269,7 +269,7 @@ din99a{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99{T},c))
 din99da{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99d{T},c))
 din99oa{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99o{T},c))
 lmsa{T}(c::ColorValue{T}) = AlphaColorValue(convert(LMS{T},c))
-rgba32{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB24,c))
+argb32{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB24,c))
 
 const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
 const CVparametric = tuple(RGB, CVconcrete...)

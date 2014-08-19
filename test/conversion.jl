@@ -37,4 +37,4 @@ for Cto in Color.CVparametric
 end
 
 ac = rgba(red)
-@test convert(Uint32, convert(RGBA32, ac)) == 0xffff0000
+@test convert(Uint32, convert(ARGB32, ac)) == 0xffff0000
