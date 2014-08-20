@@ -661,7 +661,7 @@ convert(::Type{RGB24}, c::RGB{Ufixed8}) = RGB24(to32(c.r)<<16 + to32(c.g)<<8 + t
 convert(::Type{RGB24}, c::AbstractRGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
                                                iround(Uint32, 255*c.g)<<8 +
                                                iround(Uint32, 255*c.b))
-to32(x::Ufixed8) = convert(Uint32, asraw(x))
+to32(x::Ufixed8) = convert(Uint32, reinterpret(x))
 
 
 
