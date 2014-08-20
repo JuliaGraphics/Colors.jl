@@ -9,11 +9,12 @@ import Base.Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
-       AlphaColorValue,
+       AlphaColorValue, AbstractAlphaColorValue,
        weighted_color_mean, hex,
        RGB, HSV, HSL, XYZ, xyY, Lab, LAB, Luv, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24,
-       RGBA, HSVA, HSLA, XYZA, xyYA, LabA, LuvA, LCHabA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA, RGBA32,
-       rgba, hsva, hsla, xyza, xyYa, laba, luva, lchaba, lchuva, din99a, din99da, din99oa, lmsa, rgba32,
+       RGBA, HSVA, HSLA, XYZA, xyYA, LabA, LuvA, LCHabA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA, ARGB32,
+       rgba, hsva, hsla, xyza, xyYa, laba, luva, lchaba, lchuva, din99a, din99da, din99oa, lmsa, argb32,
+       AbstractRGB,
        protanopic, deuteranopic, tritanopic,
        distinguishable_colors,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
@@ -40,5 +41,8 @@ include("differences.jl")
 include("colormaps.jl")
 include("display.jl")
 include("colormatch.jl")
+
+@deprecate RGBA32 ARGB32
+@deprecate rgba32 argb32
 
 end # module

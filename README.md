@@ -25,12 +25,31 @@ lossless.
 The sRGB colorspace.
 
 ```julia
-immutable RGB <: ColorValue
-    r::Float64 # Red in [0,1]
-    g::Float64 # Green in [0,1]
-    b::Float64 # Blue in [0,1]
+immutable RGB{T} <: ColorValue
+    r::T # Red in [0,1]
+    g::T # Green in [0,1]
+    b::T # Blue in [0,1]
 end
 ```
+
+RGBs may be defined with two broad number types: `FloatingPoint` and `FixedPoint`.
+`FixedPoint` come from the [`FixedPointNumbers`](https://github.com/JeffBezanson/FixedPointNumbers.jl) package,
+and represent fractional
+numbers (between 0 and 1, inclusive) internally using integers.
+For example, `0xffuf8` creates a `Ufixed8` number with value equal to `1.0` but
+which internally is represented as `0xff`.
+This strategy ensures that `1` always means "saturated color", regardless of how that value is represented.
+Ordinary integers should not be used, although the convenience constructor `RGB(1,0,0)` will create
+a value `RGB{Float64}(1.0, 0.0, 0.0)`.
+
+The parametric representation of colors facilitates interfacing with external libraries that may
+require a specific representation. It's also worth nothing that this package defines an
+`AbstractRGB{T}` type, from which you can define your own variants of RGB. For example, if you
+need a `BGR{Ufixed8}<:AbstractRGB{Ufixed8}` type to interface with a C library, you can
+define this easily. See an example of this in the [`test/layout.jl` file](test/layout.jl).
+
+If you do define your own `AbstractRGB`, note that the constructor **must initialize the values
+in the order `(r,g,b)` regardless of how they are arranged internally in memory**.
 
 ### HSV
 
@@ -38,12 +57,14 @@ Hue-Saturation-Value. A common projection of RGB to cylindrical coordinates.
 This is also sometimes called "HSB" for Hue-Saturation-Brightness.
 
 ```julia
-immutable HSV <: ColorValue
-    h::Float64 # Hue in [0,360]
-    s::Float64 # Saturation in [0,1]
-    v::Float64 # Value in [0,1]
+immutable HSV{T} <: ColorValue
+    h::T # Hue in [0,360]
+    s::T # Saturation in [0,1]
+    v::T # Value in [0,1]
 end
 ```
+
+`T` must be of `FloatingPoint` type, since the values range beyond what can be represented with most `FixedPoint` types.
 
 ### HSL
 
@@ -51,10 +72,10 @@ Hue-Saturation-Lightness. Another common projection of RGB to cylindrical
 coordinates.
 
 ```julia
-immutable HSL <: ColorValue
-    h::Float64 # Hue in [0,360]
-    s::Float64 # Saturation in [0,1]
-    l::Float64 # Lightness in [0,1]
+immutable HSL{T} <: ColorValue
+    h::T # Hue in [0,360]
+    s::T # Saturation in [0,1]
+    l::T # Lightness in [0,1]
 end
 ```
 
@@ -65,22 +86,24 @@ measurements of color perception culminating in the CIE standard observer (see
 `cie_color_match`)
 
 ```julia
-immutable XYZ <: ColorValue
-    x::Float64
-    y::Float64
-    z::Float64
+immutable XYZ{T} <: ColorValue
+    x::T
+    y::T
+    z::T
 end
 ```
+
+Currently, XYZ is the only type other than RGB supporting `FixedPoint`.
 
 ### xyY
 
 The xyY colorspace is another CIE standardized color space, based directly off of a transformation from XYZ. It was developed specifically because the xy chromaticity space is invariant to the lightness of the patch.
 
 ```julia
-immutable xyY <: ColorValue
-    x::Float64
-    y::Float64
-    Y::Float64
+immutable xyY{T} <: ColorValue
+    x::T
+    y::T
+    Y::T
 end
 ```
 
@@ -90,10 +113,10 @@ A percuptually uniform colorpsace standardized by the CIE in 1976. See also LUV,
 the associated colorspace standardized the same year.
 
 ```julia
-immutable LAB <: ColorValue
-    l::Float64 # Luminance in approximately [0,100]
-    a::Float64 # Red/Green
-    b::Float64 # Blue/Yellow
+immutable LAB{T} <: ColorValue
+    l::T # Luminance in approximately [0,100]
+    a::T # Red/Green
+    b::T # Blue/Yellow
 end
 ```
 
@@ -103,10 +126,10 @@ A perceptually uniform colorpsace standardized by the CIE in 1976. See also LAB,
 a similar colorspace standardized the same year.
 
 ```julia
-immutable LUV <: ColorValue
-    l::Float64 # Luminance
-    u::Float64 # Red/Green
-    v::Float64 # Blue/Yellow
+immutable LUV{T} <: ColorValue
+    l::T # Luminance
+    u::T # Red/Green
+    v::T # Blue/Yellow
 end
 ```
 
@@ -116,10 +139,10 @@ end
 The LAB colorspace reparameterized using cylindrical coordinates.
 
 ```julia
-immutable LCHab <: ColorValue
-    l::Float64 # Luminance in [0,100]
-    c::Float64 # Chroma
-    h::Float64 # Hue in [0,360]
+immutable LCHab{T} <: ColorValue
+    l::T # Luminance in [0,100]
+    c::T # Chroma
+    h::T # Hue in [0,360]
 end
 ```
 
@@ -129,10 +152,10 @@ end
 The LUV colorspace reparameterized using cylindrical coordinates.
 
 ```julia
-immutable LCHuv <: ColorValue
-    l::Float64 # Luminance
-    c::Float64 # Chroma
-    h::Float64 # Hue
+immutable LCHuv{T} <: ColorValue
+    l::T # Luminance
+    c::T # Chroma
+    h::T # Hue
 ```
 
 
@@ -141,10 +164,10 @@ immutable LCHuv <: ColorValue
 The DIN99 uniform colorspace as described in the DIN 6176 specification.
 
 ```julia
-immutable DIN99 <: ColorValue
-    l::Float64 # L99 (Lightness)
-    a::Float64 # a99 (Red/Green)
-    b::Float64 # b99 (Blue/Yellow)
+immutable DIN99{T} <: ColorValue
+    l::T # L99 (Lightness)
+    a::T # a99 (Red/Green)
+    b::T # b99 (Blue/Yellow)
 ```
 
 
@@ -153,10 +176,10 @@ immutable DIN99 <: ColorValue
 The DIN99d uniform colorspace is an improvement on the DIN99 color space that adds a correction to the X tristimulus value in order to emulate the rotation term present in the DeltaE2000 equation.
 
 ```julia
-immutable DIN99d <: ColorValue
-    l::Float64 # L99d (Lightness)
-    a::Float64 # a99d (Redish/Greenish)
-    b::Float64 # b99d (Blueish/Yellowish)
+immutable DIN99d{T} <: ColorValue
+    l::T # L99d (Lightness)
+    a::T # a99d (Redish/Greenish)
+    b::T # b99d (Blueish/Yellowish)
 ```
 
 
@@ -166,10 +189,10 @@ Revised version of the DIN99 uniform colorspace with modified coefficients for a
 Similar to DIN99d X correction and the DeltaE2000 rotation term, DIN99o achieves comparable results by optimized a*/b*rotation and chroma compression terms.
 
 ```julia
-immutable DIN99o <: ColorValue
-    l::Float64 # L99o (Lightness)
-    a::Float64 # a99o (Red/Green)
-    b::Float64 # b99o (Blue/Yellow)
+immutable DIN99o{T} <: ColorValue
+    l::T # L99o (Lightness)
+    a::T # a99o (Red/Green)
+    b::T # b99o (Blue/Yellow)
 ```
 
 
@@ -179,10 +202,10 @@ Long-Medium-Short cone response values. Multiple methods of converting to LMS
 space have been defined. Here the [CAT02](https://en.wikipedia.org/wiki/CIECAM02#CAT02) chromatic adaptation matrix is used.
 
 ```
-immutable LMS <: ColorValue
-    l::Float64 # Long
-    m::Float64 # Medium
-    s::Float64 # Short
+immutable LMS{T} <: ColorValue
+    l::T # Long
+    m::T # Medium
+    s::T # Short
 end
 ```
 
@@ -195,6 +218,14 @@ immutable RGB24 <: ColorValue
     color::Uint32
 end
 ```
+
+## Transparency (alpha values)
+
+This package also allows you to define types that store a transparency with the `AlphaColorValue` type:
+```julia
+faintred = AlphaColorValue(RGB(1,0,0),0.25)
+```
+
 
 ## Color Parsing
 
