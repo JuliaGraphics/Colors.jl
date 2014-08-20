@@ -7,6 +7,7 @@ typealias ColourValue{T} ColorValue{T}
 abstract AbstractRGB{T} <: ColorValue{T} # allow different memory layouts of RGB
 
 eltype{T}(::ColorValue{T}) = T
+eltype{CV<:ColorValue}(::Type{CV}) = CV.parameters[1]
 
 # Transparency support
 abstract AbstractAlphaColorValue{C <: ColorValue, T <: Number}  # allow different memory layouts of AlphaColorValues
@@ -20,6 +21,9 @@ immutable AlphaColorValue{C <: ColorValue, T <: Number} <: AbstractAlphaColorVal
     AlphaColorValue(c::C, alpha::T) = new(c, alpha)
 end
 AlphaColorValue{T<:Fractional}(c::ColorValue{T}, alpha::T = one(T)) = AlphaColorValue{typeof(c),T}(c, alpha)
+
+eltype{C,T}(::AbstractAlphaColorValue{C,T}) = T
+eltype{CV<:AbstractAlphaColorValue}(::Type{CV}) = CV.parameters[2]
 
 # sRGB (standard Red-Green-Blue)
 immutable RGB{T<:Fractional} <: AbstractRGB{T}
@@ -273,7 +277,3 @@ argb32{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB24,c))
 
 const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
 const CVparametric = tuple(RGB, CVconcrete...)
-
-for CV in CVparametric
-    @eval eltype{T}(::Type{$CV{T}}) = T
-end

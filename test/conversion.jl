@@ -38,3 +38,5 @@ end
 
 ac = rgba(red)
 @test convert(Uint32, convert(ARGB32, ac)) == 0xffff0000
+
+@test_throws MethodError AlphaColorValue(RGB(1,0,0), 0xffuf8)
