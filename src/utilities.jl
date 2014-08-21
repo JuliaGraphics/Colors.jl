@@ -8,8 +8,8 @@ isless(a::ColorValue, b::ColorValue) = convert(RGB, a) < convert(RGB, b)
 
 # Linear-interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
-function lerp(x::Float64, a::Float64, b::Float64)
-    a + (b - a) * max(min(x, 1.0), 0.0)
+function lerp(x, a, b)
+    a + (b - a) * max(min(x, one(x)), zero(x))
 end
 
 

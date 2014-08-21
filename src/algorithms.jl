@@ -64,14 +64,14 @@ end
 
 # Convert a color to simulate protanopic color deficiency (lack of the
 # long-wavelength photopigment).
-function protanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
+function protanopic{T <: ColorValue}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
     anchor = colormatch(anchor_wavelen)
     anchor = convert(LMS, anchor)
     (a, b, c) = brettel_abc(neutral, anchor)
 
-    q = LMS((1.0 - p) * q.l + p * (-(b*q.m + c*q.s)/a),
+    q = LMS((one(p) - p) * q.l + p * (-(b*q.m + c*q.s)/a),
             q.m,
             q.s)
     convert(T, q)
@@ -80,7 +80,7 @@ end
 
 # Convert a color to simulate deuteranopic color deficiency (lack of the
 # middle-wavelength photopigment.)
-function deuteranopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
+function deuteranopic{T <: ColorValue}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -88,7 +88,7 @@ function deuteranopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
     (a, b, c) = brettel_abc(neutral, anchor)
 
     q = LMS(q.l,
-            (1.0 - p) * q.m + p * (-(a*q.l + c*q.s)/b),
+            (one(p) - p) * q.m + p * (-(a*q.l + c*q.s)/b),
             q.s)
     convert(T, q)
 end
@@ -96,7 +96,7 @@ end
 
 # Convert a color to simulato tritanopic color deficiency (lack of the
 # short-wavelength photogiment)
-function tritanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
+function tritanopic{T <: ColorValue}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
     anchor = colormatch(anchor_wavelen)
@@ -105,14 +105,14 @@ function tritanopic{T <: ColorValue}(q::T, p::Float64, neutral::LMS)
 
     q = LMS(q.l,
             q.m,
-            (1.0 - p) * q.l + p * (-(a*q.l + b*q.m)/c))
+            (one(p) - p) * q.l + p * (-(a*q.l + b*q.m)/c))
     convert(T, q)
 end
 
 
-protanopic(c::ColorValue, p::Float64)   = protanopic(c, p, default_brettel_neutral)
-deuteranopic(c::ColorValue, p::Float64) = deuteranopic(c, p, default_brettel_neutral)
-tritanopic(c::ColorValue, p::Float64)   = tritanopic(c, p, default_brettel_neutral)
+protanopic(c::ColorValue, p)   = protanopic(c, p, default_brettel_neutral)
+deuteranopic(c::ColorValue, p) = deuteranopic(c, p, default_brettel_neutral)
+tritanopic(c::ColorValue, p)   = tritanopic(c, p, default_brettel_neutral)
 
 protanopic(c::ColorValue)   = protanopic(c, 1.0)
 deuteranopic(c::ColorValue) = deuteranopic(c, 1.0)
