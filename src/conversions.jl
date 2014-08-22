@@ -84,8 +84,8 @@ const M_XYZ_RGB = [ 3.2404542 -1.5371385 -0.4985314
                     0.0556434 -0.2040259  1.0572252 ]
 
 
-correct_gamut{CV<:AbstractRGB}(c::CV) = CV(clamp(c.r), clamp(c.g), clamp(c.b))
-clamp{T<:Fractional}(v::T) = ifelse(v < zero(T), zero(T), ifelse(v > one(T), one(T), v))
+correct_gamut{CV<:AbstractRGB}(c::CV) = CV(clamp01(c.r), clamp01(c.g), clamp01(c.b))
+clamp01{T<:Fractional}(v::T) = ifelse(v < zero(T), zero(T), ifelse(v > one(T), one(T), v))
 
 
 function srgb_compand(v)

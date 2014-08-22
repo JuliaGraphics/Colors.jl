@@ -150,7 +150,7 @@ function sequential_palette(h,
     q2=(1.0-s)*p2+s*p1
     q1=0.5*(q0+q2)
 
-    pal = RGB[]
+    pal = RGB{Float64}[]
 
     if logscale
         absc = logspace(-2.,0.,N)

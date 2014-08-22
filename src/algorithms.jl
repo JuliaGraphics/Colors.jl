@@ -200,7 +200,7 @@ function MSC(h)
     cp = cp <= 0.003 ? 12.92cp : 1.055cp^(1.0/g)-0.05
     #cp = 1.055cp^(1.0/g)-0.05
 
-    col[p]=clamp(cp,0.0,1.0)
+    col[p]=clamp01(cp)
     col[o]=0.0
     col[t]=1.0
 
