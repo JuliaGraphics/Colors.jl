@@ -1,5 +1,7 @@
 # Color
 
+[![Color](http://pkg.julialang.org/badges/Color_0.3.svg)](http://pkg.julialang.org/?pkg=Color&ver=0.3) [![Build Status](http://img.shields.io/travis/JuliaLang/Color.jl.svg)](https://travis-ci.org/JuliaLang/Color.jl) [![Coverage Status](https://img.shields.io/coveralls/JuliaLang/Color.jl.svg)](https://coveralls.io/r/JuliaLang/Color.jl)
+
 This library provides a wide array of functions for dealing with color. This
 includes conversion between colorspaces, measuring distance between colors,
 simulating color blindness, and generating color scales for graphics, among
