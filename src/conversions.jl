@@ -657,7 +657,7 @@ convert{T}(::Type{LMS{T}}, c::ColorValue) = convert(LMS{T}, convert(XYZ{T}, c))
 # Everything to RGB24
 # -------------------
 
-convert(::Type{RGB24}, c::RGB{Ufixed8}) = RGB24(to32(c.r)<<16 + to32(c.g)<<8 + to32(c.b))
+convert(::Type{RGB24}, c::AbstractRGB{Ufixed8}) = RGB24(to32(c.r)<<16 + to32(c.g)<<8 + to32(c.b))
 convert(::Type{RGB24}, c::AbstractRGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
                                                iround(Uint32, 255*c.g)<<8 +
                                                iround(Uint32, 255*c.b))
@@ -671,7 +671,7 @@ to32(x::Ufixed8) = convert(Uint32, reinterpret(x))
 convert(::Type{Uint32}, c::RGB24) = c.color
 
 
-convert(::Type{Uint32}, ac::ARGB32) = convert(Uint32, ac.c) | convert(Uint32, ac.alpha)<<24
+convert(::Type{Uint32}, ac::ARGB32) = ac.color
 
 
 #### AlphaColorValue
@@ -682,5 +682,6 @@ function convert{C,T,D,U}(::Type{AlphaColorValue{C,T}}, c::AbstractAlphaColorVal
 end
 
 convert(::Type{ARGB32}, c::ARGB32) = c
-convert(::Type{ARGB32}, c::AlphaColorValue) = AlphaColorValue(convert(RGB24, c.c), iround(Uint8, 255*c.alpha))
-convert(::Type{ARGB32}, c::AbstractAlphaColorValue) = AlphaColorValue(convert(RGB24, c.c), iround(Uint8, 255*c.alpha))
+convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::AbstractAlphaColorValue{CV,Ufixed8}) =
+    ARGB32(to32(c.alpha)<<24 + to32(c.c.r)<<16 + to32(c.c.g)<<8 + to32(c.c.b))
+convert(::Type{ARGB32}, c::AbstractAlphaColorValue) = ARGB32(convert(RGB24, c.c).color | iround(Uint32, 255*c.alpha)<<24)

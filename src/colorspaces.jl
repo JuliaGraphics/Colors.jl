@@ -237,10 +237,13 @@ LMS() = LMS(0.0, 0.0, 0.0)
 # 24 bit RGB (used by Cairo)
 immutable RGB24 <: ColorValue{Uint8}
     color::Uint32
-
-    RGB24(c::Unsigned) = new(c)
-    RGB24() = RGB24(0)
 end
+RGB24() = RGB24(0)
+
+immutable ARGB32 <: AbstractAlphaColorValue{RGB{Ufixed8}, Ufixed8}
+    color::Uint32
+end
+ARGB32() = ARGB32(0)
 
 AlphaColorValue(c::RGB24, alpha::Uint8 = 0xff) = AlphaColorValue{typeof(c),Uint8}(c, alpha)
 
@@ -258,7 +261,6 @@ typealias DIN99A{T} AlphaColorValue{DIN99{T},T}
 typealias DIN99dA{T} AlphaColorValue{DIN99d{T},T}
 typealias DIN99oA{T} AlphaColorValue{DIN99o{T},T}
 typealias LMSA{T} AlphaColorValue{LMS{T},T}
-typealias ARGB32 AlphaColorValue{RGB24,Uint8}
 
 rgba{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB{T},c))
 hsva{T}(c::ColorValue{T}) = AlphaColorValue(convert(HSV{T},c))
@@ -273,7 +275,7 @@ din99a{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99{T},c))
 din99da{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99d{T},c))
 din99oa{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99o{T},c))
 lmsa{T}(c::ColorValue{T}) = AlphaColorValue(convert(LMS{T},c))
-argb32{T}(c::ColorValue{T}) = AlphaColorValue(convert(RGB24,c))
+argb32{T}(c::ColorValue{T}) = ARGB32(convert(RGB24,c).color | 0xff000000)
 
 const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
 const CVparametric = tuple(RGB, CVconcrete...)
