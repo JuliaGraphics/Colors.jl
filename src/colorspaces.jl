@@ -7,7 +7,8 @@ typealias ColourValue{T} ColorValue{T}
 abstract AbstractRGB{T} <: ColorValue{T} # allow different memory layouts of RGB
 
 eltype{T}(::ColorValue{T}) = T
-eltype{CV<:ColorValue}(::Type{CV}) = CV.parameters[1]
+eltype{T}(::Type{ColorValue{T}}) = T
+eltype{CV<:ColorValue}(::Type{CV}) = eltype(super(CV))
 
 # Transparency support
 abstract AbstractAlphaColorValue{C <: ColorValue, T <: Number}  # allow different memory layouts of AlphaColorValues
@@ -22,8 +23,10 @@ immutable AlphaColorValue{C <: ColorValue, T <: Number} <: AbstractAlphaColorVal
 end
 AlphaColorValue{T<:Fractional}(c::ColorValue{T}, alpha::T = one(T)) = AlphaColorValue{typeof(c),T}(c, alpha)
 
-eltype{C,T}(::AbstractAlphaColorValue{C,T}) = T
-eltype{CV<:AbstractAlphaColorValue}(::Type{CV}) = CV.parameters[2]
+eltype{C<:ColorValue,T}(::AbstractAlphaColorValue{C,T}) = T
+eltype{CV<:AbstractAlphaColorValue}(::Type{CV}) = _eltype(CV, super(CV))
+_eltype{CV1<:AbstractAlphaColorValue, CV2<:AbstractAlphaColorValue}(::Type{CV1}, ::Type{CV2}) = _eltype(CV2, super(CV2)) 
+_eltype{CV<:ColorValue,T}(::Type{AbstractAlphaColorValue{CV,T}}, ::Type{Any}) =  T
 
 # sRGB (standard Red-Green-Blue)
 immutable RGB{T<:Fractional} <: AbstractRGB{T}
@@ -93,6 +96,7 @@ immutable XYZ{T<:Fractional} <: ColorValue{T}
 end
 XYZ{T<:Fractional}(x::T, y::T, z::T) = XYZ{T}(x, y, z)
 XYZ(x, y, z) = (T = promote_type(typeof(x), typeof(y), typeof(z)); XYZ{T}(x, y, z))
+XYZ(x::Integer, y::Integer, z::Integer) = XYZ{Float64}(x, y, z)
 XYZ() = XYZ(0.0, 0.0, 0.0)
 
 # CIE 1931 xyY (chromaticity + luminance) space
@@ -240,12 +244,17 @@ immutable RGB24 <: ColorValue{Uint8}
 end
 RGB24() = RGB24(0)
 
-immutable ARGB32 <: AbstractAlphaColorValue{RGB{Ufixed8}, Ufixed8}
+immutable ARGB32 <: AbstractAlphaColorValue{RGB24, Uint8}
     color::Uint32
 end
 ARGB32() = ARGB32(0)
 
 AlphaColorValue(c::RGB24, alpha::Uint8 = 0xff) = AlphaColorValue{typeof(c),Uint8}(c, alpha)
+
+eltype(::RGB24) = Uint8
+eltype(::Type{RGB24}) = Uint8
+eltype(::ARGB32) = Uint8
+eltype(::Type{ARGB32}) = Uint8
 
 # Versions with transparency
 typealias RGBA{T} AlphaColorValue{RGB{T},T}
@@ -268,7 +277,7 @@ hsla{T}(c::ColorValue{T}) = AlphaColorValue(convert(HSL{T},c))
 xyza{T}(c::ColorValue{T}) = AlphaColorValue(convert(XYZ{T},c))
 xyYa{T}(c::ColorValue{T}) = AlphaColorValue(convert(xyY{T},c))
 laba{T}(c::ColorValue{T}) = AlphaColorValue(convert(Lab{T},c))
-lchaba{T}(c::ColorValue{T}) = AlphaColorValue(convert(LCH{T},c))
+lchaba{T}(c::ColorValue{T}) = AlphaColorValue(convert(LCHab{T},c))
 luva{T}(c::ColorValue{T}) = AlphaColorValue(convert(Luv{T},c))
 lchuva{T}(c::ColorValue{T}) = AlphaColorValue(convert(LCHuv{T},c))
 din99a{T}(c::ColorValue{T}) = AlphaColorValue(convert(DIN99{T},c))
