@@ -1,3 +1,17 @@
+for (CV, CVstr) in ((RGB, "RGB"), (XYZ, "XYZ"))
+    @eval begin
+        function show{T,f}(io::IO, c::$CV{FixedPointNumbers.UfixedBase{T,f}})
+            print(io, "$($CVstr){Ufixed", f, "}(")
+            showcompact(io, getfield(c, 1))
+            print(io, ',')
+            showcompact(io, getfield(c, 2))
+            print(io, ',')
+            showcompact(io, getfield(c, 3))
+            print(io, ')')
+        end
+    end
+end
+
 # Displaying color swatches
 # -------------------------
 
