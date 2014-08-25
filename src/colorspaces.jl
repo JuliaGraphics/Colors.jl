@@ -5,13 +5,14 @@
 abstract ColorValue{T}
 typealias ColourValue{T} ColorValue{T}
 abstract AbstractRGB{T} <: ColorValue{T} # allow different memory layouts of RGB
+abstract AbstractAlphaColorValue{C <: ColorValue, T <: Number}  # allow different memory layouts of AlphaColorValues
+abstract AbstractRGBA{C <: AbstractRGB, T<: Number} <: AbstractAlphaColorValue{C,T}
 
 eltype{T}(::ColorValue{T}) = T
 eltype{T}(::Type{ColorValue{T}}) = T
 eltype{CV<:ColorValue}(::Type{CV}) = eltype(super(CV))
 
 # Transparency support
-abstract AbstractAlphaColorValue{C <: ColorValue, T <: Number}  # allow different memory layouts of AlphaColorValues
 immutable AlphaColorValue{C <: ColorValue, T <: Number} <: AbstractAlphaColorValue{C, T}
     c::C
     alpha::T
