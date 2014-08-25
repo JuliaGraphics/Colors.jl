@@ -238,16 +238,21 @@ LMS(l, m, s) = LMS{Float64}(l, m, s)
 LMS() = LMS(0.0, 0.0, 0.0)
 
 
-# 24 bit RGB (used by Cairo)
+# 24 bit RGB and 32 bit ARGB (used by Cairo)
+# It would be nice to make this a subtype of AbstractRGB, but it doesn't have operations like c.r defined.
 immutable RGB24 <: ColorValue{Uint8}
     color::Uint32
 end
 RGB24() = RGB24(0)
+RGB24(r::Uint8, g::Uint8, b::Uint8) = RGB24(uint32(r)<<16 | uint32(g)<<8 | uint32(b))
+RGB24(r::Ufixed8, g::Ufixed8, b::Ufixed8) = RGB24(reinterpret(r), reinterpret(g), reinterpret(b))
 
 immutable ARGB32 <: AbstractAlphaColorValue{RGB24, Uint8}
     color::Uint32
 end
 ARGB32() = ARGB32(0)
+ARGB32(r::Uint8, g::Uint8, b::Uint8, alpha::Uint8) = uint32(alpha)<<24 | uint32(r)<<16 | uint32(g)<<8 | uint32(b)
+ARGB32(r::Ufixed8, g::Ufixed8, b::Ufixed8, alpha::Ufixed8) = ARGB32(reinterpret(r), reinterpret(g), reinterpret(b), reinterpret(alpha))
 
 AlphaColorValue(c::RGB24, alpha::Uint8 = 0xff) = AlphaColorValue{typeof(c),Uint8}(c, alpha)
 
