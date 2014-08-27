@@ -118,6 +118,9 @@ protanopic(c::ColorValue)   = protanopic(c, 1.0)
 deuteranopic(c::ColorValue) = deuteranopic(c, 1.0)
 tritanopic(c::ColorValue)   = tritanopic(c, 1.0)
 
+@vectorize_1arg ColorValue protanopic
+@vectorize_1arg ColorValue deuteranopic
+@vectorize_1arg ColorValue tritanopic
 
 # MSC - Most Saturated Color for given hue h
 # ---------------------
