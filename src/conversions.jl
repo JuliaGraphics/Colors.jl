@@ -256,11 +256,11 @@ end
 function convert{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ)
     (u_wp, v_wp) = xyz_to_uv(wp)
 
-    a = (52 * c.l / (c.u + 13 * c.l * u_wp) - 1) / 3
+    a = (52 * (c.l==0 ? zero(T) : c.l / (c.u + 13 * c.l * u_wp)) - 1) / 3
     y = c.l > xyz_kappa * xyz_epsilon ? wp.y * ((c.l + 16) / 116)^3 : wp.y * c.l / xyz_kappa
     b = -5y
-    d = y * (39 * c.l / (c.v + 13 * c.l * v_wp) - 5)
-    x = (d - b) / (a + (1./3.))
+    d = y * (39 * (c.l==0 ? zero(T) : c.l / (c.v + 13 * c.l * v_wp)) - 5)
+    x = d==b ? zero(T) : (d - b) / (a + 1//3)
     z = a * x + b
 
     XYZ{T}(x, y, z)
