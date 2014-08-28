@@ -1,15 +1,20 @@
-for (CV, CVstr) in ((RGB, "RGB"), (XYZ, "XYZ"))
-    @eval begin
+function makeshow(CV, CVstr, fields)
+    exs = [:(showcompact(io, $(fields[d]))) for d = 1:length(fields)]
+    exc = [d < length(fields) ? (:(print(io, ','))) : (:(print(io, ')'))) for d = 1:length(fields)]
+    exboth = hcat(exs, exc)'
+    ex = Expr(:block, exboth...)
+    eval(quote
         function show{T,f}(io::IO, c::$CV{FixedPointNumbers.UfixedBase{T,f}})
             print(io, "$($CVstr){Ufixed", f, "}(")
-            showcompact(io, getfield(c, 1))
-            print(io, ',')
-            showcompact(io, getfield(c, 2))
-            print(io, ',')
-            showcompact(io, getfield(c, 3))
-            print(io, ')')
+            $ex
         end
-    end
+    end)
+end
+
+for (CV, CVstr, fields) in ((RGB,  "RGB",  (:(c.r),:(c.g),:(c.b))),
+                            (XYZ,  "XYZ",  (:(c.x),:(c.y),:(c.z))),
+                            (RGBA, "RGBA", (:(c.c.r),:(c.c.g),:(c.c.b),:(c.alpha))))
+    makeshow(CV, CVstr, fields)
 end
 
 # Displaying color swatches

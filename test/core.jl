@@ -17,3 +17,14 @@ for f in (rgba, hsva, hsla, xyza, xyYa, laba,
 end
 @test eltype(RGB24) == Uint8
 @test eltype(ARGB32) == Uint8
+
+iob = IOBuffer()
+c = RGB{Ufixed8}(0.32218,0.14983,0.87819)
+show(iob, c)
+@test takebuf_string(iob) == "RGB{Ufixed8}(0.322,0.149,0.878)"
+c = RGB{Ufixed16}(0.32218,0.14983,0.87819)
+show(iob, c)
+@test takebuf_string(iob) == "RGB{Ufixed16}(0.32218,0.14983,0.87819)"
+c = AlphaColorValue(RGB{Ufixed8}(0.32218,0.14983,0.87819),Ufixed8(0.99241))
+show(iob, c)
+@test takebuf_string(iob) == "RGBA{Ufixed8}(0.322,0.149,0.878,0.992)"
