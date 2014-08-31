@@ -9,7 +9,7 @@ import Base.Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
-       AlphaColorValue, AbstractAlphaColorValue, AbstractRGB, AbstractRGBA,
+       AlphaColorValue, AbstractAlphaColorValue, AbstractRGB,
        weighted_color_mean, hex,
        RGB, HSV, HSL, XYZ, xyY, Lab, LAB, Luv, LUV, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS, RGB24,
        RGBA, HSVA, HSLA, XYZA, xyYA, LabA, LuvA, LCHabA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA, ARGB32,

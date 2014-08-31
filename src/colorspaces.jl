@@ -5,19 +5,18 @@
 abstract ColorValue{T}
 typealias ColourValue{T} ColorValue{T}
 abstract AbstractRGB{T} <: ColorValue{T} # allow different memory layouts of RGB
-abstract AbstractAlphaColorValue{C <: ColorValue, T <: Number}  # allow different memory layouts of AlphaColorValues
-abstract AbstractRGBA{C <: AbstractRGB, T<: Number} <: AbstractAlphaColorValue{C,T}
+abstract AbstractAlphaColorValue{C <: ColorValue, T <: Real}  # allow different memory layouts of AlphaColorValues
 
 eltype{T}(::ColorValue{T}) = T
 eltype{T}(::Type{ColorValue{T}}) = T
 eltype{CV<:ColorValue}(::Type{CV}) = eltype(super(CV))
 
 # Transparency support
-immutable AlphaColorValue{C <: ColorValue, T <: Number} <: AbstractAlphaColorValue{C, T}
+immutable AlphaColorValue{C <: ColorValue, T <: Fractional} <: AbstractAlphaColorValue{C, T}
     c::C
     alpha::T
 
-    function AlphaColorValue(x1::T, x2::T, x3::T, alpha::T)
+    function AlphaColorValue(x1::Real, x2::Real, x3::Real, alpha::Real)
         new(C(x1, x2, x3), alpha)
     end
     AlphaColorValue(c::C, alpha::T) = new(c, alpha)
@@ -35,7 +34,7 @@ immutable RGB{T<:Fractional} <: AbstractRGB{T}
     g::T # Green [0,1]
     b::T # Blue [0,1]
 
-    function RGB(r::Number, g::Number, b::Number)
+    function RGB(r::Real, g::Real, b::Real)
         new(r, g, b)
     end
 
@@ -54,7 +53,7 @@ immutable HSV{T<:FloatingPoint} <: ColorValue{T}
     s::T # Saturation in [0,1]
     v::T # Value in [0,1]
 
-    function HSV(h::Number, s::Number, v::Number)
+    function HSV(h::Real, s::Real, v::Real)
         new(h, s, v)
     end
 
@@ -73,7 +72,7 @@ immutable HSL{T<:FloatingPoint} <: ColorValue{T}
     s::T # Saturation in [0,1]
     l::T # Lightness in [0,1]
 
-    function HSL(h::Number, s::Number, l::Number)
+    function HSL(h::Real, s::Real, l::Real)
         new(h, s, l)
     end
 end
@@ -91,7 +90,7 @@ immutable XYZ{T<:Fractional} <: ColorValue{T}
     y::T
     z::T
 
-    function XYZ(x::Number, y::Number, z::Number)
+    function XYZ(x::Real, y::Real, z::Real)
         new(x, y, z)
     end
 end
@@ -106,7 +105,7 @@ immutable xyY{T<:FloatingPoint} <: ColorValue{T}
     y::T
     Y::T
 
-    function xyY(x::Number, y::Number, Y::Number)
+    function xyY(x::Real, y::Real, Y::Real)
         new(x, y, Y)
     end
 end
@@ -121,7 +120,7 @@ immutable Lab{T<:FloatingPoint} <: ColorValue{T}
     a::T # Red/Green
     b::T # Blue/Yellow
 
-    function Lab(l::Number, a::Number, b::Number)
+    function Lab(l::Real, a::Real, b::Real)
         new(l, a, b)
     end
 end
@@ -138,7 +137,7 @@ immutable LCHab{T<:FloatingPoint} <: ColorValue{T}
     c::T # Chroma
     h::T # Hue in [0,360]
 
-    function LCHab(l::Number, c::Number, h::Number)
+    function LCHab(l::Real, c::Real, h::Real)
         new(l, c, h)
     end
 end
@@ -153,7 +152,7 @@ immutable Luv{T<:FloatingPoint} <: ColorValue{T}
     u::T # Red/Green
     v::T # Blue/Yellow
 
-    function Luv(l::Number, u::Number, v::Number)
+    function Luv(l::Real, u::Real, v::Real)
         new(l, u, v)
     end
 end
@@ -170,7 +169,7 @@ immutable LCHuv{T<:FloatingPoint} <: ColorValue{T}
     c::T # Chroma
     h::T # Hue
 
-    function LCHuv(l::Number, c::Number, h::Number)
+    function LCHuv(l::Real, c::Real, h::Real)
         new(l, c, h)
     end
 end
@@ -185,7 +184,7 @@ immutable DIN99{T<:FloatingPoint} <: ColorValue{T}
     a::T # a99
     b::T # b99
 
-    function DIN99(l::Number, a::Number, b::Number)
+    function DIN99(l::Real, a::Real, b::Real)
         new(l, a, b)
     end
 end
@@ -200,7 +199,7 @@ immutable DIN99d{T<:FloatingPoint} <: ColorValue{T}
     a::T # a99d
     b::T # b99d
 
-    function DIN99d(l::Number, a::Number, b::Number)
+    function DIN99d(l::Real, a::Real, b::Real)
         new(l, a, b)
     end
 end
@@ -215,7 +214,7 @@ immutable DIN99o{T<:FloatingPoint} <: ColorValue{T}
     a::T # a99o
     b::T # b99o
 
-    function DIN99o(l::Number, a::Number, b::Number)
+    function DIN99o(l::Real, a::Real, b::Real)
         new(l, a, b)
     end
 end
@@ -230,7 +229,7 @@ immutable LMS{T<:FloatingPoint} <: ColorValue{T}
     m::T # Medium
     s::T # Short
 
-    function LMS(l::Number, m::Number, s::Number)
+    function LMS(l::Real, m::Real, s::Real)
         new(l, m, s)
     end
 end
