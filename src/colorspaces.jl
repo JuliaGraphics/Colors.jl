@@ -252,7 +252,7 @@ immutable ARGB32 <: AbstractAlphaColorValue{RGB24, Uint8}
     color::Uint32
 end
 ARGB32() = ARGB32(0)
-ARGB32(r::Uint8, g::Uint8, b::Uint8, alpha::Uint8) = uint32(alpha)<<24 | uint32(r)<<16 | uint32(g)<<8 | uint32(b)
+ARGB32(r::Uint8, g::Uint8, b::Uint8, alpha::Uint8) = ARGB32(uint32(alpha)<<24 | uint32(r)<<16 | uint32(g)<<8 | uint32(b))
 ARGB32(r::Ufixed8, g::Ufixed8, b::Ufixed8, alpha::Ufixed8) = ARGB32(reinterpret(r), reinterpret(g), reinterpret(b), reinterpret(alpha))
 
 AlphaColorValue(c::RGB24, alpha::Uint8 = 0xff) = AlphaColorValue{typeof(c),Uint8}(c, alpha)
