@@ -662,7 +662,7 @@ convert(::Type{RGB24}, c::AbstractRGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
                                                iround(Uint32, 255*c.g)<<8 +
                                                iround(Uint32, 255*c.b))
 to32(x::Ufixed8) = convert(Uint32, reinterpret(x))
-
+convert(::Type{RGB24}, val::Uint32) = RGB24(val & 0x00ffffff)
 
 
 # To Uint32
@@ -686,3 +686,5 @@ convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::AbstractAlphaColorValue{CV,
     ARGB32(c.c.r, c.c.g, c.c.b, c.alpha)
 convert(::Type{ARGB32}, c::AbstractAlphaColorValue) =
     ARGB32(convert(RGB24, c.c).color | iround(Uint32, 255*c.alpha)<<24)
+convert(::Type{ARGB32}, c::ColorValue) = ARGB32(convert(RGB24, c).color | 0xff000000)
+convert(::Type{ARGB32}, val::Uint32) = ARGB32(val)
