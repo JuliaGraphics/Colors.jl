@@ -16,10 +16,10 @@ immutable AlphaColorValue{C <: ColorValue, T <: Fractional} <: AbstractAlphaColo
     c::C
     alpha::T
 
-    function AlphaColorValue(x1::Real, x2::Real, x3::Real, alpha::Real)
+    function AlphaColorValue(x1::Real, x2::Real, x3::Real, alpha::Real = 1.0)
         new(C(x1, x2, x3), alpha)
     end
-    AlphaColorValue(c::C, alpha::T) = new(c, alpha)
+    AlphaColorValue(c::ColorValue, alpha::Real) = new(c, alpha)
 end
 AlphaColorValue{T<:Fractional}(c::ColorValue{T}, alpha::T = one(T)) = AlphaColorValue{typeof(c),T}(c, alpha)
 
