@@ -41,5 +41,7 @@ ac = rgba(red)
 @test convert(Uint32, convert(ARGB32, ac)) == 0xffff0000
 @test convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8)) == RGB24(0x00ff0000)
 @test convert(Uint32, convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8))) == 0x00ff0000
+redhsv = convert(HSV, red)
+@test convert(RGB24, redhsv) == RGB24(0x00ff0000)
 
 @test_throws MethodError AlphaColorValue(RGB(1,0,0), 0xffuf8)

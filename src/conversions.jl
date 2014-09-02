@@ -664,6 +664,7 @@ convert(::Type{RGB24}, c::AbstractRGB) = RGB24(iround(Uint32, 255*c.r)<<16 +
 to32(x::Ufixed8) = convert(Uint32, reinterpret(x))
 convert(::Type{RGB24}, val::Uint32) = RGB24(val & 0x00ffffff)
 
+convert(::Type{RGB24}, c::ColorValue) = convert(RGB24, convert(RGB{Ufixed8}, c))
 
 # To Uint32
 # ----------------
