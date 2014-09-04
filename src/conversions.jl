@@ -681,6 +681,8 @@ convert{C,T}(::Type{AlphaColorValue{C,T}}, c::AlphaColorValue{C,T}) = c
 function convert{C,T,D,U}(::Type{AlphaColorValue{C,T}}, c::AbstractAlphaColorValue{D,U})
     AlphaColorValue{T}(convert(C, c.c), c.alpha)
 end
+convert{C,T}(::Type{AlphaColorValue{C,T}}, c::ColorValue) =
+    AlphaColorValue(convert(C, c), one(T))
 
 convert(::Type{ARGB32}, c::ARGB32) = c
 convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::AbstractAlphaColorValue{CV,Ufixed8}) =
