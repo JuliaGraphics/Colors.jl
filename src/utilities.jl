@@ -2,10 +2,6 @@
 include("cie_data.jl")
 
 
-# An arbitrary ordering for unique sorting.
-isless(a::RGB, b::RGB) = (a.r, a.g, a.b) < (b.r, b.g, b.b)
-isless(a::ColorValue, b::ColorValue) = convert(RGB, a) < convert(RGB, b)
-
 # Linear-interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
 function lerp(x, a, b)
