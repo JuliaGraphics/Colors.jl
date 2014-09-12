@@ -204,7 +204,7 @@ immutable DIN99d{T<:FloatingPoint} <: ColorValue{T}
     end
 end
 DIN99d{T<:FloatingPoint}(l::T, a::T, b::T) = DIN99d{T}(l, a, b)
-DIN99d(l, a, b) = DIN99{Float64}(l, a, b)
+DIN99d(l, a, b) = DIN99d{Float64}(l, a, b)
 DIN99d() = DIN99d(0.0, 0.0, 0.0)
 
 
