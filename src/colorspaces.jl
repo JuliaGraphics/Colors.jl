@@ -11,6 +11,8 @@ eltype{T}(::ColorValue{T}) = T
 eltype{T}(::Type{ColorValue{T}}) = T
 eltype{CV<:ColorValue}(::Type{CV}) = eltype(super(CV))
 
+# colortype is defined at the end of this file
+
 # Transparency support
 immutable AlphaColorValue{C <: ColorValue, T <: Fractional} <: AbstractAlphaColorValue{C, T}
     c::C
@@ -27,6 +29,11 @@ eltype{C<:ColorValue,T}(::AbstractAlphaColorValue{C,T}) = T
 eltype{CV<:AbstractAlphaColorValue}(::Type{CV}) = _eltype(CV, super(CV))
 _eltype{CV1<:AbstractAlphaColorValue, CV2<:AbstractAlphaColorValue}(::Type{CV1}, ::Type{CV2}) = _eltype(CV2, super(CV2)) 
 _eltype{CV<:ColorValue,T}(::Type{AbstractAlphaColorValue{CV,T}}, ::Type{Any}) =  T
+
+colortype{C}(::AbstractAlphaColorValue{C}) = colortype(C)
+colortype{AC<:AbstractAlphaColorValue}(::Type{AC}) = _colortype(AC, super(AC))
+_colortype{CV1<:AbstractAlphaColorValue, CV2<:AbstractAlphaColorValue}(::Type{CV1}, ::Type{CV2}) = _colortype(CV2, super(CV2))
+_colortype{CV<:ColorValue,T}(::Type{AbstractAlphaColorValue{CV,T}}, ::Type{Any}) =  colortype(CV)
 
 # sRGB (standard Red-Green-Blue)
 immutable RGB{T<:Fractional} <: AbstractRGB{T}
@@ -293,3 +300,25 @@ argb32{T}(c::ColorValue{T}) = ARGB32(convert(RGB24,c).color | 0xff000000)
 
 const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
 const CVparametric = tuple(RGB, CVconcrete...)
+
+for CV in CVparametric
+    @eval begin
+        colortype(::$CV) = $CV
+        colortype(::Type{$CV}) = $CV
+        colortype{T}(::Type{$CV{T}}) = $CV
+    end
+end
+
+colortype(::Type{RGBA}) = RGB
+colortype(::Type{HSVA}) = HSV
+colortype(::Type{HSLA}) = HSL
+colortype(::Type{XYZA}) = XYZ
+colortype(::Type{xyYA}) = xyY
+colortype(::Type{LabA}) = Lab
+colortype(::Type{LCHabA}) = LCHab
+colortype(::Type{LuvA}) = Luv
+colortype(::Type{LCHuvA}) = LCHuv
+colortype(::Type{DIN99A}) = DIN99
+colortype(::Type{DIN99dA}) = DIN99d
+colortype(::Type{DIN99oA}) = DIN99o
+colortype(::Type{LMSA}) = LMS
