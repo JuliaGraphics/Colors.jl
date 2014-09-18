@@ -293,3 +293,5 @@ argb32{T}(c::ColorValue{T}) = ARGB32(convert(RGB24,c).color | 0xff000000)
 
 const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
 const CVparametric = tuple(RGB, CVconcrete...)
+const CVfractional = (RGB, XYZ)
+const CVfloatingpoint = (HSV, HSL, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
