@@ -36,6 +36,36 @@ for Cto in Color.CVparametric
     @test typeof(convert(Cto{Float32}, red24)) == Cto{Float32}
 end
 
+# Test conversion from Ufixed types
+for Cto in Color.CVfloatingpoint
+    for Cfrom in Color.CVfractional
+        for Tto in (Float32, Float64)
+            for Tfrom in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
+                c = convert(Cfrom{Tfrom}, red)
+                @test typeof(c) == Cfrom{Tfrom}
+                c1 = convert(Cto, c)
+                @test eltype(c1) == Float64
+                c2 = convert(Cto{Tto}, c)
+                @test typeof(c2) == Cto{Tto}
+            end
+        end
+    end
+end
+
+# Test conversion to Ufixed types
+for Cto in Color.CVfractional
+    for Cfrom in Color.CVfloatingpoint
+        for Tto in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
+            for Tfrom in (Float32, Float64)
+                c = convert(Cfrom{Tfrom}, red)
+                @test typeof(c) == Cfrom{Tfrom}
+                c2 = convert(Cto{Tto}, c)
+                @test typeof(c2) == Cto{Tto}
+            end
+        end
+    end
+end
+
 ac = rgba(red)
 @test convert(ARGB32, ac) == ARGB32(0xffff0000)
 @test convert(Uint32, convert(ARGB32, ac)) == 0xffff0000

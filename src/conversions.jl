@@ -21,12 +21,14 @@ end
 
 
 # Conversions where the datatype is not specified
-for CV in CVconcrete
-    @eval begin
-        # preserves the datatype of the original space
-        convert{T<:Fractional}(::Type{$CV}, c::ColorValue{T}) = convert($CV{T}, c)
-        # fallback is Float64 (needed for RGB24)
-        convert(::Type{$CV}, c) = convert($CV{Float64}, c)
+for (ElementClass, Colorspace) in [(Fractional, CVfractional), (FloatingPoint, CVfloatingpoint)]
+    for CV in Colorspace
+        @eval begin
+            # preserves the datatype of the original space
+            convert{T<:$ElementClass}(::Type{$CV}, c::ColorValue{T}) = convert($CV{T}, c)
+            # fallback is Float64 (needed for RGB24)
+            convert(::Type{$CV}, c) = convert($CV{Float64}, c)
+        end
     end
 end
 convert{T}(::Type{RGB}, c::ColorValue{T}) = _convert(RGB{T}, c)
@@ -100,15 +102,15 @@ function _convert{CV<:AbstractRGB}(::Type{CV}, c::XYZ)
                      srgb_compand(ans[3])))
 end
 
-_convert{CV<:AbstractRGB}(::Type{CV}, c::xyY)   = _convert(CV, convert(XYZ{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::Lab)   = _convert(CV, convert(XYZ{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::LCHab) = _convert(CV, convert(Lab{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::Luv)   = _convert(CV, convert(XYZ{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::LCHuv) = _convert(CV, convert(Luv{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99) = _convert(CV, convert(XYZ{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99o) = _convert(CV, convert(XYZ{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99d) = _convert(CV, convert(XYZ{eltype(CV)}, c))
-_convert{CV<:AbstractRGB}(::Type{CV}, c::LMS)   = _convert(CV, convert(XYZ{eltype(CV)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::xyY)    = _convert(CV, convert(XYZ{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::Lab)    = _convert(CV, convert(XYZ{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::LCHab)  = _convert(CV, convert(Lab{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::Luv)    = _convert(CV, convert(XYZ{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::LCHuv)  = _convert(CV, convert(Luv{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99)  = _convert(CV, convert(XYZ{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99o) = _convert(CV, convert(XYZ{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99d) = _convert(CV, convert(XYZ{eltype(c)}, c))
+_convert{CV<:AbstractRGB}(::Type{CV}, c::LMS)    = _convert(CV, convert(XYZ{eltype(c)}, c))
 
 _convert{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
@@ -244,6 +246,10 @@ convert{T}(::Type{XYZ{T}}, c::LCHab) = convert(XYZ{T}, convert(Lab{T}, c))
 convert{T}(::Type{XYZ{T}}, c::DIN99) = convert(XYZ{T}, convert(Lab{T}, c))
 convert{T}(::Type{XYZ{T}}, c::DIN99o) = convert(XYZ{T}, convert(Lab{T}, c))
 
+convert{T<:Ufixed}(::Type{XYZ{T}}, c::LCHab) = convert(XYZ{T}, convert(Lab{eltype(c)}, c))
+convert{T<:Ufixed}(::Type{XYZ{T}}, c::DIN99) = convert(XYZ{T}, convert(Lab{eltype(c)}, c))
+convert{T<:Ufixed}(::Type{XYZ{T}}, c::DIN99o) = convert(XYZ{T}, convert(Lab{eltype(c)}, c))
+
 
 function xyz_to_uv(c::XYZ)
     d = c.x + 15c.y + 3c.z
@@ -269,6 +275,7 @@ end
 
 convert{T}(::Type{XYZ{T}}, c::Luv)   = convert(XYZ{T}, c, WP_DEFAULT)
 convert{T}(::Type{XYZ{T}}, c::LCHuv) = convert(XYZ{T}, convert(Luv{T}, c))
+convert{T<:Ufixed}(::Type{XYZ{T}}, c::LCHuv) = convert(XYZ{T}, convert(Luv{eltype(c)}, c))
 
 
 function convert{T}(::Type{XYZ{T}}, c::DIN99d)
