@@ -86,11 +86,6 @@ distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)
 
-
-# Small definitions to make color computations more clear
-+(x::LCHuv, y::LCHuv) = LCHuv(x.l+y.l,x.c+y.c,x.h+y.h)
-*(x::Real, y::LCHuv) = LCHuv(x*y.l,x*y.c,x*y.h)
-
 # Sequential palette
 # ----------------------
 # Sequential_palette implements the color palette creation technique by

@@ -324,3 +324,15 @@ colortype(::Type{DIN99A}) = DIN99
 colortype(::Type{DIN99dA}) = DIN99d
 colortype(::Type{DIN99oA}) = DIN99o
 colortype(::Type{LMSA}) = LMS
+
+# Vector space operations
+import Base: +, *
+
+#XYZ is a linear vector space
++{T<:Number}(a::XYZ{T}, b::XYZ{T}) = XYZ(a.x+b.x, a.y+b.y, a.z+b.z)
+*(c::Number, a::XYZ) = XYZ(c*a.x, c*a.y, c*a.z)
+
+#Most color spaces are nonlinear, so do the arithmetic in XYZ and convert back
++{T<:ColorValue}(a::T, b::T) = convert(T, convert(XYZ, a) + convert(XYZ, b))
+*{T<:ColorValue}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
+
