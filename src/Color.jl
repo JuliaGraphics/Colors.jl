@@ -26,6 +26,18 @@ if !isdefined(:rad2deg)
   const deg2rad = degrees2radians
 end
 
+# Dict compatibility
+if VERSION < v"0.4-"
+    macro Dict(pairs...)
+        Expr(:dict, pairs...)
+    end
+else
+    macro Dict(pairs...)
+        Expr(:call, :Dict, pairs...)
+    end
+end
+
+
 # The core; every other include will need these type definitions
 include("colorspaces.jl")
 

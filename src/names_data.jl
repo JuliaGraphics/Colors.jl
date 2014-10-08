@@ -2,7 +2,7 @@
 # This is the union of every color defined in X11 and in SVG, prefering the SVG
 # definition when they clash.
 
-const color_names = {
+const color_names = @Dict(
     "aliceblue"            => (240, 248, 255),
     "antiquewhite"         => (250, 235, 215),
     "antiquewhite1"        => (255, 239, 219),
@@ -664,5 +664,5 @@ const color_names = {
     "yellow3"              => (205, 205,   0),
     "yellow4"              => (139, 139,   0),
     "yellowgreen"          => (154, 205,  50)
-}
+)
 
