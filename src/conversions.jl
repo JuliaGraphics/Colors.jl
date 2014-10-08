@@ -27,7 +27,7 @@ for (ElementClass, Colorspace) in [(Fractional, CVfractional), (FloatingPoint, C
             # preserves the datatype of the original space
             convert{T<:$ElementClass}(::Type{$CV}, c::ColorValue{T}) = convert($CV{T}, c)
             # fallback is Float64 (needed for RGB24)
-            convert(::Type{$CV}, c) = convert($CV{Float64}, c)
+            convert{T}(::Type{$CV}, c::ColorValue{T}) = convert($CV{Float64}, c)
         end
     end
 end
@@ -688,8 +688,16 @@ convert{C,T}(::Type{AlphaColorValue{C,T}}, c::AlphaColorValue{C,T}) = c
 function convert{C,T,D,U}(::Type{AlphaColorValue{C,T}}, c::AbstractAlphaColorValue{D,U})
     AlphaColorValue{C,T}(convert(C, c.c), c.alpha)
 end
+function convert{D,T}(AC::TypeConstructor, c::AbstractAlphaColorValue{D,T})
+    AlphaColorValue(convert(colortype(AC), c.c), c.alpha)
+end
+
 convert{C,T}(::Type{AlphaColorValue{C,T}}, c::ColorValue) =
     AlphaColorValue{C,T}(convert(C, c), one(T))
+function convert(AC::TypeConstructor, c::ColorValue)
+    AlphaColorValue(convert(colortype(AC), c))
+end
+convert{C<:ColorValue,D,T}(::Type{C}, c::AlphaColorValue{D, T}) = convert(C, c.c)
 
 convert(::Type{ARGB32}, c::ARGB32) = c
 convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::AbstractAlphaColorValue{CV,Ufixed8}) =

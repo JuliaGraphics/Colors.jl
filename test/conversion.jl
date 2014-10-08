@@ -67,6 +67,14 @@ for Cto in Color.CVfractional
 end
 
 ac = rgba(red)
+
+@test convert(RGB, ac) == RGB(1,0,0)
+@test convert(RGB{Ufixed8}, ac) == RGB{Ufixed8}(1,0,0)
+@test convert(RGBA{Ufixed8}, ac) == RGBA{Ufixed8}(1,0,0,1)
+@test convert(HSVA, ac) == HSVA{Float64}(convert(HSV, red), 1.0)
+@test convert(HSVA{Float32}, ac) == HSVA{Float32}(convert(HSV{Float32}, red), 1.0f0)
+@test convert(RGBA, red) == ac
+
 @test convert(ARGB32, ac) == ARGB32(0xffff0000)
 @test convert(Uint32, convert(ARGB32, ac)) == 0xffff0000
 @test convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8)) == RGB24(0x00ff0000)
