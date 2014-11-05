@@ -232,7 +232,7 @@ end
 # ----------------------
 # Main function to handle different predefined colormaps
 #
-function colormap(cname::String, N::Int=100; mid=0.5, logscale=false, kvs...)
+function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)
 
     cname = lowercase(cname)
     if haskey(colormaps_sequential, cname)

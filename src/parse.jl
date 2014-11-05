@@ -13,7 +13,7 @@ const col_pat_rgba = r"rgba\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
 const col_pat_hsla = r"hsla\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
 
 # Parse a number used in the "rgb()" or "hsl()" color.
-function parse_rgb_hsl_num(num::String)
+function parse_rgb_hsl_num(num::AbstractString)
     if num[end] == '%'
         return parseint(num[1:end-1], 10) / 100
     else
@@ -22,7 +22,7 @@ function parse_rgb_hsl_num(num::String)
 end
 
 # Parse a number used in the alpha field of "rgba()" and "hsla()".
-function parse_alpha_num(num::String)
+function parse_alpha_num(num::AbstractString)
     if num[end] == '%'
         return parsefloat(num[1:end-1]) / 100
     else
@@ -46,7 +46,7 @@ end
 # Returns:
 #   An RGB color, unless "hsl()" was used, in which case an HSL color.
 #
-function color(desc::String)
+function color(desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
