@@ -688,15 +688,17 @@ convert{C,T}(::Type{AlphaColorValue{C,T}}, c::AlphaColorValue{C,T}) = c
 function convert{C,T,D,U}(::Type{AlphaColorValue{C,T}}, c::AbstractAlphaColorValue{D,U})
     AlphaColorValue{C,T}(convert(C, c.c), c.alpha)
 end
-function convert{D,T}(AC::TypeConstructor, c::AbstractAlphaColorValue{D,T})
-    AlphaColorValue(convert(colortype(AC), c.c), c.alpha)
+for CV in CVAlpha
+    @eval begin
+        function convert{D,T}(AC::Type{$CV}, c::AbstractAlphaColorValue{D,T})
+            AlphaColorValue(convert(colortype($CV), c.c), c.alpha)
+        end
+        convert(AC::Type{$CV}, c::ColorValue) = AlphaColorValue(convert(colortype($CV), c))
+    end
 end
 
 convert{C,T}(::Type{AlphaColorValue{C,T}}, c::ColorValue) =
     AlphaColorValue{C,T}(convert(C, c), one(T))
-function convert(AC::TypeConstructor, c::ColorValue)
-    AlphaColorValue(convert(colortype(AC), c))
-end
 convert{C<:ColorValue,D,T}(::Type{C}, c::AlphaColorValue{D, T}) = convert(C, c.c)
 
 convert(::Type{ARGB32}, c::ARGB32) = c

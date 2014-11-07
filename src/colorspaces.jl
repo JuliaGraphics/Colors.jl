@@ -302,6 +302,7 @@ const CVconcrete = (HSV, HSL, XYZ, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, D
 const CVparametric = tuple(RGB, CVconcrete...)
 const CVfractional = (RGB, XYZ)
 const CVfloatingpoint = (HSV, HSL, xyY, Lab, Luv, LCHab, LCHuv, DIN99, DIN99d, DIN99o, LMS)
+const CVAlpha = (RGBA, HSVA, HSLA, XYZA, xyYA, LabA, LCHabA, LuvA, LCHuvA, DIN99A, DIN99dA, DIN99oA, LMSA)
 
 for CV in CVparametric
     @eval begin
