@@ -45,12 +45,11 @@ const abds = [
     ((2.0776,    0.0795,  -1.1350), ( 0.9033,  -0.0636,  -0.5514),  0.9082)]
 
 
-const eps = 0.01
+const eps_cdiff = 0.01
 
 metric = DE_2000()
 
 for (i, (a, b, dexpect)) in enumerate(abds)
-    @assert abs(dexpect - colordiff(Lab(a...), Lab(b...), metric)) < eps
-    @assert abs(dexpect - colordiff(Lab(b...), Lab(a...), metric)) < eps
+    @assert abs(dexpect - colordiff(Lab(a...), Lab(b...), metric)) < eps_cdiff
+    @assert abs(dexpect - colordiff(Lab(b...), Lab(a...), metric)) < eps_cdiff
 end
-
