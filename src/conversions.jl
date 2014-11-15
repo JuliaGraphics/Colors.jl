@@ -708,3 +708,7 @@ convert(::Type{ARGB32}, c::AbstractAlphaColorValue) =
     ARGB32(convert(RGB24, c.c).color | iround(Uint32, 255*c.alpha)<<24)
 convert(::Type{ARGB32}, c::ColorValue) = ARGB32(convert(RGB24, c).color | 0xff000000)
 convert(::Type{ARGB32}, val::Uint32) = ARGB32(val)
+
+
+### Equality
+==(c1::AbstractRGB, c2::AbstractRGB) = c1.r == c2.r && c1.g == c2.g && c1.b == c2.b
