@@ -30,10 +30,10 @@ function interpolate_table(tbl, start, step, wavelen)
     stop = start + step * (n - 1)
     i = (wavelen - start) / step
 
-    a = ifloor(i) + 1
+    a = floor(Integer, i) + 1
     ac = 1 <= a <= n ? tbl[a,:] : [0.0 0.0 0.0]
 
-    b = iceil(i) + 1
+    b = ceil(Integer, i) + 1
     bc = 1 <= b <= n ? tbl[b,:] : [0.0 0.0 0.0]
 
     p = i % 1.0
