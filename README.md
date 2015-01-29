@@ -398,15 +398,21 @@ Colormaps computed by this algorithm are ensured to have an increasing perceived
 Currently supported colormap names are:
 
 #### Sequential
-* `Blues`
-* `Greens`
-* `Grays`
-* `Oranges`
-* `Purples`
-* `Reds`
+
+| Name       | Example |
+| ---------- | ------- |
+| Blues | ![Blues](images/Blues.png "Blues") |
+| Greens | ![Greens](images/Greens.png "Greens") |
+| Grays |  |
+| Oranges | ![Oranges](images/Oranges.png "Oranges") |
+| Purples | ![Purples](images/Purples.png "Purples") |
+| Reds | ![Reds](images/Reds.png "Reds") |
 
 #### Diverging
-* `RdBu` (from red to blue)
+
+| Name       | Example |
+| ---------- | ------- |
+| RdBu (from red to blue) | ![RdBu](images/RdBu.png "RdBu") |
 
 It is also possible to create your own colormaps by using the
 `sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0, wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])`
