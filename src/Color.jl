@@ -5,7 +5,7 @@ using FixedPointNumbers, Compat
 typealias Fractional Union(FloatingPoint, FixedPoint)
 
 import Base: ==, convert, eltype, hex, isless, linspace, show, typemin, typemax, writemime
-import Base.Graphics: set_source, set_source_rgb, GraphicsContext
+import Graphics: set_source, set_source_rgb, GraphicsContext
 
 export ColorValue, color,
        ColourValue, colour,
