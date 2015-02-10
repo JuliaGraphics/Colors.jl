@@ -1,3 +1,4 @@
 julia 0.3-
 Compat 0.2
 FixedPointNumbers
+Graphics 0.1
