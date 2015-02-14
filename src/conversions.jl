@@ -10,6 +10,7 @@ for CV in CVparametric
     end
 end
 convert(::RGB24, c::RGB24) = c
+convert(::ARGB32, c::ARGB32) = c
 
 # changing the datatype without changing the underlying colorspace
 # Note: this assumes that the underlying type constructor doesn't swap the layout!
@@ -112,6 +113,7 @@ _convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99o) = _convert(CV, convert(XYZ{elty
 _convert{CV<:AbstractRGB}(::Type{CV}, c::DIN99d) = _convert(CV, convert(XYZ{eltype(c)}, c))
 _convert{CV<:AbstractRGB}(::Type{CV}, c::LMS)    = _convert(CV, convert(XYZ{eltype(c)}, c))
 
+_convert{CV<:AbstractRGB{Ufixed8}}(::Type{CV}, c::RGB24) = CV(Ufixed8(c.color&0x00ff0000>>>16,0), Ufixed8(c.color&0x0000ff00>>>8,0), Ufixed8(c.color&0x000000ff,0))
 _convert{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
 
@@ -709,6 +711,21 @@ convert(::Type{ARGB32}, c::AbstractAlphaColorValue) =
 convert(::Type{ARGB32}, c::ColorValue) = ARGB32(convert(RGB24, c).color | 0xff000000)
 convert(::Type{ARGB32}, val::Uint32) = ARGB32(val)
 
+function convert(::Type{RGBA{Ufixed8}}, ac::ARGB32)
+    RGBA{Ufixed8}(Ufixed8(ac.color&0x00ff0000>>>16,0),
+                  Ufixed8(ac.color&0x0000ff00>>>8,0),
+                  Ufixed8(ac.color&0x000000ff,0),
+                  Ufixed8(ac.color>>>24,0))
+end
+function convert{T}(::Type{RGBA{T}}, c::ARGB32)
+    RGBA{T}((c.color&0x00ff0000>>>16)/255,
+            (c.color&0x0000ff00>>>8)/255,
+            (c.color&0x000000ff)/255,
+            (c.color>>>24)/255)
+end
+function convert{C,T}(::Type{AlphaColorValue{C,T}}, c::ARGB32)
+    convert(AlphaColorValue{C,T}, convert(RGBA{Ufixed8}, c))
+end
 
 ### Equality
 ==(c1::AbstractRGB, c2::AbstractRGB) = c1.r == c2.r && c1.g == c2.g && c1.b == c2.b

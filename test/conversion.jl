@@ -3,6 +3,7 @@ using Base.Test
 
 const red = color("red")
 const red24 = RGB24(0x00ff0000)
+const red32 = ARGB32(0xffff0000)
 for T in (Float64, Float32, Ufixed8)
     c = RGB(one(T), zero(T), zero(T))
     @test eltype(c) == T
@@ -81,6 +82,10 @@ ac = rgba(red)
 @test convert(Uint32, convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8))) == 0x00ff0000
 redhsv = convert(HSV, red)
 @test convert(RGB24, redhsv) == RGB24(0x00ff0000)
+
+@test convert(RGB{Ufixed8}, red24) == RGB{Ufixed8}(1,0,0)
+@test convert(RGBA{Ufixed8}, red32) == RGBA{Ufixed8}(1,0,0,1)
+@test convert(HSVA{Float64}, red32) == HSVA{Float64}(360, 1, 1, 1)
 
 @test_throws MethodError AlphaColorValue(RGB(1,0,0), 0xffuf8)
 
