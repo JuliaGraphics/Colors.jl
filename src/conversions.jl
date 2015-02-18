@@ -258,7 +258,7 @@ function xyz_to_uv(c::XYZ)
 end
 
 
-function convert{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ)
+function convert{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT)
     (u_wp, v_wp) = xyz_to_uv(wp)
 
     a = (52 * (c.l==0 ? zero(T) : c.l / (c.u + 13 * c.l * u_wp)) - 1) / 3
@@ -266,13 +266,11 @@ function convert{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ)
     b = -5y
     d = y * (39 * (c.l==0 ? zero(T) : c.l / (c.v + 13 * c.l * v_wp)) - 5)
     x = d==b ? zero(T) : (d - b) / (a + 1//3)
-    z = a * x + b
+    z = a * x + b + zero(T)
 
     XYZ{T}(x, y, z)
 end
 
-
-convert{T}(::Type{XYZ{T}}, c::Luv)   = convert(XYZ{T}, c, WP_DEFAULT)
 convert{T}(::Type{XYZ{T}}, c::LCHuv) = convert(XYZ{T}, convert(Luv{T}, c))
 convert{T<:Ufixed}(::Type{XYZ{T}}, c::LCHuv) = convert(XYZ{T}, convert(Luv{eltype(c)}, c))
 
@@ -459,8 +457,8 @@ function convert{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT)
     y = c.y / wp.y
 
     l = y > xyz_epsilon ? 116 * cbrt(y) - 16 : xyz_kappa * y
-    u = 13 * l * (u_ - u_wp)
-    v = 13 * l * (v_ - v_wp)
+    u = 13 * l * (u_ - u_wp) + zero(T)
+    v = 13 * l * (v_ - v_wp) + zero(T)
 
     Luv{T}(l, u, v)
 end

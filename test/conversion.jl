@@ -92,11 +92,11 @@ redhsv = convert(HSV, red)
 # Test vector space operations
 import Base.full
 full(T::ColorValue) = map(x->getfield(T, x), names(T)) #Allow test to access numeric elements
-# Generated from: 
+# Generated from:
 #=
 julia> for t in subtypes(ColorValue)
           isleaftype(t) || isleaftype(t{Float64}) || continue
-         
+
           try
               println("@test_approx_eq_eps ", t(0.125, 0.5, 0), "+", t(0.2, 0.7, 0.4), " ", t(0.125, 0.5, 0) + t(0.2, 0.7, 0.4), " 91eps()")
               println("@test_approx_eq_eps 3", t(0.125, 0.5, 0.03), " ", 3t(0.125, 0.5, 0.03), " 91eps()\n")
@@ -136,4 +136,13 @@ julia> for t in subtypes(ColorValue)
 
 @test_approx_eq_eps xyY{Float64}(0.125,0.5,0.0)+xyY{Float64}(0.2,0.7,0.4) xyY{Float64}(0.2,0.7,0.4) 91eps()
 @test_approx_eq_eps 3xyY{Float64}(0.125,0.5,0.03) xyY{Float64}(0.125,0.5,0.09) 91eps()
+
+#59
+@test Color.xyz_to_uv(XYZ{Float64}(0.0, 0.0, 0.0)) === (0.0, 0.0)
+@test Color.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 0.0)) === (0.0, 0.6)
+@test Color.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 1.0)) === (0.0, 0.5)
+@test Color.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 1.0)) === (1.0, 0.0)
+@test Color.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
+
+@test 1.0LCHuv(0.0, 0.0, 0.0) === LCHuv(0.0, 0.0, 0.0)
 
