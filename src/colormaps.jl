@@ -236,15 +236,12 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
 
     cname = lowercase(cname)
     if haskey(colormaps_sequential, cname)
-        vals = colormaps_sequential[cname]
+        p = copy(colormaps_sequential[cname][1:8])
 
-        p=Array(Any,8)
-        for i in 1:8
-            p[i] = vals[i]
-        end
-
+        const allowedkeys = [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
         for (k,v) in kvs
-            ind = findfirst([:h, :w, :d, :c, :s, :b, :wcolor, :dcolor], k)
+            k in allowedkeys || throw(ArgumentError("Unknown keyword argument $k"))
+            ind = findfirst(allowedkeys, k)
             if ind > 0
                 p[ind] = v
             end
@@ -253,15 +250,11 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
         return sequential_palette(p[1], N, w=p[2], d=p[3], c=p[4], s=p[5], b=p[6], wcolor=p[7], dcolor=p[8], logscale=logscale)
 
     elseif haskey(colormaps_diverging, cname)
-        vals = colormaps_diverging[cname]
-
-        p=Array(Any,11)
-        for i in 1:11
-            p[i] = vals[i]
-        end
+        p = copy(colormaps_diverging[cname][1:11])
 
         for (k,v) in kvs
-            ind = findfirst([:h, :h2, :w, :d1, :d2, :c, :s, :b, :wcolor, :dcolor1, :dcolor2], k)
+            k in allowedkeys || throw(ArgumentError("Unknown keyword argument $k"))
+            ind = findfirst(allowedkeys, k)
             if ind > 0
                 p[ind] = v
             end
@@ -270,8 +263,7 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
         return diverging_palette(p[1], p[2], N, w=p[3], d1=p[4], d2=p[5], c=p[6], s=p[7], b=p[8], wcolor=p[9], dcolor1=p[10], dcolor2=p[11], mid=mid, logscale=logscale)
 
     else
-        error("Unknown colormap: ", cname)
+        throw(ArgumentError(string("Unknown colormap: ", cname)))
     end
-
 end
 
