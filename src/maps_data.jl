@@ -1,6 +1,3 @@
-
-
-
 # Colormap parameters
 
 const colormaps_sequential = Compat.@Dict(

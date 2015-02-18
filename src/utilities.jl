@@ -2,7 +2,7 @@
 include("cie_data.jl")
 
 
-# Linear-interpolation in [a, b] where x is in [0,1],
+# Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
 function lerp(x, a, b)
     a + (b - a) * max(min(x, one(x)), zero(x))
@@ -56,31 +56,21 @@ function linspace{T<:ColorValue}(c1::T, c2::T, n=100)
 end
 
 #Double quadratic Bezier curve
-function Bezier(t,p0,p2,q0,q1,q2)
-    function B(t,a,b,c)
-    a*(1.0-t)^2.0+2.0*b*(1.0-t)*t+c*t^2.0
-    end
-
+function Bezier{T<:Real}(t::T, p0::T, p2::T, q0::T, q1::T, q2::T)
+    B(t,a,b,c)=a*(1.0-t)^2.0+2.0b*(1.0-t)*t+c*t^2.0
     if t <= 0.5
         return B(2.0t, p0, q0, q1)
-    elseif t > 0.5
+    else #t > 0.5
         return B(2.0(t-0.5), q1, q2, p2)
     end
-
-    NaN
 end
 
 #Inverse double quadratic Bezier curve
-function invBezier(t,p0,p2,q0,q1,q2)
-    function invB(t,a,b,c)
-        (a-b+sqrt(b^2.0-a*c+(a-2.0b+c)*t))/(a-2.0b+c)
-    end
-
+function invBezier{T<:Real}(t::T, p0::T, p2::T, q0::T, q1::T, q2::T)
+    invB(t,a,b,c)=(a-b+sqrt(b^2.0-a*c+(a-2.0b+c)*t))/(a-2.0b+c)
     if t < q1
         return 0.5*invB(t,p0,q0,q1)
-    elseif t >= q1
+    else #t >= q1
         return 0.5*invB(t,q1,q2,p2)+0.5
     end
-
-    NaN
 end
