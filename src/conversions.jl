@@ -213,18 +213,14 @@ convert{T}(::Type{XYZ{T}}, c::HSL) = convert(XYZ{T}, convert(RGB{T}, c))
 
 
 function convert{T}(::Type{XYZ{T}}, c::xyY)
-
     X = c.Y*c.x/c.y
-
     Z = c.Y*(1-c.x-c.y)/c.y
-
     XYZ{T}(X, c.Y, Z)
-
 end
 
 
-const xyz_epsilon = 216. / 24389.
-const xyz_kappa   = 24389. / 27.
+const xyz_epsilon = 216 // 24389
+const xyz_kappa   = 24389 // 27
 
 
 function convert{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
@@ -455,7 +451,7 @@ convert{T}(::Type{Luv{T}}, c::HSV) = convert(Luv{T}, convert(RGB{T}, c))
 convert{T}(::Type{Luv{T}}, c::HSL) = convert(Luv{T}, convert(RGB{T}, c))
 
 
-function convert{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ)
+function convert{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT)
     (u_wp, v_wp) = xyz_to_uv(wp)
     (u_, v_) = xyz_to_uv(c)
 
@@ -467,9 +463,6 @@ function convert{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ)
 
     Luv{T}(l, u, v)
 end
-
-
-convert{T}(::Type{Luv{T}}, c::XYZ) = convert(Luv{T}, c, WP_DEFAULT)
 
 
 function convert{T}(::Type{Luv{T}}, c::LCHuv)
