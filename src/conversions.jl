@@ -251,9 +251,10 @@ convert{T<:Ufixed}(::Type{XYZ{T}}, c::DIN99o) = convert(XYZ{T}, convert(Lab{elty
 
 function xyz_to_uv(c::XYZ)
     d = c.x + 15c.y + 3c.z
-    u = (4 * c.x) / d
-    v = (9 * c.y) / d
-    return (u,v)
+    d==0 && return (d, d)
+    u = 4c.x / d
+    v = 9c.y / d
+    return (u, v)
 end
 
 
