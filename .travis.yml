@@ -1,10 +1,15 @@
 language: julia
 os:
+    - osx
     - linux
 julia:
     - release
     - nightly
 notifications:
     email: false
-after_success:
-    - julia -e 'cd(Pkg.dir("Color")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+script:
+    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+    - if [[ $TRAVIS_JULIA_VERSION = "nightly" ]]; then
+         julia -e 'Pkg.clone(pwd()); Pkg.build("Color"); Pkg.test("Color"; coverage=true)';
+         julia -e 'cd(Pkg.dir("Color")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+      fi
