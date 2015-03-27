@@ -1,4 +1,4 @@
-using Color, FixedPointNumbers
+using Color, FixedPointNumbers, Compat
 using Base.Test
 
 const red = color("red")
@@ -14,8 +14,8 @@ for T in (Float64, Float32, Ufixed8)
     @test cr == c
 end
 @test RGB(1,0,0) == red
-@test RGB(uint8(1),0,0) == red
-@test RGB(uint8(1),uint8(0),uint8(0)) == red
+@test RGB(convert(UInt8, 1),0,0) == red
+@test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == red
 @test convert(RGB, red24) == red
 
 for Cto in Color.CVparametric
@@ -91,7 +91,7 @@ redhsv = convert(HSV, red)
 
 # Test vector space operations
 import Base.full
-full(T::ColorValue) = map(x->getfield(T, x), names(T)) #Allow test to access numeric elements
+full(T::ColorValue) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
 # Generated from:
 #=
 julia> for t in subtypes(ColorValue)

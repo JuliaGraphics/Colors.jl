@@ -44,12 +44,12 @@ function _convert{CV<:AbstractRGB}(::Type{CV}, c::HSV)
     h = c.h / 60
     i = floor(h)
     f = h - i
-    if int(i) & 1 == 0
+    if round(Int, i) & 1 == 0
         f = 1 - f
     end
     m = c.v * (1 - c.s)
     n = c.v * (1 - c.s * f)
-    i = int(i)
+    i = round(Int, i)
     if i == 6 || i == 0; CV(c.v, n, m)
     elseif i == 1;       CV(n, c.v, m)
     elseif i == 2;       CV(m, c.v, n)
