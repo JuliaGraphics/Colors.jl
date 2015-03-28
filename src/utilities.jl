@@ -12,9 +12,9 @@ end
 # Print a color as a RGB hex triple.
 function hex(c::RGB)
     @sprintf("%02X%02X%02X",
-             int(lerp(c.r, 0.0, 255.0)),
-             int(lerp(c.g, 0.0, 255.0)),
-             int(lerp(c.b, 0.0, 255.0)))
+             convert(Int, lerp(c.r, 0.0, 255.0)),
+             convert(Int, lerp(c.g, 0.0, 255.0)),
+             convert(Int, lerp(c.b, 0.0, 255.0)))
 end
 
 
@@ -43,7 +43,7 @@ weighted_color_mean(w1::Real, c1::RGB24, c2::RGB24) =
 
 # return a linear ramp of n colors from c1 to c2, inclusive
 function linspace{T<:ColorValue}(c1::T, c2::T, n=100)
-    a = Array(T, int(n))
+    a = Array(T, convert(Int, n))
     if n == 1
         a[1] = c1
         return a
