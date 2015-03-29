@@ -12,9 +12,9 @@ end
 # Print a color as a RGB hex triple.
 function hex(c::RGB)
     @sprintf("%02X%02X%02X",
-             convert(Int, lerp(c.r, 0.0, 255.0)),
-             convert(Int, lerp(c.g, 0.0, 255.0)),
-             convert(Int, lerp(c.b, 0.0, 255.0)))
+             round(Int, lerp(c.r, 0.0, 255.0)),
+             round(Int, lerp(c.g, 0.0, 255.0)),
+             round(Int, lerp(c.b, 0.0, 255.0)))
 end
 
 
