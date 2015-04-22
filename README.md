@@ -353,17 +353,17 @@ Generate `n` maximally distinguishable colors in LCHab space.
 
 ```julia
 distinguishable_colors(n::Integer,seed::ColorValue)
-distinguishable_colors{T<:ColorValue}(n::Integer,seed::Vector{T})
+distinguishable_colors{T<:ColorValue}(n::Integer,seed::AbstractVector{T})
 ```
 
 A seed color or array of seed colors may be provided to `distinguishable_colors`, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
 
 ```julia
-distinguishable_colors{T<:ColorValue}(n::Integer, seed::Vector{T};
+distinguishable_colors{T<:ColorValue}(n::Integer, seed::AbstractVector{T};
     transform::Function = identity,
-    lchoices::Vector{Float64} = linspace(0, 100, 15),
-    cchoices::Vector{Float64} = linspace(0, 100, 15),
-    hchoices::Vector{Float64} = linspace(0, 340, 20)
+    lchoices::AbstractVector = linspace(0, 100, 15),
+    cchoices::AbstractVector = linspace(0, 100, 15),
+    hchoices::AbstractVector = linspace(0, 340, 20)
 )
 ```
 
