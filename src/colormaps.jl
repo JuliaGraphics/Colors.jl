@@ -24,11 +24,11 @@ include("maps_data.jl")
 #   A Vector{ColorValue} of length n.
 #
 function distinguishable_colors{T<:ColorValue}(n::Integer,
-                            seed::Vector{T};
+                            seed::AbstractVector{T};
                             transform::Function = identity,
-                            lchoices::Vector = linspace(0, 100, 15),
-                            cchoices::Vector = linspace(0, 100, 15),
-                            hchoices::Vector = linspace(0, 340, 20))
+                            lchoices::AbstractVector = linspace(0, 100, 15),
+                            cchoices::AbstractVector = linspace(0, 100, 15),
+                            hchoices::AbstractVector = linspace(0, 340, 20))
     if n <= length(seed)
         return seed[1:n]
     end
