@@ -153,7 +153,7 @@ convert{T}(::Type{HSV{T}}, c::ColorValue) = convert(HSV{T}, convert(RGB{T}, c))
 function convert{T}(::Type{HSL{T}}, c::AbstractRGB)
     c_min = min(c.r, c.g, c.b)
     c_max = max(c.r, c.g, c.b)
-    l = (c_max - c_min) / 2
+    l = (c_max + c_min) / 2
 
     if c_max == c_min
         return HSL(zero(T), zero(T), l)
