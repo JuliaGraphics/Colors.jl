@@ -43,7 +43,9 @@ function make_color_table(image_width, image_height, output_file)
     f = open(output_file, "w")
 
     # write svg header
-    println(f, """<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$(image_width)" height="$(image_height)"> \n """)
+    println(f, """<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$(image_width)" height="$(image_height)"> \n
+    <rect x="0" y="0" width="$(image_width)" height="$(image_height)" fill="white" /> \n
+    """)
 
     # title
     println(f, """<text x="$(margin)" y="$(margin - margin/2)" font-size="14px" font-family="Helvetica-Bold">Color names in Color.jl, sorted by luminance</text>\n""")
