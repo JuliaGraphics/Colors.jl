@@ -161,6 +161,7 @@ immutable LCHuv{T} <: ColorValue
     l::T # Luminance
     c::T # Chroma
     h::T # Hue
+end
 ```
 
 
@@ -173,6 +174,7 @@ immutable DIN99{T} <: ColorValue
     l::T # L99 (Lightness)
     a::T # a99 (Red/Green)
     b::T # b99 (Blue/Yellow)
+end
 ```
 
 
@@ -183,21 +185,23 @@ The DIN99d uniform colorspace is an improvement on the DIN99 color space that ad
 ```julia
 immutable DIN99d{T} <: ColorValue
     l::T # L99d (Lightness)
-    a::T # a99d (Redish/Greenish)
-    b::T # b99d (Blueish/Yellowish)
+    a::T # a99d (Reddish/Greenish)
+    b::T # b99d (Bluish/Yellowish)
+end
 ```
 
 
 ### DIN99o
 
 Revised version of the DIN99 uniform colorspace with modified coefficients for an improved metric.
-Similar to DIN99d X correction and the DeltaE2000 rotation term, DIN99o achieves comparable results by optimized a*/b*rotation and chroma compression terms.
+Similar to DIN99d X correction and the DeltaE2000 rotation term, DIN99o achieves comparable results by optimized `a*/b*` rotation and chroma compression terms.
 
 ```julia
 immutable DIN99o{T} <: ColorValue
     l::T # L99o (Lightness)
     a::T # a99o (Red/Green)
     b::T # b99o (Blue/Yellow)
+end
 ```
 
 
@@ -303,19 +307,19 @@ Specify the color difference using the BFD equation, with weighting parameters `
 
 `DE_AB()`
 
-Specify the original, Euclidian color difference equation.
+Specify the original, Euclidean color difference equation.
 
 `DE_DIN99()`
 
-Specify the Euclidian color difference equation applied in the `DIN99` uniform color space.
+Specify the Euclidean color difference equation applied in the `DIN99` uniform color space.
 
 `DE_DIN99d()`
 
-Specify the Euclidian color difference equation applied in the `DIN99` uniform color space.
+Specify the Euclidean color difference equation applied in the `DIN99` uniform color space.
 
 `DE_DIN99o()`
 
-Specify the Euclidian color difference equation applied in the `DIN99` uniform color space.
+Specify the Euclidean color difference equation applied in the `DIN99` uniform color space.
 
 ## Simulation of color deficiency ("color blindness")
 
