@@ -1,21 +1,31 @@
-function makeshow(CV, CVstr, fields)
-    exs = [:(showcompact(io, $(fields[d]))) for d = 1:length(fields)]
+macro makeshow(CV, fields)
+    fields = fields.args
+    CVstr = string(CV)
+    CVesc = esc(CV)
+    objfields = Array(Expr, length(fields))
+    for i = 1:length(fields)
+        if isa(fields[i], Expr)
+            sym = fields[i].args[2].args[1]
+            objfields[i] = :(c.c.$sym)
+        else
+            objfields[i] = :(c.$(fields[i]))
+        end
+    end
+    exs = [:(showcompact(io, $(fn))) for fn in objfields]
     exc = [d < length(fields) ? (:(print(io, ','))) : (:(print(io, ')'))) for d = 1:length(fields)]
     exboth = hcat(exs, exc)'
     ex = Expr(:block, exboth...)
-    eval(quote
-        function show{T,f}(io::IO, c::$CV{FixedPointNumbers.UfixedBase{T,f}})
+    quote
+        function Base.show{T,f}(io::IO, c::$CVesc{FixedPointNumbers.UfixedBase{T,f}})
             print(io, "$($CVstr){Ufixed", f, "}(")
             $ex
         end
-    end)
+    end
 end
 
-for (CV, CVstr, fields) in ((RGB,  "RGB",  (:(c.r),:(c.g),:(c.b))),
-                            (XYZ,  "XYZ",  (:(c.x),:(c.y),:(c.z))),
-                            (RGBA, "RGBA", (:(c.c.r),:(c.c.g),:(c.c.b),:(c.alpha))))
-    makeshow(CV, CVstr, fields)
-end
+@makeshow RGB (r, g, b)
+@makeshow XYZ (x, y, z)
+@makeshow RGBA (c.r, c.g, c.b, alpha)
 
 # Displaying color swatches
 # -------------------------
@@ -40,7 +50,7 @@ function writemime{T <: ColorValue}(io::IO, ::MIME"image/svg+xml",
 
     xsize,xpad = n > 50 ? (250/n,0) : n > 18 ? (5.,1) : n > 12 ? (10.,1) : n > 1 ? (15.,1) : (25.,0)
     ysize,ypad = m > 28 ? (150/m,0) : m > 14 ? (5.,1) : m > 9 ? (10.,1) : m > 1 ? (15.,1) : (25.,0)
-    
+
     write(io,
         """
         <?xml version="1.0" encoding="UTF-8"?>
@@ -63,4 +73,3 @@ function writemime{T <: ColorValue}(io::IO, ::MIME"image/svg+xml",
 
     write(io, "</svg>")
 end
-
