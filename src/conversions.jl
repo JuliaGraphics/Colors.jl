@@ -21,7 +21,7 @@ end
 
 convert{C<:AbstractColor}(::Type{C}, c::Transparent) = convert(C, color(c))
 convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::AbstractColor) = convert(A, c)
-convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::Transparent) = A(convert(colortype(A), color(c)), alpha(c))
+convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::Transparent) = convert(A, convert(colortype(A), color(c)), alpha(c))
 convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::ARGB32) = A(convert(colortype(A), color(c)), alpha(c))
 
 
@@ -753,22 +753,3 @@ convert(::Type{ARGB32}, c::Transparent) =
 convert(::Type{ARGB32}, c::Color) = ARGB32(convert(RGB24, c).color | 0xff000000)
 convert(::Type{ARGB32}, val::UInt32) = ARGB32(val)
 convert(::Type{ARGB32}, c::Color, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
-
-for C in subtypes(AbstractRGB)
-    for A in (alphacolor(C), coloralpha(C))
-        @eval begin
-            function convert(::Type{$A{U8}}, ac::ARGB32)
-                $A(Ufixed8(ac.color&0x00ff0000>>>16,0),
-                   Ufixed8(ac.color&0x0000ff00>>>8,0),
-                   Ufixed8(ac.color&0x000000ff,0),
-                   Ufixed8(ac.color>>>24,0))
-            end
-            function convert{T}(::Type{$A{T}}, ac::ARGB32)
-                $A{T}((ac.color&0x00ff0000>>>16)/255,
-                      (ac.color&0x0000ff00>>>8)/255,
-                      (ac.color&0x000000ff)/255,
-                      (ac.color>>>24)/255)
-            end
-        end
-    end
-end

@@ -71,7 +71,7 @@ for Cto in fractional_types
     end
 end
 
-ac = rgba(red)
+ac = RGBA(red)
 
 @test convert(RGB, ac) == RGB(1,0,0)
 @test convert(RGB{Ufixed8}, ac) == RGB{Ufixed8}(1,0,0)
@@ -91,7 +91,11 @@ redhsv = convert(HSV, red)
 @test convert(RGBA{Ufixed8}, red32) == RGBA{Ufixed8}(1,0,0,1)
 @test convert(HSVA{Float64}, red32) == HSVA{Float64}(360, 1, 1, 1)
 
-@test_throws MethodError AlphaColor(RGB(1,0,0), 0xffuf8)
+if VERSION >= v"0.4.0-dev"
+    @test_throws MethodError AlphaColor(RGB(1,0,0), 0xffuf8)
+else
+    @test_throws ErrorException AlphaColor(RGB(1,0,0), 0xffuf8)
+end
 
 # Test vector space operations
 import Base.full
