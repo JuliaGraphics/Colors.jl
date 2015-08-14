@@ -1,5 +1,5 @@
 
-using Color
+using Colors
 
 # Test data from the DIN 6176 specification
 const testdata = [
@@ -41,4 +41,3 @@ for (i, (a, b)) in enumerate(testdata)
 
 
 end
-

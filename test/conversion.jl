@@ -1,5 +1,7 @@
-using Color, FixedPointNumbers, Compat
+using Colors, FixedPointNumbers, Compat
 using Base.Test
+
+fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
 const red = color("red")
 const red24 = RGB24(0x00ff0000)
@@ -18,8 +20,8 @@ end
 @test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == red
 @test convert(RGB, red24) == red
 
-for Cto in Color.CVparametric
-    for Cfrom in Color.CVparametric
+for Cto in ColorTypes.parametric
+    for Cfrom in ColorTypes.parametric
         for Tto in (Float32, Float64)
             for Tfrom in (Float32, Float64)
                 c = convert(Cfrom{Tfrom}, red)
@@ -32,20 +34,22 @@ for Cto in Color.CVparametric
         end
     end
 end
-for Cto in Color.CVparametric
-    @test typeof(convert(Cto, red24)) == Cto{Float64}
-    @test typeof(convert(Cto{Float32}, red24)) == Cto{Float32}
+for Cto in ColorTypes.parametric
+    @test typeof(convert(Cto, red24)) == Cto{eltype_default(Cto)}
+    @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
 end
 
 # Test conversion from Ufixed types
-for Cto in Color.CVfloatingpoint
-    for Cfrom in Color.CVfractional
+for Cto in ColorTypes.parametric
+    for Cfrom in fractional_types
         for Tto in (Float32, Float64)
             for Tfrom in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
                 c = convert(Cfrom{Tfrom}, red)
                 @test typeof(c) == Cfrom{Tfrom}
-                c1 = convert(Cto, c)
-                @test eltype(c1) == Float64
+                if !(eltype_default(Cto) <: FixedPoint)
+                    c1 = convert(Cto, c)
+                    @test eltype(c1) == eltype_default(Cto)
+                end
                 c2 = convert(Cto{Tto}, c)
                 @test typeof(c2) == Cto{Tto}
             end
@@ -54,8 +58,8 @@ for Cto in Color.CVfloatingpoint
 end
 
 # Test conversion to Ufixed types
-for Cto in Color.CVfractional
-    for Cfrom in Color.CVfloatingpoint
+for Cto in fractional_types
+    for Cfrom in ColorTypes.parametric
         for Tto in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
             for Tfrom in (Float32, Float64)
                 c = convert(Cfrom{Tfrom}, red)
@@ -87,11 +91,11 @@ redhsv = convert(HSV, red)
 @test convert(RGBA{Ufixed8}, red32) == RGBA{Ufixed8}(1,0,0,1)
 @test convert(HSVA{Float64}, red32) == HSVA{Float64}(360, 1, 1, 1)
 
-@test_throws MethodError AlphaColorValue(RGB(1,0,0), 0xffuf8)
+@test_throws MethodError AlphaColor(RGB(1,0,0), 0xffuf8)
 
 # Test vector space operations
 import Base.full
-full(T::ColorValue) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
+full(T::Color) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
 # Generated from:
 #=
 julia> for t in subtypes(ColorValue)
@@ -138,11 +142,10 @@ julia> for t in subtypes(ColorValue)
 @test_approx_eq_eps 3xyY{Float64}(0.125,0.5,0.03) xyY{Float64}(0.125,0.5,0.09) 91eps()
 
 #59
-@test Color.xyz_to_uv(XYZ{Float64}(0.0, 0.0, 0.0)) === (0.0, 0.0)
-@test Color.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 0.0)) === (0.0, 0.6)
-@test Color.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 1.0)) === (0.0, 0.5)
-@test Color.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 1.0)) === (1.0, 0.0)
-@test Color.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
+@test Colors.xyz_to_uv(XYZ{Float64}(0.0, 0.0, 0.0)) === (0.0, 0.0)
+@test Colors.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 0.0)) === (0.0, 0.6)
+@test Colors.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 1.0)) === (0.0, 0.5)
+@test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 1.0)) === (1.0, 0.0)
+@test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
 
 @test 1.0LCHuv(0.0, 0.0, 0.0) === LCHuv(0.0, 0.0, 0.0)
-

@@ -21,9 +21,9 @@ include("maps_data.jl")
 #   hchoices: Possible hue values.
 #
 # Returns:
-#   A Vector{ColorValue} of length n.
+#   A Vector{Color} of length n.
 #
-function distinguishable_colors{T<:ColorValue}(n::Integer,
+function distinguishable_colors{T<:Color}(n::Integer,
                             seed::AbstractVector{T};
                             transform::Function = identity,
                             lchoices::AbstractVector = linspace(0, 100, 15),
@@ -76,12 +76,12 @@ function distinguishable_colors{T<:ColorValue}(n::Integer,
 end
 
 
-distinguishable_colors(n::Integer, seed::ColorValue; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
+distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
 distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB,0); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,
-                                seed::ColorValue,
+                                seed::Color,
                                 ls::Vector{Float64},
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)
@@ -266,4 +266,3 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
         throw(ArgumentError(string("Unknown colormap: ", cname)))
     end
 end
-

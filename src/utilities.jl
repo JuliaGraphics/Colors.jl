@@ -18,11 +18,11 @@ function hex(c::RGB)
 end
 
 
-hex(c::ColorValue) = hex(convert(RGB, c))
+hex(c::Color) = hex(convert(RGB, c))
 
 
-# set source color as a ColorValue
-function set_source(gc::GraphicsContext, c::ColorValue)
+# set source color as a Color
+function set_source(gc::GraphicsContext, c::Color)
     rgb = convert(RGB, c)
     set_source_rgb(gc, rgb.r, rgb.g, rgb.b)
 end
@@ -42,7 +42,7 @@ weighted_color_mean(w1::Real, c1::RGB24, c2::RGB24) =
     convert(RGB24, weighted_color_mean(w1, convert(RGB, c1), convert(RGB, c2)))
 
 # return a linear ramp of n colors from c1 to c2, inclusive
-function linspace{T<:ColorValue}(c1::T, c2::T, n=100)
+function linspace{T<:Color}(c1::T, c2::T, n=100)
     a = Array(T, convert(Int, n))
     if n == 1
         a[1] = c1

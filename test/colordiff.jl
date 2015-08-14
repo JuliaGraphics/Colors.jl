@@ -1,5 +1,4 @@
-
-using Color
+using Colors
 
 # Test the colordiff function against example input and output from:
 #

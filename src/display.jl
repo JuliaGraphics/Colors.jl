@@ -1,36 +1,7 @@
-macro makeshow(CV, fields)
-    fields = fields.args
-    CVstr = string(CV)
-    CVesc = esc(CV)
-    objfields = Array(Expr, length(fields))
-    for i = 1:length(fields)
-        if isa(fields[i], Expr)
-            sym = fields[i].args[2].args[1]
-            objfields[i] = :(c.c.$sym)
-        else
-            objfields[i] = :(c.$(fields[i]))
-        end
-    end
-    exs = [:(showcompact(io, $(fn))) for fn in objfields]
-    exc = [d < length(fields) ? (:(print(io, ','))) : (:(print(io, ')'))) for d = 1:length(fields)]
-    exboth = hcat(exs, exc)'
-    ex = Expr(:block, exboth...)
-    quote
-        function Base.show{T,f}(io::IO, c::$CVesc{FixedPointNumbers.UfixedBase{T,f}})
-            print(io, "$($CVstr){Ufixed", f, "}(")
-            $ex
-        end
-    end
-end
-
-@makeshow RGB (r, g, b)
-@makeshow XYZ (x, y, z)
-@makeshow RGBA (c.r, c.g, c.b, alpha)
-
 # Displaying color swatches
 # -------------------------
 
-function writemime(io::IO, ::MIME"image/svg+xml", c::ColorValue)
+function writemime(io::IO, ::MIME"image/svg+xml", c::Color)
     write(io,
         """
         <?xml version"1.0" encoding="UTF-8"?>
@@ -44,7 +15,7 @@ function writemime(io::IO, ::MIME"image/svg+xml", c::ColorValue)
         """)
 end
 
-function writemime{T <: ColorValue}(io::IO, ::MIME"image/svg+xml",
+function writemime{T <: Color}(io::IO, ::MIME"image/svg+xml",
                                     cs::AbstractVecOrMat{T})
     m,n = ndims(cs) == 2 ? size(cs) : (1,length(cs))
 

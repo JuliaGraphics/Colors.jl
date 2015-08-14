@@ -107,6 +107,5 @@ function color(desc::AbstractString)
     return RGB(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
-color(c::ColorValue) = c
-color(c::AlphaColorValue) = c
-
+color(c::Color) = c
+# color(c::AlphaColor) = c

@@ -1,3 +1,17 @@
+# Arithmetic
+#XYZ is a linear vector space
++{T<:Number}(a::XYZ{T}, b::XYZ{T}) = XYZ(a.x+b.x, a.y+b.y, a.z+b.z)
+-{T<:Number}(a::XYZ{T}, b::XYZ{T}) = XYZ(a.x-b.x, a.y-b.y, a.z-b.z)
+-(a::XYZ) = XYZ(-a.x, -a.y, -a.z)
+*(c::Number, a::XYZ) = XYZ(c*a.x, c*a.y, c*a.z)
+
+#Most color spaces are nonlinear, so do the arithmetic in XYZ and convert back
++{T<:Color}(a::T, b::T) = convert(T, convert(XYZ, a) + convert(XYZ, b))
+*{T<:Color}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
+*{T<:Color}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
+
+/(a::Color, c::Number) = *(1/c, a)
+
 # Algorithms relating to color processing and generation
 
 
@@ -19,7 +33,7 @@
 # Returns:
 #   A whitebalanced color.
 #
-function whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::ColorValue)
+function whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)
     c_lms = convert(LMS, c)
     src_wp = convert(LMS, src_white)
     dest_wp = convert(LMS, ref_white)
@@ -64,7 +78,7 @@ end
 
 # Convert a color to simulate protanopic color deficiency (lack of the
 # long-wavelength photopigment).
-function protanopic{T <: ColorValue}(q::T, p, neutral::LMS)
+function protanopic{T <: Color}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -80,7 +94,7 @@ end
 
 # Convert a color to simulate deuteranopic color deficiency (lack of the
 # middle-wavelength photopigment.)
-function deuteranopic{T <: ColorValue}(q::T, p, neutral::LMS)
+function deuteranopic{T <: Color}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -96,7 +110,7 @@ end
 
 # Convert a color to simulato tritanopic color deficiency (lack of the
 # short-wavelength photogiment)
-function tritanopic{T <: ColorValue}(q::T, p, neutral::LMS)
+function tritanopic{T <: Color}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
     anchor = colormatch(anchor_wavelen)
@@ -110,17 +124,17 @@ function tritanopic{T <: ColorValue}(q::T, p, neutral::LMS)
 end
 
 
-protanopic(c::ColorValue, p)   = protanopic(c, p, default_brettel_neutral)
-deuteranopic(c::ColorValue, p) = deuteranopic(c, p, default_brettel_neutral)
-tritanopic(c::ColorValue, p)   = tritanopic(c, p, default_brettel_neutral)
+protanopic(c::Color, p)   = protanopic(c, p, default_brettel_neutral)
+deuteranopic(c::Color, p) = deuteranopic(c, p, default_brettel_neutral)
+tritanopic(c::Color, p)   = tritanopic(c, p, default_brettel_neutral)
 
-protanopic(c::ColorValue)   = protanopic(c, 1.0)
-deuteranopic(c::ColorValue) = deuteranopic(c, 1.0)
-tritanopic(c::ColorValue)   = tritanopic(c, 1.0)
+protanopic(c::Color)   = protanopic(c, 1.0)
+deuteranopic(c::Color) = deuteranopic(c, 1.0)
+tritanopic(c::Color)   = tritanopic(c, 1.0)
 
-@vectorize_1arg ColorValue protanopic
-@vectorize_1arg ColorValue deuteranopic
-@vectorize_1arg ColorValue tritanopic
+@vectorize_1arg Color protanopic
+@vectorize_1arg Color deuteranopic
+@vectorize_1arg Color tritanopic
 
 # MSC - Most Saturated Color for given hue h
 # ---------------------
@@ -228,4 +242,3 @@ function MSC(h,l)
     a=(pend.l-l)/(pend.l-pmid.l)
     a*(pmid.c-pend.c)+pend.c
 end
-
