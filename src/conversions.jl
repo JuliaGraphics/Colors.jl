@@ -6,7 +6,8 @@
 # which will always have the eltype filled in.
 
 # changing the datatype without changing the underlying colorspace
-for C in ColorTypes.parametric
+pcolors = union(ColorTypes.parametric, [Gray])
+for C in pcolors
     fn = colorfields(C)
     fcvt = Expr[:(convert(T, c.$f)) for f in fn]
     @eval _convert{T}(::Type{$C{T}}, c::$C) = $C{T}($(fcvt...))
@@ -14,16 +15,17 @@ end
 
 # Conversions to other color spaces (and for which the element type
 # may or may not be specified)
-for C in ColorTypes.parametric
+for C in pcolors
     @eval convert(::Type{$C}, c::Color) = _convert(ccolor($C,typeof(c)), c)
     @eval convert{T}(::Type{$C{T}}, c::Color) = _convert($C{T}, c)
 end
 
-convert{C<:AbstractColor}(::Type{C}, c::Transparent) = convert(C, color(c))
-convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::AbstractColor) = convert(A, c)
-convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::Transparent) = convert(A, convert(colortype(A), color(c)), alpha(c))
-convert{A<:Union(AlphaColor,ColorAlpha)}(::Type{A}, c::ARGB32) = A(convert(colortype(A), color(c)), alpha(c))
+convert{C<:AbstractColor}(::Type{C}, c::Transparent)   = convert(C, color(c))
+convert{P<:Transparent  }(::Type{P}, c::AbstractColor) = convert(P, convert(colortype(P), c))
+convert{P<:Transparent  }(::Type{P}, c::Transparent)   = convert(P, convert(colortype(P), c), alpha(c))
 
+convert{C<:AbstractColor}(::Type{C}, g::AbstractGray)  = convert(P, convert(RGB, g))
+convert{P<:Transparent  }(::Type{P}, g::AbstractGray)  = convert(P, convert(RGB, g))
 
 # Everything to RGB
 # -----------------
@@ -130,6 +132,11 @@ _convert{CV<:AbstractRGB}(::Type{CV}, c::Color)    = _convert(CV, _convert(XYZ{e
 
 _convert{CV<:AbstractRGB{Ufixed8}}(::Type{CV}, c::RGB24) = CV(Ufixed8(c.color&0x00ff0000>>>16,0), Ufixed8(c.color&0x0000ff00>>>8,0), Ufixed8(c.color&0x000000ff,0))
 _convert{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
+
+function _convert{CV<:AbstractRGB}(::Type{CV}, c::AbstractGray)
+    g = convert(eltype(CV), c.val)
+    CV(g, g, g)
+end
 
 
 # Everything to HSV
@@ -729,18 +736,8 @@ convert(::Type{RGB24}, c::AbstractRGB{Ufixed8}) = RGB24(c.r, c.g, c.b)
 convert(::Type{RGB24}, c::AbstractRGB) = RGB24(round(UInt32, 255*c.r)<<16 +
                                                round(UInt32, 255*c.g)<<8 +
                                                round(UInt32, 255*c.b))
-to32(x::Ufixed8) = convert(UInt32, reinterpret(x))
-convert(::Type{RGB24}, val::UInt32) = RGB24(val & 0x00ffffff)
 
 convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{Ufixed8}, c))
-
-# To UInt32
-# ----------------
-
-convert(::Type{UInt32}, c::RGB24) = c.color
-
-
-convert(::Type{UInt32}, ac::ARGB32) = ac.color
 
 
 # To ARGB32
@@ -751,5 +748,17 @@ convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::Transparent{CV}) =
 convert(::Type{ARGB32}, c::Transparent) =
     ARGB32(convert(RGB24, c).color | round(UInt32, 255*c.alpha)<<24)
 convert(::Type{ARGB32}, c::Color) = ARGB32(convert(RGB24, c).color | 0xff000000)
-convert(::Type{ARGB32}, val::UInt32) = ARGB32(val)
 convert(::Type{ARGB32}, c::Color, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
+
+# To Gray
+# -------
+
+# Rec 601 luma conversion
+if VERSION < v"0.4.0-dev+1827"
+    const unsafe_trunc = itrunc
+else
+    const unsafe_trunc = Base.unsafe_trunc
+end
+
+convert{T<:Ufixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = Gray{T}(T(unsafe_trunc(FixedPointNumbers.rawtype(T), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b)), 0))
+convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
