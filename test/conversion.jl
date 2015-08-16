@@ -153,3 +153,26 @@ julia> for t in subtypes(ColorValue)
 @test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
 
 @test 1.0LCHuv(0.0, 0.0, 0.0) === LCHuv(0.0, 0.0, 0.0)
+
+# YIQ
+@test convert(YIQ, RGB(1,0,0)) == YIQ{Float32}(0.299, 0.595716, 0.211456)
+@test convert(YIQ, RGB(0,1,0)) == YIQ{Float32}(0.587, -0.274453, -0.522591)
+@test convert(YIQ, RGB(0,0,1)) == YIQ{Float32}(0.114, -0.321263, 0.311135)
+@test convert(RGB, YIQ(1.0,0.0,0.0)) == RGB(1,1,1)
+v = 0.5957
+@test convert(RGB, YIQ(0.0,1.0,0.0)) == RGB(0.9563*v,0,0)
+v = -0.5226
+@test convert(RGB, YIQ(0.0,0.0,-1.0)) == RGB(0,-0.6474*v,0)
+
+# Gray
+c = Gray{Ufixed16}(0.8)
+@test convert(RGB, c) == RGB{Ufixed16}(0.8,0.8,0.8)
+@test convert(RGB{Float32}, c) == RGB{Float32}(0.8,0.8,0.8)
+
+# More AbstractRGB
+r4 = RGB4(1,0,0)
+@test convert(RGB, r4) == RGB(1,0,0)
+@test convert(RGB{Ufixed8}, r4) == RGB{Ufixed8}(1,0,0)
+@test convert(RGB4{Ufixed8}, r4) == RGB4{Ufixed8}(1,0,0)
+@test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
+@test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
