@@ -92,9 +92,11 @@ end
 #   The CIEDE2000 color difference metric evaluated between a and b.
 #
 
+pow7(x) = (y = x*x*x; y*y*x)
+const twentyfive7 = 25^7
+
 # Delta E 2000
 function colordiff(ai::Color, bi::Color, m::DE_2000)
-
     # Ensure that the input values are in L*a*b* space
     a_Lab = convert(Lab, ai)
     b_Lab = convert(Lab, bi)
@@ -102,7 +104,7 @@ function colordiff(ai::Color, bi::Color, m::DE_2000)
     # Calculate some necessary factors from the L*a*b* values
     ac, bc = sqrt(a_Lab.a^2 + a_Lab.b^2), sqrt(b_Lab.a^2 + b_Lab.b^2)
     mc = (ac + bc)/2
-    g = (1 - sqrt(mc^7 / (mc^7 + 25.0^7))) / 2
+    g = (1 - sqrt(pow7(mc) / (pow7(mc) + twentyfive7))) / 2
     a_Lab = Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b)
     b_Lab = Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b)
 
@@ -148,7 +150,7 @@ function colordiff(ai::Color, bi::Color, m::DE_2000)
 
     # rotation term
     dtheta = 30 * exp(-((mh - 275)/25)^2)
-    cr = 2 * sqrt(mc^7 / (mc^7 + 25.0^7))
+    cr = 2 * sqrt(pow7(mc) / (pow7(mc) + twentyfive7))
     tr = -sind(2*dtheta) * cr
 
     # Final calculation

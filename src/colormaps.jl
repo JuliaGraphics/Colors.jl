@@ -35,17 +35,15 @@ function distinguishable_colors{T<:Color}(n::Integer,
 
     # Candidate colors
     N = length(lchoices)*length(cchoices)*length(hchoices)
-    candidate = Array(T, N)
+    candidate = Array(Lab{Float64}, N)
     j = 0
     for h in hchoices, c in cchoices, l in lchoices
         candidate[j+=1] = LCHab(l, c, h)
     end
 
     # Transformed colors
-    tc = transform(candidate[1])
-    candidate_t = Array(typeof(tc), N)
-    candidate_t[1] = tc
-    for i = 2:N
+    candidate_t = Array(Lab{Float64}, N)
+    for i = 1:N
         candidate_t[i] = transform(candidate[i])
     end
 
@@ -56,7 +54,7 @@ function distinguishable_colors{T<:Color}(n::Integer,
     # Minimum distances of the current color to each previously selected color.
     ds = fill(Inf, N)
     for i = 1:length(seed)
-        ts = transform(seed[i])
+        ts = convert(Lab{Float64}, transform(seed[i]))::Lab{Float64}
         for k = 1:N
             ds[k] = min(ds[k], colordiff(ts, candidate_t[k]))
         end
@@ -77,7 +75,7 @@ end
 
 
 distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
-distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB,0); kwargs...)
+distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB{U8},0); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,
