@@ -292,6 +292,8 @@ end
 const xyz_epsilon = 216 / 24389
 const xyz_kappa   = 24389 / 27
 
+convert(::Type{XYZ}, c, wp::XYZ) = convert(XYZ{eltype(wp)}, c, wp)
+convert{T}(::Type{XYZ{T}}, c, wp::XYZ) = cnvt(XYZ{T}, c, wp)
 function cnvt{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
     fy = (c.l + 16) / 116
     fx = c.a / 500 + fy
@@ -308,7 +310,7 @@ function cnvt{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
 end
 
 
-cnvt{T}(::Type{XYZ{T}}, c::Lab)   = cnvt(XYZ{T}, c, WP_DEFAULT)
+cnvt{T}(::Type{XYZ{T}}, c::Lab)   = convert(XYZ{T}, c, WP_DEFAULT)
 cnvt{T}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{T}, c))
@@ -404,6 +406,8 @@ cnvt{T}(::Type{Lab{T}}, c::AbstractRGB) = convert(Lab{T}, convert(XYZ{T}, c))
 cnvt{T}(::Type{Lab{T}}, c::HSV) = cnvt(Lab{T}, convert(RGB{T}, c))
 cnvt{T}(::Type{Lab{T}}, c::HSL) = cnvt(Lab{T}, convert(RGB{T}, c))
 
+convert{T}(::Type{Lab{T}}, c, wp::XYZ) = cnvt(Lab{T}, c, wp)
+convert(::Type{Lab}, c, wp::XYZ) = cnvt(Lab{eltype(wp)}, c, wp)
 
 function fxyz2lab(v)
     v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
@@ -519,6 +523,8 @@ cnvt{T}(::Type{Luv{T}}, c::AbstractRGB) = cnvt(Luv{T}, convert(XYZ{T}, c))
 cnvt{T}(::Type{Luv{T}}, c::HSV) = cnvt(Luv{T}, convert(RGB{T}, c))
 cnvt{T}(::Type{Luv{T}}, c::HSL) = cnvt(Luv{T}, convert(RGB{T}, c))
 
+convert{T}(::Type{Luv{T}}, c, wp::XYZ) = cnvt(Luv{T}, c, wp)
+convert(::Type{Luv}, c, wp::XYZ) = cnvt(Luv{eltype(wp)}, c, wp)
 
 function cnvt{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT)
     (u_wp, v_wp) = xyz_to_uv(wp)
