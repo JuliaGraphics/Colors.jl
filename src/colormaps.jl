@@ -4,25 +4,32 @@ include("maps_data.jl")
 # Color Scale Generation
 # ----------------------
 
-# Generate n maximally distinguishable colors.
-#
-# This uses a greedy brute-force approach to choose n colors that are maximally
-# distinguishable. Given seed color(s), and a set of possible hue, chroma, and
-# lightness values (in LCHab space), it repeatedly chooses the next color as the
-# one that maximizes the minimum pairwise distance to any of the colors already
-# in the palette.
-#
-# Args:
-#   n: Number of colors to generate.
-#   seed: Initial color(s) included in the palette.
-#   transform: Transform applied to colors before measuring distance.
-#   lchoices: Possible lightness values.
-#   cchoices: Possible chroma values.
-#   hchoices: Possible hue values.
-#
-# Returns:
-#   A Vector{Color} of length n.
-#
+@doc """
+    distinguishable_colors(n, [seed]; [transform, lchoices, cchoices, hchoices])
+
+Generate n maximally distinguishable colors.
+
+This uses a greedy brute-force approach to choose n colors that are maximally
+distinguishable. Given seed color(s), and a set of possible hue, chroma, and
+lightness values (in LCHab space), it repeatedly chooses the next color as the
+one that maximizes the minimum pairwise distance to any of the colors already
+in the palette.
+
+Args:
+
+- `n`: Number of colors to generate.
+- `seed`: Initial color(s) included in the palette.  Default is `Array(RGB{U8},0)`.
+
+Keyword arguments:
+
+- `transform`: Transform applied to colors before measuring distance. Default is the identity; other choices include `deuteranopic` to simulate color-blindness.
+- `lchoices`: Possible lightness values (default `linspace(0,100,15)`)
+- `cchoices`: Possible chroma values (default `linspace(0,100,15)`)
+- `hchoices`: Possible hue values (default `linspace(0,340,20)`)
+
+Returns:
+  A `Vector{Color}` of length `n`.
+""" ->
 function distinguishable_colors{T<:Color}(n::Integer,
                             seed::AbstractVector{T};
                             transform::Function = identity,
@@ -230,6 +237,17 @@ end
 # ----------------------
 # Main function to handle different predefined colormaps
 #
+@doc """
+    colormap(cname, [N; mid, logscale, kvs...])
+
+Returns a predefined sequential or diverging colormap computed using
+the algorithm by Wijffelaars, M., et al. (2008).  Sequential colormaps
+`cname` choices are `Blues`, `Greens`, `Grays`, `Oranges`, `Purples`,
+and `Reds`.  Diverging colormap choices are `RdBu`.  Optionally, you
+can specify the number of colors `N` (default 100). Keyword arguments
+include the position of the middle point `mid` (default 0.5) and the
+possibility to switch to log scaling with `logscale` (default false).
+""" ->
 function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)
 
     cname = lowercase(cname)

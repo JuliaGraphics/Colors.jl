@@ -31,21 +31,24 @@ function parse_alpha_num(num::AbstractString)
 end
 
 
-# Parse a color description.
-#
-# This parses subset of HTML/CSS color specifications. In particular, everything
-# is supported but: "currentColor".
-#
-# It does support named colors (though it uses X11 named colors, which are
-# slightly different than W3C named colors in some cases), "rgb()", "hsl()",
-# "#RGB", and "#RRGGBB' syntax.
-#
-# Args:
-#   desc: A color name or description.
-#
-# Returns:
-#   An RGB color, unless "hsl()" was used, in which case an HSL color.
-#
+@doc """
+    color(desc)
+
+Parse a color description.
+
+This parses subset of HTML/CSS color specifications. In particular, everything
+is supported but: "currentColor".
+
+It does support named colors (though it uses X11 named colors, which are
+slightly different than W3C named colors in some cases), "rgb()", "hsl()",
+"#RGB", and "#RRGGBB' syntax.
+
+Args:
+  desc: A color name or description.
+
+Returns:
+  An RGB color, unless "hsl()" was used, in which case an HSL color.
+""" ->
 function color(desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)

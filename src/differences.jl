@@ -404,4 +404,13 @@ function colordiff(ai::Color, bi::Color, m::DE_DIN99o)
 end
 
 # Default to Delta E 2000
+@doc """
+    colordiff(a, b)
+    colordiff(a, b, metric)
+
+Compute an approximate measure of the perceptual difference between
+colors `a` and `b`.  Optionally, a `metric` may be supplied, chosen
+among `DE_2000` (the default), `DE_94`, `DE_JPC79`, `DE_CMC`,
+`DE_BFD`, `DE_AB`, `DE_DIN99`, `DE_DIN99d`, `DE_DIN99o`.
+""" ->
 colordiff(ai::Color, bi::Color) = colordiff(ai::Color, bi::Color, DE_2000())

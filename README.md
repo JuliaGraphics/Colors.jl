@@ -58,7 +58,7 @@ a `HSL` value.
 
 ## CIE Standard Observer
 
-`cie_color_match(wavelen::Real)`
+`colormatch(wavelen::Real)`
 
 The CIE defines a standard observer, defining typical frequency response curve
 for each of the three human cones. This function returns an XYZ color

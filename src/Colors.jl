@@ -15,11 +15,15 @@ else
     import Graphics: set_source, set_source_rgb, GraphicsContext
 end
 
+if VERSION < v"0.4.0-dev"
+    using Docile
+end
+
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,
        hex,
        protanopic, deuteranopic, tritanopic,
-       distinguishable_colors,
+       distinguishable_colors, whitebalance,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
        MSC, sequential_palette, diverging_palette, colormap,
        colormatch, CIE1931_CMF, CIE1964_CMF, CIE1931J_CMF, CIE1931JV_CMF

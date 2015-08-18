@@ -7,14 +7,20 @@ abstract CIE1931JV_CMF <: CMF
 abstract CIE2006_2_CMF <: CMF
 abstract CIE2006_10_CMF <: CMF
 
-# Evaluate the CIE standard observer color match function.
-#
-# Args:
-#   wavelen: Wavelength of stimulus in nanometers.
-#
-# Returns:
-#   XYZ value of perceived color.
-#
+@doc """
+    colormatch(wavelength)
+    colormatch(matchingfunction, wavelength)
+
+Evaluate the CIE standard observer color match function.
+
+Args:
+
+- matchingfunction (optional): a type used to specify the matching function. Choices include `CIE1931_CMF` (the default, the CIE 1931 2° matching function), `CIE1964_CMF` (the CIE 1964 10° color matching function), `CIE1931J_CMF` (Judd adjustment to `CIE1931_CMF`), `CIE1931JV_CMF` (Judd-Vos adjustment to `CIE1931_CMF`).
+- wavelen: Wavelength of stimulus in nanometers.
+
+Returns:
+  XYZ value of perceived color.
+""" ->
 function colormatch(wavelen::Real)
     return colormatch(CIE1931_CMF, wavelen)
 end
@@ -1984,5 +1990,3 @@ const cie2006_10deg_xyz_cmf_table=
      3.874992e-05  1.520262e-05  0.000000e+00;
      3.633762e-05  1.426169e-05  0.000000e+00;
      3.407653e-05  1.337946e-05  0.000000e+00]
-
-
