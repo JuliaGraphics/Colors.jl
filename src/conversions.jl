@@ -289,9 +289,8 @@ function cnvt{T}(::Type{XYZ{T}}, c::xyY)
 end
 
 
-const xyz_epsilon = 216 // 24389
-const xyz_kappa   = 24389 // 27
-
+const xyz_epsilon = 216 / 24389
+const xyz_kappa   = 24389 / 27
 
 function cnvt{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
     fy = (c.l + 16) / 116
@@ -335,7 +334,7 @@ function cnvt{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT)
     y = c.l > xyz_kappa * xyz_epsilon ? wp.y * ((c.l + 16) / 116)^3 : wp.y * c.l / xyz_kappa
     b = -5y
     d = y * (39 * (c.l==0 ? zero(T) : c.l / (c.v + 13 * c.l * v_wp)) - 5)
-    x = d==b ? zero(T) : (d - b) / (a + 1//3)
+    x = d==b ? zero(T) : (d - b) / (a + 1/3)
     z = a * x + b + zero(T)
 
     XYZ{T}(x, y, z)
