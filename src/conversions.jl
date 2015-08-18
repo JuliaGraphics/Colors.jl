@@ -54,6 +54,15 @@ ColorTypes._convert{Pdest<:Color,Cdest,Csrc}(::Type{Pdest}, ::Type{Cdest}, ::Typ
 cnvt{C<:Color}(::Type{C}, g::AbstractGray)  = cnvt(C, convert(RGB{eltype(C)}, g))
 
 
+macro mul3x3(T, M, c1, c2, c3)
+    esc(quote
+        @inbounds ret = $T($M[1,1]*$c1 + $M[1,2]*$c2 + $M[1,3]*$c3,
+                           $M[2,1]*$c1 + $M[2,2]*$c2 + $M[2,3]*$c3,
+                           $M[3,1]*$c1 + $M[3,2]*$c2 + $M[3,3]*$c3)
+        ret
+        end)
+end
+
 # Everything to RGB
 # -----------------
 
@@ -364,8 +373,7 @@ end
 
 
 function cnvt{T}(::Type{XYZ{T}}, c::LMS)
-    ans = CAT02_INV * [c.l, c.m, c.s]
-    XYZ{T}(ans[1], ans[2], ans[3])
+    @mul3x3 XYZ{T} CAT02_INV c.l c.m c.s
 end
 
 
@@ -710,8 +718,7 @@ const CAT02_INV = inv(CAT02)
 
 
 function cnvt{T}(::Type{LMS{T}}, c::XYZ)
-    ans = CAT02 * [c.x, c.y, c.z]
-    LMS{T}(ans[1], ans[2], ans[3])
+    @mul3x3 LMS{T} CAT02 c.x c.y c.z
 end
 
 
