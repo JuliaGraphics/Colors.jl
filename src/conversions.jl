@@ -239,12 +239,17 @@ cnvt{T}(::Type{HSL{T}}, c::Color) = cnvt(HSL{T}, convert(RGB{T}, c))
 
 function cnvt{T}(::Type{HSI{T}}, c::AbstractRGB)
     rgb = correct_gamut(c)
-    α = (2red(rgb) - green(rgb) - blue(rgb))/2
-    β = 0.8660254*(green(rgb) - blue(rgb))
-    h = atan2(β, α)
-    i = (red(rgb) + green(rgb) + blue(rgb))/3
-    s = 1-min(red(rgb), green(rgb), blue(rgb))/i
-    s = ifelse(i > 0, s, zero(s))
+    r, g, b = red(rgb), green(rgb), blue(rgb)
+    isum = r+g+b
+    i = isum/3
+    m = min(r, g, b)
+    s = i > 0 ? 1-m/i : 1-one(i)/one(i) # the latter is a type-stable 0
+    val = (r-(g+b)/2)/sqrt(r^2+g^2+b^2-r*g-r*b-g*b)
+    val = clamp(val, -one(val), one(val))
+    h = acosd(val)
+    if b > g
+        h = 360-h
+    end
     HSI{T}(h, s, i)
 end
 

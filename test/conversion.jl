@@ -176,3 +176,32 @@ r4 = RGB4(1,0,0)
 @test convert(RGB4{Ufixed8}, r4) == RGB4{Ufixed8}(1,0,0)
 @test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
 @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
+
+# Test accuracy of conversion
+csconv = jldopen("test_conversions.jld") do file
+    read(file, "csconv")
+end
+
+function convcompare(from, to, eps; showfailure::Bool=false)
+    errmax = 0.0
+    for i = 1:length(from)
+        t = to[i]
+        f = convert(typeof(t), from[i])
+        diff = abs(comp1(t)-comp1(f)) + abs(comp2(t)-comp2(f)) + abs(comp3(t)-comp3(f))
+        mag = abs(comp1(t)+comp1(f)) + abs(comp2(t)+comp2(f)) + abs(comp3(t)+comp3(f))
+        if showfailure && diff>eps*mag
+            original = from[i]
+            @show original f t
+        end
+        errmax = max(errmax, diff/mag)
+    end
+    errmax > eps && warn("Error on conversions from ", eltype(from), " to ", eltype(to), ", relative error = ", errmax)
+    errmax <= eps
+end
+
+for i = 1:length(csconv)
+    f, t = csconv[i]
+    if !convcompare(f, t, 1e-3)
+        println("  index $i")
+    end
+end
