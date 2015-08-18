@@ -94,26 +94,26 @@ function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSV)
     end
 end
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSL)
-    function qtrans(u, v, hue)
-        if     hue > 360; hue -= 360
-        elseif hue < 0;   hue += 360
-        end
-
-        if     hue < 60;  u + (v - u) * hue / 60
-        elseif hue < 180; v
-        elseif hue < 240; u + (v - u) * (240 - hue) / 60
-        else;             u
-        end
+function qtrans(u, v, hue)
+    if     hue > 360; hue -= 360
+    elseif hue < 0;   hue += 360
     end
 
+    if     hue < 60;  u + (v - u) * hue / 60
+    elseif hue < 180; v
+    elseif hue < 240; u + (v - u) * (240 - hue) / 60
+    else;             u
+    end
+end
+
+function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSL)
     v = c.l <= 0.5 ? c.l * (1 + c.s) : c.l + c.s - (c.l * c.s)
     u = 2 * c.l - v
 
     if c.s == 0; CV(c.l, c.l, c.l)
     else;        CV(qtrans(u, v, c.h + 120),
-                        qtrans(u, v, c.h),
-                        qtrans(u, v, c.h - 120))
+                    qtrans(u, v, c.h),
+                    qtrans(u, v, c.h - 120))
     end
 end
 
