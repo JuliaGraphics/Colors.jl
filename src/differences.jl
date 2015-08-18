@@ -35,7 +35,7 @@ end
 
 # BFD recommendation
 immutable DE_BFD <: DifferenceMetric
-    wp::XYZ
+    wp::XYZ{Float64}
     kl::Float64
     kc::Float64
     DE_BFD(wp,kl,kc) = new(wp,kl,kc)
@@ -96,24 +96,24 @@ end
 function colordiff(ai::Color, bi::Color, m::DE_2000)
 
     # Ensure that the input values are in L*a*b* space
-    a = convert(Lab, ai)
-    b = convert(Lab, bi)
+    a_Lab = convert(Lab, ai)
+    b_Lab = convert(Lab, bi)
 
     # Calculate some necessary factors from the L*a*b* values
-    ac, bc = sqrt(a.a^2 + a.b^2), sqrt(b.a^2 + b.b^2)
+    ac, bc = sqrt(a_Lab.a^2 + a_Lab.b^2), sqrt(b_Lab.a^2 + b_Lab.b^2)
     mc = (ac + bc)/2
     g = (1 - sqrt(mc^7 / (mc^7 + 25.0^7))) / 2
-    a = Lab(a.l, a.a * (1 + g), a.b)
-    b = Lab(b.l, b.a * (1 + g), b.b)
+    a_Lab = Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b)
+    b_Lab = Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b)
 
     # Convert to L*C*h, where the remainder of the calculations are performed
-    a = convert(LCHab, a)
-    b = convert(LCHab, b)
+    a = convert(LCHab, a_Lab)
+    b = convert(LCHab, b_Lab)
 
     # Calculate the delta values for each channel
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
     if a.c * b.c == 0
-        dh = 0
+        dh = zero(dh)
     elseif dh > 180
         dh -= 360
     elseif dh < -180
@@ -165,7 +165,7 @@ function colordiff(ai::Color, bi::Color, m::DE_94)
     # Calculate the delta values for each channel
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
     if a.c * b.c == 0
-        dh = 0
+        dh = zero(dh)
     elseif dh > 180
         dh -= 360
     elseif dh < -180
@@ -196,7 +196,7 @@ function colordiff(ai::Color, bi::Color, m::DE_JPC79)
     # Calculate deltas in each direction
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
     if a.c * b.c == 0
-        dh = 0
+        dh = zero(dh)
     elseif dh > 180
         dh -= 360
     elseif dh < -180
@@ -246,7 +246,7 @@ function colordiff(ai::Color, bi::Color, m::DE_CMC)
     # Calculate deltas in each direction
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
     if a.c * b.c == 0
-        dh = 0
+        dh = zero(dh)
     elseif dh > 180
         dh -= 360
     elseif dh < -180
@@ -295,26 +295,26 @@ end
 function colordiff(ai::Color, bi::Color, m::DE_BFD)
 
     # We have to start back in XYZ because BFD uses a different L equation
-    a = convert(XYZ, ai, m.wp)
-    b = convert(XYZ, bi, m.wp)
+    a_XYZ = convert(XYZ, ai, m.wp)
+    b_XYZ = convert(XYZ, bi, m.wp)
 
-    la = 54.6*log10(a.y+1.5)-9.6
-    lb = 54.6*log10(b.y+1.5)-9.6
+    la = 54.6*log10(a_XYZ.y+1.5)-9.6
+    lb = 54.6*log10(b_XYZ.y+1.5)-9.6
 
     # Convert into LCh with the proper white point
-    a = convert(Lab, a, m.wp)
-    b = convert(Lab, b, m.wp)
-    a = convert(LCHab, a)
-    b = convert(LCHab, b)
+    a_Lab = convert(Lab, a_XYZ, m.wp)
+    b_Lab = convert(Lab, b_XYZ, m.wp)
+    a1 = convert(LCHab, a_Lab)
+    b1 = convert(LCHab, b_Lab)
 
     # Substitute in the different L values into the L*C*h values
-    a = LCHab(la, a.c, a.h)
-    b = LCHab(lb, b.c, b.h)
+    a = LCHab(la, a1.c, a1.h)
+    b = LCHab(lb, b1.c, b1.h)
 
     # Calculate deltas in each direction
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
     if a.c * b.c == 0
-        dh = 0
+        dh = zero(dh)
     elseif dh > 180
         dh -= 360
     elseif dh < -180
@@ -348,8 +348,7 @@ function colordiff(ai::Color, bi::Color, m::DE_BFD)
     rt = rc*rh
 
     # Final calculation
-    a = sqrt((dl/m.kl)^2 + (dc/(m.kc*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
-
+    sqrt((dl/m.kl)^2 + (dc/(m.kc*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
 end
 
 # Delta E*ab (the original)
