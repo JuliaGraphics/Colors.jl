@@ -13,9 +13,7 @@ other things.
 
 ## Colorspaces
 
-What follows is a synopsis of every colorspace implemented in Color.jl. Any
-color value can be converted to a similar value in any other colorspace using
-the `convert` function.
+The colorspaces used by Colors are defined in [ColorTypes]().  Colors allows you to convert from one colorspace to another using the `convert` function.
 
 E.g.
 ```julia
@@ -25,216 +23,24 @@ convert(RGB, HSL(270, 0.5, 0.5))
 Depending on the source and destination colorspace, this may not be perfectly
 lossless.
 
-### RGB
+The available colorspaces are described in detail in ColorTypes; briefly, the defined spaces are:
 
-The sRGB colorspace.
+- Red-Green-Blue spaces: `RGB`, `BGR`, `RGB1`, `RGB4`, `RGB24`, plus
+  transparent versions `ARGB`, `RGBA`, `ABGR`, `BGRA`, and `ARGB32`.
 
-```julia
-immutable RGB{T} <: ColorValue
-    r::T # Red in [0,1]
-    g::T # Green in [0,1]
-    b::T # Blue in [0,1]
-end
-```
+- `HSV`, `HSL`, `HSI`, plus all 6 transparent variants (`AHSV`,
+  `HSVA`, `AHSL`, `HSLA`, `AHSI`, `HSIA`)
 
-RGBs may be defined with two broad number types: `FloatingPoint` and `FixedPoint`.
-`FixedPoint` come from the [`FixedPointNumbers`](https://github.com/JeffBezanson/FixedPointNumbers.jl) package,
-and represent fractional
-numbers (between 0 and 1, inclusive) internally using integers.
-For example, `0xffuf8` creates a `Ufixed8` number with value equal to `1.0` but
-which internally is represented as `0xff`.
-This strategy ensures that `1` always means "saturated color", regardless of how that value is represented.
-Ordinary integers should not be used, although the convenience constructor `RGB(1,0,0)` will create
-a value `RGB{Float64}(1.0, 0.0, 0.0)`.
+- `XYZ`, `xyY`, `LMS` and all 6 transparent variants
 
-The parametric representation of colors facilitates interfacing with external libraries that may
-require a specific representation. It's also worth nothing that this package defines an
-`AbstractRGB{T}` type, from which you can define your own variants of RGB. For example, if you
-need a `BGR{Ufixed8}<:AbstractRGB{Ufixed8}` type to interface with a C library, you can
-define this easily. See an example of this in the [`test/layout.jl` file](test/layout.jl).
+- `Lab`, `Luv`, `LCHab`, `LCHuv` and all 8 transparent variants
 
-If you do define your own `AbstractRGB`, note that the constructor **must initialize the values
-in the order `(r,g,b)` regardless of how they are arranged internally in memory**.
+- `DIN99`, `DIN99d`, `DIN99o` and all 6 transparent variants
 
-### HSV
+- Storage formats `YIQ`, `YCbCr` and their transparent variants
 
-Hue-Saturation-Value. A common projection of RGB to cylindrical coordinates.
-This is also sometimes called "HSB" for Hue-Saturation-Brightness.
-
-```julia
-immutable HSV{T} <: ColorValue
-    h::T # Hue in [0,360]
-    s::T # Saturation in [0,1]
-    v::T # Value in [0,1]
-end
-```
-
-`T` must be of `FloatingPoint` type, since the values range beyond what can be represented with most `FixedPoint` types.
-
-### HSL
-
-Hue-Saturation-Lightness. Another common projection of RGB to cylindrical
-coordinates.
-
-```julia
-immutable HSL{T} <: ColorValue
-    h::T # Hue in [0,360]
-    s::T # Saturation in [0,1]
-    l::T # Lightness in [0,1]
-end
-```
-
-### XYZ
-
-The XYZ colorspace standardized by the CIE in 1931, based on experimental
-measurements of color perception culminating in the CIE standard observer (see
-`cie_color_match`)
-
-```julia
-immutable XYZ{T} <: ColorValue
-    x::T
-    y::T
-    z::T
-end
-```
-
-Currently, XYZ is the only type other than RGB supporting `FixedPoint`.
-
-### xyY
-
-The xyY colorspace is another CIE standardized color space, based directly off of a transformation from XYZ. It was developed specifically because the xy chromaticity space is invariant to the lightness of the patch.
-
-```julia
-immutable xyY{T} <: ColorValue
-    x::T
-    y::T
-    Y::T
-end
-```
-
-### LAB
-
-A perceptually uniform colorpsace standardized by the CIE in 1976. See also LUV,
-the associated colorspace standardized the same year.
-
-```julia
-immutable LAB{T} <: ColorValue
-    l::T # Luminance in approximately [0,100]
-    a::T # Red/Green
-    b::T # Blue/Yellow
-end
-```
-
-### LUV
-
-A perceptually uniform colorpsace standardized by the CIE in 1976. See also LAB,
-a similar colorspace standardized the same year.
-
-```julia
-immutable LUV{T} <: ColorValue
-    l::T # Luminance
-    u::T # Red/Green
-    v::T # Blue/Yellow
-end
-```
-
-
-### LCHab
-
-The LAB colorspace reparameterized using cylindrical coordinates.
-
-```julia
-immutable LCHab{T} <: ColorValue
-    l::T # Luminance in [0,100]
-    c::T # Chroma
-    h::T # Hue in [0,360]
-end
-```
-
-
-### LCHuv
-
-The LUV colorspace reparameterized using cylindrical coordinates.
-
-```julia
-immutable LCHuv{T} <: ColorValue
-    l::T # Luminance
-    c::T # Chroma
-    h::T # Hue
-end
-```
-
-
-### DIN99
-
-The DIN99 uniform colorspace as described in the DIN 6176 specification.
-
-```julia
-immutable DIN99{T} <: ColorValue
-    l::T # L99 (Lightness)
-    a::T # a99 (Red/Green)
-    b::T # b99 (Blue/Yellow)
-end
-```
-
-
-### DIN99d
-
-The DIN99d uniform colorspace is an improvement on the DIN99 color space that adds a correction to the X tristimulus value in order to emulate the rotation term present in the DeltaE2000 equation.
-
-```julia
-immutable DIN99d{T} <: ColorValue
-    l::T # L99d (Lightness)
-    a::T # a99d (Reddish/Greenish)
-    b::T # b99d (Bluish/Yellowish)
-end
-```
-
-
-### DIN99o
-
-Revised version of the DIN99 uniform colorspace with modified coefficients for an improved metric.
-Similar to DIN99d X correction and the DeltaE2000 rotation term, DIN99o achieves comparable results by optimized `a*/b*` rotation and chroma compression terms.
-
-```julia
-immutable DIN99o{T} <: ColorValue
-    l::T # L99o (Lightness)
-    a::T # a99o (Red/Green)
-    b::T # b99o (Blue/Yellow)
-end
-```
-
-
-### LMS
-
-Long-Medium-Short cone response values. Multiple methods of converting to LMS
-space have been defined. Here the [CAT02](https://en.wikipedia.org/wiki/CIECAM02#CAT02) chromatic adaptation matrix is used.
-
-```
-immutable LMS{T} <: ColorValue
-    l::T # Long
-    m::T # Medium
-    s::T # Short
-end
-```
-
-### RGB24
-
-An RGB color represented as 8-bit values packed into a 32-bit integer.
-
-```julia
-immutable RGB24 <: ColorValue
-    color::Uint32
-end
-```
-
-## Transparency (alpha values)
-
-This package also allows you to define types that store a transparency with the `AlphaColorValue` type:
-```julia
-faintred = AlphaColorValue(RGB(1,0,0),0.25)
-```
-
+- `Gray`, `Gray24`, and the transparent variants `AGray`, `GrayA`, and
+  `AGray32`.
 
 ## Color Parsing
 
@@ -260,7 +66,7 @@ corresponding to a wavelength specified in nanometers.
 
 ## Chromatic Adaptation (white balance)
 
-`whitebalance{T <: ColorValue}(c::T, src_white::ColorValue, ref_white::ColorValue)`
+`whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)`
 
 Convert a color `c` viewed under conditions with a given source whitepoint
 `src_whitepoint`, to appear the same under a different conditions specified by a
@@ -268,15 +74,15 @@ reference whitepoint `ref_white`.
 
 ## Color Difference
 
-`colordiff(a::ColorValue, b::ColorValue)`
+`colordiff(a::Color, b::Color)`
 
 Evaluate the
 [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) color
 difference formula. This gives an approximate measure of the perceptual
-difference between two colors to a typical viewer. A large number is returned
+difference between two colors to a typical viewer. A larger number is returned
 for increasingly distinguishable colors.
 
-`colordiff(a::ColorValue, b::ColorValue, m::DifferenceMetric)`
+`colordiff(a::Color, b::Color, m::DifferenceMetric)`
 
 Evaluate the color difference formula specified by the supplied `DifferenceMetric`. Options are as follows:
 
@@ -324,9 +130,9 @@ Specify the Euclidean color difference equation applied in the `DIN99` uniform c
 ## Simulation of color deficiency ("color blindness")
 
 ```julia
-protanopic(c::ColorValue)
-deuteranopic(c::ColorValue)
-tritanopic(c::ColorValue)
+protanopic(c::Color)
+deuteranopic(c::Color)
+tritanopic(c::Color)
 ```
 
 Three functions are provided that map colors to a reduced gamut to simulate
@@ -338,9 +144,9 @@ These functions take a color and return a new, altered color is the same
 colorspace .
 
 ```julia
-protanopic(c::ColorValue, p::Float64)
-deuteranopic(c::ColorValue, p::Float64)
-tritanopic(c::ColorValue, p::Float64)
+protanopic(c::Color, p::Float64)
+deuteranopic(c::Color, p::Float64)
+tritanopic(c::Color, p::Float64)
 ```
 
 Also provided are versions of these functions with an extra parameter `p` in
@@ -356,14 +162,14 @@ and 0.0 is no loss at all.
 Generate `n` maximally distinguishable colors in LCHab space.
 
 ```julia
-distinguishable_colors(n::Integer,seed::ColorValue)
-distinguishable_colors{T<:ColorValue}(n::Integer,seed::AbstractVector{T})
+distinguishable_colors(n::Integer,seed::Color)
+distinguishable_colors{T<:Color}(n::Integer,seed::AbstractVector{T})
 ```
 
 A seed color or array of seed colors may be provided to `distinguishable_colors`, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
 
 ```julia
-distinguishable_colors{T<:ColorValue}(n::Integer, seed::AbstractVector{T};
+distinguishable_colors{T<:Color}(n::Integer, seed::AbstractVector{T};
     transform::Function = identity,
     lchoices::AbstractVector = linspace(0, 100, 15),
     cchoices::AbstractVector = linspace(0, 100, 15),
@@ -376,12 +182,12 @@ By default, `distinguishable_colors` chooses maximally distinguishable colors fr
 Distinguishability is maximized with respect to the CIEDE2000 color difference formula (see `colordiff`). If a `transform` function is specified, color difference is instead maximized between colors `a` and `b` according to
 `colordiff(transform(a), transform(b))`.
 
-`linspace(c1::ColorValue, c2::ColorValue, n=100)`
+`linspace(c1::Color, c2::Color, n=100)`
 
 Generates `n` colors in a linearly interpolated ramp from `c1` to
 `c2`, inclusive, returning an `Array` of colors
 
-`weighted_color_mean(w1::Real, c1::ColorValue, c2::ColorValue)`
+`weighted_color_mean(w1::Real, c1::Color, c2::Color)`
 
 Returns a color that is the weighted mean of `c1` and `c2`, where `c1`
 has a weight 0 ≤ `w1` ≤ 1.
