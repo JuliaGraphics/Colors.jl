@@ -1,9 +1,9 @@
-# Color
+# Colors
 
-[![Color on julia-release](http://pkg.julialang.org/badges/Color_release.svg)](http://pkg.julialang.org/?pkg=Color&ver=release)
-[![Color on julia-nightly](http://pkg.julialang.org/badges/Color_nightly.svg)](http://pkg.julialang.org/?pkg=Color&ver=nightly)
-[![Build Status](http://img.shields.io/travis/JuliaLang/Color.jl.svg)](https://travis-ci.org/JuliaLang/Color.jl)
-[![Coverage Status](https://img.shields.io/coveralls/JuliaLang/Color.jl.svg)](https://coveralls.io/r/JuliaLang/Color.jl)
+[![Colors on julia-release](http://pkg.julialang.org/badges/Colors_release.svg)](http://pkg.julialang.org/?pkg=Colors&ver=release)
+[![Colors on julia-nightly](http://pkg.julialang.org/badges/Colors_nightly.svg)](http://pkg.julialang.org/?pkg=Colors&ver=nightly)
+[![Build Status](http://img.shields.io/travis/JuliaLang/Colors.jl.svg)](https://travis-ci.org/JuliaLang/Colors.jl)
+[![Coverage Status](https://img.shields.io/coveralls/JuliaLang/Colors.jl.svg)](https://coveralls.io/r/JuliaLang/Colors.jl)
 
 This library provides a wide array of functions for dealing with color. This
 includes conversion between colorspaces, measuring distance between colors,
@@ -13,7 +13,7 @@ other things.
 
 ## Colorspaces
 
-The colorspaces used by Colors are defined in [ColorTypes]().  Colors allows you to convert from one colorspace to another using the `convert` function.
+The colorspaces used by Colors are defined in [ColorTypes](https://github.com/JuliaGraphics/ColorTypes.jl).  Colors allows you to convert from one colorspace to another using the `convert` function.
 
 E.g.
 ```julia
