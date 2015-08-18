@@ -125,15 +125,13 @@ function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSI)
     end
 end
 
-const M_XYZ_RGB = [ 3.2404542 -1.5371385 -0.4985314
-                   -0.9692660  1.8760108  0.0415560
-                    0.0556434 -0.2040259  1.0572252 ]
-
 function cnvt{CV<:AbstractRGB}(::Type{CV}, c::XYZ)
-    ans = M_XYZ_RGB * [c.x, c.y, c.z]
-    correct_gamut(CV(srgb_compand(ans[1]),
-                     srgb_compand(ans[2]),
-                     srgb_compand(ans[3])))
+    r =  3.2404542*c.x - 1.5371385*c.y - 0.4985314*c.z
+    g = -0.9692660*c.x + 1.8760108*c.y + 0.0415560*c.z
+    b =  0.0556434*c.x - 0.2040259*c.y + 1.0572252*c.z
+    CV(clamp01(srgb_compand(r)),
+       clamp01(srgb_compand(g)),
+       clamp01(srgb_compand(b)))
 end
 
 function cnvt{CV<:AbstractRGB}(::Type{CV}, c::YIQ)
@@ -262,19 +260,11 @@ function invert_rgb_compand(v)
     v <= 0.04045 ? v/12.92 : ((v+0.055) /1.055)^2.4
 end
 
-
-const M_RGB_XYZ =
-    [ 0.4124564  0.3575761  0.1804375
-      0.2126729  0.7151522  0.0721750
-      0.0193339  0.1191920  0.9503041 ]
-
-
 function cnvt{T}(::Type{XYZ{T}}, c::AbstractRGB)
-    v = [invert_rgb_compand(red(c)),
-         invert_rgb_compand(green(c)),
-         invert_rgb_compand(blue(c))]
-    ans = M_RGB_XYZ * v
-    XYZ{T}(ans[1], ans[2], ans[3])
+    r, g, b = invert_rgb_compand(red(c)), invert_rgb_compand(green(c)), invert_rgb_compand(blue(c))
+    XYZ{T}(0.4124564*r + 0.3575761*g + 0.1804375*b,
+           0.2126729*r + 0.7151522*g + 0.0721750*b,
+           0.0193339*r + 0.1191920*g + 0.9503041*b)
 end
 
 
@@ -408,12 +398,11 @@ cnvt{T}(::Type{Lab{T}}, c::HSV) = cnvt(Lab{T}, convert(RGB{T}, c))
 cnvt{T}(::Type{Lab{T}}, c::HSL) = cnvt(Lab{T}, convert(RGB{T}, c))
 
 
+function fxyz2lab(v)
+    v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
+end
 function cnvt{T}(::Type{Lab{T}}, c::XYZ, wp::XYZ)
-    function f(v)
-        v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
-    end
-
-    fx, fy, fz = f(c.x / wp.x), f(c.y / wp.y), f(c.z / wp.z)
+    fx, fy, fz = fxyz2lab(c.x / wp.x), fxyz2lab(c.y / wp.y), fxyz2lab(c.z / wp.z)
     Lab{T}(116fy - 16, 500(fx - fy), 200(fy - fz))
 end
 
