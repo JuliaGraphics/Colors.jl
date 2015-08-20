@@ -1,9 +1,28 @@
 using Colors, FixedPointNumbers, Compat, JLD
 using Base.Test
+import ColorTypes: eltype_default
+
+# Color parsing
+const redU8 = parse(Color, "red")
+@test isa(redU8, RGB{U8})
+@test redU8 == RGB(1,0,0)
+const redF64 = convert(RGB{Float64}, redU8)
+@test parse(RGB{Float64}, "red") === RGB{Float64}(1,0,0)
+@test isa(parse(HSV, "blue"), HSV)
+@test parse(Color, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
+@test parse(Color, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
+@test parse(Color, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
+@test parse(Color, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
+@test parse(Color, "hsl(120, 100%, 50%)") === HSL{Float32}(120,1.0,.5)
+@test parse(RGB{U8}, "hsl(120, 100%, 50%)") === convert(RGB{U8}, HSL{Float32}(120,1.0,.5))
+@test_throws ErrorException  parse(Color, "hsl(120, 100, 50)")
+@test parse(Color, "#D0FF58") === RGB(0xD0uf8,0xFFuf8,0x58uf8)
+
+@test hex(RGB(1,0.5,0)) == "FF8000"
+@test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
 
 fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
-const redF64 = color("red")
 const red24 = RGB24(0x00ff0000)
 const red32 = ARGB32(0xffff0000)
 for T in (Float64, Float32, Ufixed8)
@@ -20,8 +39,8 @@ end
 @test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == redF64
 @test convert(RGB, red24) == redF64
 
-for Cto in ColorTypes.parametric
-    for Cfrom in ColorTypes.parametric
+for Cto in ColorTypes.parametric3
+    for Cfrom in ColorTypes.parametric3
         for Tto in (Float32, Float64)
             for Tfrom in (Float32, Float64)
                 c = convert(Cfrom{Tfrom}, redF64)
@@ -34,13 +53,13 @@ for Cto in ColorTypes.parametric
         end
     end
 end
-for Cto in ColorTypes.parametric
+for Cto in ColorTypes.parametric3
     @test typeof(convert(Cto, red24)) == Cto{eltype_default(Cto)}
     @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
 end
 
 # Test conversion from Ufixed types
-for Cto in ColorTypes.parametric
+for Cto in ColorTypes.parametric3
     for Cfrom in fractional_types
         for Tto in (Float32, Float64)
             for Tfrom in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
@@ -59,7 +78,7 @@ end
 
 # Test conversion to Ufixed types
 for Cto in fractional_types
-    for Cfrom in ColorTypes.parametric
+    for Cfrom in ColorTypes.parametric3
         for Tto in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
             for Tfrom in (Float32, Float64)
                 c = convert(Cfrom{Tfrom}, redF64)
@@ -109,7 +128,7 @@ end
 
 # Test vector space operations
 import Base.full
-full(T::Color) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
+full(T::OpaqueColor) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
 # Generated from:
 #=
 julia> for t in subtypes(ColorValue)

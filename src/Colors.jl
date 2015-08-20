@@ -5,9 +5,11 @@ module Colors
 using FixedPointNumbers, ColorTypes, Reexport, Compat
 @reexport using ColorTypes
 
+typealias AbstractGray{T} OpaqueColor{T,1}
+typealias OpaqueColor3{T} OpaqueColor{T,3}
+
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax, writemime
-import ColorTypes: color
 
 if VERSION < v"0.4.0-dev+3275"
     import Base.Graphics: set_source, set_source_rgb, GraphicsContext

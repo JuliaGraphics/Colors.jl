@@ -1,7 +1,7 @@
 # Support Data for color maps
 include("maps_data.jl")
 
-# Color Scale Generation
+# color scale generation
 # ----------------------
 
 @doc """
@@ -28,9 +28,9 @@ Keyword arguments:
 - `hchoices`: Possible hue values (default `linspace(0,340,20)`)
 
 Returns:
-  A `Vector{Color}` of length `n`.
+  A `Vector` of colors of length `n`, of the type specified in `seed`.
 """ ->
-function distinguishable_colors{T<:Color}(n::Integer,
+function distinguishable_colors{T<:OpaqueColor}(n::Integer,
                             seed::AbstractVector{T};
                             transform::Function = identity,
                             lchoices::AbstractVector = linspace(0, 100, 15),
@@ -81,12 +81,12 @@ function distinguishable_colors{T<:Color}(n::Integer,
 end
 
 
-distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
+distinguishable_colors(n::Integer, seed::OpaqueColor; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
 distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB{U8},0); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,
-                                seed::Color,
+                                seed::OpaqueColor,
                                 ls::Vector{Float64},
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)
