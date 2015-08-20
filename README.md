@@ -3,7 +3,7 @@
 [![Colors on julia-release](http://pkg.julialang.org/badges/Colors_release.svg)](http://pkg.julialang.org/?pkg=Colors&ver=release)
 [![Colors on julia-nightly](http://pkg.julialang.org/badges/Colors_nightly.svg)](http://pkg.julialang.org/?pkg=Colors&ver=nightly)
 [![Build Status](http://img.shields.io/travis/JuliaLang/Colors.jl.svg)](https://travis-ci.org/JuliaLang/Colors.jl)
-[![Coverage Status](https://img.shields.io/coveralls/JuliaLang/Colors.jl.svg)](https://coveralls.io/r/JuliaLang/Colors.jl)
+[![codecov.io](http://codecov.io/github/JuliaGraphics/Colors.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaGraphics/Colors.jl?branch=master)
 
 This library provides a wide array of functions for dealing with color. This
 includes conversion between colorspaces, measuring distance between colors,
