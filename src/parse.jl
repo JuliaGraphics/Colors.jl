@@ -13,26 +13,42 @@ const col_pat_rgba = r"rgba\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
 const col_pat_hsla = r"hsla\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
 
 # Parse a number used in the "rgb()" or "hsl()" color.
-function parse_rgb_hsl_num(num::AbstractString)
+function parse_rgb(num::AbstractString)
     if num[end] == '%'
-        return parse(Int, num[1:end-1], 10) / 100
+        return clamp(parse(Int, num[1:end-1], 10) / 100, 0, 1)
     else
-        return parse(Int, num, 10) / 255
+        return clamp(parse(Int, num, 10) / 255, 0, 1)
+    end
+end
+
+function parse_hsl_hue(num::AbstractString)
+    if num[end] == '%'
+        error("hue cannot end in %")
+    else
+        return parse(Int, num, 10)
+    end
+end
+
+function parse_hsl_sl(num::AbstractString)
+    if num[end] != '%'
+        error("saturation and lightness must end in %")
+    else
+        return parse(Int, num[1:end-1], 10) / 100
     end
 end
 
 # Parse a number used in the alpha field of "rgba()" and "hsla()".
 function parse_alpha_num(num::AbstractString)
     if num[end] == '%'
-        return parsefloat(num[1:end-1]) / 100
+        return parse(Int, num[1:end-1]) / 100
     else
-        return parsefloat(num)
+        return parse(Float32, num)
     end
 end
 
 
 @doc """
-    color(desc)
+    parse(Color, desc)
 
 Parse a color description.
 
@@ -44,62 +60,69 @@ slightly different than W3C named colors in some cases), "rgb()", "hsl()",
 "#RGB", and "#RRGGBB' syntax.
 
 Args:
-  desc: A color name or description.
+- `Color`: literal "Color" will parse according to the `desc`
+string (usually returning an `RGB`); any more specific choice will
+return a color of the specified type.
+- `desc`: A color name or description.
 
 Returns:
-  An RGB color, unless "hsl()" was used, in which case an HSL color.
+  An `RGB{U8}` color, unless:
+    - "hsl(h,s,l)" was used, in which case an `HSL` color;
+    - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
+    - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
+    - a specific `Color` type was specified in the first argument
 """ ->
-function color(desc::AbstractString)
+function Base.parse(::Type{Color}, desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
-        return RGB(parse(Int, mat.captures[2], 16) / 255,
-                   parse(Int, mat.captures[3], 16) / 255,
-                   parse(Int, mat.captures[4], 16) / 255)
+        return RGB{U8}(parse(Int, mat.captures[2], 16) / 255,
+                       parse(Int, mat.captures[3], 16) / 255,
+                       parse(Int, mat.captures[4], 16) / 255)
     end
 
     mat = match(col_pat_hex1, desc_)
     if mat != nothing
-        return RGB((16 * parse(Int, mat.captures[2], 16)) / 255,
-                   (16 * parse(Int, mat.captures[3], 16)) / 255,
-                   (16 * parse(Int, mat.captures[4], 16)) / 255)
+        return RGB{U8}((16 * parse(Int, mat.captures[2], 16)) / 255,
+                       (16 * parse(Int, mat.captures[3], 16)) / 255,
+                       (16 * parse(Int, mat.captures[4], 16)) / 255)
     end
 
     mat = match(col_pat_rgb, desc_)
     if mat != nothing
-        return RGB(parse_rgb_hsl_num(mat.captures[1]),
-                   parse_rgb_hsl_num(mat.captures[2]),
-                   parse_rgb_hsl_num(mat.captures[3]))
+        return RGB{U8}(parse_rgb(mat.captures[1]),
+                       parse_rgb(mat.captures[2]),
+                       parse_rgb(mat.captures[3]))
     end
 
     mat = match(col_pat_hsl, desc_)
     if mat != nothing
-        return HSL(parse_rgb_hsl_num(mat.captures[1]),
-                   parse_rgb_hsl_num(mat.captures[2]),
-                   parse_rgb_hsl_num(mat.captures[3]))
+        return HSL{ColorTypes.eltype_default(HSL)}(parse_hsl_hue(mat.captures[1]),
+                                        parse_hsl_sl(mat.captures[2]),
+                                        parse_hsl_sl(mat.captures[3]))
     end
 
     mat = match(col_pat_rgba, desc_)
     if mat != nothing
-        return RGBA(parse_rgb_hsl_num(mat.captures[1]),
-                    parse_rgb_hsl_num(mat.captures[2]),
-                    parse_rgb_hsl_num(mat.captures[3]),
-                    parse_alpha_num(mat.captures[4]))
+        return RGBA{U8}(parse_rgb(mat.captures[1]),
+                        parse_rgb(mat.captures[2]),
+                        parse_rgb(mat.captures[3]),
+                        parse_alpha_num(mat.captures[4]))
     end
 
     mat = match(col_pat_hsla, desc_)
     if mat != nothing
-        return HSLA(parse_rgb_hsl_num(mat.captures[1]),
-                    parse_rgb_hsl_num(mat.captures[2]),
-                    parse_rgb_hsl_num(mat.captures[3]),
-                    parse_alpha_num(mat.captures[4]))
+        return HSLA{ColorTypes.eltype_default(HSLA)}(parse_hsl_hue(mat.captures[1]),
+                                          parse_hsl_sl(mat.captures[2]),
+                                          parse_hsl_sl(mat.captures[3]),
+                                          parse_alpha_num(mat.captures[4]))
     end
 
 
     desc_ = lowercase(desc_)
 
     if desc_ == "transparent"
-        return RGBA(0.0, 0.0, 0.0, 0.0)
+        return RGBA{U8}(0,0,0,0)
     end
 
     if !haskey(color_names, desc_)
@@ -107,8 +130,7 @@ function color(desc::AbstractString)
     end
 
     c = color_names[desc_]
-    return RGB(c[1] / 255, c[2] / 255, c[3] / 255)
+    return RGB{U8}(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
-color(c::Color) = c
-# color(c::AlphaColor) = c
+Base.parse{C<:Color}(::Type{C}, desc) = convert(C, parse(Color, desc))::C

@@ -3,3 +3,4 @@ ColorTypes
 FixedPointNumbers
 Compat 0.2
 Graphics 0.1
+Reexport

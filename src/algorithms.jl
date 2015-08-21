@@ -6,11 +6,11 @@
 *(c::Number, a::XYZ) = XYZ(c*a.x, c*a.y, c*a.z)
 
 #Most color spaces are nonlinear, so do the arithmetic in XYZ and convert back
-+{T<:Color}(a::T, b::T) = convert(T, convert(XYZ, a) + convert(XYZ, b))
-*{T<:Color}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
-*{T<:Color}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
++{T<:OpaqueColor}(a::T, b::T) = convert(T, convert(XYZ, a) + convert(XYZ, b))
+*{T<:OpaqueColor}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
+*{T<:OpaqueColor}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
 
-/(a::Color, c::Number) = *(1/c, a)
+/(a::OpaqueColor, c::Number) = *(1/c, a)
 
 # Algorithms relating to color processing and generation
 
@@ -37,7 +37,7 @@ Args:
 Returns:
   A whitebalanced color.
 """ ->
-function whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)
+function whitebalance{T <: OpaqueColor}(c::T, src_white::OpaqueColor, ref_white::OpaqueColor)
     c_lms = convert(LMS, c)
     src_wp = convert(LMS, src_white)
     dest_wp = convert(LMS, ref_white)
@@ -54,7 +54,7 @@ function whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)
 end
 
 
-# Simulation of Color deficiency (color "blindness")
+# Simulation of color deficiency (color "blindness")
 # ----------------------------
 
 # This method is due to:
@@ -89,7 +89,7 @@ long-wavelength photopigment).  `c` is the input color; the optional
 argument `p` is the fraction of photopigment loss, in the range 0 (no
 loss) to 1 (complete loss).
 """ ->
-function protanopic{T <: Color}(q::T, p, neutral::LMS)
+function protanopic{T <: OpaqueColor}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -110,7 +110,7 @@ end
 Convert a color to simulate deuteranopic color deficiency (lack of the
 middle-wavelength photopigment).  See the description of `protanopic` for detail about the arguments.
 """ ->
-function deuteranopic{T <: Color}(q::T, p, neutral::LMS)
+function deuteranopic{T <: OpaqueColor}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -132,7 +132,7 @@ Convert a color to simulate tritanopic color deficiency (lack of the
 short-wavelength photogiment).  See `protanopic` for more detail about
 the arguments.
 """ ->
-function tritanopic{T <: Color}(q::T, p, neutral::LMS)
+function tritanopic{T <: OpaqueColor}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
     anchor = colormatch(anchor_wavelen)
@@ -146,17 +146,17 @@ function tritanopic{T <: Color}(q::T, p, neutral::LMS)
 end
 
 
-protanopic(c::Color, p)   = protanopic(c, p, default_brettel_neutral)
-deuteranopic(c::Color, p) = deuteranopic(c, p, default_brettel_neutral)
-tritanopic(c::Color, p)   = tritanopic(c, p, default_brettel_neutral)
+protanopic(c::OpaqueColor, p)   = protanopic(c, p, default_brettel_neutral)
+deuteranopic(c::OpaqueColor, p) = deuteranopic(c, p, default_brettel_neutral)
+tritanopic(c::OpaqueColor, p)   = tritanopic(c, p, default_brettel_neutral)
 
-protanopic(c::Color)   = protanopic(c, 1.0)
-deuteranopic(c::Color) = deuteranopic(c, 1.0)
-tritanopic(c::Color)   = tritanopic(c, 1.0)
+protanopic(c::OpaqueColor)   = protanopic(c, 1.0)
+deuteranopic(c::OpaqueColor) = deuteranopic(c, 1.0)
+tritanopic(c::OpaqueColor)   = tritanopic(c, 1.0)
 
-@vectorize_1arg Color protanopic
-@vectorize_1arg Color deuteranopic
-@vectorize_1arg Color tritanopic
+@vectorize_1arg OpaqueColor protanopic
+@vectorize_1arg OpaqueColor deuteranopic
+@vectorize_1arg OpaqueColor tritanopic
 
 # MSC - Most Saturated Color for given hue h
 # ---------------------

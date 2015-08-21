@@ -3,15 +3,15 @@
 
 # convert(C, c) might be called as convert(RGB, c) or convert(RGB{Float32}, c)
 # This is handled in ColorTypes, which calls functions
-#     _convert(::Type{Pdest}, ::Type{Cdest}, ::Type{Csrc}, c)
-#     _convert(::Type{Pdest}, ::Type{Cdest}, ::Type{Csrc}, c, alpha)
+#     _convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c)
+#     _convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c, alpha)
 # Here are the argument types:
-# - Pdest may be any concrete Paint type. For parametric paint types
+# - Cdest may be any concrete Color type. For parametric paint types
 #   it _always_ has the desired element type (e.g., Float32), so it's
-#   safe to dispatch on Pdest{T}.
-# - Cdest and Csrc are AbstractColor subtypes, i.e., things like RGB
-#   or HSV. They have no transparency and no element type.
-# - c is the paint object you wish to convert.
+#   safe to dispatch on Cdest{T}.
+# - Odest and Osrc are OpaqueColor subtypes, i.e., things like RGB
+#   or HSV. They have no element type.
+# - c is the Color object you wish to convert.
 # - alpha, if present, is a user-supplied alpha value (to be used in
 #   place of any default alpha or alpha present in c).
 #
@@ -30,28 +30,28 @@
 # the various alpha variants) and can break if not all C support
 # the same eltypes.
 #
-# Note that ColorTypes handles the cases where Cdest == Csrc, or they
+# Note that ColorTypes handles the cases where Odest == Osrc, or they
 # are both subtypes of AbstractRGB.  Therefore, here we only have to
 # deal with conversions between different spaces.
 
 
-function ColorTypes._convert{Pdest<:Transparent,Cdest,Csrc}(::Type{Pdest}, ::Type{Cdest}, ::Type{Csrc}, p, alpha)
+function ColorTypes._convert{Cdest<:TransparentColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p, alpha)
     # Convert the base color
-    c = cnvt(colortype(Pdest), color(p))
+    c = cnvt(opaquetype(Cdest), opaquecolor(p))
     # Append the alpha
-    ColorTypes._convert(Pdest, Cdest, Cdest, c, alpha)
+    ColorTypes._convert(Cdest, Odest, Odest, c, alpha)
 end
-function ColorTypes._convert{Pdest<:Transparent,Cdest,Csrc}(::Type{Pdest}, ::Type{Cdest}, ::Type{Csrc}, p)
-    c = cnvt(colortype(Pdest), color(p))
-    ColorTypes._convert(Pdest, Cdest, Cdest, c, alpha(p))
+function ColorTypes._convert{Cdest<:TransparentColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p)
+    c = cnvt(opaquetype(Cdest), opaquecolor(p))
+    ColorTypes._convert(Cdest, Odest, Odest, c, alpha(p))
 end
 
-ColorTypes._convert{Pdest<:Color,Cdest,Csrc}(::Type{Pdest}, ::Type{Cdest}, ::Type{Csrc}, c) = cnvt(Pdest, c)
+ColorTypes._convert{Cdest<:OpaqueColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) = cnvt(Cdest, c)
 
 
 # Conversions from grayscale
 # --------------------------
-cnvt{C<:Color}(::Type{C}, g::AbstractGray)  = cnvt(C, convert(RGB{eltype(C)}, g))
+cnvt{C<:OpaqueColor3}(::Type{C}, g::AbstractGray)  = cnvt(C, convert(RGB{eltype(C)}, g))
 
 
 macro mul3x3(T, M, c1, c2, c3)
@@ -162,7 +162,7 @@ end
 
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHab)  = cnvt(CV, convert(Lab{eltype(c)}, c))
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHuv)  = cnvt(CV, convert(Luv{eltype(c)}, c))
-cnvt{CV<:AbstractRGB}(::Type{CV}, c::Color)    = cnvt(CV, convert(XYZ{eltype(c)}, c))
+cnvt{CV<:AbstractRGB}(::Type{CV}, c::OpaqueColor3)    = cnvt(CV, convert(XYZ{eltype(c)}, c))
 
 cnvt{CV<:AbstractRGB{Ufixed8}}(::Type{CV}, c::RGB24) = CV(Ufixed8(c.color&0x00ff0000>>>16,0), Ufixed8(c.color&0x0000ff00>>>8,0), Ufixed8(c.color&0x000000ff,0))
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
@@ -200,7 +200,7 @@ function cnvt{T}(::Type{HSV{T}}, c::AbstractRGB)
 end
 
 
-cnvt{T}(::Type{HSV{T}}, c::Color) = cnvt(HSV{T}, convert(RGB{T}, c))
+cnvt{T}(::Type{HSV{T}}, c::OpaqueColor3) = cnvt(HSV{T}, convert(RGB{T}, c))
 
 
 # Everything to HSL
@@ -238,7 +238,7 @@ function cnvt{T}(::Type{HSL{T}}, c::AbstractRGB)
 end
 
 
-cnvt{T}(::Type{HSL{T}}, c::Color) = cnvt(HSL{T}, convert(RGB{T}, c))
+cnvt{T}(::Type{HSL{T}}, c::OpaqueColor3) = cnvt(HSL{T}, convert(RGB{T}, c))
 
 
 # Everything to HSI
@@ -260,7 +260,7 @@ function cnvt{T}(::Type{HSI{T}}, c::AbstractRGB)
     HSI{T}(h, s, i)
 end
 
-cnvt{T}(::Type{HSI{T}}, c::Color) = cnvt(HSI{T}, convert(RGB{T}, c))
+cnvt{T}(::Type{HSI{T}}, c::OpaqueColor3) = cnvt(HSI{T}, convert(RGB{T}, c))
 
 # Everything to XYZ
 # -----------------
@@ -395,7 +395,7 @@ function cnvt{T}(::Type{xyY{T}}, c::XYZ)
 
 end
 
-cnvt{T}(::Type{xyY{T}}, c::Color) = cnvt(xyY{T}, convert(XYZ{T}, c))
+cnvt{T}(::Type{xyY{T}}, c::OpaqueColor3) = cnvt(xyY{T}, convert(XYZ{T}, c))
 
 
 
@@ -513,7 +513,7 @@ function cnvt{T}(::Type{Lab{T}}, c::DIN99o)
 end
 
 
-cnvt{T}(::Type{Lab{T}}, c::Color) = cnvt(Lab{T}, convert(XYZ{T}, c))
+cnvt{T}(::Type{Lab{T}}, c::OpaqueColor3) = cnvt(Lab{T}, convert(XYZ{T}, c))
 
 
 # Everything to Luv
@@ -546,7 +546,7 @@ function cnvt{T}(::Type{Luv{T}}, c::LCHuv)
 end
 
 
-cnvt{T}(::Type{Luv{T}}, c::Color) = cnvt(Luv{T}, convert(XYZ{T}, c))
+cnvt{T}(::Type{Luv{T}}, c::OpaqueColor3) = cnvt(Luv{T}, convert(XYZ{T}, c))
 
 
 # Everything to LCHuv
@@ -560,7 +560,7 @@ function cnvt{T}(::Type{LCHuv{T}}, c::Luv)
 end
 
 
-cnvt{T}(::Type{LCHuv{T}}, c::Color) = cnvt(LCHuv{T}, convert(Luv{T}, c))
+cnvt{T}(::Type{LCHuv{T}}, c::OpaqueColor3) = cnvt(LCHuv{T}, convert(Luv{T}, c))
 
 
 # Everything to LCHab
@@ -574,7 +574,7 @@ function cnvt{T}(::Type{LCHab{T}}, c::Lab)
 end
 
 
-cnvt{T}(::Type{LCHab{T}}, c::Color) = cnvt(LCHab{T}, convert(Lab{T}, c))
+cnvt{T}(::Type{LCHab{T}}, c::OpaqueColor3) = cnvt(LCHab{T}, convert(Lab{T}, c))
 
 
 # Everything to DIN99
@@ -626,7 +626,7 @@ function cnvt{T}(::Type{DIN99{T}}, c::Lab)
 end
 
 
-cnvt{T}(::Type{DIN99{T}}, c::Color) = cnvt(DIN99{T}, convert(Lab{T}, c))
+cnvt{T}(::Type{DIN99{T}}, c::OpaqueColor3) = cnvt(DIN99{T}, convert(Lab{T}, c))
 
 
 # Everything to DIN99d
@@ -660,7 +660,7 @@ function cnvt{T}(::Type{DIN99d{T}}, c::XYZ{T})
 end
 
 
-cnvt{T}(::Type{DIN99d{T}}, c::Color) = cnvt(DIN99d{T}, convert(XYZ{T}, c))
+cnvt{T}(::Type{DIN99d{T}}, c::OpaqueColor3) = cnvt(DIN99d{T}, convert(XYZ{T}, c))
 
 
 # Everything to DIN99o
@@ -701,7 +701,7 @@ function cnvt{T}(::Type{DIN99o{T}}, c::Lab)
 end
 
 
-cnvt{T}(::Type{DIN99o{T}}, c::Color) = cnvt(DIN99o{T}, convert(Lab{T}, c))
+cnvt{T}(::Type{DIN99o{T}}, c::OpaqueColor3) = cnvt(DIN99o{T}, convert(Lab{T}, c))
 
 
 # Everything to LMS
@@ -727,7 +727,7 @@ function cnvt{T}(::Type{LMS{T}}, c::XYZ)
 end
 
 
-cnvt{T}(::Type{LMS{T}}, c::Color) = cnvt(LMS{T}, convert(XYZ{T}, c))
+cnvt{T}(::Type{LMS{T}}, c::OpaqueColor3) = cnvt(LMS{T}, convert(XYZ{T}, c))
 
 # Everything to YIQ
 # -----------------
@@ -743,7 +743,7 @@ function cnvt{T}(::Type{YIQ{T}}, c::AbstractRGB)
            0.211456*red(rgb)-0.522591*green(rgb)+0.311135*blue(rgb))
 end
 
-cnvt{T}(::Type{YIQ{T}}, c::Color) = cnvt(YIQ{T}, convert(RGB{T}, c))
+cnvt{T}(::Type{YIQ{T}}, c::OpaqueColor3) = cnvt(YIQ{T}, convert(RGB{T}, c))
 
 
 # Everything to YCbCr
@@ -760,7 +760,7 @@ function cnvt{T}(::Type{YCbCr{T}}, c::AbstractRGB)
              128+112*red(rgb)-93.786*green(rgb)-18.214*blue(rgb))
 end
 
-cnvt{T}(::Type{YCbCr{T}}, c::Color) = cnvt(YCbCr{T}, convert(RGB{T}, c))
+cnvt{T}(::Type{YCbCr{T}}, c::OpaqueColor3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
 
 # Everything to RGB24
 # -------------------
@@ -770,18 +770,18 @@ convert(::Type{RGB24}, c::AbstractRGB) = RGB24(round(UInt32, 255*red(c))<<16 +
                                                round(UInt32, 255*green(c))<<8 +
                                                round(UInt32, 255*blue(c)))
 
-convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{Ufixed8}, c))
+convert(::Type{RGB24}, c::OpaqueColor) = convert(RGB24, convert(RGB{Ufixed8}, c))
 
 
 # To ARGB32
 # ----------------
 
-convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::Transparent{CV}) =
+convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
-convert(::Type{ARGB32}, c::Transparent) =
+convert(::Type{ARGB32}, c::TransparentColor) =
     ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha(c))<<24)
-convert(::Type{ARGB32}, c::Color) = ARGB32(convert(RGB24, c).color | 0xff000000)
-convert(::Type{ARGB32}, c::Color, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
+convert(::Type{ARGB32}, c::OpaqueColor) = ARGB32(convert(RGB24, c).color | 0xff000000)
+convert(::Type{ARGB32}, c::OpaqueColor, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
 
 # To Gray
 # -------
