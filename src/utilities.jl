@@ -29,12 +29,12 @@ function hex(c::ARGB)
              round(Int, lerp(blue(c), 0.0, 255.0)))
 end
 
-hex(c::OpaqueColor) = hex(convert(RGB, c))
-hex(c::Color) = hex(convert(ARGB, c))
+hex(c::Color) = hex(convert(RGB, c))
+hex(c::Colorant) = hex(convert(ARGB, c))
 
 
-# set source color as a OpaqueColor
-function set_source(gc::GraphicsContext, c::OpaqueColor)
+# set source color as a Color
+function set_source(gc::GraphicsContext, c::Color)
     rgb = convert(RGB, c)
     set_source_rgb(gc, rgb.r, rgb.g, rgb.b)
 end
@@ -61,12 +61,12 @@ weighted_color_mean(w1::Real, c1::RGB24, c2::RGB24) =
     convert(RGB24, weighted_color_mean(w1, convert(RGB, c1), convert(RGB, c2)))
 
 @doc """
-    linspace(c1::OpaqueColor, c2::OpaqueColor, n=100)
+    linspace(c1::Color, c2::Color, n=100)
 
 Generates `n` colors in a linearly interpolated ramp from `c1` to
 `c2`, inclusive, returning an `Array` of colors.
 """ ->
-function linspace{T<:OpaqueColor}(c1::T, c2::T, n=100)
+function linspace{T<:Color}(c1::T, c2::T, n=100)
     a = Array(T, convert(Int, n))
     if n == 1
         a[1] = c1

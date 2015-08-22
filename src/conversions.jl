@@ -9,7 +9,7 @@
 # - Cdest may be any concrete Color type. For parametric paint types
 #   it _always_ has the desired element type (e.g., Float32), so it's
 #   safe to dispatch on Cdest{T}.
-# - Odest and Osrc are OpaqueColor subtypes, i.e., things like RGB
+# - Odest and Osrc are Color subtypes, i.e., things like RGB
 #   or HSV. They have no element type.
 # - c is the Color object you wish to convert.
 # - alpha, if present, is a user-supplied alpha value (to be used in
@@ -37,16 +37,16 @@
 
 function ColorTypes._convert{Cdest<:TransparentColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p, alpha)
     # Convert the base color
-    c = cnvt(opaquetype(Cdest), opaquecolor(p))
+    c = cnvt(color_type(Cdest), color(p))
     # Append the alpha
     ColorTypes._convert(Cdest, Odest, Odest, c, alpha)
 end
 function ColorTypes._convert{Cdest<:TransparentColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p)
-    c = cnvt(opaquetype(Cdest), opaquecolor(p))
+    c = cnvt(color_type(Cdest), color(p))
     ColorTypes._convert(Cdest, Odest, Odest, c, alpha(p))
 end
 
-ColorTypes._convert{Cdest<:OpaqueColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) = cnvt(Cdest, c)
+ColorTypes._convert{Cdest<:Color,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) = cnvt(Cdest, c)
 
 
 # Conversions from grayscale
@@ -770,7 +770,7 @@ convert(::Type{RGB24}, c::AbstractRGB) = RGB24(round(UInt32, 255*red(c))<<16 +
                                                round(UInt32, 255*green(c))<<8 +
                                                round(UInt32, 255*blue(c)))
 
-convert(::Type{RGB24}, c::OpaqueColor) = convert(RGB24, convert(RGB{Ufixed8}, c))
+convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{Ufixed8}, c))
 
 
 # To ARGB32
@@ -780,8 +780,8 @@ convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
 convert(::Type{ARGB32}, c::TransparentColor) =
     ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha(c))<<24)
-convert(::Type{ARGB32}, c::OpaqueColor) = ARGB32(convert(RGB24, c).color | 0xff000000)
-convert(::Type{ARGB32}, c::OpaqueColor, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
+convert(::Type{ARGB32}, c::Color) = ARGB32(convert(RGB24, c).color | 0xff000000)
+convert(::Type{ARGB32}, c::Color, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
 
 # To Gray
 # -------

@@ -1,5 +1,5 @@
-using Color
-using Color, ColorBrewer
+using Colors
+using Colors, ColorBrewer
 
 function out_image(name, color_list)
   total_width = 12.

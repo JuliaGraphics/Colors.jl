@@ -72,7 +72,7 @@ Returns:
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
     - a specific `Color` type was specified in the first argument
 """ ->
-function Base.parse(::Type{Color}, desc::AbstractString)
+function Base.parse(::Type{Colorant}, desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
@@ -133,4 +133,4 @@ function Base.parse(::Type{Color}, desc::AbstractString)
     return RGB{U8}(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
-Base.parse{C<:Color}(::Type{C}, desc) = convert(C, parse(Color, desc))::C
+Base.parse{C<:Colorant}(::Type{C}, desc) = convert(C, parse(Colorant, desc))::C

@@ -1,6 +1,6 @@
 #!/Applications/Julia-0.3.9.app/Contents/Resources/julia/bin/julia
 
-using Color
+using Colors
 
 function compare_colors(color_a, color_b)
     # compare two colors, looking just at their LUV luminance values
@@ -28,7 +28,7 @@ end
 function make_color_table(image_width, image_height, output_file)
     # prepare synonym lists
     synonyms = Dict{Tuple, Array}()
-    for color in Color.color_names
+    for color in Colors.color_names
         col_name  = color[1]
         col_value = color[2]
         if haskey(synonyms, col_value)
@@ -62,7 +62,7 @@ function make_color_table(image_width, image_height, output_file)
     <rect x="0" y="0" width="$(image_width)" height="$(image_height)" fill="white" /> \n """)
 
     # title
-    println(f, """<text x="$(margin)" y="$(margin - margin/2)" font-size="14px" font-family="Helvetica-Bold">Color names in Color.jl, sorted by luminance</text>\n""")
+    println(f, """<text x="$(margin)" y="$(margin - margin/2)" font-size="14px" font-family="Helvetica-Bold">Color names in Colors.jl, sorted by luminance</text>\n""")
 
     # x and y track position
     x = margin
