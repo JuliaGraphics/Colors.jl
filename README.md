@@ -44,7 +44,10 @@ The available colorspaces are described in detail in ColorTypes; briefly, the de
 
 ## Color Parsing
 
-`color(desc::String)`
+```jl
+c = Color"red"
+c = parse(Color, "red")
+```
 
 Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will
 parse any CSS color syntax with the exception of `transparent`, `rgba()`,
@@ -55,6 +58,10 @@ their definitions do not clash with SVG.
 
 A `RGB` color is returned, except when the `hsl()` syntax is used, which returns
 a `HSL` value.
+
+When writing functions the `Color"red"` version is preferred, because
+the slow step runs when the code is parsed (i.e., during compilation
+rather than run-time).
 
 ## CIE Standard Observer
 
