@@ -46,9 +46,7 @@ The available colorspaces are described in detail in ColorTypes; briefly, the de
 
 `color(desc::String)`
 
-Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will
-parse any CSS color syntax with the exception of `transparent`, `rgba()`,
-`hsla()` (since this library has no notion of transparency), and `currentColor`.
+Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will parse any CSS color syntax with the exception of `currentColor`.
 
 All CSS/SVG named colors are supported, in addition to X11 named colors, when
 their definitions do not clash with SVG.

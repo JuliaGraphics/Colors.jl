@@ -1,7 +1,7 @@
 # Displaying color swatches
 # -------------------------
 
-function writemime(io::IO, ::MIME"image/svg+xml", c::OpaqueColor)
+function writemime(io::IO, ::MIME"image/svg+xml", c::Color)
     write(io,
         """
         <?xml version"1.0" encoding="UTF-8"?>
@@ -15,7 +15,7 @@ function writemime(io::IO, ::MIME"image/svg+xml", c::OpaqueColor)
         """)
 end
 
-function writemime{T <: OpaqueColor}(io::IO, ::MIME"image/svg+xml",
+function writemime{T <: Color}(io::IO, ::MIME"image/svg+xml",
                                      cs::AbstractVecOrMat{T})
     m,n = ndims(cs) == 2 ? size(cs) : (1,length(cs))
 
