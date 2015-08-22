@@ -134,3 +134,14 @@ function Base.parse(::Type{Colorant}, desc::AbstractString)
 end
 
 Base.parse{C<:Colorant}(::Type{C}, desc) = convert(C, parse(Colorant, desc))::C
+
+macro Colorant_str(ex)
+    isa(ex, AbstractString) || error("Colorant macro only works with literal strings")
+    col = parse(Colorant, ex)
+    :($col)
+end
+
+@noinline function ColorTypes.color(str::AbstractString)
+    Base.depwarn("color(\"$str\") is deprecated, use Colorant\"$str\" or parse(Colorant, \"$str\")", :color)
+    parse(Colorant, str)
+end
