@@ -17,7 +17,7 @@ end
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,
-       hex, @Colorant_str,
+       hex, @colorant_str,
        protanopic, deuteranopic, tritanopic,
        distinguishable_colors, whitebalance,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,

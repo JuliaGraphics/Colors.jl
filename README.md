@@ -45,7 +45,7 @@ The available colorspaces are described in detail in ColorTypes; briefly, the de
 ## Color Parsing
 
 ```jl
-c = Colorant"red"
+c = colorant"red"
 c = parse(Colorant, "red")
 ```
 
@@ -60,7 +60,7 @@ Returns a `RGB{U8}` color, unless:
     - `"hsla(h,s,l,a)"` was used, in which case an `HSLA` color;
     - a specific `Colorant` type was specified in the first argument
 
-When writing functions the `Colorant"red"` version is preferred, because
+When writing functions the `colorant"red"` version is preferred, because
 the slow step runs when the code is parsed (i.e., during compilation
 rather than run-time).
 
