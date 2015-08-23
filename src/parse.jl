@@ -48,7 +48,7 @@ end
 
 
 @doc """
-    parse(Color, desc)
+    parse(Colorant, desc)
 
 Parse a color description.
 
@@ -60,7 +60,7 @@ slightly different than W3C named colors in some cases), "rgb()", "hsl()",
 "#RGB", and "#RRGGBB' syntax.
 
 Args:
-- `Color`: literal "Color" will parse according to the `desc`
+- `Colorant`: literal "Colorant" will parse according to the `desc`
 string (usually returning an `RGB`); any more specific choice will
 return a color of the specified type.
 - `desc`: A color name or description.
@@ -70,9 +70,9 @@ Returns:
     - "hsl(h,s,l)" was used, in which case an `HSL` color;
     - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
-    - a specific `Color` type was specified in the first argument
+    - a specific `Colorant` type was specified in the first argument
 """ ->
-function Base.parse(::Type{Color}, desc::AbstractString)
+function Base.parse(::Type{Colorant}, desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
@@ -133,4 +133,15 @@ function Base.parse(::Type{Color}, desc::AbstractString)
     return RGB{U8}(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
-Base.parse{C<:Color}(::Type{C}, desc) = convert(C, parse(Color, desc))::C
+Base.parse{C<:Colorant}(::Type{C}, desc) = convert(C, parse(Colorant, desc))::C
+
+macro colorant_str(ex)
+    isa(ex, AbstractString) || error("colorant requires literal strings")
+    col = parse(Colorant, ex)
+    :($col)
+end
+
+@noinline function ColorTypes.color(str::AbstractString)
+    Base.depwarn("color(\"$str\") is deprecated, use colorant\"$str\" or parse(Colorant, \"$str\")", :color)
+    parse(Colorant, str)
+end

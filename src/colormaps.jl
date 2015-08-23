@@ -30,7 +30,7 @@ Keyword arguments:
 Returns:
   A `Vector` of colors of length `n`, of the type specified in `seed`.
 """ ->
-function distinguishable_colors{T<:OpaqueColor}(n::Integer,
+function distinguishable_colors{T<:Color}(n::Integer,
                             seed::AbstractVector{T};
                             transform::Function = identity,
                             lchoices::AbstractVector = linspace(0, 100, 15),
@@ -81,12 +81,12 @@ function distinguishable_colors{T<:OpaqueColor}(n::Integer,
 end
 
 
-distinguishable_colors(n::Integer, seed::OpaqueColor; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
+distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
 distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB{U8},0); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,
-                                seed::OpaqueColor,
+                                seed::Color,
                                 ls::Vector{Float64},
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)

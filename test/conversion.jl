@@ -3,20 +3,23 @@ using Base.Test
 import ColorTypes: eltype_default
 
 # Color parsing
-const redU8 = parse(Color, "red")
+const redU8 = parse(Colorant, "red")
+@test colorant"red" == redU8
 @test isa(redU8, RGB{U8})
 @test redU8 == RGB(1,0,0)
 const redF64 = convert(RGB{Float64}, redU8)
 @test parse(RGB{Float64}, "red") === RGB{Float64}(1,0,0)
 @test isa(parse(HSV, "blue"), HSV)
-@test parse(Color, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
-@test parse(Color, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
-@test parse(Color, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
-@test parse(Color, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
-@test parse(Color, "hsl(120, 100%, 50%)") === HSL{Float32}(120,1.0,.5)
+@test parse(Colorant, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
+@test colorant"rgb(55,217,127)" === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
+@test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
+@test parse(Colorant, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
+@test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
+@test parse(Colorant, "hsl(120, 100%, 50%)") === HSL{Float32}(120,1.0,.5)
+@test colorant"hsl(120, 100%, 50%)" === HSL{Float32}(120,1.0,.5)
 @test parse(RGB{U8}, "hsl(120, 100%, 50%)") === convert(RGB{U8}, HSL{Float32}(120,1.0,.5))
-@test_throws ErrorException  parse(Color, "hsl(120, 100, 50)")
-@test parse(Color, "#D0FF58") === RGB(0xD0uf8,0xFFuf8,0x58uf8)
+@test_throws ErrorException  parse(Colorant, "hsl(120, 100, 50)")
+@test parse(Colorant, "#D0FF58") === RGB(0xD0uf8,0xFFuf8,0x58uf8)
 
 @test hex(RGB(1,0.5,0)) == "FF8000"
 @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
@@ -128,7 +131,7 @@ end
 
 # Test vector space operations
 import Base.full
-full(T::OpaqueColor) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
+full(T::Color) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
 # Generated from:
 #=
 julia> for t in subtypes(ColorValue)

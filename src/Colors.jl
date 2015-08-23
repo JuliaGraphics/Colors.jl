@@ -5,17 +5,11 @@ module Colors
 using FixedPointNumbers, ColorTypes, Reexport, Compat
 @reexport using ColorTypes
 
-typealias AbstractGray{T} OpaqueColor{T,1}
-typealias OpaqueColor3{T} OpaqueColor{T,3}
+typealias AbstractGray{T} Color{T,1}
+typealias Color3{T} Color{T,3}
 
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax, writemime
-
-if VERSION < v"0.4.0-dev+3275"
-    import Base.Graphics: set_source, set_source_rgb, GraphicsContext
-else
-    import Graphics: set_source, set_source_rgb, GraphicsContext
-end
 
 if VERSION < v"0.4.0-dev"
     using Docile
@@ -23,7 +17,7 @@ end
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,
-       hex,
+       hex, @colorant_str,
        protanopic, deuteranopic, tritanopic,
        distinguishable_colors, whitebalance,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
