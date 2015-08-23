@@ -32,13 +32,6 @@ end
 hex(c::Color) = hex(convert(RGB, c))
 hex(c::Colorant) = hex(convert(ARGB, c))
 
-
-# set source color as a Color
-function set_source(gc::GraphicsContext, c::Color)
-    rgb = convert(RGB, c)
-    set_source_rgb(gc, rgb.r, rgb.g, rgb.b)
-end
-
 # weighted_color_mean(w1, c1, c2) gives a mean color "w1*c1 + (1-w1)*c2".
 for (T,a,b,c) in ((:RGB,:r,:g,:b), (:HSV,:h,:s,:v), (:HSL,:h,:s,:l),
                   (:XYZ,:x,:y,:z), (:Lab,:l,:a,:b), (:LCHab,:l,:c,:h),

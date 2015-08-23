@@ -11,12 +11,6 @@ typealias Color3{T} Color{T,3}
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax, writemime
 
-if VERSION < v"0.4.0-dev+3275"
-    import Base.Graphics: set_source, set_source_rgb, GraphicsContext
-else
-    import Graphics: set_source, set_source_rgb, GraphicsContext
-end
-
 if VERSION < v"0.4.0-dev"
     using Docile
 end
