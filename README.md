@@ -45,8 +45,8 @@ The available colorspaces are described in detail in ColorTypes; briefly, the de
 ## Color Parsing
 
 ```jl
-c = Color"red"
-c = parse(Color, "red")
+c = Colorant"red"
+c = parse(Colorant, "red")
 ```
 
 Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will parse any CSS color syntax with the exception of `currentColor`.
@@ -54,10 +54,13 @@ Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/c
 All CSS/SVG named colors are supported, in addition to X11 named colors, when
 their definitions do not clash with SVG.
 
-A `RGB` color is returned, except when the `hsl()` syntax is used, which returns
-a `HSL` value.
+Returns a `RGB{U8}` color, unless:
+    - `"hsl(h,s,l)"` was used, in which case an `HSL` color;
+    - `"rgba(r,g,b,a)"` was used, in which case an `RGBA` color;
+    - `"hsla(h,s,l,a)"` was used, in which case an `HSLA` color;
+    - a specific `Colorant` type was specified in the first argument
 
-When writing functions the `Color"red"` version is preferred, because
+When writing functions the `Colorant"red"` version is preferred, because
 the slow step runs when the code is parsed (i.e., during compilation
 rather than run-time).
 
