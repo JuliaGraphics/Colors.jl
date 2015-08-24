@@ -58,10 +58,11 @@ All CSS/SVG named colors are supported, in addition to X11 named colors, when
 their definitions do not clash with SVG.
 
 Returns a `RGB{U8}` color, unless:
-    - `"hsl(h,s,l)"` was used, in which case an `HSL` color;
-    - `"rgba(r,g,b,a)"` was used, in which case an `RGBA` color;
-    - `"hsla(h,s,l,a)"` was used, in which case an `HSLA` color;
-    - a specific `Colorant` type was specified in the first argument
+
+- `"hsl(h,s,l)"` was used, in which case an `HSL` color;
+- `"rgba(r,g,b,a)"` was used, in which case an `RGBA` color;
+- `"hsla(h,s,l,a)"` was used, in which case an `HSLA` color;
+- a specific `Colorant` type was specified in the first argument
 
 When writing functions the `colorant"red"` version is preferred, because
 the slow step runs when the code is parsed (i.e., during compilation
@@ -167,15 +168,14 @@ and 0.0 is no loss at all.
 
 ## Color Scales
 
-
-`distinguishable_colors(n::Integer)`
-
-Generate `n` maximally distinguishable colors in LCHab space.
+#### `distinguishable_colors`
 
 ```julia
 distinguishable_colors(n::Integer,seed::Color)
 distinguishable_colors{T<:Color}(n::Integer,seed::AbstractVector{T})
 ```
+
+Generate `n` maximally distinguishable colors in LCHab space.
 
 A seed color or array of seed colors may be provided to `distinguishable_colors`, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
 
@@ -193,15 +193,21 @@ By default, `distinguishable_colors` chooses maximally distinguishable colors fr
 Distinguishability is maximized with respect to the CIEDE2000 color difference formula (see `colordiff`). If a `transform` function is specified, color difference is instead maximized between colors `a` and `b` according to
 `colordiff(transform(a), transform(b))`.
 
+#### `linspace`
+
 `linspace(c1::Color, c2::Color, n=100)`
 
 Generates `n` colors in a linearly interpolated ramp from `c1` to
 `c2`, inclusive, returning an `Array` of colors
 
+#### `weighted_color_mean`
+
 `weighted_color_mean(w1::Real, c1::Color, c2::Color)`
 
 Returns a color that is the weighted mean of `c1` and `c2`, where `c1`
 has a weight 0 ≤ `w1` ≤ 1.
+
+#### `MSC`
 
 `MSC(h)`
 
