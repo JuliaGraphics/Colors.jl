@@ -48,6 +48,8 @@ end
 
 ColorTypes._convert{Cdest<:Color,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) = cnvt(Cdest, c)
 
+# Fallback to catch undefined operations
+cnvt{C}(::Type{C}, c) = convert(C, c)
 
 # Conversions from grayscale
 # --------------------------
