@@ -128,6 +128,9 @@ function sequential_palette(h,
         M=mod(180.0+h1-h0, 360)-180.0
         mod(h0+a*M, 360)
     end
+    function mix_linearly{C<:Color}(a::C, b::C, s)
+        base_color_type(C)((1-s)*comp1(a)+s*comp1(b), (1-s)*comp2(a)+s*comp2(b), (1-s)*comp3(a)+s*comp3(b))
+    end
 
     pstart=convert(LCHuv, wcolor)
     p1=MSC(h)
@@ -146,9 +149,9 @@ function sequential_palette(h,
     p0c=min(MSC(p0h,p0l), d*s*pend.c)
     p0=LCHuv(p0l,p0c,p0h)
 
-    q0=(1.0-s)*p0+s*p1
-    q2=(1.0-s)*p2+s*p1
-    q1=0.5*(q0+q2)
+    q0=mix_linearly(p0,p1,s)
+    q2=mix_linearly(p2,p1,s)
+    q1=mix_linearly(q0,q2,0.5)
 
     pal = RGB{Float64}[]
 
