@@ -1,16 +1,11 @@
 # Arithmetic
-#XYZ is a linear vector space
-+{T<:Number}(a::XYZ{T}, b::XYZ{T}) = XYZ(a.x+b.x, a.y+b.y, a.z+b.z)
--{T<:Number}(a::XYZ{T}, b::XYZ{T}) = XYZ(a.x-b.x, a.y-b.y, a.z-b.z)
--(a::XYZ) = XYZ(-a.x, -a.y, -a.z)
-*(c::Number, a::XYZ) = XYZ(c*a.x, c*a.y, c*a.z)
-
-#Most color spaces are nonlinear, so do the arithmetic in XYZ and convert back
-+{T<:Color}(a::T, b::T) = convert(T, convert(XYZ, a) + convert(XYZ, b))
-*{T<:Color}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
-*{T<:Color}(c::Number, a::T) = convert(T, c * convert(XYZ, a))
-
-/(a::Color, c::Number) = *(1/c, a)
+#XYZ and LMS are linear vector spaces
+typealias Linear3 Union(XYZ, LMS)
++{C<:Linear3}(a::C, b::C) = C(comp1(a)+comp1(b), comp2(a)+comp2(b), comp3(a)+comp3(b))
+-{C<:Linear3}(a::C, b::C) = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
+-(a::Linear3) = typeof(a)(-comp1(a), -comp2(a), -comp3(a))
+*(c::Number, a::Linear3) = base_color_type(a)(c*comp1(a), c*comp2(a), c*comp3(a))
+/(a::Linear3, c::Number) = base_color_type(a)(comp1(a)/c, comp2(a)/c, comp3(a)/c)
 
 # Algorithms relating to color processing and generation
 
