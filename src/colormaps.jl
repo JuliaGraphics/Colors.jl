@@ -219,7 +219,7 @@ function diverging_palette(h1,
     else
         n=N
     end
-    N1 = round(Int, max(ceil(mid*n), 1))
+    N1 = max(ceil(Int, mid*n), 1)
     N2 = @compat Int(max(n-N1, 1))
 
     pal1 = sequential_palette(h1, N1+1, w=w, d=d1, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor1, logscale=logscale)
