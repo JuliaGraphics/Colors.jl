@@ -219,19 +219,19 @@ function diverging_palette(h1,
     else
         n=N
     end
-    N1 = int(max(ceil(mid*n), 1))
-    N2 = int(max(n-N1, 1))
+    N1 = round(Int, max(ceil(mid*n), 1))
+    N2 = @compat Int(max(n-N1, 1))
 
     pal1 = sequential_palette(h1, N1+1, w=w, d=d1, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor1, logscale=logscale)
-    pal1 = flipud(pal1)
+    pal1 = flipdim(pal1, 1)
 
     pal2 = sequential_palette(h2, N2+1, w=w, d=d2, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor2, logscale=logscale)
 
     if isodd(N)
         midcol = weighted_color_mean(0.5, pal1[end], pal2[1])
-        return [pal1[1:end-1], midcol, pal2[2:end]]
+        return [pal1[1:end-1]; midcol; pal2[2:end]]
     else
-        return [pal1[1:end-1], pal2[2:end]]
+        return [pal1[1:end-1]; pal2[2:end]]
     end
 end
 
