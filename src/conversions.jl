@@ -79,14 +79,13 @@ cnvt{CV<:AbstractRGB}(::Type{CV}, c::AbstractRGB) = CV(red(c), green(c), blue(c)
 
 function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSV)
     h = c.h / 60
-    i = floor(h)
+    i = floor(Int, h)
     f = h - i
-    if round(Int, i) & 1 == 0
+    if i & 1 == 0
         f = 1 - f
     end
     m = c.v * (1 - c.s)
     n = c.v * (1 - c.s * f)
-    i = round(Int, i)
     if i == 6 || i == 0; CV(c.v, n, m)
     elseif i == 1;       CV(n, c.v, m)
     elseif i == 2;       CV(m, c.v, n)

@@ -10,4 +10,5 @@ notifications:
 script:
     - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
     - julia -e 'Pkg.clone(pwd()); Pkg.build("Colors"); Pkg.test("Colors"; coverage=true)';
-    - julia -e 'cd(Pkg.dir("Colors")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())';
+after_success:
+    - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'cd(Pkg.dir("Colors")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'; fi
