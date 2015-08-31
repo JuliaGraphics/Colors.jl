@@ -169,7 +169,7 @@ cnvt{CV<:AbstractRGB{Ufixed8}}(::Type{CV}, c::RGB24) = CV(Ufixed8(c.color&0x00ff
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
 function cnvt{CV<:AbstractRGB}(::Type{CV}, c::AbstractGray)
-    g = convert(eltype(CV), c.val)
+    g = convert(eltype(CV), gray(c))
     CV(g, g, g)
 end
 

@@ -42,6 +42,14 @@ end
 @test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == redF64
 @test convert(RGB, red24) == redF64
 
+@test convert(Gray{U8}, Gray{U8}(0.1)) == Gray{U8}(0.1)
+@test convert(Gray{U8}, Gray(0.1))     == Gray{U8}(0.1)
+@test convert(Gray{U8}, Gray24(0.1))   == Gray{U8}(0.1)
+@test convert(Gray24, Gray{U8}(0.1))   == Gray24(0.1)
+
+@test convert(RGB{U8}, Gray{U8}(0.1)) == RGB{U8}(0.1,0.1,0.1)
+@test convert(RGB{U8}, Gray24(0.1))   == RGB{U8}(0.1,0.1,0.1)
+
 for Cto in ColorTypes.parametric3
     for Cfrom in ColorTypes.parametric3
         for Tto in (Float32, Float64)
