@@ -1,7 +1,7 @@
 # Colors
 
-[![Colors on julia-release](http://pkg.julialang.org/badges/Colors_release.svg)](http://pkg.julialang.org/?pkg=Colors&ver=release)
-[![Colors on julia-nightly](http://pkg.julialang.org/badges/Colors_nightly.svg)](http://pkg.julialang.org/?pkg=Colors&ver=nightly)
+[![Colors](http://pkg.julialang.org/badges/Colors_0.3.svg)](http://pkg.julialang.org/?pkg=Colors&ver=0.3)
+[![Colors](http://pkg.julialang.org/badges/Colors_0.4.svg)](http://pkg.julialang.org/?pkg=Colors&ver=0.4)
 [![Build Status](http://img.shields.io/travis/JuliaGraphics/Colors.jl.svg)](https://travis-ci.org/JuliaGraphics/Colors.jl)
 [![codecov.io](http://codecov.io/github/JuliaGraphics/Colors.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaGraphics/Colors.jl?branch=master)
 
