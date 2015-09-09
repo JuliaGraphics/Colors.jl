@@ -766,6 +766,7 @@ cnvt{T}(::Type{YCbCr{T}}, c::Color3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
 # Everything to RGB24
 # -------------------
 
+convert(::Type{RGB24}, c::RGB24) = c
 convert(::Type{RGB24}, c::AbstractRGB{Ufixed8}) = RGB24(red(c), green(c), blue(c))
 convert(::Type{RGB24}, c::AbstractRGB) = RGB24(round(UInt32, 255*red(c))<<16 +
                                                round(UInt32, 255*green(c))<<8 +
@@ -777,6 +778,7 @@ convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{Ufixed8}, c))
 # To ARGB32
 # ----------------
 
+convert(::Type{ARGB32}, c::ARGB32) = c
 convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
 convert(::Type{ARGB32}, c::TransparentColor) =
