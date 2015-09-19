@@ -1,6 +1,6 @@
 # Arithmetic
 #XYZ and LMS are linear vector spaces
-typealias Linear3 Union(XYZ, LMS)
+@compat typealias Linear3 Union{XYZ, LMS}
 +{C<:Linear3}(a::C, b::C) = C(comp1(a)+comp1(b), comp2(a)+comp2(b), comp3(a)+comp3(b))
 -{C<:Linear3}(a::C, b::C) = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
 -(a::Linear3) = typeof(a)(-comp1(a), -comp2(a), -comp3(a))
