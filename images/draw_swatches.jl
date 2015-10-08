@@ -1,4 +1,4 @@
-using Colors
+using Colors, Compat
 
 function compare_colors(color_a, color_b)
     # compare two colors, looking just at their LUV luminance values
@@ -23,7 +23,7 @@ end
 
 function make_color_table(image_width, image_height, output_file)
     # prepare synonym lists
-    synonyms = Dict{Tuple, Array}()
+    synonyms = @compat Dict{Tuple, Array}()
     for color in Colors.color_names
         col_name  = color[1]
         col_value = color[2]
