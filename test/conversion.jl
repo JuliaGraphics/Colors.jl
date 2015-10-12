@@ -28,7 +28,7 @@ fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
 const red24 = RGB24(0x00ff0000)
 const red32 = ARGB32(0xffff0000)
-for T in (Float64, Float32, Ufixed8)
+for T in (Float64, Float32, UFixed8)
     c = RGB(one(T), zero(T), zero(T))
     @test eltype(c) == T
     c64 = convert(RGB{Float64}, c)
@@ -69,11 +69,11 @@ for Cto in ColorTypes.parametric3
     @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
 end
 
-# Test conversion from Ufixed types
+# Test conversion from UFixed types
 for Cto in ColorTypes.parametric3
     for Cfrom in fractional_types
         for Tto in (Float32, Float64)
-            for Tfrom in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
+            for Tfrom in (UFixed8, UFixed10, UFixed12, UFixed14, UFixed16)
                 c = convert(Cfrom{Tfrom}, redF64)
                 @test typeof(c) == Cfrom{Tfrom}
                 if !(eltype_default(Cto) <: FixedPoint)
@@ -87,10 +87,10 @@ for Cto in ColorTypes.parametric3
     end
 end
 
-# Test conversion to Ufixed types
+# Test conversion to UFixed types
 for Cto in fractional_types
     for Cfrom in ColorTypes.parametric3
-        for Tto in (Ufixed8, Ufixed10, Ufixed12, Ufixed14, Ufixed16)
+        for Tto in (UFixed8, UFixed10, UFixed12, UFixed14, UFixed16)
             for Tfrom in (Float32, Float64)
                 c = convert(Cfrom{Tfrom}, redF64)
                 @test typeof(c) == Cfrom{Tfrom}
@@ -104,8 +104,8 @@ end
 ac = RGBA(redF64)
 
 @test convert(RGB, ac) == RGB(1,0,0)
-@test convert(RGB{Ufixed8}, ac) == RGB{Ufixed8}(1,0,0)
-@test convert(RGBA{Ufixed8}, ac) == RGBA{Ufixed8}(1,0,0,1)
+@test convert(RGB{UFixed8}, ac) == RGB{UFixed8}(1,0,0)
+@test convert(RGBA{UFixed8}, ac) == RGBA{UFixed8}(1,0,0,1)
 @test convert(HSVA, ac) == HSVA{Float64}(convert(HSV, redF64), 1.0)
 @test convert(HSVA{Float32}, ac) == HSVA{Float32}(convert(HSV{Float32}, redF64), 1.0f0)
 @test convert(RGBA, redF64) == ac
@@ -117,8 +117,8 @@ ac = RGBA(redF64)
 redhsv = convert(HSV, redF64)
 @test convert(RGB24, redhsv) == RGB24(0x00ff0000)
 
-@test convert(RGB{Ufixed8}, red24) == RGB{Ufixed8}(1,0,0)
-@test convert(RGBA{Ufixed8}, red32) == RGBA{Ufixed8}(1,0,0,1)
+@test convert(RGB{UFixed8}, red24) == RGB{UFixed8}(1,0,0)
+@test convert(RGBA{UFixed8}, red32) == RGBA{UFixed8}(1,0,0,1)
 @test convert(HSVA{Float64}, red32) == HSVA{Float64}(360, 1, 1, 1)
 
 if VERSION >= v"0.4.0-dev"
@@ -177,15 +177,15 @@ v = -0.5226
 @test convert(RGB, YIQ(0.0,0.0,-1.0)) == RGB(0,-0.6474*v,0)
 
 # Gray
-c = Gray{Ufixed16}(0.8)
-@test convert(RGB, c) == RGB{Ufixed16}(0.8,0.8,0.8)
+c = Gray{UFixed16}(0.8)
+@test convert(RGB, c) == RGB{UFixed16}(0.8,0.8,0.8)
 @test convert(RGB{Float32}, c) == RGB{Float32}(0.8,0.8,0.8)
 
 # More AbstractRGB
 r4 = RGB4(1,0,0)
 @test convert(RGB, r4) == RGB(1,0,0)
-@test convert(RGB{Ufixed8}, r4) == RGB{Ufixed8}(1,0,0)
-@test convert(RGB4{Ufixed8}, r4) == RGB4{Ufixed8}(1,0,0)
+@test convert(RGB{UFixed8}, r4) == RGB{UFixed8}(1,0,0)
+@test convert(RGB4{UFixed8}, r4) == RGB4{UFixed8}(1,0,0)
 @test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
 @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
 
