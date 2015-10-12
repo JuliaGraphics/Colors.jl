@@ -178,21 +178,21 @@ end
 # -----------------
 
 function cnvt{T}(::Type{HSV{T}}, c::AbstractRGB)
-    c_min = min(red(c), green(c), blue(c))
-    c_max = max(red(c), green(c), blue(c))
+    c_min = Float64(min(red(c), green(c), blue(c)))
+    c_max = Float64(max(red(c), green(c), blue(c)))
     if c_min == c_max
-        return HSV(zero(T), zero(T), c_max)
+        return HSV{T}(zero(T), zero(T), c_max)
     end
 
     if c_min == red(c)
-        f = green(c) - blue(c)
-        i = convert(T, 3)
+        f = Float64(green(c)) - Float64(blue(c))
+        i = 3
     elseif c_min == green(c)
-        f = blue(c) - red(c)
-        i = convert(T, 5)
+        f = Float64(blue(c)) - Float64(red(c))
+        i = 5
     else
-        f = red(c) - green(c)
-        i = convert(T, 1)
+        f = Float64(red(c)) - Float64(green(c))
+        i = 1
     end
 
     HSV{T}(60 * (i - f / (c_max - c_min)),
