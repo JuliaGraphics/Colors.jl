@@ -1,14 +1,10 @@
-#!/Applications/Julia-0.3.9.app/Contents/Resources/julia/bin/julia
-
-using Colors
+using Colors, Compat
 
 function compare_colors(color_a, color_b)
     # compare two colors, looking just at their LUV luminance values
-    rx, gx, bx = color_a
-    ry, gy, by = color_b
-    hslx = convert(LUV, RGB(rx, gx, bx))
-    hsly = convert(LUV, RGB(ry, gy, by))
-    hslx.l > hsly.l
+    luv1 = convert(Luv, RGB{U8}(color_a[1]/255, color_a[2]/255, color_a[3]/255))
+    luv2 = convert(Luv, RGB{U8}(color_b[1]/255, color_b[2]/255, color_b[3]/255))
+    luv1.l > luv2.l
 end
 
 function draw_swatch(colorname, x, y, swatchwidth, swatchheight, color_values)
@@ -16,8 +12,8 @@ function draw_swatch(colorname, x, y, swatchwidth, swatchheight, color_values)
     toplabel = """<text x="$(x)" y="$(y - 3)" fill="black" font-size="5px" font-family="Helvetica-Bold">$colorname</text>\n"""
     bottomlabel = """<text x="$(x)" y="$(y + swatchheight + 3)" font-size="3px" font-family="Helvetica">($r, $g, $b)</text>\n"""
     return  toplabel *
-            bottomlabel *
-            """<rect rx="2" ry="2" x="$(x)" y="$(y)" width="$(swatchwidth)" height="$(swatchheight)" fill="rgb($r, $g, $b)" /> \n """
+    bottomlabel *
+    """<rect rx="2" ry="2" x="$(x)" y="$(y)" width="$(swatchwidth)" height="$(swatchheight)" fill="rgb($r, $g, $b)" /> \n """
 end
 
 function draw_synonym(colorname, x, y, swatchwidth, swatchheight)
@@ -27,7 +23,7 @@ end
 
 function make_color_table(image_width, image_height, output_file)
     # prepare synonym lists
-    synonyms = Dict{Tuple, Array}()
+    synonyms = @compat Dict{Tuple, Array}()
     for color in Colors.color_names
         col_name  = color[1]
         col_value = color[2]
@@ -88,5 +84,6 @@ function make_color_table(image_width, image_height, output_file)
     println(f, "</svg>")
     close(f)
 end
+
 
 make_color_table(1400, 1400, "/tmp/color_names_sorted.svg")
