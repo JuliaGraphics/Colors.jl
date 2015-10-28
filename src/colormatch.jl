@@ -7,7 +7,7 @@ abstract CIE1931JV_CMF <: CMF
 abstract CIE2006_2_CMF <: CMF
 abstract CIE2006_10_CMF <: CMF
 
-@doc """
+"""
     colormatch(wavelength)
     colormatch(matchingfunction, wavelength)
 
@@ -20,7 +20,7 @@ Args:
 
 Returns:
   XYZ value of perceived color.
-""" ->
+"""
 function colormatch(wavelen::Real)
     return colormatch(CIE1931_CMF, wavelen)
 end

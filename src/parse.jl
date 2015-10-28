@@ -47,7 +47,7 @@ function parse_alpha_num(num::AbstractString)
 end
 
 
-@doc """
+"""
     parse(Colorant, desc)
 
 Parse a color description.
@@ -71,7 +71,7 @@ Returns:
     - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
     - a specific `Colorant` type was specified in the first argument
-""" ->
+"""
 function Base.parse(::Type{Colorant}, desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)

@@ -1,8 +1,8 @@
-VERSION >= v"0.4.0-dev+6521" && __precompile__()
+__precompile__()
 
 module Colors
 
-using FixedPointNumbers, ColorTypes, Reexport, Compat
+using FixedPointNumbers, ColorTypes, Reexport
 @reexport using ColorTypes
 
 typealias AbstractGray{T} Color{T,1}
@@ -10,10 +10,6 @@ typealias Color3{T} Color{T,3}
 
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax, writemime
-
-if VERSION < v"0.4.0-dev"
-    using Docile
-end
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,

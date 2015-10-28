@@ -1,5 +1,4 @@
-julia 0.3
-ColorTypes
-FixedPointNumbers
-Compat 0.2
+julia 0.4
+ColorTypes 0.2
+FixedPointNumbers 0.1
 Reexport

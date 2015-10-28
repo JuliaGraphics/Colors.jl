@@ -1,6 +1,6 @@
-using Colors, FixedPointNumbers, Compat, JLD
+using Colors, FixedPointNumbers, JLD
 using Base.Test
-import ColorTypes: eltype_default
+using ColorTypes: eltype_default
 
 # Color parsing
 const redU8 = parse(Colorant, "red")

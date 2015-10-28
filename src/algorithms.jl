@@ -1,6 +1,6 @@
 # Arithmetic
 #XYZ and LMS are linear vector spaces
-@compat typealias Linear3 Union{XYZ, LMS}
+typealias Linear3 Union{XYZ, LMS}
 +{C<:Linear3}(a::C, b::C) = C(comp1(a)+comp1(b), comp2(a)+comp2(b), comp3(a)+comp3(b))
 -{C<:Linear3}(a::C, b::C) = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
 -(a::Linear3) = typeof(a)(-comp1(a), -comp2(a), -comp3(a))
@@ -13,7 +13,7 @@
 # Chromatic Adaptation / Whitebalancing
 # -------------------------------------
 
-@doc """
+"""
     whitebalance(c, src_white, ref_white)
 
 Whitebalance a color.
@@ -31,7 +31,7 @@ Args:
 
 Returns:
   A whitebalanced color.
-""" ->
+"""
 function whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)
     c_lms = convert(LMS, c)
     src_wp = convert(LMS, src_white)
@@ -75,7 +75,7 @@ function brettel_abc(neutral::LMS, anchor::LMS)
 end
 
 
-@doc """
+"""
     protanopic(c)
     protanopic(c, p)
 
@@ -83,7 +83,7 @@ Convert a color to simulate protanopic color deficiency (lack of the
 long-wavelength photopigment).  `c` is the input color; the optional
 argument `p` is the fraction of photopigment loss, in the range 0 (no
 loss) to 1 (complete loss).
-""" ->
+"""
 function protanopic{T <: Color}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
@@ -98,13 +98,13 @@ function protanopic{T <: Color}(q::T, p, neutral::LMS)
 end
 
 
-@doc """
+"""
     deuteranopic(c)
     deuteranopic(c, p)
 
 Convert a color to simulate deuteranopic color deficiency (lack of the
 middle-wavelength photopigment).  See the description of `protanopic` for detail about the arguments.
-""" ->
+"""
 function deuteranopic{T <: Color}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
@@ -119,14 +119,14 @@ function deuteranopic{T <: Color}(q::T, p, neutral::LMS)
 end
 
 
-@doc """
+"""
     tritanopic(c)
     tritanopic(c, p)
 
 Convert a color to simulate tritanopic color deficiency (lack of the
 short-wavelength photogiment).  See `protanopic` for more detail about
 the arguments.
-""" ->
+"""
 function tritanopic{T <: Color}(q::T, p, neutral::LMS)
     q = convert(LMS, q)
     anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
@@ -156,14 +156,14 @@ tritanopic(c::Color)   = tritanopic(c, 1.0)
 # MSC - Most Saturated Colorant for given hue h
 # ---------------------
 
-@doc """
+"""
     MSC(h)
     MSC(h, l)
 
 Calculates the most saturated color for any given hue `h` by
 finding the corresponding corner in LCHuv space. Optionally,
 the lightness `l` may also be specified.
-""" ->
+"""
 function MSC(h)
 
     #Corners of RGB cube

@@ -4,7 +4,7 @@ include("maps_data.jl")
 # color scale generation
 # ----------------------
 
-@doc """
+"""
     distinguishable_colors(n, [seed]; [transform, lchoices, cchoices, hchoices])
 
 Generate n maximally distinguishable colors.
@@ -29,7 +29,7 @@ Keyword arguments:
 
 Returns:
   A `Vector` of colors of length `n`, of the type specified in `seed`.
-""" ->
+"""
 function distinguishable_colors{T<:Color}(n::Integer,
                             seed::AbstractVector{T};
                             transform::Function = identity,
@@ -46,6 +46,8 @@ function distinguishable_colors{T<:Color}(n::Integer,
     j = 0
     for h in hchoices, c in cchoices, l in lchoices
         candidate[j+=1] = LCHab(l, c, h)
+        # rgb = convert(RGB, LCHab(l, c, h))
+        # candidate[j+=1] = convert(LCHab, rgb)
     end
 
     # Transformed colors
@@ -220,7 +222,7 @@ function diverging_palette(h1,
         n=N
     end
     N1 = max(ceil(Int, mid*n), 1)
-    N2 = @compat Int(max(n-N1, 1))
+    N2 = Int(max(n-N1, 1))
 
     pal1 = sequential_palette(h1, N1+1, w=w, d=d1, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor1, logscale=logscale)
     pal1 = flipdim(pal1, 1)
@@ -240,7 +242,7 @@ end
 # ----------------------
 # Main function to handle different predefined colormaps
 #
-@doc """
+"""
     colormap(cname, [N; mid, logscale, kvs...])
 
 Returns a predefined sequential or diverging colormap computed using
@@ -250,7 +252,7 @@ and `Reds`.  Diverging colormap choices are `RdBu`.  Optionally, you
 can specify the number of colors `N` (default 100). Keyword arguments
 include the position of the middle point `mid` (default 0.5) and the
 possibility to switch to log scaling with `logscale` (default false).
-""" ->
+"""
 function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)
 
     cname = lowercase(cname)
