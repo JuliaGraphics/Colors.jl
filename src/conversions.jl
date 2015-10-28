@@ -165,7 +165,7 @@ cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHab)  = cnvt(CV, convert(Lab{eltype(c)}, 
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHuv)  = cnvt(CV, convert(Luv{eltype(c)}, c))
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::Color3)    = cnvt(CV, convert(XYZ{eltype(c)}, c))
 
-cnvt{CV<:AbstractRGB{Ufixed8}}(::Type{CV}, c::RGB24) = CV(Ufixed8(c.color&0x00ff0000>>>16,0), Ufixed8(c.color&0x0000ff00>>>8,0), Ufixed8(c.color&0x000000ff,0))
+cnvt{CV<:AbstractRGB{UFixed8}}(::Type{CV}, c::RGB24) = CV(UFixed8(c.color&0x00ff0000>>>16,0), UFixed8(c.color&0x0000ff00>>>8,0), UFixed8(c.color&0x000000ff,0))
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
 function cnvt{CV<:AbstractRGB}(::Type{CV}, c::AbstractGray)
@@ -178,21 +178,21 @@ end
 # -----------------
 
 function cnvt{T}(::Type{HSV{T}}, c::AbstractRGB)
-    c_min = min(red(c), green(c), blue(c))
-    c_max = max(red(c), green(c), blue(c))
+    c_min = Float64(min(red(c), green(c), blue(c)))
+    c_max = Float64(max(red(c), green(c), blue(c)))
     if c_min == c_max
-        return HSV(zero(T), zero(T), c_max)
+        return HSV{T}(zero(T), zero(T), c_max)
     end
 
     if c_min == red(c)
-        f = green(c) - blue(c)
-        i = convert(T, 3)
+        f = Float64(green(c)) - Float64(blue(c))
+        i = 3
     elseif c_min == green(c)
-        f = blue(c) - red(c)
-        i = convert(T, 5)
+        f = Float64(blue(c)) - Float64(red(c))
+        i = 5
     else
-        f = red(c) - green(c)
-        i = convert(T, 1)
+        f = Float64(red(c)) - Float64(green(c))
+        i = 1
     end
 
     HSV{T}(60 * (i - f / (c_max - c_min)),
@@ -316,9 +316,9 @@ cnvt{T}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{T}, c))
 
-cnvt{T<:Ufixed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:Ufixed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:Ufixed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:UFixed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:UFixed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:UFixed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
 
 
 function xyz_to_uv(c::XYZ)
@@ -767,19 +767,19 @@ cnvt{T}(::Type{YCbCr{T}}, c::Color3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
 # -------------------
 
 convert(::Type{RGB24}, c::RGB24) = c
-convert(::Type{RGB24}, c::AbstractRGB{Ufixed8}) = RGB24(red(c), green(c), blue(c))
+convert(::Type{RGB24}, c::AbstractRGB{UFixed8}) = RGB24(red(c), green(c), blue(c))
 convert(::Type{RGB24}, c::AbstractRGB) = RGB24(round(UInt32, 255*red(c))<<16 +
                                                round(UInt32, 255*green(c))<<8 +
                                                round(UInt32, 255*blue(c)))
 
-convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{Ufixed8}, c))
+convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{UFixed8}, c))
 
 
 # To ARGB32
 # ----------------
 
 convert(::Type{ARGB32}, c::ARGB32) = c
-convert{CV<:AbstractRGB{Ufixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
+convert{CV<:AbstractRGB{UFixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
 convert(::Type{ARGB32}, c::TransparentColor) =
     ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha(c))<<24)
@@ -796,5 +796,5 @@ else
     const unsafe_trunc = Base.unsafe_trunc
 end
 
-convert{T<:Ufixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = Gray{T}(T(unsafe_trunc(FixedPointNumbers.rawtype(T), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b)), 0))
+convert{T<:UFixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = Gray{T}(T(unsafe_trunc(FixedPointNumbers.rawtype(T), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b)), 0))
 convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)

@@ -9,12 +9,12 @@ function lerp(x, a, b)
 end
 
 
-@doc """
+"""
     hex(c)
 
 Print a color as a RGB hex triple, or a transparent paint as an ARGB
 hex quadruplet.
-""" ->
+"""
 function hex(c::RGB)
     @sprintf("%02X%02X%02X",
              round(Int, lerp(c.r, 0.0, 255.0)),
@@ -44,21 +44,21 @@ for (T,a,b,c) in ((:RGB,:r,:g,:b), (:HSV,:h,:s,:v), (:HSL,:h,:s,:l),
       end
 end
 
-@doc """
+"""
     weighted_color_mean(w1, c1, c2)
 
 Returns a color that is the weighted mean of `c1` and `c2`, where `c1`
 has a weight 0 ≤ `w1` ≤ 1.
-""" ->
+"""
 weighted_color_mean(w1::Real, c1::RGB24, c2::RGB24) =
     convert(RGB24, weighted_color_mean(w1, convert(RGB, c1), convert(RGB, c2)))
 
-@doc """
+"""
     linspace(c1::Color, c2::Color, n=100)
 
 Generates `n` colors in a linearly interpolated ramp from `c1` to
 `c2`, inclusive, returning an `Array` of colors.
-""" ->
+"""
 function linspace{T<:Color}(c1::T, c2::T, n=100)
     a = Array(T, convert(Int, n))
     if n == 1
