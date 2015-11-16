@@ -72,7 +72,7 @@ Returns:
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
     - a specific `Colorant` type was specified in the first argument
 """
-function Base.parse(::Type{Colorant}, desc::AbstractString)
+function _parse_colorant(desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
@@ -133,7 +133,17 @@ function Base.parse(::Type{Colorant}, desc::AbstractString)
     return RGB{U8}(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
-Base.parse{C<:Colorant}(::Type{C}, desc) = convert(C, parse(Colorant, desc))::C
+function Base.parse{C<:Colorant}(::Type{C}, desc::AbstractString)
+    c = _parse_colorant(desc)
+    if C === Colorant
+        c
+    else
+        convert(C, c)::C
+    end
+end
+
+Base.parse{C<:Colorant}(::Type{C}, desc::Symbol) = parse(C, string(desc))
+Base.parse{C<:Colorant}(::Type{C}, c::Colorant) = C === Colorant ? c : convert(C, c)
 
 macro colorant_str(ex)
     isa(ex, AbstractString) || error("colorant requires literal strings")

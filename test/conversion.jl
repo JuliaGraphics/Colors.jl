@@ -21,6 +21,9 @@ const redF64 = convert(RGB{Float64}, redU8)
 @test_throws ErrorException  parse(Colorant, "hsl(120, 100, 50)")
 @test parse(Colorant, "#D0FF58") === RGB(0xD0uf8,0xFFuf8,0x58uf8)
 
+@test parse(Colorant, :red) === colorant"red"
+@test parse(Colorant, colorant"red") === colorant"red"
+
 @test hex(RGB(1,0.5,0)) == "FF8000"
 @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
 
