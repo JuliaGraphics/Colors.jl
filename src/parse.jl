@@ -135,6 +135,8 @@ end
 
 Base.parse{C<:Colorant}(::Type{C}, desc) = convert(C, parse(Colorant, desc))::C
 
+Base.parse{C<:Colorant}(::Type{C}, c::Colorant) = convert(C, c)::C
+
 macro colorant_str(ex)
     isa(ex, AbstractString) || error("colorant requires literal strings")
     col = parse(Colorant, ex)
