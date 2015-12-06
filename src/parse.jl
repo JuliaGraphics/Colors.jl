@@ -47,32 +47,7 @@ function parse_alpha_num(num::AbstractString)
 end
 
 
-"""
-    parse(Colorant, desc)
-
-Parse a color description.
-
-This parses subset of HTML/CSS color specifications. In particular, everything
-is supported but: "currentColor".
-
-It does support named colors (though it uses X11 named colors, which are
-slightly different than W3C named colors in some cases), "rgb()", "hsl()",
-"#RGB", and "#RRGGBB' syntax.
-
-Args:
-- `Colorant`: literal "Colorant" will parse according to the `desc`
-string (usually returning an `RGB`); any more specific choice will
-return a color of the specified type.
-- `desc`: A color name or description.
-
-Returns:
-  An `RGB{U8}` color, unless:
-    - "hsl(h,s,l)" was used, in which case an `HSL` color;
-    - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
-    - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
-    - a specific `Colorant` type was specified in the first argument
-"""
-function Base.parse(::Type{Colorant}, desc::AbstractString)
+function _parse_colorant(desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
@@ -133,7 +108,39 @@ function Base.parse(::Type{Colorant}, desc::AbstractString)
     return RGB{U8}(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
-Base.parse{C<:Colorant}(::Type{C}, desc) = convert(C, parse(Colorant, desc))::C
+# note: these exist to enable proper dispatch, since super(Colorant) == Any
+_parse_colorant{C<:Colorant,SUP<:Any}(::Type{C}, ::Type{SUP}, desc::AbstractString) = _parse_colorant(desc)
+_parse_colorant{C<:Colorant,SUP<:Colorant}(::Type{C}, ::Type{SUP}, desc::AbstractString) = convert(C, _parse_colorant(desc))::C
+
+"""
+    parse(Colorant, desc)
+
+Parse a color description.
+
+This parses subset of HTML/CSS color specifications. In particular, everything
+is supported but: "currentColor".
+
+It does support named colors (though it uses X11 named colors, which are
+slightly different than W3C named colors in some cases), "rgb()", "hsl()",
+"#RGB", and "#RRGGBB' syntax.
+
+Args:
+- `Colorant`: literal "Colorant" will parse according to the `desc`
+string (usually returning an `RGB`); any more specific choice will
+return a color of the specified type.
+- `desc`: A color name or description.
+
+Returns:
+  An `RGB{U8}` color, unless:
+    - "hsl(h,s,l)" was used, in which case an `HSL` color;
+    - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
+    - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
+    - a specific `Colorant` type was specified in the first argument
+"""
+Base.parse{C<:Colorant}(::Type{C}, desc::AbstractString) = _parse_colorant(C, super(C), desc)
+Base.parse{C<:Colorant}(::Type{C}, desc::Symbol) = parse(C, string(desc))
+Base.parse{C<:Colorant}(::Type{C}, c::Colorant) = c
+
 
 macro colorant_str(ex)
     isa(ex, AbstractString) || error("colorant requires literal strings")
