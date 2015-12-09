@@ -220,3 +220,6 @@ for i = 1:length(csconv)
         println("  index $i")
     end
 end
+
+# Images issue #382
+@test convert(Gray, RGBA(1,1,1,1)) == Gray(U8(1))
