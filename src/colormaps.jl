@@ -45,9 +45,8 @@ function distinguishable_colors{T<:Color}(n::Integer,
     candidate = Array(Lab{Float64}, N)
     j = 0
     for h in hchoices, c in cchoices, l in lchoices
-        candidate[j+=1] = LCHab(l, c, h)
-        # rgb = convert(RGB, LCHab(l, c, h))
-        # candidate[j+=1] = convert(LCHab, rgb)
+        rgb = convert(RGB, LCHab(l, c, h))
+        candidate[j+=1] = convert(LCHab, rgb)
     end
 
     # Transformed colors
