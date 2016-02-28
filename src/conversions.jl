@@ -798,5 +798,5 @@ else
     const unsafe_trunc = Base.unsafe_trunc
 end
 
-convert{T<:UFixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = Gray{T}(T(unsafe_trunc(FixedPointNumbers.rawtype(T), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b)), 0))
+convert{T<:UFixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
 convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)

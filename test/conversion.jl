@@ -223,3 +223,6 @@ end
 
 # Images issue #382
 @test convert(Gray, RGBA(1,1,1,1)) == Gray(U8(1))
+
+# https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
+@test convert(Gray, RGB{U8}(0.145,0.145,0.145)) == Gray{U8}(0.145)
