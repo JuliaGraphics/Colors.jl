@@ -137,7 +137,7 @@ Returns:
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
     - a specific `Colorant` type was specified in the first argument
 """
-Base.parse{C<:Colorant}(::Type{C}, desc::AbstractString) = _parse_colorant(C, super(C), desc)
+Base.parse{C<:Colorant}(::Type{C}, desc::AbstractString) = _parse_colorant(C, supertype(C), desc)
 Base.parse{C<:Colorant}(::Type{C}, desc::Symbol) = parse(C, string(desc))
 Base.parse{C<:Colorant}(::Type{C}, c::Colorant) = c
 
