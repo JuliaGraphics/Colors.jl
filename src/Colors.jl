@@ -2,7 +2,7 @@ __precompile__()
 
 module Colors
 
-using FixedPointNumbers, ColorTypes, Reexport
+using FixedPointNumbers, ColorTypes, Reexport, Compat
 @reexport using ColorTypes
 
 typealias AbstractGray{T} Color{T,1}

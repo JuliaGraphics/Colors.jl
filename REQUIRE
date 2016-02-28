@@ -2,3 +2,4 @@ julia 0.4
 ColorTypes 0.2
 FixedPointNumbers 0.1
 Reexport
+Compat
