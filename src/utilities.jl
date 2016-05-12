@@ -38,9 +38,9 @@ for (T,a,b,c) in ((:RGB,:r,:g,:b), (:HSV,:h,:s,:v), (:HSL,:h,:s,:l),
                   (:Luv,:l,:u,:v), (:LCHuv,:l,:c,:h), (:LMS,:l,:m,:s))
     @eval weighted_color_mean(w1::Real, c1::$T, c2::$T) =
       let w2 = w1 >= 0 && w1 <= 1 ? 1 - w1 : throw(DomainError())
-          $T(c1.($(Expr(:quote, a))) * w1 + c2.($(Expr(:quote, a))) * w2,
-             c1.($(Expr(:quote, b))) * w1 + c2.($(Expr(:quote, b))) * w2,
-             c1.($(Expr(:quote, c))) * w1 + c2.($(Expr(:quote, c))) * w2)
+          $T(c1.$a * w1 + c2.$a * w2,
+             c1.$b * w1 + c2.$b * w2,
+             c1.$c * w1 + c2.$c * w2)
       end
 end
 
