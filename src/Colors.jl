@@ -9,7 +9,7 @@ typealias AbstractGray{T} Color{T,1}
 typealias Color3{T} Color{T,3}
 
 import Base: ==, +, -, *, /
-import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax, writemime
+import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,

@@ -770,9 +770,9 @@ cnvt{T}(::Type{YCbCr{T}}, c::Color3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
 
 convert(::Type{RGB24}, c::RGB24) = c
 convert(::Type{RGB24}, c::AbstractRGB{UFixed8}) = RGB24(red(c), green(c), blue(c))
-convert(::Type{RGB24}, c::AbstractRGB) = RGB24(round(UInt32, 255*red(c))<<16 +
-                                               round(UInt32, 255*green(c))<<8 +
-                                               round(UInt32, 255*blue(c)))
+convert(::Type{RGB24}, c::AbstractRGB) = RGB24((round(UInt8, 255*red(c))%UInt32)<<16 +
+                                               (round(UInt8, 255*green(c))%UInt32)<<8 +
+                                                round(UInt8, 255*blue(c))%UInt32)
 
 convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{UFixed8}, c))
 
@@ -784,7 +784,7 @@ convert(::Type{ARGB32}, c::ARGB32) = c
 convert{CV<:AbstractRGB{UFixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
 convert(::Type{ARGB32}, c::TransparentColor) =
-    ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha(c))<<24)
+    ARGB32(convert(RGB24, c).color | (round(UInt8, 255*alpha(c))%UInt32)<<24)
 convert(::Type{ARGB32}, c::Color) = ARGB32(convert(RGB24, c).color | 0xff000000)
 convert(::Type{ARGB32}, c::Color, alpha) = ARGB32(convert(RGB24, c).color | round(UInt32, 255*alpha)<<24)
 

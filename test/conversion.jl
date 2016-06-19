@@ -119,6 +119,9 @@ ac = RGBA(redF64)
 @test convert(UInt32, convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8))) == 0x00ff0000
 redhsv = convert(HSV, redF64)
 @test convert(RGB24, redhsv) == RGB24(0x00ff0000)
+@test_throws InexactError convert(RGB24,  RGB(0, 1.1, 0))
+@test_throws InexactError convert(ARGB32, RGBA(0, 1.1, 0, 0.8))
+@test_throws InexactError convert(ARGB32, RGBA(0, 0.8, 0, 1.1))
 
 @test convert(RGB{UFixed8}, red24) == RGB{UFixed8}(1,0,0)
 @test convert(RGBA{UFixed8}, red32) == RGBA{UFixed8}(1,0,0,1)
