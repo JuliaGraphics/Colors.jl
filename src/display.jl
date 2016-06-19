@@ -1,7 +1,7 @@
 # Displaying color swatches
 # -------------------------
 
-function writemime(io::IO, ::MIME"image/svg+xml", c::Color)
+@compat function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
     write(io,
         """
         <?xml version"1.0" encoding="UTF-8"?>
@@ -15,8 +15,8 @@ function writemime(io::IO, ::MIME"image/svg+xml", c::Color)
         """)
 end
 
-function writemime{T <: Color}(io::IO, ::MIME"image/svg+xml",
-                                     cs::AbstractVecOrMat{T})
+@compat function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml",
+                                       cs::AbstractVecOrMat{T})
     m,n = ndims(cs) == 2 ? size(cs) : (1,length(cs))
 
     xsize,xpad = n > 50 ? (250/n,0) : n > 18 ? (5.,1) : n > 12 ? (10.,1) : n > 1 ? (15.,1) : (25.,0)
