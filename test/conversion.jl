@@ -172,6 +172,9 @@ julia> for t in subtypes(ColorValue)
 @test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 1.0)) === (1.0, 0.0)
 @test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
 
+# ColorTypes.jl issue #40
+@test_approx_eq_eps convert(HSL, RGB{U8}(0.678, 0.847, 0.902)) HSL{Float32}(194.73685f0,0.5327105f0,0.7901961f0) 100eps(Float32)
+
 # YIQ
 @test convert(YIQ, RGB(1,0,0)) == YIQ{Float32}(0.299, 0.595716, 0.211456)
 @test convert(YIQ, RGB(0,1,0)) == YIQ{Float32}(0.587, -0.274453, -0.522591)
