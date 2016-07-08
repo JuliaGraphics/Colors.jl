@@ -210,8 +210,9 @@ cnvt{T}(::Type{HSV{T}}, c::Color3) = cnvt(HSV{T}, convert(RGB{T}, c))
 # -----------------
 
 function cnvt{T}(::Type{HSL{T}}, c::AbstractRGB)
-    c_min = min(red(c), green(c), blue(c))
-    c_max = max(red(c), green(c), blue(c))
+    r, g, b = T(red(c)), T(green(c)), T(blue(c))
+    c_min = min(r, g, b)
+    c_max = max(r, g, b)
     l = (c_max + c_min) / 2
 
     if c_max == c_min
@@ -223,11 +224,11 @@ function cnvt{T}(::Type{HSL{T}}, c::AbstractRGB)
     end
 
     if c_max == red(c)
-        h = (green(c) - blue(c)) / (c_max - c_min)
+        h = (g - b) / (c_max - c_min)
     elseif c_max == green(c)
-        h = convert(T, 2) + (blue(c) - red(c)) / (c_max - c_min)
+        h = convert(T, 2) + (b - r) / (c_max - c_min)
     else
-        h = convert(T, 4) + (red(c) - green(c)) / (c_max - c_min)
+        h = convert(T, 4) + (r - g) / (c_max - c_min)
     end
 
     h *= 60
