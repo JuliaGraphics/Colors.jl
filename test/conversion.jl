@@ -199,7 +199,7 @@ r4 = RGB4(1,0,0)
 @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
 
 # Test accuracy of conversion
-csconv = jldopen("test_conversions.jld") do file
+csconv = jldopen(joinpath(dirname(@__FILE__), "test_conversions.jld")) do file
     read(file, "csconv")
 end
 
