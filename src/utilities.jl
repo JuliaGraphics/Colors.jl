@@ -59,7 +59,7 @@ weighted_color_mean(w1::Real, c1::RGB24, c2::RGB24) =
 Generates `n` colors in a linearly interpolated ramp from `c1` to
 `c2`, inclusive, returning an `Array` of colors.
 """
-function linspace{T<:Color}(c1::T, c2::T, n=100)
+function linspace{T<:Colorant}(c1::T, c2::T, n=100)
     a = Array(T, convert(Int, n))
     if n == 1
         a[1] = c1
