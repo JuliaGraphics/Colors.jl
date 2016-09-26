@@ -39,33 +39,9 @@ Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and
 `c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
 """
 function weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
-    w1 = convert(eltype(c1),w1)
-    w2 = w1 >= 0 && w1 <= 1 ? oftype(w1,1-w1) : throw(DomainError())
-    _weighted_color_mean(base_colorant_type(c1), base_colorant_type(c2), w1, w2, c1, c2)
-end
-
-function _weighted_color_mean{C<:ColorTypes.AbstractGray}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
-    C(w1*comp1(c1)+w2*comp1(c2))
-end
-
-function _weighted_color_mean{C<:ColorTypes.TransparentGray}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
-    C(w1*comp1(c1)+w2*comp1(c2), w1*alpha(c1)+w2*alpha(c2))
-end
-
-function _weighted_color_mean{C<:ColorTypes.Color3}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
-    C(w1*comp1(c1)+w2*comp1(c2), w1*comp2(c1)+w2*comp2(c2), w1*comp3(c1)+w2*comp3(c2))
-end
-
-function _weighted_color_mean{C<:ColorTypes.Transparent3}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
-    C(w1*comp1(c1)+w2*comp1(c2), w1*comp2(c1)+w2*comp2(c2), w1*comp3(c1)+w2*comp3(c2), w1*alpha(c1)+w2*alpha(c2))
-end
-
-function _weighted_color_mean{C<:ColorTypes.TransparentRGB}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
-    C(w1*comp1(c1)+w2*comp1(c2), w1*comp2(c1)+w2*comp2(c2), w1*comp3(c1)+w2*comp3(c2), w1*alpha(c1)+w2*alpha(c2))
-end
-
-function _weighted_color_mean(::Type, ::Type, w1, w2, c1, c2)
-    throw(ArgumentError("the two colors must be from the same colorspace, but got $c1 and $c2"))
+    weight1 = convert(promote_type(eltype(c1), eltype(c2)),w1)
+    weight2 = weight1 >= 0 && weight1 <= 1 ? oftype(weight1,1-weight1) : throw(DomainError())
+    mapc((x,y)->weigth1*x+weight2*y, c1, c2)
 end
 
 """
