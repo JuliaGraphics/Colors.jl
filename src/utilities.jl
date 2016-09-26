@@ -32,26 +32,41 @@ end
 hex(c::Color) = hex(convert(RGB, c))
 hex(c::Colorant) = hex(convert(ARGB, c))
 
-# weighted_color_mean(w1, c1, c2) gives a mean color "w1*c1 + (1-w1)*c2".
-for (T,a,b,c) in ((:RGB,:r,:g,:b), (:HSV,:h,:s,:v), (:HSL,:h,:s,:l),
-                  (:XYZ,:x,:y,:z), (:Lab,:l,:a,:b), (:LCHab,:l,:c,:h),
-                  (:Luv,:l,:u,:v), (:LCHuv,:l,:c,:h), (:LMS,:l,:m,:s))
-    @eval weighted_color_mean(w1::Real, c1::$T, c2::$T) =
-      let w2 = w1 >= 0 && w1 <= 1 ? 1 - w1 : throw(DomainError())
-          $T(c1.$a * w1 + c2.$a * w2,
-             c1.$b * w1 + c2.$b * w2,
-             c1.$c * w1 + c2.$c * w2)
-      end
-end
-
 """
     weighted_color_mean(w1, c1, c2)
 
-Returns a color that is the weighted mean of `c1` and `c2`, where `c1`
-has a weight 0 ≤ `w1` ≤ 1.
+Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and 
+`c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
 """
-weighted_color_mean(w1::Real, c1::RGB24, c2::RGB24) =
-    convert(RGB24, weighted_color_mean(w1, convert(RGB, c1), convert(RGB, c2)))
+function weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
+    w1 = convert(eltype(c1),w1)
+    w2 = w1 >= 0 && w1 <= 1 ? oftype(w1,1-w1) : throw(DomainError())
+    _weighted_color_mean(base_colorant_type(c1), base_colorant_type(c2), w1, w2, c1, c2)
+end
+
+function _weighted_color_mean{C<:ColorTypes.AbstractGray}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
+    C(w1*comp1(c1)+w2*comp1(c2))
+end
+
+function _weighted_color_mean{C<:ColorTypes.TransparentGray}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
+    C(w1*comp1(c1)+w2*comp1(c2), w1*alpha(c1)+w2*alpha(c2))
+end
+
+function _weighted_color_mean{C<:ColorTypes.Color3}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
+    C(w1*comp1(c1)+w2*comp1(c2), w1*comp2(c1)+w2*comp2(c2), w1*comp3(c1)+w2*comp3(c2))
+end
+
+function _weighted_color_mean{C<:ColorTypes.Transparent3}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
+    C(w1*comp1(c1)+w2*comp1(c2), w1*comp2(c1)+w2*comp2(c2), w1*comp3(c1)+w2*comp3(c2), w1*alpha(c1)+w2*alpha(c2))
+end
+
+function _weighted_color_mean{C<:ColorTypes.TransparentRGB}(::Type{C}, ::Type{C}, w1, w2, c1, c2)
+    C(w1*comp1(c1)+w2*comp1(c2), w1*comp2(c1)+w2*comp2(c2), w1*comp3(c1)+w2*comp3(c2), w1*alpha(c1)+w2*alpha(c2))
+end
+
+function _weighted_color_mean(::Type, ::Type, w1, w2, c1, c2)
+    throw(ArgumentError("the two colors must be from the same colorspace, but got $c1 and $c2"))
+end
 
 """
     linspace(c1::Color, c2::Color, n=100)
