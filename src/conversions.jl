@@ -255,7 +255,7 @@ function cnvt{T}(::Type{HSI{T}}, c::AbstractRGB)
     i = isum/3
     m = min(r, g, b)
     s = i > 0 ? 1-m/i : 1-one(i)/one(i) # the latter is a type-stable 0
-    val = (r-(g+b)/2)/sqrt(r^2+g^2+b^2-r*g-r*b-g*b)
+    val = (r-(g+b)/2)/sqrt(((r-g)^2 + (r-b)^2 + (g-b)^2)/2)
     val = clamp(val, -one(val), one(val))
     h = acosd(val)
     if b > g

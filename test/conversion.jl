@@ -232,3 +232,8 @@ end
 
 # https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
 @test convert(Gray, RGB{U8}(0.145,0.145,0.145)) == Gray{U8}(0.145)
+
+# Issue #257
+c = RGB{Float16}(0.9473,0.962,0.9766)
+hsi = convert(HSI, c)
+@test hsi.i > 0.96 && hsi.h ≈ 210
