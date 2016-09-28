@@ -58,8 +58,9 @@ Generates `n`>2 colors in a linearly interpolated ramp from `c1` to`c2`,
 inclusive, returning an `Array` of colors.
 """
 function linspace{T<:Colorant}(c1::T, c2::T, n::Integer=100)
-    return [weighted_color_mean(w1, c1, c2) for w1 in linspace(1.0,0.0,convert(Int,n))]
+    return T[weighted_color_mean(w1, c1, c2) for w1 in linspace(1.0,0.0,convert(Int,n))]
 end
+linspace(c1::Gray{Bool}, c2::Gray{Bool}, n::Integer=100) = linspace(convert(Gray{Float64},c1),convert(Gray{Float64},c2),n)
 
 #Double quadratic Bezier curve
 function Bezier{T<:Real}(t::T, p0::T, p2::T, q0::T, q1::T, q2::T)
