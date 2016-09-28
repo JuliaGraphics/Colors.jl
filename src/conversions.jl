@@ -353,7 +353,7 @@ function cnvt{T}(::Type{XYZ{T}}, c::DIN99d)
 
     # Go back to C-h space
     # FIXME: Clean this up (why is there no atan2d?)
-    h = rad2deg(atan2(c.b,c.a)) + 50
+    h = rad2deg(atan2(c.b,c.a)) - 50
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
 
@@ -361,14 +361,14 @@ function cnvt{T}(::Type{XYZ{T}}, c::DIN99d)
 
     # Intermediate terms
     G = (exp(C/22.5)-1)/0.06
-    f = G*sind(h - 50)
-    ee = G*cosd(h - 50)
+    f = G*sind(h)
+    ee = G*cosd(h)
 
-    l = (exp(c.l/325.22)-1)/0.0036
+    l = (exp(c.l/325.221)-1)/0.0036
     # a = ee*cosd(50) - f/1.14*sind(50)
-    a = ee*0.6427876096865393 - f/1.14*0.766044443118978
+    a = ee*0.6427876096865394 - f/1.14*0.766044443118978
     # b = ee*sind(50) - f/1.14*cosd(50)
-    b = ee*0.766044443118978 - f/1.14*0.6427876096865393
+    b = ee*0.766044443118978 + f/1.14*0.6427876096865394
 
     adj = convert(XYZ, Lab(l, a, b))
 
@@ -643,13 +643,13 @@ function cnvt{T}(::Type{DIN99d{T}}, c::XYZ{T})
 
     # Apply L*a*b*-space correction
     lab = convert(Lab, adj_c)
-    adj_L = 325.22*log(1+0.0036*lab.l)
+    adj_L = 325.221*log(1+0.0036*lab.l)
 
     # Calculate intermediate parameters
     # ee = lab.a*cosd(50) + lab.b*sind(50)
-    ee = lab.a*0.6427876096865393 + lab.b*0.766044443118978
+    ee = lab.a*0.6427876096865394 + lab.b*0.766044443118978
     # f = 1.14*(lab.b*cosd(50) - lab.a*sind(50))
-    f = 1.14*(lab.b*0.6427876096865393 - lab.a*0.766044443118978)
+    f = 1.14*(lab.b*0.6427876096865394 - lab.a*0.766044443118978)
     G = sqrt(ee^2+f^2)
 
     # Calculate hue/chroma
