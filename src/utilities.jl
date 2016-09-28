@@ -41,7 +41,16 @@ Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and
 function weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
     weight1 = convert(promote_type(eltype(c1), eltype(c2)),w1)
     weight2 = weight1 >= 0 && weight1 <= 1 ? oftype(weight1,1-weight1) : throw(DomainError())
-    mapc((x,y)->weigth1*x+weight2*y, c1, c2)
+    mapc((x,y)->weight1*x+weight2*y, c1, c2)
+end
+
+function weighted_color_mean(w1::Bool, c1::Gray{Bool}, c2::Gray{Bool})
+    return w1 ? c1 : c2
+end
+
+# special case if c1 and c2 are of type Gray{Bool} and w1 is not
+function weighted_color_mean{T<:Union{AbstractFloat,FixedPointNumbers.FixedPoint}}(w1::T, c1::Gray{Bool}, c2::Gray{Bool})
+    weighted_color_mean(w1,convert(Gray{T},c1),convert(Gray{T},c2))
 end
 
 """
