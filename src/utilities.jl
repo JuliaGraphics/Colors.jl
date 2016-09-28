@@ -43,11 +43,9 @@ function weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
     weight2 = weight1 >= 0 && weight1 <= 1 ? oftype(weight1,1-weight1) : throw(DomainError())
     mapc((x,y)->weight1*x+weight2*y, c1, c2)
 end
-
 function weighted_color_mean(w1::Bool, c1::Gray{Bool}, c2::Gray{Bool})
     return w1 ? c1 : c2
 end
-
 # special case if c1 and c2 are of type Gray{Bool} and w1 is not
 function weighted_color_mean{T<:Union{AbstractFloat,FixedPointNumbers.FixedPoint}}(w1::T, c1::Gray{Bool}, c2::Gray{Bool})
     weighted_color_mean(w1,convert(Gray{T},c1),convert(Gray{T},c2))
@@ -56,20 +54,11 @@ end
 """
     linspace(c1::Color, c2::Color, n=100)
 
-Generates `n` colors in a linearly interpolated ramp from `c1` to
-`c2`, inclusive, returning an `Array` of colors.
+Generates `n`>2 colors in a linearly interpolated ramp from `c1` to`c2`,
+inclusive, returning an `Array` of colors.
 """
-function linspace{T<:Colorant}(c1::T, c2::T, n=100)
-    a = Array(T, convert(Int, n))
-    if n == 1
-        a[1] = c1
-        return a
-    end
-    n -= 1
-    for i = 0:n
-        a[i+1] = weighted_color_mean((n-i)/n, c1, c2)
-    end
-    a
+function linspace{T<:Colorant}(c1::T, c2::T, n::Integer=100)
+    return [weighted_color_mean(w1, c1, c2) for w1 in linspace(1.0,0.0,convert(Int,n))]
 end
 
 #Double quadratic Bezier curve

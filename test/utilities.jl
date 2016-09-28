@@ -47,3 +47,22 @@ for C in colortypes
 	end
     end
 end
+
+# test utility function linspace
+# linspace uses weighted_color_mean which is extensively tested.
+# Therefore it suffices to test the function using gray colors.
+for T in vcat(colorElementTypes,[Bool])
+    c1 = Gray(T(1))
+    c2 = Gray(T(0))
+    linc1c2 = linspace(c1,c2,43)
+    @test length(linc1c2) == 43
+    @test linc1c2[1] == c1
+    @test linc1c2[end] == c2
+    if T==Bool
+        @test linc1c2[22] == Gray(0.5)
+        @test typeof(linc1c2) == Array{Gray{Float64},1}
+    else
+        @test linc1c2[22] == Gray(T(0.5))
+        @test typeof(linc1c2) == Array{Gray{T},1}
+    end
+end
