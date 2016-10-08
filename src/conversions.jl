@@ -771,12 +771,14 @@ cnvt{T}(::Type{YCbCr{T}}, c::Color3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
 
 convert(::Type{RGB24}, c::RGB24) = c
 convert(::Type{RGB24}, c::AbstractRGB{UFixed8}) = RGB24(red(c), green(c), blue(c))
-convert(::Type{RGB24}, c::AbstractRGB) = RGB24((reinterpret(U8(red(c))) % UInt32)<<16 +
-                                               (reinterpret(U8(green(c))) % UInt32)<<8 +
-                                                reinterpret(U8(blue(c))) % UInt32)
+function convert(::Type{RGB24}, c::AbstractRGB)
+    u = (reinterpret(U8(red(c))) % UInt32)<<16 +
+        (reinterpret(U8(green(c))) % UInt32)<<8 +
+        reinterpret(U8(blue(c))) % UInt32
+    reinterpret(RGB24, u)
+end
 
 convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{UFixed8}, c))
-
 
 # To ARGB32
 # ----------------
@@ -784,10 +786,18 @@ convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{UFixed8}, c))
 convert(::Type{ARGB32}, c::ARGB32) = c
 convert{CV<:AbstractRGB{UFixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
-convert(::Type{ARGB32}, c::TransparentColor) =
-    ARGB32(convert(RGB24, c).color | (reinterpret(U8(alpha(c)))%UInt32)<<24)
-convert(::Type{ARGB32}, c::Color) = ARGB32(convert(RGB24, c).color | 0xff000000)
-convert(::Type{ARGB32}, c::Color, alpha) = ARGB32(convert(RGB24, c).color | (reinterpret(U8(alpha))%UInt32)<<24)
+function convert(::Type{ARGB32}, c::TransparentColor)
+    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(U8(alpha(c)))%UInt32)<<24
+    reinterpret(ARGB32, u)
+end
+function convert(::Type{ARGB32}, c::Color)
+    u = reinterpret(UInt32, convert(RGB24, c)) | 0xff000000
+    reinterpret(ARGB32, u)
+end
+function convert(::Type{ARGB32}, c::Color, alpha)
+    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(U8(alpha))%UInt32)<<24
+    reinterpret(ARGB32, u)
+end
 
 # To Gray
 # -------
