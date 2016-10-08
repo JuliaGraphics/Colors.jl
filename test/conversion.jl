@@ -29,8 +29,8 @@ const redF64 = convert(RGB{Float64}, redU8)
 
 fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
-const red24 = RGB24(0x00ff0000)
-const red32 = ARGB32(0xffff0000)
+const red24 = reinterpret(RGB24, 0x00ff0000)
+const red32 = reinterpret(ARGB32, 0xffff0000)
 for T in (Float64, Float32, UFixed8)
     c = RGB(one(T), zero(T), zero(T))
     @test eltype(c) == T
@@ -113,12 +113,18 @@ ac = RGBA(redF64)
 @test convert(HSVA{Float32}, ac) == HSVA{Float32}(convert(HSV{Float32}, redF64), 1.0f0)
 @test convert(RGBA, redF64) == ac
 
-@test convert(ARGB32, ac) == ARGB32(0xffff0000)
-@test convert(UInt32, convert(ARGB32, ac)) == 0xffff0000
-@test convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8)) == RGB24(0x00ff0000)
-@test convert(UInt32, convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8))) == 0x00ff0000
+@test convert(ARGB32, ac) == reinterpret(ARGB32, 0xffff0000)
+@test convert(ARGB32, RGB(1,0,0)) == reinterpret(ARGB32, 0xffff0000)
+ac32 = convert(ARGB32, RGB(1,0,0), 0.5)
+@test ac32 == reinterpret(ARGB32, 0x80ff0000)
+@test convert(ARGB32, ac32) === ac32
+@test convert(ARGB32, BGRA(1,0,0,0.5)) == reinterpret(ARGB32, 0x80ff0000)
+@test reinterpret(UInt32, convert(ARGB32, ac)) == 0xffff0000
+@test convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8)) == reinterpret(RGB24, 0x00ff0000)
+@test reinterpret(UInt32, convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8))) == 0x00ff0000
 redhsv = convert(HSV, redF64)
-@test convert(RGB24, redhsv) == RGB24(0x00ff0000)
+@test convert(RGB24, red24) === red24
+@test convert(RGB24, redhsv) == reinterpret(RGB24, 0x00ff0000)
 @test_throws ArgumentError convert(RGB24,  RGB(0, 1.1, 0))
 @test_throws ArgumentError convert(ARGB32, RGBA(0, 1.1, 0, 0.8))
 @test_throws ArgumentError convert(ARGB32, RGBA(0, 0.8, 0, 1.1))
