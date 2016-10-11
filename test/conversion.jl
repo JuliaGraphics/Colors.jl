@@ -2,24 +2,26 @@ using Colors, FixedPointNumbers, JLD
 using Base.Test
 using ColorTypes: eltype_default
 
+r8(x) = reinterpret(N0f8, x)
+
 # Color parsing
-const redU8 = parse(Colorant, "red")
-@test colorant"red" == redU8
-@test isa(redU8, RGB{U8})
-@test redU8 == RGB(1,0,0)
-const redF64 = convert(RGB{Float64}, redU8)
+const redN0f8 = parse(Colorant, "red")
+@test colorant"red" == redN0f8
+@test isa(redN0f8, RGB{N0f8})
+@test redN0f8 == RGB(1,0,0)
+const redF64 = convert(RGB{Float64}, redN0f8)
 @test parse(RGB{Float64}, "red") === RGB{Float64}(1,0,0)
 @test isa(parse(HSV, "blue"), HSV)
-@test parse(Colorant, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
-@test colorant"rgb(55,217,127)" === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
-@test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
-@test parse(Colorant, "rgb(55,217,127)") === RGB{U8}(0x37uf8,0xd9uf8,0x7fuf8)
-@test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{U8}(0x37uf8,0xd9uf8,0x7fuf8,0.5)
+@test parse(Colorant, "rgb(55,217,127)") === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
+@test colorant"rgb(55,217,127)" === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
+@test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{N0f8}(r8(0x37),r8(0xd9),r8(0x7f),0.5)
+@test parse(Colorant, "rgb(55,217,127)") === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
+@test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{N0f8}(r8(0x37),r8(0xd9),r8(0x7f),0.5)
 @test parse(Colorant, "hsl(120, 100%, 50%)") === HSL{Float32}(120,1.0,.5)
 @test colorant"hsl(120, 100%, 50%)" === HSL{Float32}(120,1.0,.5)
-@test parse(RGB{U8}, "hsl(120, 100%, 50%)") === convert(RGB{U8}, HSL{Float32}(120,1.0,.5))
+@test parse(RGB{N0f8}, "hsl(120, 100%, 50%)") === convert(RGB{N0f8}, HSL{Float32}(120,1.0,.5))
 @test_throws ErrorException  parse(Colorant, "hsl(120, 100, 50)")
-@test parse(Colorant, "#D0FF58") === RGB(0xD0uf8,0xFFuf8,0x58uf8)
+@test parse(Colorant, "#D0FF58") === RGB(r8(0xD0),r8(0xFF),r8(0x58))
 
 @test parse(Colorant, :red) === colorant"red"
 @test parse(Colorant, colorant"red") === colorant"red"
@@ -31,7 +33,7 @@ fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
 const red24 = reinterpret(RGB24, 0x00ff0000)
 const red32 = reinterpret(ARGB32, 0xffff0000)
-for T in (Float64, Float32, UFixed8)
+for T in (Float64, Float32, N0f8)
     c = RGB(one(T), zero(T), zero(T))
     @test eltype(c) == T
     c64 = convert(RGB{Float64}, c)
@@ -45,13 +47,13 @@ end
 @test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == redF64
 @test convert(RGB, red24) == redF64
 
-@test convert(Gray{U8}, Gray{U8}(0.1)) == Gray{U8}(0.1)
-@test convert(Gray{U8}, Gray(0.1))     == Gray{U8}(0.1)
-@test convert(Gray{U8}, Gray24(0.1))   == Gray{U8}(0.1)
-@test convert(Gray24, Gray{U8}(0.1))   == Gray24(0.1)
+@test convert(Gray{N0f8}, Gray{N0f8}(0.1)) == Gray{N0f8}(0.1)
+@test convert(Gray{N0f8}, Gray(0.1))     == Gray{N0f8}(0.1)
+@test convert(Gray{N0f8}, Gray24(0.1))   == Gray{N0f8}(0.1)
+@test convert(Gray24, Gray{N0f8}(0.1))   == Gray24(0.1)
 
-@test convert(RGB{U8}, Gray{U8}(0.1)) == RGB{U8}(0.1,0.1,0.1)
-@test convert(RGB{U8}, Gray24(0.1))   == RGB{U8}(0.1,0.1,0.1)
+@test convert(RGB{N0f8}, Gray{N0f8}(0.1)) == RGB{N0f8}(0.1,0.1,0.1)
+@test convert(RGB{N0f8}, Gray24(0.1))   == RGB{N0f8}(0.1,0.1,0.1)
 
 for Cto in ColorTypes.parametric3
     for Cfrom in ColorTypes.parametric3
@@ -76,7 +78,7 @@ end
 for Cto in ColorTypes.parametric3
     for Cfrom in fractional_types
         for Tto in (Float32, Float64)
-            for Tfrom in (UFixed8, UFixed10, UFixed12, UFixed14, UFixed16)
+            for Tfrom in (N0f8, N6f10, N4f12, N2f14, N0f16)
                 c = convert(Cfrom{Tfrom}, redF64)
                 @test typeof(c) == Cfrom{Tfrom}
                 if !(eltype_default(Cto) <: FixedPoint)
@@ -93,7 +95,7 @@ end
 # Test conversion to UFixed types
 for Cto in fractional_types
     for Cfrom in ColorTypes.parametric3
-        for Tto in (UFixed8, UFixed10, UFixed12, UFixed14, UFixed16)
+        for Tto in (N0f8, N6f10, N4f12, N2f14, N0f16)
             for Tfrom in (Float32, Float64)
                 c = convert(Cfrom{Tfrom}, redF64)
                 @test typeof(c) == Cfrom{Tfrom}
@@ -107,8 +109,8 @@ end
 ac = RGBA(redF64)
 
 @test convert(RGB, ac) == RGB(1,0,0)
-@test convert(RGB{UFixed8}, ac) == RGB{UFixed8}(1,0,0)
-@test convert(RGBA{UFixed8}, ac) == RGBA{UFixed8}(1,0,0,1)
+@test convert(RGB{N0f8}, ac) == RGB{N0f8}(1,0,0)
+@test convert(RGBA{N0f8}, ac) == RGBA{N0f8}(1,0,0,1)
 @test convert(HSVA, ac) == HSVA{Float64}(convert(HSV, redF64), 1.0)
 @test convert(HSVA{Float32}, ac) == HSVA{Float32}(convert(HSV{Float32}, redF64), 1.0f0)
 @test convert(RGBA, redF64) == ac
@@ -120,8 +122,8 @@ ac32 = convert(ARGB32, RGB(1,0,0), 0.5)
 @test convert(ARGB32, ac32) === ac32
 @test convert(ARGB32, BGRA(1,0,0,0.5)) == reinterpret(ARGB32, 0x80ff0000)
 @test reinterpret(UInt32, convert(ARGB32, ac)) == 0xffff0000
-@test convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8)) == reinterpret(RGB24, 0x00ff0000)
-@test reinterpret(UInt32, convert(RGB24, RGB(0xffuf8,0x00uf8,0x00uf8))) == 0x00ff0000
+@test convert(RGB24, RGB(r8(0xff),r8(0x00),r8(0x00))) == reinterpret(RGB24, 0x00ff0000)
+@test reinterpret(UInt32, convert(RGB24, RGB(r8(0xff),r8(0x00),r8(0x00)))) == 0x00ff0000
 redhsv = convert(HSV, redF64)
 @test convert(RGB24, red24) === red24
 @test convert(RGB24, redhsv) == reinterpret(RGB24, 0x00ff0000)
@@ -129,14 +131,14 @@ redhsv = convert(HSV, redF64)
 @test_throws ArgumentError convert(ARGB32, RGBA(0, 1.1, 0, 0.8))
 @test_throws ArgumentError convert(ARGB32, RGBA(0, 0.8, 0, 1.1))
 
-@test convert(RGB{UFixed8}, red24) == RGB{UFixed8}(1,0,0)
-@test convert(RGBA{UFixed8}, red32) == RGBA{UFixed8}(1,0,0,1)
+@test convert(RGB{N0f8}, red24) == RGB{N0f8}(1,0,0)
+@test convert(RGBA{N0f8}, red32) == RGBA{N0f8}(1,0,0,1)
 @test convert(HSVA{Float64}, red32) == HSVA{Float64}(360, 1, 1, 1)
 
 if VERSION >= v"0.4.0-dev"
-    @test_throws MethodError AlphaColor(RGB(1,0,0), 0xffuf8)
+    @test_throws MethodError AlphaColor(RGB(1,0,0), r8(0xff))
 else
-    @test_throws ErrorException AlphaColor(RGB(1,0,0), 0xffuf8)
+    @test_throws ErrorException AlphaColor(RGB(1,0,0), r8(0xff))
 end
 
 # whitepoint conversions
@@ -179,7 +181,7 @@ julia> for t in subtypes(ColorValue)
 @test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
 
 # ColorTypes.jl issue #40
-@test_approx_eq_eps convert(HSL, RGB{U8}(0.678, 0.847, 0.902)) HSL{Float32}(194.73685f0,0.5327105f0,0.7901961f0) 100eps(Float32)
+@test_approx_eq_eps convert(HSL, RGB{N0f8}(0.678, 0.847, 0.902)) HSL{Float32}(194.73685f0,0.5327105f0,0.7901961f0) 100eps(Float32)
 
 # YIQ
 @test convert(YIQ, RGB(1,0,0)) == YIQ{Float32}(0.299, 0.595716, 0.211456)
@@ -192,15 +194,15 @@ v = -0.5226
 @test convert(RGB, YIQ(0.0,0.0,-1.0)) == RGB(0,-0.6474*v,0)
 
 # Gray
-c = Gray{UFixed16}(0.8)
-@test convert(RGB, c) == RGB{UFixed16}(0.8,0.8,0.8)
+c = Gray{N0f16}(0.8)
+@test convert(RGB, c) == RGB{N0f16}(0.8,0.8,0.8)
 @test convert(RGB{Float32}, c) == RGB{Float32}(0.8,0.8,0.8)
 
 # More AbstractRGB
 r4 = RGB4(1,0,0)
 @test convert(RGB, r4) == RGB(1,0,0)
-@test convert(RGB{UFixed8}, r4) == RGB{UFixed8}(1,0,0)
-@test convert(RGB4{UFixed8}, r4) == RGB4{UFixed8}(1,0,0)
+@test convert(RGB{N0f8}, r4) == RGB{N0f8}(1,0,0)
+@test convert(RGB4{N0f8}, r4) == RGB4{N0f8}(1,0,0)
 @test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
 @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
 
@@ -234,10 +236,10 @@ for i = 1:length(csconv)
 end
 
 # Images issue #382
-@test convert(Gray, RGBA(1,1,1,1)) == Gray(U8(1))
+@test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
 
 # https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
-@test convert(Gray, RGB{U8}(0.145,0.145,0.145)) == Gray{U8}(0.145)
+@test convert(Gray, RGB{N0f8}(0.145,0.145,0.145)) == Gray{N0f8}(0.145)
 
 # Issue #257
 c = RGB{Float16}(0.9473,0.962,0.9766)

@@ -51,21 +51,21 @@ function _parse_colorant(desc::AbstractString)
     desc_ = replace(desc, " ", "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
-        return RGB{U8}(parse(Int, mat.captures[2], 16) / 255,
+        return RGB{N0f8}(parse(Int, mat.captures[2], 16) / 255,
                        parse(Int, mat.captures[3], 16) / 255,
                        parse(Int, mat.captures[4], 16) / 255)
     end
 
     mat = match(col_pat_hex1, desc_)
     if mat != nothing
-        return RGB{U8}((16 * parse(Int, mat.captures[2], 16)) / 255,
+        return RGB{N0f8}((16 * parse(Int, mat.captures[2], 16)) / 255,
                        (16 * parse(Int, mat.captures[3], 16)) / 255,
                        (16 * parse(Int, mat.captures[4], 16)) / 255)
     end
 
     mat = match(col_pat_rgb, desc_)
     if mat != nothing
-        return RGB{U8}(parse_rgb(mat.captures[1]),
+        return RGB{N0f8}(parse_rgb(mat.captures[1]),
                        parse_rgb(mat.captures[2]),
                        parse_rgb(mat.captures[3]))
     end
@@ -79,7 +79,7 @@ function _parse_colorant(desc::AbstractString)
 
     mat = match(col_pat_rgba, desc_)
     if mat != nothing
-        return RGBA{U8}(parse_rgb(mat.captures[1]),
+        return RGBA{N0f8}(parse_rgb(mat.captures[1]),
                         parse_rgb(mat.captures[2]),
                         parse_rgb(mat.captures[3]),
                         parse_alpha_num(mat.captures[4]))
@@ -97,7 +97,7 @@ function _parse_colorant(desc::AbstractString)
     desc_ = lowercase(desc_)
 
     if desc_ == "transparent"
-        return RGBA{U8}(0,0,0,0)
+        return RGBA{N0f8}(0,0,0,0)
     end
 
     if !haskey(color_names, desc_)
@@ -105,7 +105,7 @@ function _parse_colorant(desc::AbstractString)
     end
 
     c = color_names[desc_]
-    return RGB{U8}(c[1] / 255, c[2] / 255, c[3] / 255)
+    return RGB{N0f8}(c[1] / 255, c[2] / 255, c[3] / 255)
 end
 
 # note: these exist to enable proper dispatch, since super(Colorant) == Any
@@ -131,7 +131,7 @@ return a color of the specified type.
 - `desc`: A color name or description.
 
 Returns:
-  An `RGB{U8}` color, unless:
+  An `RGB{N0f8}` color, unless:
     - "hsl(h,s,l)" was used, in which case an `HSL` color;
     - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;

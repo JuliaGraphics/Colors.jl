@@ -6,7 +6,7 @@ parametric3 = ColorTypes.parametric3
 parametric4A = setdiff(subtypes(ColorAlpha),[GrayA])
 parametricA4 = setdiff(subtypes(AlphaColor),[AGray32,AGray])
 colortypes = vcat(parametric3,parametric4A,parametricA4)
-colorElementTypes = [Float16,Float32,Float64,BigFloat,UFixed8,UFixed10,UFixed12,UFixed14,UFixed16]
+colorElementTypes = [Float16,Float32,Float64,BigFloat,N0f8,N6f10,N4f12,N2f14,N0f16]
 
 for T in colorElementTypes
     c1 = Gray{T}(1)
@@ -16,7 +16,7 @@ end
 
 for C in parametric2
     for T in colorElementTypes
-        C == AGray32 && (T=U8)
+        C == AGray32 && (T=N0f8)
 	c1 = C(T(0),T(1))
         c2 = C(T(1),T(0))
 	@test weighted_color_mean(0.5,c1,c2) == C(T(1)-T(0.5),T(0.5))
@@ -30,7 +30,7 @@ for C in colortypes
             c2 = C(T(0),T(1),T(1))
 	    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5))
 	else
-            C == ARGB32 && (T=U8)
+            C == ARGB32 && (T=N0f8)
             c1 = C(T(1),T(1),T(0),T(1))
             c2 = C(T(0),T(1),T(1),T(0))
 	    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5),T(0.5))

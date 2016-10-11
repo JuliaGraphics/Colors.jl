@@ -4,6 +4,8 @@ module Colors
 
 using FixedPointNumbers, ColorTypes, Reexport, Compat
 @reexport using ColorTypes
+# deprecated exports
+export U8, U16
 
 typealias AbstractGray{T} Color{T,1}
 typealias Color3{T} Color{T,3}
