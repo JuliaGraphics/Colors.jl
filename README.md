@@ -49,6 +49,7 @@ The available colorspaces are described in detail in ColorTypes; briefly, the de
 ```jl
 c = colorant"red"
 c = parse(Colorant, "red")
+c = colorant"#7aa457" # hex triplets are also supported
 ```
 
 Parse a [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color). It will parse any CSS color syntax with the exception of `currentColor`.
