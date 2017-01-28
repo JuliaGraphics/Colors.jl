@@ -2,8 +2,8 @@ using Colors, Compat
 
 function compare_colors(color_a, color_b)
     # compare two colors, looking just at their LUV luminance values
-    luv1 = convert(Luv, RGB{U8}(color_a[1]/255, color_a[2]/255, color_a[3]/255))
-    luv2 = convert(Luv, RGB{U8}(color_b[1]/255, color_b[2]/255, color_b[3]/255))
+    luv1 = convert(Luv, RGB{N0f8}(color_a[1]/255, color_a[2]/255, color_a[3]/255))
+    luv2 = convert(Luv, RGB{N0f8}(color_b[1]/255, color_b[2]/255, color_b[3]/255))
     luv1.l > luv2.l
 end
 

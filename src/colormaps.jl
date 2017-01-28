@@ -18,7 +18,7 @@ in the palette.
 Args:
 
 - `n`: Number of colors to generate.
-- `seed`: Initial color(s) included in the palette.  Default is `Array(RGB{U8},0)`.
+- `seed`: Initial color(s) included in the palette.  Default is `Array(RGB{N0f8},0)`.
 
 Keyword arguments:
 
@@ -83,7 +83,7 @@ end
 
 
 distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
-distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB{U8},0); kwargs...)
+distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB{N0f8},0); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,

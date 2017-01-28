@@ -167,7 +167,7 @@ cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHab)  = cnvt(CV, convert(Lab{eltype(c)}, 
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHuv)  = cnvt(CV, convert(Luv{eltype(c)}, c))
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::Color3)    = cnvt(CV, convert(XYZ{eltype(c)}, c))
 
-cnvt{CV<:AbstractRGB{UFixed8}}(::Type{CV}, c::RGB24) = CV(UFixed8(c.color&0x00ff0000>>>16,0), UFixed8(c.color&0x0000ff00>>>8,0), UFixed8(c.color&0x000000ff,0))
+cnvt{CV<:AbstractRGB{N0f8}}(::Type{CV}, c::RGB24) = CV(N0f8(c.color&0x00ff0000>>>16,0), N0f8(c.color&0x0000ff00>>>8,0), N0f8(c.color&0x000000ff,0))
 cnvt{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
 function cnvt{CV<:AbstractRGB}(::Type{CV}, c::AbstractGray)
@@ -319,9 +319,9 @@ cnvt{T}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{T}, c))
 
-cnvt{T<:UFixed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:UFixed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:UFixed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:Normed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:Normed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:Normed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
 
 
 function xyz_to_uv(c::XYZ)
@@ -770,24 +770,24 @@ cnvt{T}(::Type{YCbCr{T}}, c::Color3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
 # -------------------
 
 convert(::Type{RGB24}, c::RGB24) = c
-convert(::Type{RGB24}, c::AbstractRGB{UFixed8}) = RGB24(red(c), green(c), blue(c))
+convert(::Type{RGB24}, c::AbstractRGB{N0f8}) = RGB24(red(c), green(c), blue(c))
 function convert(::Type{RGB24}, c::AbstractRGB)
-    u = (reinterpret(U8(red(c))) % UInt32)<<16 +
-        (reinterpret(U8(green(c))) % UInt32)<<8 +
-        reinterpret(U8(blue(c))) % UInt32
+    u = (reinterpret(N0f8(red(c))) % UInt32)<<16 +
+        (reinterpret(N0f8(green(c))) % UInt32)<<8 +
+        reinterpret(N0f8(blue(c))) % UInt32
     reinterpret(RGB24, u)
 end
 
-convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{UFixed8}, c))
+convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{N0f8}, c))
 
 # To ARGB32
 # ----------------
 
 convert(::Type{ARGB32}, c::ARGB32) = c
-convert{CV<:AbstractRGB{UFixed8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
+convert{CV<:AbstractRGB{N0f8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
     ARGB32(red(c), green(c), blue(c), alpha(c))
 function convert(::Type{ARGB32}, c::TransparentColor)
-    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(U8(alpha(c)))%UInt32)<<24
+    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(N0f8(alpha(c)))%UInt32)<<24
     reinterpret(ARGB32, u)
 end
 function convert(::Type{ARGB32}, c::Color)
@@ -795,7 +795,7 @@ function convert(::Type{ARGB32}, c::Color)
     reinterpret(ARGB32, u)
 end
 function convert(::Type{ARGB32}, c::Color, alpha)
-    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(U8(alpha))%UInt32)<<24
+    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(N0f8(alpha))%UInt32)<<24
     reinterpret(ARGB32, u)
 end
 
@@ -809,5 +809,5 @@ else
     const unsafe_trunc = Base.unsafe_trunc
 end
 
-convert{T<:UFixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
+convert{T<:Normed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
 convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
