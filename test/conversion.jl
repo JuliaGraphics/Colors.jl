@@ -74,7 +74,7 @@ for Cto in ColorTypes.parametric3
     @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
 end
 
-# Test conversion from UFixed types
+# Test conversion from Normed types
 for Cto in ColorTypes.parametric3
     for Cfrom in fractional_types
         for Tto in (Float32, Float64)
@@ -92,7 +92,7 @@ for Cto in ColorTypes.parametric3
     end
 end
 
-# Test conversion to UFixed types
+# Test conversion to Normed types
 for Cto in fractional_types
     for Cfrom in ColorTypes.parametric3
         for Tto in (N0f8, N6f10, N4f12, N2f14, N0f16)

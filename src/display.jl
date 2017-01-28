@@ -1,7 +1,7 @@
 # Displaying color swatches
 # -------------------------
 
-@compat function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
+function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
     write(io,
         """
         <?xml version="1.0" encoding="UTF-8"?>
@@ -15,7 +15,7 @@
         """)
 end
 
-@compat function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml",
+function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml",
                                        cs::AbstractVecOrMat{T})
     m,n = ndims(cs) == 2 ? size(cs) : (1,length(cs))
 

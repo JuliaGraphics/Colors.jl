@@ -319,9 +319,9 @@ cnvt{T}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt{T}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{T}, c))
 
-cnvt{T<:UFixed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:UFixed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:UFixed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:Normed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:Normed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt{T<:Normed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
 
 
 function xyz_to_uv(c::XYZ)
@@ -809,5 +809,5 @@ else
     const unsafe_trunc = Base.unsafe_trunc
 end
 
-convert{T<:UFixed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
+convert{T<:Normed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
 convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
