@@ -34,19 +34,4 @@ include("colormaps.jl")
 include("display.jl")
 include("colormatch.jl")
 
-@deprecate rgba RGBA
-@deprecate hsva HSVA
-@deprecate hsla HSLA
-@deprecate xyza XYZA
-@deprecate xyYa xyYA
-@deprecate laba LabA
-@deprecate luva LuvA
-@deprecate lchaba LCHabA
-@deprecate lchuva LCHuvA
-@deprecate din99a DIN99A
-@deprecate din99da DIN99dA
-@deprecate din99oa DIN99oA
-@deprecate lmsa LMSA
-@deprecate argb32 ARGB32
-
 end # module
