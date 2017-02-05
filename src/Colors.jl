@@ -8,7 +8,11 @@ using FixedPointNumbers, ColorTypes, Reexport, Compat
 export U8, U16
 
 typealias AbstractGray{T} Color{T,1}
+using ColorTypes: TransparentGray
+typealias AbstractAGray{C<:AbstractGray,T} AlphaColor{C,T,2}
+typealias AbstractGrayA{C<:AbstractGray,T} ColorAlpha{C,T,2}
 typealias Color3{T} Color{T,3}
+typealias Transparent4{C<:Color3,T} TransparentColor{C,T,4}
 
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax
@@ -27,6 +31,7 @@ include("utilities.jl")
 
 # Include other module components
 include("conversions.jl")
+include("promotions.jl")
 include("algorithms.jl")
 include("parse.jl")
 include("differences.jl")
