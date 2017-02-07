@@ -4,6 +4,18 @@ using ColorTypes: eltype_default
 
 r8(x) = reinterpret(N0f8, x)
 
+# Promotions
+a, b = promote(RGB(1,0,0), Gray(0.8))
+@test isa(a, RGB{Float64}) && isa(b, RGB{Float64})
+a, b = promote(RGBA(1,0,0), Gray(0.8))
+@test isa(a, RGBA{Float64}) && isa(b, RGBA{Float64})
+a, b = promote(RGBA(1,0,0), GrayA(0.8))
+@test isa(a, RGBA{Float64}) && isa(b, RGBA{Float64})
+a, b = promote(RGB(1,0,0), GrayA(0.8))
+@test isa(a, RGBA{Float64}) && isa(b, RGBA{Float64})
+a, b = promote(RGB(1,0,0), AGray(0.8))
+@test isa(a, ARGB{Float64}) && isa(b, ARGB{Float64})
+
 # Color parsing
 const redN0f8 = parse(Colorant, "red")
 @test colorant"red" == redN0f8
