@@ -18,7 +18,7 @@ in the palette.
 Args:
 
 - `n`: Number of colors to generate.
-- `seed`: Initial color(s) included in the palette.  Default is `Array(RGB{N0f8},0)`.
+- `seed`: Initial color(s) included in the palette.  Default is `Vector{RGB{N0f8}}(0)`.
 
 Keyword arguments:
 
@@ -42,7 +42,7 @@ function distinguishable_colors{T<:Color}(n::Integer,
 
     # Candidate colors
     N = length(lchoices)*length(cchoices)*length(hchoices)
-    candidate = Array(Lab{Float64}, N)
+    candidate = Vector{Lab{Float64}}(N)
     j = 0
     for h in hchoices, c in cchoices, l in lchoices
         rgb = convert(RGB, LCHab(l, c, h))
@@ -50,13 +50,13 @@ function distinguishable_colors{T<:Color}(n::Integer,
     end
 
     # Transformed colors
-    candidate_t = Array(Lab{Float64}, N)
+    candidate_t = Vector{Lab{Float64}}(N)
     for i = 1:N
         candidate_t[i] = transform(candidate[i])
     end
 
     # Start with the seed colors
-    colors = Array(T, n)
+    colors = Vector{T}(n)
     copy!(colors, seed)
 
     # Minimum distances of the current color to each previously selected color.
@@ -83,7 +83,7 @@ end
 
 
 distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
-distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Array(RGB{N0f8},0); kwargs...)
+distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Vector{RGB{N0f8}}(0); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,
