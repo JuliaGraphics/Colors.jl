@@ -1,6 +1,6 @@
 
 # Define an abstract type to represent color difference metrics
-abstract DifferenceMetric
+@compat abstract type DifferenceMetric end
 
 # TODO?: make the DifferenMetrics parametric, to preserve type-stability
 

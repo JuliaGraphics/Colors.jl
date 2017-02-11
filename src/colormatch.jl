@@ -1,11 +1,11 @@
 
-abstract CMF
-abstract CIE1931_CMF <: CMF
-abstract CIE1964_CMF <: CMF
-abstract CIE1931J_CMF <: CMF
-abstract CIE1931JV_CMF <: CMF
-abstract CIE2006_2_CMF <: CMF
-abstract CIE2006_10_CMF <: CMF
+@compat abstract type CMF end
+@compat abstract type CIE1931_CMF <: CMF end
+@compat abstract type CIE1964_CMF <: CMF end
+@compat abstract type CIE1931J_CMF <: CMF end
+@compat abstract type CIE1931JV_CMF <: CMF end
+@compat abstract type CIE2006_2_CMF <: CMF end
+@compat abstract type CIE2006_10_CMF <: CMF end
 
 """
     colormatch(wavelength)
