@@ -34,6 +34,7 @@ const redF64 = convert(RGB{Float64}, redN0f8)
 @test parse(RGB{N0f8}, "hsl(120, 100%, 50%)") === convert(RGB{N0f8}, HSL{Float32}(120,1.0,.5))
 @test_throws ErrorException  parse(Colorant, "hsl(120, 100, 50)")
 @test parse(Colorant, "#D0FF58") === RGB(r8(0xD0),r8(0xFF),r8(0x58))
+@test parse(Colorant, "#FB0") === RGB(r8(0xFF),r8(0xBB),r8(0x00))
 
 @test parse(Colorant, :red) === colorant"red"
 @test parse(Colorant, colorant"red") === colorant"red"

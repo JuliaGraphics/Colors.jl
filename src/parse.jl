@@ -58,9 +58,9 @@ function _parse_colorant(desc::AbstractString)
 
     mat = match(col_pat_hex1, desc_)
     if mat != nothing
-        return RGB{N0f8}((16 * parse(Int, mat.captures[2], 16)) / 255,
-                       (16 * parse(Int, mat.captures[3], 16)) / 255,
-                       (16 * parse(Int, mat.captures[4], 16)) / 255)
+        return RGB{N0f8}(parse(Int, mat.captures[2], 16) / 15,
+                       parse(Int, mat.captures[3], 16) / 15,
+                       parse(Int, mat.captures[4], 16) / 15)
     end
 
     mat = match(col_pat_rgb, desc_)
