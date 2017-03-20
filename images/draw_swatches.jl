@@ -1,9 +1,9 @@
-using Colors, Compat
+using Colors
 
 function compare_colors(color_a, color_b)
     # compare two colors, looking just at their LUV luminance values
-    luv1 = convert(Luv, RGB{N0f8}(color_a[1]/255, color_a[2]/255, color_a[3]/255))
-    luv2 = convert(Luv, RGB{N0f8}(color_b[1]/255, color_b[2]/255, color_b[3]/255))
+    luv1 = convert(Luv, RGB(color_a[1]/255, color_a[2]/255, color_a[3]/255))
+    luv2 = convert(Luv, RGB(color_b[1]/255, color_b[2]/255, color_b[3]/255))
     luv1.l > luv2.l
 end
 
@@ -23,7 +23,7 @@ end
 
 function make_color_table(image_width, image_height, output_file)
     # prepare synonym lists
-    synonyms = @compat Dict{Tuple, Array}()
+    synonyms = Dict{Tuple, Array}()
     for color in Colors.color_names
         col_name  = color[1]
         col_value = color[2]
@@ -58,7 +58,7 @@ function make_color_table(image_width, image_height, output_file)
     <rect x="0" y="0" width="$(image_width)" height="$(image_height)" fill="white" /> \n """)
 
     # title
-    println(f, """<text x="$(margin)" y="$(margin - margin/2)" font-size="14px" font-family="Helvetica-Bold">Color names in Color.jl, sorted by luminance</text>\n""")
+    println(f, """<text x="$(margin)" y="$(margin - margin/2)" font-size="14px" font-family="Helvetica-Bold">Color names in Colors.jl, sorted by luminance</text>\n""")
 
     # x and y track position
     x = margin
