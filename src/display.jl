@@ -1,6 +1,10 @@
 # Displaying color swatches
 # -------------------------
 
+const max_width = 180
+const max_height = 150
+const max_pixel_size = 25
+
 function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
     write(io,
         """
@@ -15,12 +19,26 @@ function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
         """)
 end
 
-function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml",
-                                       cs::AbstractVecOrMat{T})
-    m,n = ndims(cs) == 2 ? size(cs) : (1,length(cs))
+function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml", 
+                               cs::AbstractVector{T})
+    show(io, MIME"image/svg+xml"(), reshape(cs, (1, length(cs))))
+end
 
-    xsize,xpad = n > 50 ? (250/n,0) : n > 18 ? (5.,1) : n > 12 ? (10.,1) : n > 1 ? (15.,1) : (25.,0)
-    ysize,ypad = m > 28 ? (150/m,0) : m > 14 ? (5.,1) : m > 9 ? (10.,1) : m > 1 ? (15.,1) : (25.,0)
+function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml",
+                                       cs::AbstractMatrix{T})
+    m, n = size(cs)
+    apsect_ratio = clamp(n / m,
+                         max_pixel_size / max_height,
+                         max_width / max_pixel_size)
+    pixel_aspect = apsect_ratio / (n / m)
+    scale_factor = min(max_width / (n * max_pixel_size * pixel_aspect),
+                       max_height / (m * max_pixel_size),
+                       1)
+    ysize = max_pixel_size * scale_factor
+    xsize = ysize * pixel_aspect
+
+    xpad = n > 50 ? 0 : 1
+    ypad = m > 28 ? 0 : 1
 
     write(io,
         """
