@@ -166,7 +166,7 @@ end
 
 # Test vector space operations
 import Base.full
-full(T::Color) = map(x->getfield(T, x), fieldnames(T)) #Allow test to access numeric elements
+full(T::Color) = map(x->getfield(T, x), fieldnames(typeof(T))) #Allow test to access numeric elements
 # Generated from:
 #=
 julia> for t in subtypes(ColorValue)
