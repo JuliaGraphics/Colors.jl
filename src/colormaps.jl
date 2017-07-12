@@ -139,7 +139,7 @@ function sequential_palette(h,
     pend=convert(LCHuv, dcolor)
 
     #multi-hue start point
-    p2l=100*(1.-w)+w*pstart.l
+    p2l = 100 * (1. - w) + w * pstart.l
     p2h=MixHue(w,h,pstart.h)
     p2c=min(MSC(p2h,p2l), w*s*pstart.c)
     p2=LCHuv(p2l,p2c,p2h)
