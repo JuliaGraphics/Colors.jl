@@ -5,7 +5,7 @@
 # TODO?: make the DifferenMetrics parametric, to preserve type-stability
 
 # CIE Delta E 2000 recommendation
-immutable DE_2000 <: DifferenceMetric
+struct DE_2000 <: DifferenceMetric
     kl::Float64
     kc::Float64
     kh::Float64
@@ -14,7 +14,7 @@ immutable DE_2000 <: DifferenceMetric
 end
 
 # CIE Delta E 94 recommendation
-immutable DE_94 <: DifferenceMetric
+struct DE_94 <: DifferenceMetric
     kl::Float64
     kc::Float64
     kh::Float64
@@ -23,12 +23,12 @@ immutable DE_94 <: DifferenceMetric
 end
 
 # McDonald "JP Coates Thread Company" formulation
-immutable DE_JPC79 <: DifferenceMetric
+struct DE_JPC79 <: DifferenceMetric
 
 end
 
 # CMC recommendation
-immutable DE_CMC <: DifferenceMetric
+struct DE_CMC <: DifferenceMetric
     kl::Float64
     kc::Float64
     DE_CMC(kl,kc) = new(kl,kc)
@@ -36,7 +36,7 @@ immutable DE_CMC <: DifferenceMetric
 end
 
 # BFD recommendation
-immutable DE_BFD <: DifferenceMetric
+struct DE_BFD <: DifferenceMetric
     wp::XYZ{Float64}
     kl::Float64
     kc::Float64
@@ -46,22 +46,22 @@ immutable DE_BFD <: DifferenceMetric
 end
 
 # The original CIE Delta E equation (Euclidian)
-immutable DE_AB <: DifferenceMetric
+struct DE_AB <: DifferenceMetric
 
 end
 
 # DIN99 color difference (Euclidian)
-immutable DE_DIN99 <: DifferenceMetric
+struct DE_DIN99 <: DifferenceMetric
 
 end
 
 # DIN99d color difference (Euclidian)
-immutable DE_DIN99d <: DifferenceMetric
+struct DE_DIN99d <: DifferenceMetric
 
 end
 
 # DIN99o color difference (Euclidian)
-immutable DE_DIN99o <: DifferenceMetric
+struct DE_DIN99o <: DifferenceMetric
 
 end
 
