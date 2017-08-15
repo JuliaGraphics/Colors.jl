@@ -7,12 +7,12 @@ using FixedPointNumbers, ColorTypes, Reexport, Compat
 # deprecated exports
 export U8, U16
 
-@compat AbstractGray{T} = Color{T,1}
+AbstractGray{T} = Color{T,1}
 using ColorTypes: TransparentGray
-@compat AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
-@compat AbstractGrayA{C<:AbstractGray,T} = ColorAlpha{C,T,2}
-@compat Color3{T} = Color{T,3}
-@compat Transparent4{C<:Color3,T} = TransparentColor{C,T,4}
+AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
+AbstractGrayA{C<:AbstractGray,T} = ColorAlpha{C,T,2}
+Color3{T} = Color{T,3}
+Transparent4{C<:Color3,T} = TransparentColor{C,T,4}
 
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, linspace, show, typemin, typemax

@@ -19,13 +19,13 @@ function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
         """)
 end
 
-function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml", 
-                               cs::AbstractVector{T})
+function Base.show(io::IO, ::MIME"image/svg+xml", 
+                   cs::AbstractVector{T}) where T <: Color
     show(io, MIME"image/svg+xml"(), reshape(cs, (1, length(cs))))
 end
 
-function Base.show{T <: Color}(io::IO, ::MIME"image/svg+xml",
-                                       cs::AbstractMatrix{T})
+function Base.show(io::IO, ::MIME"image/svg+xml",
+                           cs::AbstractMatrix{T}) where T <: Color
     m, n = size(cs)
     apsect_ratio = clamp(n / m,
                          max_pixel_size / max_height,
