@@ -30,12 +30,12 @@ Keyword arguments:
 Returns:
   A `Vector` of colors of length `n`, of the type specified in `seed`.
 """
-function distinguishable_colors{T<:Color}(n::Integer,
-                            seed::AbstractVector{T};
-                            transform::Function = identity,
-                            lchoices::AbstractVector = linspace(0, 100, 15),
-                            cchoices::AbstractVector = linspace(0, 100, 15),
-                            hchoices::AbstractVector = linspace(0, 340, 20))
+function distinguishable_colors(n::Integer,
+                  seed::AbstractVector{T};
+                  transform::Function = identity,
+                  lchoices::AbstractVector = linspace(0, 100, 15),
+                  cchoices::AbstractVector = linspace(0, 100, 15),
+                  hchoices::AbstractVector = linspace(0, 340, 20)) where T<:Color
     if n <= length(seed)
         return seed[1:n]
     end
@@ -129,7 +129,7 @@ function sequential_palette(h,
         M=mod(180.0+h1-h0, 360)-180.0
         mod(h0+a*M, 360)
     end
-    function mix_linearly{C<:Color}(a::C, b::C, s)
+    function mix_linearly(a::C, b::C, s) where C<:Color
         base_color_type(C)((1-s)*comp1(a)+s*comp1(b), (1-s)*comp2(a)+s*comp2(b), (1-s)*comp3(a)+s*comp3(b))
     end
 

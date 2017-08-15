@@ -109,8 +109,8 @@ function _parse_colorant(desc::AbstractString)
 end
 
 # note: these exist to enable proper dispatch, since super(Colorant) == Any
-_parse_colorant{C<:Colorant,SUP<:Any}(::Type{C}, ::Type{SUP}, desc::AbstractString) = _parse_colorant(desc)
-_parse_colorant{C<:Colorant,SUP<:Colorant}(::Type{C}, ::Type{SUP}, desc::AbstractString) = convert(C, _parse_colorant(desc))::C
+_parse_colorant(::Type{C}, ::Type{SUP}, desc::AbstractString) where {C<:Colorant,SUP<:Any} = _parse_colorant(desc)
+_parse_colorant(::Type{C}, ::Type{SUP}, desc::AbstractString) where {C<:Colorant,SUP<:Colorant} = convert(C, _parse_colorant(desc))::C
 
 """
     parse(Colorant, desc)
@@ -137,9 +137,9 @@ Returns:
     - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
     - a specific `Colorant` type was specified in the first argument
 """
-Base.parse{C<:Colorant}(::Type{C}, desc::AbstractString) = _parse_colorant(C, supertype(C), desc)
-Base.parse{C<:Colorant}(::Type{C}, desc::Symbol) = parse(C, string(desc))
-Base.parse{C<:Colorant}(::Type{C}, c::Colorant) = c
+Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant} = _parse_colorant(C, supertype(C), desc)
+Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
+Base.parse(::Type{C}, c::Colorant) where {C<:Colorant} = c
 
 
 macro colorant_str(ex)
