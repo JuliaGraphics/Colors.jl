@@ -211,6 +211,12 @@ c = Gray{N0f16}(0.8)
 @test convert(RGB, c) == RGB{N0f16}(0.8,0.8,0.8)
 @test convert(RGB{Float32}, c) == RGB{Float32}(0.8,0.8,0.8)
 
+for C in ColorTypes.parametric3
+    c = convert(C, RGB(1,1,1))
+    @test gray(convert(Gray, c)) ≈ 1 atol=0.01
+    @test gray(convert(Gray{Float64}, c)) ≈ 1 atol=0.01
+end
+
 # More AbstractRGB
 r4 = RGB4(1,0,0)
 @test convert(RGB, r4) == RGB(1,0,0)

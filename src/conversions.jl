@@ -250,13 +250,15 @@ cnvt{T}(::Type{HSL{T}}, c::Color3) = cnvt(HSL{T}, convert(RGB{T}, c))
 
 function cnvt{T}(::Type{HSI{T}}, c::AbstractRGB)
     rgb = correct_gamut(c)
-    r, g, b = red(rgb), green(rgb), blue(rgb)
+    r, g, b = float(red(rgb)), float(green(rgb)), float(blue(rgb))
     isum = r+g+b
+    dnorm = sqrt(((r-g)^2 + (r-b)^2 + (g-b)^2)/2)
+    dnorm = dnorm == 0 ? oftype(dnorm, 1) : dnorm
     i = isum/3
     m = min(r, g, b)
-    s = i > 0 ? 1-m/i : 1-one(i)/one(i) # the latter is a type-stable 0
-    val = (r-(g+b)/2)/sqrt(((r-g)^2 + (r-b)^2 + (g-b)^2)/2)
-    val = clamp(val, -one(val), one(val))
+    s = i > 0 ? 1-m/i : zero(1 - m/i)
+    val = (r-(g+b)/2)/dnorm
+    val = clamp(val, -oneunit(val), oneunit(val))
     h = acosd(val)
     if b > g
         h = 360-h
@@ -809,5 +811,8 @@ else
     const unsafe_trunc = Base.unsafe_trunc
 end
 
+convert{T}(::Type{Gray{T}}, x::Gray{T}) = x
+convert{T}(::Type{Gray{T}}, x::Gray) = Gray{T}(gray(x))
 convert{T<:Normed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
 convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
+convert{T}(::Type{Gray{T}}, x::Color) = convert(Gray{T}, convert(RGB{T}, x))
