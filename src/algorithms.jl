@@ -1,8 +1,8 @@
 # Arithmetic
 #XYZ and LMS are linear vector spaces
 const Linear3 = Union{XYZ, LMS}
-+{C<:Linear3}(a::C, b::C) = C(comp1(a)+comp1(b), comp2(a)+comp2(b), comp3(a)+comp3(b))
--{C<:Linear3}(a::C, b::C) = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
++(a::C, b::C) where {C<:Linear3} = C(comp1(a)+comp1(b), comp2(a)+comp2(b), comp3(a)+comp3(b))
+-(a::C, b::C) where {C<:Linear3} = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
 -(a::Linear3) = typeof(a)(-comp1(a), -comp2(a), -comp3(a))
 *(c::Number, a::Linear3) = base_color_type(a)(c*comp1(a), c*comp2(a), c*comp3(a))
 /(a::Linear3, c::Number) = base_color_type(a)(comp1(a)/c, comp2(a)/c, comp3(a)/c)
@@ -32,7 +32,7 @@ Args:
 Returns:
   A whitebalanced color.
 """
-function whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)
+function whitebalance(c::T, src_white::Color, ref_white::Color) where T <: Color
     c_lms = convert(LMS, c)
     src_wp = convert(LMS, src_white)
     dest_wp = convert(LMS, ref_white)
@@ -84,7 +84,7 @@ long-wavelength photopigment).  `c` is the input color; the optional
 argument `p` is the fraction of photopigment loss, in the range 0 (no
 loss) to 1 (complete loss).
 """
-function protanopic{T <: Color}(q::T, p, neutral::LMS)
+function protanopic(q::T, p, neutral::LMS) where T <: Color
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.m < neutral.s / neutral.m ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -105,7 +105,7 @@ end
 Convert a color to simulate deuteranopic color deficiency (lack of the
 middle-wavelength photopigment).  See the description of `protanopic` for detail about the arguments.
 """
-function deuteranopic{T <: Color}(q::T, p, neutral::LMS)
+function deuteranopic(q::T, p, neutral::LMS) where T <: Color
     q = convert(LMS, q)
     anchor_wavelen = q.s / q.l < neutral.s / neutral.l ? 575 : 475
     anchor = colormatch(anchor_wavelen)
@@ -127,7 +127,7 @@ Convert a color to simulate tritanopic color deficiency (lack of the
 short-wavelength photogiment).  See `protanopic` for more detail about
 the arguments.
 """
-function tritanopic{T <: Color}(q::T, p, neutral::LMS)
+function tritanopic(q::T, p, neutral::LMS) where T <: Color
     q = convert(LMS, q)
     anchor_wavelen = q.m / q.l < neutral.m / neutral.l ? 660 : 485
     anchor = colormatch(anchor_wavelen)

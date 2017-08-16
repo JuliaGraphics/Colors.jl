@@ -54,12 +54,12 @@ end
 Generates `n`>2 colors in a linearly interpolated ramp from `c1` to`c2`,
 inclusive, returning an `Array` of colors.
 """
-function linspace{T<:Colorant}(c1::T, c2::T, n::Integer=100)
+function linspace(c1::T, c2::T, n::Integer=100) where T<:Colorant
     return T[weighted_color_mean(w1, c1, c2) for w1 in linspace(1.0,0.0,n)]
 end
 
 #Double quadratic Bezier curve
-function Bezier{T<:Real}(t::T, p0::T, p2::T, q0::T, q1::T, q2::T)
+function Bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
     B(t,a,b,c)=a*(1.0-t)^2.0+2.0b*(1.0-t)*t+c*t^2.0
     if t <= 0.5
         return B(2.0t, p0, q0, q1)
@@ -69,7 +69,7 @@ function Bezier{T<:Real}(t::T, p0::T, p2::T, q0::T, q1::T, q2::T)
 end
 
 #Inverse double quadratic Bezier curve
-function invBezier{T<:Real}(t::T, p0::T, p2::T, q0::T, q1::T, q2::T)
+function invBezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
     invB(t,a,b,c)=(a-b+sqrt(b^2.0-a*c+(a-2.0b+c)*t))/(a-2.0b+c)
     if t < q1
         return 0.5*invB(t,p0,q0,q1)
