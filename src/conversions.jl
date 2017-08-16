@@ -35,27 +35,27 @@
 # deal with conversions between different spaces.
 
 
-function ColorTypes._convert{Cdest<:TransparentColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p, alpha)
+function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p, alpha) where {Cdest<:TransparentColor,Odest,Osrc}
     # Convert the base color
     c = cnvt(color_type(Cdest), color(p))
     # Append the alpha
     ColorTypes._convert(Cdest, Odest, Odest, c, alpha)
 end
-function ColorTypes._convert{Cdest<:TransparentColor,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p)
+function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p) where {Cdest<:TransparentColor,Odest,Osrc}
     c = cnvt(color_type(Cdest), color(p))
     ColorTypes._convert(Cdest, Odest, Odest, c, alpha(p))
 end
 
-ColorTypes._convert{Cdest<:Color,Odest,Osrc}(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) = cnvt(Cdest, c)
+ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) where {Cdest<:Color,Odest,Osrc} = cnvt(Cdest, c)
 
 
 # Fallback to catch undefined operations
-cnvt{C<:Color}(::Type{C}, c::TransparentColor) = cnvt(C, color(c))
-cnvt{C}(::Type{C}, c) = convert(C, c)
+cnvt(::Type{C}, c::TransparentColor) where {C<:Color} = cnvt(C, color(c))
+cnvt(::Type{C}, c) where {C} = convert(C, c)
 
 # Conversions from grayscale
 # --------------------------
-cnvt{C<:Color3}(::Type{C}, g::AbstractGray)  = cnvt(C, convert(RGB{eltype(C)}, g))
+cnvt(::Type{C}, g::AbstractGray) where {C<:Color3}  = cnvt(C, convert(RGB{eltype(C)}, g))
 
 
 macro mul3x3(T, M, c1, c2, c3)
@@ -70,16 +70,16 @@ end
 # Everything to RGB
 # -----------------
 
-correct_gamut{CV<:AbstractRGB}(c::CV) = CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)))
-clamp01{T<:Fractional}(v::T) = ifelse(v < zero(T), zero(T), ifelse(v > one(T), one(T), v))
+correct_gamut(c::CV) where {CV<:AbstractRGB} = CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)))
+clamp01(v::T) where {T<:Fractional} = ifelse(v < zero(T), zero(T), ifelse(v > one(T), one(T), v))
 
 function srgb_compand(v)
     v <= 0.0031308 ? 12.92v : 1.055v^(1/2.4) - 0.055
 end
 
-cnvt{CV<:AbstractRGB}(::Type{CV}, c::AbstractRGB) = CV(red(c), green(c), blue(c))
+cnvt(::Type{CV}, c::AbstractRGB) where {CV<:AbstractRGB} = CV(red(c), green(c), blue(c))
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSV)
+function cnvt(::Type{CV}, c::HSV) where CV<:AbstractRGB
     h = c.h / 60
     i = floor(Int, h)
     f = h - i
@@ -109,7 +109,7 @@ function qtrans(u, v, hue)
     end
 end
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSL)
+function cnvt(::Type{CV}, c::HSL) where CV<:AbstractRGB
     v = c.l <= 0.5 ? c.l * (1 + c.s) : c.l + c.s - (c.l * c.s)
     u = 2 * c.l - v
 
@@ -120,7 +120,7 @@ function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSL)
     end
 end
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSI)
+function cnvt(::Type{CV}, c::HSI) where CV<:AbstractRGB
     h, s, i = c.h, c.s, c.i
     while(h > 360) h -= 360 end
     while(h < 0) h += 360 end
@@ -137,7 +137,7 @@ function cnvt{CV<:AbstractRGB}(::Type{CV}, c::HSI)
     end
 end
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::XYZ)
+function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
     r =  3.2404542*c.x - 1.5371385*c.y - 0.4985314*c.z
     g = -0.9692660*c.x + 1.8760108*c.y + 0.0415560*c.z
     b =  0.0556434*c.x - 0.2040259*c.y + 1.0572252*c.z
@@ -146,14 +146,14 @@ function cnvt{CV<:AbstractRGB}(::Type{CV}, c::XYZ)
        clamp01(srgb_compand(b)))
 end
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::YIQ)
+function cnvt(::Type{CV}, c::YIQ) where CV<:AbstractRGB
     cc = correct_gamut(c)
     CV(clamp01(cc.y+0.9563*cc.i+0.6210*cc.q),
        clamp01(cc.y-0.2721*cc.i-0.6474*cc.q),
        clamp01(cc.y-1.1070*cc.i+1.7046*cc.q))
 end
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::YCbCr)
+function cnvt(::Type{CV}, c::YCbCr) where CV<:AbstractRGB
     cc = correct_gamut(c)
     ny = cc.y - 16
     ncb = cc.cb - 128
@@ -163,14 +163,14 @@ function cnvt{CV<:AbstractRGB}(::Type{CV}, c::YCbCr)
        clamp01(0.004567ny + 0.00791058ncb - 2.79201e-7ncr))
 end
 
-cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHab)  = cnvt(CV, convert(Lab{eltype(c)}, c))
-cnvt{CV<:AbstractRGB}(::Type{CV}, c::LCHuv)  = cnvt(CV, convert(Luv{eltype(c)}, c))
-cnvt{CV<:AbstractRGB}(::Type{CV}, c::Color3)    = cnvt(CV, convert(XYZ{eltype(c)}, c))
+cnvt(::Type{CV}, c::LCHab) where {CV<:AbstractRGB}  = cnvt(CV, convert(Lab{eltype(c)}, c))
+cnvt(::Type{CV}, c::LCHuv) where {CV<:AbstractRGB}  = cnvt(CV, convert(Luv{eltype(c)}, c))
+cnvt(::Type{CV}, c::Color3) where {CV<:AbstractRGB}    = cnvt(CV, convert(XYZ{eltype(c)}, c))
 
-cnvt{CV<:AbstractRGB{N0f8}}(::Type{CV}, c::RGB24) = CV(N0f8(c.color&0x00ff0000>>>16,0), N0f8(c.color&0x0000ff00>>>8,0), N0f8(c.color&0x000000ff,0))
-cnvt{CV<:AbstractRGB}(::Type{CV}, c::RGB24) = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
+cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB{N0f8}} = CV(N0f8(c.color&0x00ff0000>>>16,0), N0f8(c.color&0x0000ff00>>>8,0), N0f8(c.color&0x000000ff,0))
+cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB} = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
 
-function cnvt{CV<:AbstractRGB}(::Type{CV}, c::AbstractGray)
+function cnvt(::Type{CV}, c::AbstractGray) where CV<:AbstractRGB
     g = convert(eltype(CV), gray(c))
     CV(g, g, g)
 end
@@ -179,7 +179,7 @@ end
 # Everything to HSV
 # -----------------
 
-function cnvt{T}(::Type{HSV{T}}, c::AbstractRGB)
+function cnvt(::Type{HSV{T}}, c::AbstractRGB) where T
     c_min = Float64(min(red(c), green(c), blue(c)))
     c_max = Float64(max(red(c), green(c), blue(c)))
     if c_min == c_max
@@ -203,13 +203,13 @@ function cnvt{T}(::Type{HSV{T}}, c::AbstractRGB)
 end
 
 
-cnvt{T}(::Type{HSV{T}}, c::Color3) = cnvt(HSV{T}, convert(RGB{T}, c))
+cnvt(::Type{HSV{T}}, c::Color3) where {T} = cnvt(HSV{T}, convert(RGB{T}, c))
 
 
 # Everything to HSL
 # -----------------
 
-function cnvt{T}(::Type{HSL{T}}, c::AbstractRGB)
+function cnvt(::Type{HSL{T}}, c::AbstractRGB) where T
     r, g, b = T(red(c)), T(green(c)), T(blue(c))
     c_min = min(r, g, b)
     c_max = max(r, g, b)
@@ -242,13 +242,13 @@ function cnvt{T}(::Type{HSL{T}}, c::AbstractRGB)
 end
 
 
-cnvt{T}(::Type{HSL{T}}, c::Color3) = cnvt(HSL{T}, convert(RGB{T}, c))
+cnvt(::Type{HSL{T}}, c::Color3) where {T} = cnvt(HSL{T}, convert(RGB{T}, c))
 
 
 # Everything to HSI
 # -----------------
 
-function cnvt{T}(::Type{HSI{T}}, c::AbstractRGB)
+function cnvt(::Type{HSI{T}}, c::AbstractRGB) where T
     rgb = correct_gamut(c)
     r, g, b = red(rgb), green(rgb), blue(rgb)
     isum = r+g+b
@@ -264,7 +264,7 @@ function cnvt{T}(::Type{HSI{T}}, c::AbstractRGB)
     HSI{T}(h, s, i)
 end
 
-cnvt{T}(::Type{HSI{T}}, c::Color3) = cnvt(HSI{T}, convert(RGB{T}, c))
+cnvt(::Type{HSI{T}}, c::Color3) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
 
 # Everything to XYZ
 # -----------------
@@ -273,7 +273,7 @@ function invert_rgb_compand(v)
     v <= 0.04045 ? v/12.92 : ((v+0.055) /1.055)^2.4
 end
 
-function cnvt{T}(::Type{XYZ{T}}, c::AbstractRGB)
+function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T
     r, g, b = invert_rgb_compand(red(c)), invert_rgb_compand(green(c)), invert_rgb_compand(blue(c))
     XYZ{T}(0.4124564*r + 0.3575761*g + 0.1804375*b,
            0.2126729*r + 0.7151522*g + 0.0721750*b,
@@ -281,12 +281,12 @@ function cnvt{T}(::Type{XYZ{T}}, c::AbstractRGB)
 end
 
 
-cnvt{T}(::Type{XYZ{T}}, c::HSV) = cnvt(XYZ{T}, convert(RGB{T}, c))
-cnvt{T}(::Type{XYZ{T}}, c::HSL) = cnvt(XYZ{T}, convert(RGB{T}, c))
-cnvt{T}(::Type{XYZ{T}}, c::HSI) = cnvt(XYZ{T}, convert(RGB{T}, c))
+cnvt(::Type{XYZ{T}}, c::HSV) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
+cnvt(::Type{XYZ{T}}, c::HSL) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
+cnvt(::Type{XYZ{T}}, c::HSI) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
 
 
-function cnvt{T}(::Type{XYZ{T}}, c::xyY)
+function cnvt(::Type{XYZ{T}}, c::xyY) where T
     X = c.Y*c.x/c.y
     Z = c.Y*(1-c.x-c.y)/c.y
     XYZ{T}(X, c.Y, Z)
@@ -297,8 +297,8 @@ const xyz_epsilon = 216 / 24389
 const xyz_kappa   = 24389 / 27
 
 convert(::Type{XYZ}, c, wp::XYZ) = convert(XYZ{eltype(wp)}, c, wp)
-convert{T}(::Type{XYZ{T}}, c, wp::XYZ) = cnvt(XYZ{T}, c, wp)
-function cnvt{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
+convert(::Type{XYZ{T}}, c, wp::XYZ) where {T} = cnvt(XYZ{T}, c, wp)
+function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ) where T
     fy = (c.l + 16) / 116
     fx = c.a / 500 + fy
     fz = fy - c.b / 200
@@ -314,14 +314,14 @@ function cnvt{T}(::Type{XYZ{T}}, c::Lab, wp::XYZ)
 end
 
 
-cnvt{T}(::Type{XYZ{T}}, c::Lab)   = convert(XYZ{T}, c, WP_DEFAULT)
-cnvt{T}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{T}, c))
-cnvt{T}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{T}, c))
-cnvt{T}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{T}, c))
+cnvt(::Type{XYZ{T}}, c::Lab) where {T}   = convert(XYZ{T}, c, WP_DEFAULT)
+cnvt(::Type{XYZ{T}}, c::LCHab) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
+cnvt(::Type{XYZ{T}}, c::DIN99) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
+cnvt(::Type{XYZ{T}}, c::DIN99o) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
 
-cnvt{T<:Normed}(::Type{XYZ{T}}, c::LCHab) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:Normed}(::Type{XYZ{T}}, c::DIN99) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt{T<:Normed}(::Type{XYZ{T}}, c::DIN99o) = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt(::Type{XYZ{T}}, c::LCHab) where {T<:Normed} = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt(::Type{XYZ{T}}, c::DIN99) where {T<:Normed} = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
+cnvt(::Type{XYZ{T}}, c::DIN99o) where {T<:Normed} = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
 
 
 function xyz_to_uv(c::XYZ)
@@ -333,7 +333,7 @@ function xyz_to_uv(c::XYZ)
 end
 
 
-function cnvt{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT)
+function cnvt(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT) where T
     (u_wp, v_wp) = xyz_to_uv(wp)
 
     a = (52 * (c.l==0 ? zero(T) : c.l / (c.u + 13 * c.l * u_wp)) - 1) / 3
@@ -346,10 +346,10 @@ function cnvt{T}(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT)
     XYZ{T}(x, y, z)
 end
 
-cnvt{T}(::Type{XYZ{T}}, c::LCHuv) = cnvt(XYZ{T}, convert(Luv{T}, c))
+cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, convert(Luv{T}, c))
 
 
-function cnvt{T}(::Type{XYZ{T}}, c::DIN99d)
+function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
     # Go back to C-h space
     # FIXME: Clean this up (why is there no atan2d?)
@@ -377,20 +377,20 @@ function cnvt{T}(::Type{XYZ{T}}, c::DIN99d)
 end
 
 
-function cnvt{T}(::Type{XYZ{T}}, c::LMS)
+function cnvt(::Type{XYZ{T}}, c::LMS) where T
     @mul3x3 XYZ{T} CAT02_INV c.l c.m c.s
 end
 
 
-cnvt{T}(::Type{XYZ{T}}, c::YIQ) = cnvt(XYZ{T}, convert(RGB{T}, c))
-cnvt{T}(::Type{XYZ{T}}, c::YCbCr) = cnvt(XYZ{T}, convert(RGB{T}, c))
+cnvt(::Type{XYZ{T}}, c::YIQ) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
+cnvt(::Type{XYZ{T}}, c::YCbCr) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
 
-cnvt{T}(::Type{XYZ{T}}, c::RGB24) = cnvt(XYZ{T}, convert(RGB{T}, c))
+cnvt(::Type{XYZ{T}}, c::RGB24) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
 
 # Everything to xyY
 # -----------------
 
-function cnvt{T}(::Type{xyY{T}}, c::XYZ)
+function cnvt(::Type{xyY{T}}, c::XYZ) where T
 
     x = c.x/(c.x + c.y + c.z)
     y = c.y/(c.x + c.y + c.z)
@@ -399,39 +399,39 @@ function cnvt{T}(::Type{xyY{T}}, c::XYZ)
 
 end
 
-cnvt{T}(::Type{xyY{T}}, c::Color3) = cnvt(xyY{T}, convert(XYZ{T}, c))
+cnvt(::Type{xyY{T}}, c::Color3) where {T} = cnvt(xyY{T}, convert(XYZ{T}, c))
 
 
 
 # Everything to Lab
 # -----------------
 
-cnvt{T}(::Type{Lab{T}}, c::AbstractRGB) = convert(Lab{T}, convert(XYZ{T}, c))
-cnvt{T}(::Type{Lab{T}}, c::HSV) = cnvt(Lab{T}, convert(RGB{T}, c))
-cnvt{T}(::Type{Lab{T}}, c::HSL) = cnvt(Lab{T}, convert(RGB{T}, c))
+cnvt(::Type{Lab{T}}, c::AbstractRGB) where {T} = convert(Lab{T}, convert(XYZ{T}, c))
+cnvt(::Type{Lab{T}}, c::HSV) where {T} = cnvt(Lab{T}, convert(RGB{T}, c))
+cnvt(::Type{Lab{T}}, c::HSL) where {T} = cnvt(Lab{T}, convert(RGB{T}, c))
 
-convert{T}(::Type{Lab{T}}, c, wp::XYZ) = cnvt(Lab{T}, c, wp)
+convert(::Type{Lab{T}}, c, wp::XYZ) where {T} = cnvt(Lab{T}, c, wp)
 convert(::Type{Lab}, c, wp::XYZ) = cnvt(Lab{eltype(wp)}, c, wp)
 
 function fxyz2lab(v)
     v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
 end
-function cnvt{T}(::Type{Lab{T}}, c::XYZ, wp::XYZ)
+function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ) where T
     fx, fy, fz = fxyz2lab(c.x / wp.x), fxyz2lab(c.y / wp.y), fxyz2lab(c.z / wp.z)
     Lab{T}(116fy - 16, 500(fx - fy), 200(fy - fz))
 end
 
 
-cnvt{T}(::Type{Lab{T}}, c::XYZ{T}) = cnvt(Lab{T}, c, WP_DEFAULT)
+cnvt(::Type{Lab{T}}, c::XYZ{T}) where {T} = cnvt(Lab{T}, c, WP_DEFAULT)
 
 
-function cnvt{T}(::Type{Lab{T}}, c::LCHab)
+function cnvt(::Type{Lab{T}}, c::LCHab) where T
     hr = deg2rad(c.h)
     Lab{T}(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
 
-function cnvt{T}(::Type{Lab{T}}, c::DIN99)
+function cnvt(::Type{Lab{T}}, c::DIN99) where T
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -479,7 +479,7 @@ function cnvt{T}(::Type{Lab{T}}, c::DIN99)
 end
 
 
-function cnvt{T}(::Type{Lab{T}}, c::DIN99o)
+function cnvt(::Type{Lab{T}}, c::DIN99o) where T
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -517,20 +517,20 @@ function cnvt{T}(::Type{Lab{T}}, c::DIN99o)
 end
 
 
-cnvt{T}(::Type{Lab{T}}, c::Color3) = cnvt(Lab{T}, convert(XYZ{T}, c))
+cnvt(::Type{Lab{T}}, c::Color3) where {T} = cnvt(Lab{T}, convert(XYZ{T}, c))
 
 
 # Everything to Luv
 # -----------------
 
-cnvt{T}(::Type{Luv{T}}, c::AbstractRGB) = cnvt(Luv{T}, convert(XYZ{T}, c))
-cnvt{T}(::Type{Luv{T}}, c::HSV) = cnvt(Luv{T}, convert(RGB{T}, c))
-cnvt{T}(::Type{Luv{T}}, c::HSL) = cnvt(Luv{T}, convert(RGB{T}, c))
+cnvt(::Type{Luv{T}}, c::AbstractRGB) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
+cnvt(::Type{Luv{T}}, c::HSV) where {T} = cnvt(Luv{T}, convert(RGB{T}, c))
+cnvt(::Type{Luv{T}}, c::HSL) where {T} = cnvt(Luv{T}, convert(RGB{T}, c))
 
-convert{T}(::Type{Luv{T}}, c, wp::XYZ) = cnvt(Luv{T}, c, wp)
+convert(::Type{Luv{T}}, c, wp::XYZ) where {T} = cnvt(Luv{T}, c, wp)
 convert(::Type{Luv}, c, wp::XYZ) = cnvt(Luv{eltype(wp)}, c, wp)
 
-function cnvt{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT)
+function cnvt(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
     (u_wp, v_wp) = xyz_to_uv(wp)
     (u_, v_) = xyz_to_uv(c)
 
@@ -544,19 +544,19 @@ function cnvt{T}(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT)
 end
 
 
-function cnvt{T}(::Type{Luv{T}}, c::LCHuv)
+function cnvt(::Type{Luv{T}}, c::LCHuv) where T
     hr = deg2rad(c.h)
     Luv{T}(c.l, c.c * cos(hr), c.c * sin(hr))
 end
 
 
-cnvt{T}(::Type{Luv{T}}, c::Color3) = cnvt(Luv{T}, convert(XYZ{T}, c))
+cnvt(::Type{Luv{T}}, c::Color3) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
 
 
 # Everything to LCHuv
 # -------------------
 
-function cnvt{T}(::Type{LCHuv{T}}, c::Luv)
+function cnvt(::Type{LCHuv{T}}, c::Luv) where T
     h = rad2deg(atan2(c.v, c.u))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
@@ -564,13 +564,13 @@ function cnvt{T}(::Type{LCHuv{T}}, c::Luv)
 end
 
 
-cnvt{T}(::Type{LCHuv{T}}, c::Color3) = cnvt(LCHuv{T}, convert(Luv{T}, c))
+cnvt(::Type{LCHuv{T}}, c::Color3) where {T} = cnvt(LCHuv{T}, convert(Luv{T}, c))
 
 
 # Everything to LCHab
 # -------------------
 
-function cnvt{T}(::Type{LCHab{T}}, c::Lab)
+function cnvt(::Type{LCHab{T}}, c::Lab) where T
     h = rad2deg(atan2(c.b, c.a))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
@@ -578,13 +578,13 @@ function cnvt{T}(::Type{LCHab{T}}, c::Lab)
 end
 
 
-cnvt{T}(::Type{LCHab{T}}, c::Color3) = cnvt(LCHab{T}, convert(Lab{T}, c))
+cnvt(::Type{LCHab{T}}, c::Color3) where {T} = cnvt(LCHab{T}, convert(Lab{T}, c))
 
 
 # Everything to DIN99
 # -------------------
 
-function cnvt{T}(::Type{DIN99{T}}, c::Lab)
+function cnvt(::Type{DIN99{T}}, c::Lab) where T
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -630,13 +630,13 @@ function cnvt{T}(::Type{DIN99{T}}, c::Lab)
 end
 
 
-cnvt{T}(::Type{DIN99{T}}, c::Color3) = cnvt(DIN99{T}, convert(Lab{T}, c))
+cnvt(::Type{DIN99{T}}, c::Color3) where {T} = cnvt(DIN99{T}, convert(Lab{T}, c))
 
 
 # Everything to DIN99d
 # --------------------
 
-function cnvt{T}(::Type{DIN99d{T}}, c::XYZ{T})
+function cnvt(::Type{DIN99d{T}}, c::XYZ{T}) where T
 
     # Apply tristimulus-space correction term
     adj_c = XYZ(1.12*c.x - 0.12*c.z, c.y, c.z)
@@ -664,13 +664,13 @@ function cnvt{T}(::Type{DIN99d{T}}, c::XYZ{T})
 end
 
 
-cnvt{T}(::Type{DIN99d{T}}, c::Color3) = cnvt(DIN99d{T}, convert(XYZ{T}, c))
+cnvt(::Type{DIN99d{T}}, c::Color3) where {T} = cnvt(DIN99d{T}, convert(XYZ{T}, c))
 
 
 # Everything to DIN99o
 # -------------------
 
-function cnvt{T}(::Type{DIN99o{T}}, c::Lab)
+function cnvt(::Type{DIN99o{T}}, c::Lab) where T
 
     # We assume the adjustment parameters are always 1; the standard recommends
     # that they not be changed from these values.
@@ -705,7 +705,7 @@ function cnvt{T}(::Type{DIN99o{T}}, c::Lab)
 end
 
 
-cnvt{T}(::Type{DIN99o{T}}, c::Color3) = cnvt(DIN99o{T}, convert(Lab{T}, c))
+cnvt(::Type{DIN99o{T}}, c::Color3) where {T} = cnvt(DIN99o{T}, convert(Lab{T}, c))
 
 
 # Everything to LMS
@@ -726,45 +726,45 @@ const CAT02 = [ 0.7328 0.4296 -0.1624
 const CAT02_INV = inv(CAT02)
 
 
-function cnvt{T}(::Type{LMS{T}}, c::XYZ)
+function cnvt(::Type{LMS{T}}, c::XYZ) where T
     @mul3x3 LMS{T} CAT02 c.x c.y c.z
 end
 
 
-cnvt{T}(::Type{LMS{T}}, c::Color3) = cnvt(LMS{T}, convert(XYZ{T}, c))
+cnvt(::Type{LMS{T}}, c::Color3) where {T} = cnvt(LMS{T}, convert(XYZ{T}, c))
 
 # Everything to YIQ
 # -----------------
 
-correct_gamut{T}(c::YIQ{T}) = YIQ{T}(clamp(c.y, zero(T), one(T)),
+correct_gamut(c::YIQ{T}) where {T} = YIQ{T}(clamp(c.y, zero(T), one(T)),
                                      clamp(c.i, convert(T,-0.5957), convert(T,0.5957)),
                                      clamp(c.q, convert(T,-0.5226), convert(T,0.5226)))
 
-function cnvt{T}(::Type{YIQ{T}}, c::AbstractRGB)
+function cnvt(::Type{YIQ{T}}, c::AbstractRGB) where T
     rgb = correct_gamut(c)
     YIQ{T}(0.299*red(rgb)+0.587*green(rgb)+0.114*blue(rgb),
            0.595716*red(rgb)-0.274453*green(rgb)-0.321263*blue(rgb),
            0.211456*red(rgb)-0.522591*green(rgb)+0.311135*blue(rgb))
 end
 
-cnvt{T}(::Type{YIQ{T}}, c::Color3) = cnvt(YIQ{T}, convert(RGB{T}, c))
+cnvt(::Type{YIQ{T}}, c::Color3) where {T} = cnvt(YIQ{T}, convert(RGB{T}, c))
 
 
 # Everything to YCbCr
 # -------------------
 
-correct_gamut{T}(c::YCbCr{T}) = YCbCr{T}(clamp(c.y, convert(T,16), convert(T,235)),
+correct_gamut(c::YCbCr{T}) where {T} = YCbCr{T}(clamp(c.y, convert(T,16), convert(T,235)),
                                          clamp(c.cb, convert(T,16), convert(T,240)),
                                          clamp(c.cr, convert(T,16), convert(T,240)))
 
-function cnvt{T}(::Type{YCbCr{T}}, c::AbstractRGB)
+function cnvt(::Type{YCbCr{T}}, c::AbstractRGB) where T
     rgb = correct_gamut(c)
     YCbCr{T}(16+65.481*red(rgb)+128.553*green(rgb)+24.966*blue(rgb),
              128-37.797*red(rgb)-74.203*green(rgb)+112*blue(rgb),
              128+112*red(rgb)-93.786*green(rgb)-18.214*blue(rgb))
 end
 
-cnvt{T}(::Type{YCbCr{T}}, c::Color3) = cnvt(YCbCr{T}, convert(RGB{T}, c))
+cnvt(::Type{YCbCr{T}}, c::Color3) where {T} = cnvt(YCbCr{T}, convert(RGB{T}, c))
 
 # Everything to RGB24
 # -------------------
@@ -784,7 +784,7 @@ convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{N0f8}, c))
 # ----------------
 
 convert(::Type{ARGB32}, c::ARGB32) = c
-convert{CV<:AbstractRGB{N0f8}}(::Type{ARGB32}, c::TransparentColor{CV}) =
+convert(::Type{ARGB32}, c::TransparentColor{CV}) where {CV<:AbstractRGB{N0f8}} =
     ARGB32(red(c), green(c), blue(c), alpha(c))
 function convert(::Type{ARGB32}, c::TransparentColor)
     u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(N0f8(alpha(c)))%UInt32)<<24
@@ -803,11 +803,7 @@ end
 # -------
 
 # Rec 601 luma conversion
-if VERSION < v"0.4.0-dev+1827"
-    const unsafe_trunc = itrunc
-else
-    const unsafe_trunc = Base.unsafe_trunc
-end
+const unsafe_trunc = Base.unsafe_trunc
 
-convert{T<:Normed}(::Type{Gray{T}}, x::AbstractRGB{T}) = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
-convert{T}(::Type{Gray{T}}, x::AbstractRGB) = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
+convert(::Type{Gray{T}}, x::AbstractRGB{T}) where {T<:Normed} = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
+convert(::Type{Gray{T}}, x::AbstractRGB) where {T} = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
