@@ -167,12 +167,12 @@ the lightness `l` may also be specified.
 function MSC(h)
 
     #Corners of RGB cube
-    const h0 = 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
-    const h1 = 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
-    const h2 = 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
-    const h3 = 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
-    const h4 = 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
-    const h5 = 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
+    h0 = 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
+    h1 = 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
+    h2 = 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
+    h3 = 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
+    h4 = 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
+    h5 = 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
 
     #Wrap h to [0, 360] range]
     h = mod(h, 360)
@@ -213,14 +213,14 @@ function MSC(h)
 
     #un &vn are calculated based on reference white (D65)
     #X=0.95047; Y=1.0000; Z=1.08883
-    const un=0.19783982482140777 #4.0X/(X+15.0Y+3.0Z)
-    const vn=0.46833630293240970 #9.0Y/(X+15.0Y+3.0Z)
+    un = 0.19783982482140777 #4.0X/(X+15.0Y+3.0Z)
+    vn = 0.46833630293240970 #9.0Y/(X+15.0Y+3.0Z)
 
     #sRGB matrix
-    const M=[0.4124564  0.3575761  0.1804375;
-             0.2126729  0.7151522  0.0721750;
-             0.0193339  0.1191920  0.9503041]'
-    const g=2.4
+    M = [0.4124564  0.3575761  0.1804375;
+         0.2126729  0.7151522  0.0721750;
+         0.0193339  0.1191920  0.9503041]'
+    g = 2.4
 
     m_tx=M[t,1]
     m_ty=M[t,2]
