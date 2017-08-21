@@ -258,7 +258,7 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
     if haskey(colormaps_sequential, cname)
         p = copy(colormaps_sequential[cname][1:8])
 
-        const allowedkeys = [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
+        allowedkeys = [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
         for (k,v) in kvs
             k in allowedkeys || throw(ArgumentError("Unknown keyword argument $k"))
             ind = findfirst(allowedkeys, k)
