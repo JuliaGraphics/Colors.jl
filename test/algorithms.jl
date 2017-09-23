@@ -1,11 +1,11 @@
 using Base.Test, Colors
 
-@test isleaftype(eltype(colormap("Grays")))
+@test isconcrete(eltype(colormap("Grays")))
 
 @test_throws ArgumentError colormap("Grays", N=10)
 
 col = distinguishable_colors(10)
-@test isleaftype(eltype(col))
+@test isconcrete(eltype(col))
 mindiff = Inf
 for i = 1:10
     for j = i+1:10

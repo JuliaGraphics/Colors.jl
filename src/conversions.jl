@@ -460,7 +460,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99) where T
     end
 
     # Temporary variable for chroma
-    g = (e^(0.045*cc*kch*ke)-1)/0.045
+    g = (exp(0.045*cc*kch*ke)-1)/0.045
 
     # Temporary redness
     ee = g*cosd(h)
@@ -475,7 +475,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99) where T
     cieb = ee*0.27563735581699916 + (f/0.7)*0.9612616959383189
 
     # CIELAB L*
-    ciel = (e^(c.l*ke/105.51)-1)/0.0158
+    ciel = (exp(c.l*ke/105.51)-1)/0.0158
 
     Lab{T}(ciel, ciea, cieb)
 end
@@ -498,7 +498,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99o) where T
     ho= rad2deg(h)-26
 
     # revert logarithmic chroma compression
-    g = (e^(co*kch*ke/23.0)-1)/0.075
+    g = (exp(co*kch*ke/23.0)-1)/0.075
 
     # Temporary redness
     eo = g*cosd(ho)
@@ -513,7 +513,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99o) where T
     cieb = eo*0.4383711467890774 + (fo/0.83)*0.898794046299167
 
     # CIELAB L* (revert logarithmic lightness compression)
-    ciel = (e^(c.l*ke/303.67)-1)/0.0039
+    ciel = (exp(c.l*ke/303.67)-1)/0.0039
 
     Lab{T}(ciel, ciea, cieb)
 end
