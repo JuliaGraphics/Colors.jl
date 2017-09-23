@@ -48,7 +48,9 @@ const eps_cdiff = 0.01
 
 metric = DE_2000()
 
-for (i, (a, b, dexpect)) in enumerate(abds)
-    @assert abs(dexpect - colordiff(Lab(a...), Lab(b...), metric)) < eps_cdiff
-    @assert abs(dexpect - colordiff(Lab(b...), Lab(a...), metric)) < eps_cdiff
+let a, b
+    for (i, (a, b, dexpect)) in enumerate(abds)
+        @assert abs(dexpect - colordiff(Lab(a...), Lab(b...), metric)) < eps_cdiff
+        @assert abs(dexpect - colordiff(Lab(b...), Lab(a...), metric)) < eps_cdiff
+    end
 end

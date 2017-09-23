@@ -19,25 +19,25 @@ const testdata = [
 # results due to the exponentiation.
 const conveps = 0.05
 const diffeps = 0.01
-for (i, (a, b)) in enumerate(testdata)
-    converted = convert(DIN99, Lab(a...))
-    test = DIN99(b...)
+let a, b
+    for (i, (a, b)) in enumerate(testdata)
+        converted = convert(DIN99, Lab(a...))
+        test = DIN99(b...)
 
-    @assert (abs(converted.l - test.l) < conveps)
-    @assert (abs(converted.a - test.a) < conveps)
-    @assert (abs(converted.b - test.b) < conveps)
+        @assert (abs(converted.l - test.l) < conveps)
+        @assert (abs(converted.a - test.a) < conveps)
+        @assert (abs(converted.b - test.b) < conveps)
 
-    converted = convert(Lab, DIN99(b...))
-    test = Lab(a...)
+        converted = convert(Lab, DIN99(b...))
+        test = Lab(a...)
 
-    @assert (abs(converted.l - test.l) < conveps)
-    @assert (abs(converted.a - test.a) < conveps)
-    @assert (abs(converted.b - test.b) < conveps)
+        @assert (abs(converted.l - test.l) < conveps)
+        @assert (abs(converted.a - test.a) < conveps)
+        @assert (abs(converted.b - test.b) < conveps)
 
-    # This is not a real test of the color difference metric, but at least
-    # makes sure it isn't doing anything really crazy.
-    metric = DE_DIN99()
-    @assert (abs(colordiff(convert(DIN99, Lab(a...)), DIN99(b...), metric)) < diffeps)
-
-
+        # This is not a real test of the color difference metric, but at least
+        # makes sure it isn't doing anything really crazy.
+        metric = DE_DIN99()
+        @assert (abs(colordiff(convert(DIN99, Lab(a...)), DIN99(b...), metric)) < diffeps)
+    end
 end

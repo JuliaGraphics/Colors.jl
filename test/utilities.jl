@@ -25,7 +25,7 @@ end
 
 for C in colortypes
     for T in (Float16,Float32,Float64,BigFloat)
-	if issubtype(C,Color)
+	if C<:Color
             c1 = C(T(1),T(1),T(0))
             c2 = C(T(0),T(1),T(1))
 	    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5))
