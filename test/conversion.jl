@@ -161,26 +161,11 @@ redhsv = convert(HSV, redF64)
 @test isa(convert(Luv{Float32}, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float32})
 
 # Test vector space operations
-import Base.full
-full(T::Color) = map(x->getfield(T, x), fieldnames(typeof(T))) #Allow test to access numeric elements
-# Generated from:
-#=
-julia> for t in subtypes(ColorValue)
-          isleaftype(t) || isleaftype(t{Float64}) || continue
+@test LMS{Float64}(0.125,0.5,0.0)+LMS{Float64}(0.2,0.7,0.4) ≈ LMS{Float64}(0.325,1.2,0.4) atol=91eps()
+@test 3LMS{Float64}(0.125,0.5,0.03) ≈ LMS{Float64}(0.375,1.5,0.09) atol=91eps()
 
-          try
-              println("@test_approx_eq_eps ", t(0.125, 0.5, 0), "+", t(0.2, 0.7, 0.4), " ", t(0.125, 0.5, 0) + t(0.2, 0.7, 0.4), " 91eps()")
-              println("@test_approx_eq_eps 3", t(0.125, 0.5, 0.03), " ", 3t(0.125, 0.5, 0.03), " 91eps()\n")
-          catch    continue
-          end
-       end
-=#
-
-@test_approx_eq_eps LMS{Float64}(0.125,0.5,0.0)+LMS{Float64}(0.2,0.7,0.4) LMS{Float64}(0.32500000000000007,1.2000000000000002,0.4000000000000001) 91eps()
-@test_approx_eq_eps 3LMS{Float64}(0.125,0.5,0.03) LMS{Float64}(0.37499999999999994,1.4999999999999998,0.09000000000000001) 91eps()
-
-@test_approx_eq_eps XYZ{Float64}(0.125,0.5,0.0)+XYZ{Float64}(0.2,0.7,0.4) XYZ{Float64}(0.325,1.2,0.4) 91eps()
-@test_approx_eq_eps 3XYZ{Float64}(0.125,0.5,0.03) XYZ{Float64}(0.375,1.5,0.09) 91eps()
+@test XYZ{Float64}(0.125,0.5,0.0)+XYZ{Float64}(0.2,0.7,0.4) ≈ XYZ{Float64}(0.325,1.2,0.4) atol=91eps()
+@test 3XYZ{Float64}(0.125,0.5,0.03) ≈ XYZ{Float64}(0.375,1.5,0.09) atol=91eps()
 
 #59
 @test Colors.xyz_to_uv(XYZ{Float64}(0.0, 0.0, 0.0)) === (0.0, 0.0)
@@ -190,7 +175,7 @@ julia> for t in subtypes(ColorValue)
 @test Colors.xyz_to_uv(XYZ{Float64}(1.0, 0.0, 0.0)) === (4.0, 0.0)
 
 # ColorTypes.jl issue #40
-@test_approx_eq_eps convert(HSL, RGB{N0f8}(0.678, 0.847, 0.902)) HSL{Float32}(194.73685f0,0.5327105f0,0.7901961f0) 100eps(Float32)
+@test convert(HSL, RGB{N0f8}(0.678, 0.847, 0.902)) ≈ HSL{Float32}(194.73685f0,0.5327105f0,0.7901961f0) atol=100eps(Float32)
 
 # YIQ
 @test convert(YIQ, RGB(1,0,0)) == YIQ{Float32}(0.299, 0.595716, 0.211456)
