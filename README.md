@@ -215,6 +215,15 @@ Returns the most saturated color for a given hue `h` (defined in LCHuv space, i.
 
 ## Colormaps
 
+This package provides some pre-defined colormaps (described below). There are also several packages:
+
+- [ColorSchemes.jl](https://github.com/JuliaGraphics/ColorSchemes.jl) (see [colormaps](http://juliagraphics.github.io/ColorSchemes.jl/latest/basics.html))
+- [PerceptualColourMaps](https://github.com/peterkovesi/PerceptualColourMaps.jl)
+- [ColorBrewer](https://github.com/timothyrenner/ColorBrewer.jl)
+- [NoveltyColors](https://github.com/randyzwitch/NoveltyColors.jl)
+
+Colormap functions provided by Colors.jl:
+
 `colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])`
 
 Returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).
