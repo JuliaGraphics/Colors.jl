@@ -15,9 +15,9 @@ const col_pat_hsla = r"hsla\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
 # Parse a number used in the "rgb()" or "hsl()" color.
 function parse_rgb(num::AbstractString)
     if num[end] == '%'
-        return clamp(parse(Int, num[1:end-1], 10) / 100, 0, 1)
+        return clamp(parse(Int, num[1:end-1], base=10) / 100, 0, 1)
     else
-        return clamp(parse(Int, num, 10) / 255, 0, 1)
+        return clamp(parse(Int, num, base=10) / 255, 0, 1)
     end
 end
 
@@ -25,7 +25,7 @@ function parse_hsl_hue(num::AbstractString)
     if num[end] == '%'
         error("hue cannot end in %")
     else
-        return parse(Int, num, 10)
+        return parse(Int, num, base=10)
     end
 end
 
@@ -33,7 +33,7 @@ function parse_hsl_sl(num::AbstractString)
     if num[end] != '%'
         error("saturation and lightness must end in %")
     else
-        return parse(Int, num[1:end-1], 10) / 100
+        return parse(Int, num[1:end-1], base=10) / 100
     end
 end
 
@@ -48,19 +48,19 @@ end
 
 
 function _parse_colorant(desc::AbstractString)
-    desc_ = replace(desc, " ", "")
+    desc_ = replace(desc, " " => "")
     mat = match(col_pat_hex2, desc_)
     if mat != nothing
-        return RGB{N0f8}(parse(Int, mat.captures[2], 16) / 255,
-                       parse(Int, mat.captures[3], 16) / 255,
-                       parse(Int, mat.captures[4], 16) / 255)
+        return RGB{N0f8}(parse(Int, mat.captures[2], base=16) / 255,
+                       parse(Int, mat.captures[3], base=16) / 255,
+                       parse(Int, mat.captures[4], base=16) / 255)
     end
 
     mat = match(col_pat_hex1, desc_)
     if mat != nothing
-        return RGB{N0f8}(parse(Int, mat.captures[2], 16) / 15,
-                       parse(Int, mat.captures[3], 16) / 15,
-                       parse(Int, mat.captures[4], 16) / 15)
+        return RGB{N0f8}(parse(Int, mat.captures[2], base=16) / 15,
+                       parse(Int, mat.captures[3], base=16) / 15,
+                       parse(Int, mat.captures[4], base=16) / 15)
     end
 
     mat = match(col_pat_rgb, desc_)

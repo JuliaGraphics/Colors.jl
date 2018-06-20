@@ -35,7 +35,7 @@ hex(c::Colorant) = hex(convert(ARGB, c))
 """
     weighted_color_mean(w1, c1, c2)
 
-Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and 
+Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and
 `c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
 """
 function weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
@@ -49,14 +49,17 @@ function weighted_color_mean(w1::Real, c1::Gray{Bool}, c2::Gray{Bool})
 end
 
 """
-    linspace(c1::Color, c2::Color, n=100)
+    range(start::Color; stop::Color, length=100)
 
-Generates `n`>2 colors in a linearly interpolated ramp from `c1` to`c2`,
+Generates `n`>2 colors in a linearly interpolated ramp from `start` to`stop`,
 inclusive, returning an `Array` of colors.
 """
-function linspace(c1::T, c2::T, n::Integer=100) where T<:Colorant
-    return T[weighted_color_mean(w1, c1, c2) for w1 in linspace(1.0,0.0,n)]
+function range(start::T; stop::T, length::Integer=100) where T<:Colorant
+    return T[weighted_color_mean(w1, start, stop) for w1 in range(1.0,stop=0.0,length=length)]
 end
+
+import Base: linspace
+Base.@deprecate linspace(start::Colorant, stop::Colorant, n::Integer=100) range(start, stop=stop, length=n)
 
 #Double quadratic Bezier curve
 function Bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real

@@ -19,7 +19,7 @@ const testdata = [
 # results due to the exponentiation.
 const conveps = 0.05
 const diffeps = 0.01
-let a, b
+let a, b, metric
     for (i, (a, b)) in enumerate(testdata)
         converted = convert(DIN99, Lab(a...))
         test = DIN99(b...)

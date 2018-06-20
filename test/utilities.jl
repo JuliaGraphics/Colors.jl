@@ -1,4 +1,4 @@
-using Colors, FixedPointNumbers, Base.Test
+using Colors, FixedPointNumbers, Test, InteractiveUtils
 
 # test utility function weighted_color_mean
 parametric2 = [GrayA,AGray32,AGray]
@@ -38,13 +38,13 @@ for C in colortypes
     end
 end
 
-# test utility function linspace
-# linspace uses weighted_color_mean which is extensively tested.
+# test utility function range
+# range uses weighted_color_mean which is extensively tested.
 # Therefore it suffices to test the function using gray colors.
 for T in colorElementTypes
     c1 = Gray(T(1))
     c2 = Gray(T(0))
-    linc1c2 = linspace(c1,c2,43)
+    linc1c2 = range(c1,stop=c2,length=43)
     @test length(linc1c2) == 43
     @test linc1c2[1] == c1
     @test linc1c2[end] == c2

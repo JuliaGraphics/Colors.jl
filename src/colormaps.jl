@@ -23,9 +23,9 @@ Args:
 Keyword arguments:
 
 - `transform`: Transform applied to colors before measuring distance. Default is the identity; other choices include `deuteranopic` to simulate color-blindness.
-- `lchoices`: Possible lightness values (default `linspace(0,100,15)`)
-- `cchoices`: Possible chroma values (default `linspace(0,100,15)`)
-- `hchoices`: Possible hue values (default `linspace(0,340,20)`)
+- `lchoices`: Possible lightness values (default `range(0,stop=100,start=15)`)
+- `cchoices`: Possible chroma values (default `range(0,stop=100,start=15)`)
+- `hchoices`: Possible hue values (default `range(0,stop=340,start=20)`)
 
 Returns:
   A `Vector` of colors of length `n`, of the type specified in `seed`.
@@ -33,16 +33,16 @@ Returns:
 function distinguishable_colors(n::Integer,
                   seed::AbstractVector{T};
                   transform::Function = identity,
-                  lchoices::AbstractVector = linspace(0, 100, 15),
-                  cchoices::AbstractVector = linspace(0, 100, 15),
-                  hchoices::AbstractVector = linspace(0, 340, 20)) where T<:Color
+                  lchoices::AbstractVector = range(0, stop=100, length=15),
+                  cchoices::AbstractVector = range(0, stop=100, length=15),
+                  hchoices::AbstractVector = range(0, stop=340, length=20)) where T<:Color
     if n <= length(seed)
         return seed[1:n]
     end
 
     # Candidate colors
     N = length(lchoices)*length(cchoices)*length(hchoices)
-    candidate = Vector{Lab{Float64}}(N)
+    candidate = Vector{Lab{Float64}}(undef, N)
     j = 0
     for h in hchoices, c in cchoices, l in lchoices
         rgb = convert(RGB, LCHab(l, c, h))
@@ -50,14 +50,14 @@ function distinguishable_colors(n::Integer,
     end
 
     # Transformed colors
-    candidate_t = Vector{Lab{Float64}}(N)
+    candidate_t = Vector{Lab{Float64}}(undef, N)
     for i = 1:N
         candidate_t[i] = transform(candidate[i])
     end
 
     # Start with the seed colors
-    colors = Vector{T}(n)
-    copy!(colors, seed)
+    colors = Vector{T}(undef, n)
+    copyto!(colors, seed)
 
     # Minimum distances of the current color to each previously selected color.
     ds = fill(Inf, N)
@@ -69,7 +69,7 @@ function distinguishable_colors(n::Integer,
     end
 
     for i in length(seed)+1:n
-        j = indmax(ds)
+        j = argmax(ds)
         colors[i] = candidate[j]
         tc = candidate_t[j]
         for k = 1:N
@@ -83,7 +83,7 @@ end
 
 
 distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
-distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Vector{RGB{N0f8}}(0); kwargs...)
+distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Vector{RGB{N0f8}}(); kwargs...)
 
 @deprecate distinguishable_colors(n::Integer,
                                 transform::Function,
@@ -159,7 +159,7 @@ function sequential_palette(h,
     if logscale
         absc = logspace(-2.,0.,N)
     else
-        absc = linspace(0.,1.,N)
+        absc = range(0.,stop=1.,length=N)
     end
 
     for t in absc
