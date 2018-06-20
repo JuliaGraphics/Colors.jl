@@ -157,7 +157,7 @@ function sequential_palette(h,
     pal = RGB{Float64}[]
 
     if logscale
-        absc = logspace(-2.,0.,N)
+        absc = exp10.(range(-2., stop=0., length=N))
     else
         absc = range(0.,stop=1.,length=N)
     end
