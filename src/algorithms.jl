@@ -149,10 +149,6 @@ protanopic(c::Color)   = protanopic(c, 1.0)
 deuteranopic(c::Color) = deuteranopic(c, 1.0)
 tritanopic(c::Color)   = tritanopic(c, 1.0)
 
-Compat.@dep_vectorize_1arg Color protanopic
-Compat.@dep_vectorize_1arg Color deuteranopic
-Compat.@dep_vectorize_1arg Color tritanopic
-
 # MSC - Most Saturated Colorant for given hue h
 # ---------------------
 

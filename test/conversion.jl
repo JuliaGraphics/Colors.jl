@@ -1,5 +1,5 @@
 using Colors, FixedPointNumbers, JLD2
-using Base.Test
+using Test
 using ColorTypes: eltype_default
 
 r8(x) = reinterpret(N0f8, x)

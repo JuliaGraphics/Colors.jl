@@ -354,8 +354,8 @@ cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, convert(Luv{T}, c))
 function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
     # Go back to C-h space
-    # FIXME: Clean this up (why is there no atan2d?)
-    h = rad2deg(atan2(c.b,c.a)) + 50
+    # FIXME: Clean this up (why is there no atand?)
+    h = rad2deg(atan(c.b,c.a)) + 50
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
 
@@ -492,7 +492,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99o) where T
     co = sqrt(c.a^2 + c.b^2)
 
     # hue angle h99o
-    h = atan2(c.b, c.a)
+    h = atan(c.b, c.a)
 
     # revert rotation by 26°
     ho= rad2deg(h)-26
@@ -559,7 +559,7 @@ cnvt(::Type{Luv{T}}, c::Color3) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHuv{T}}, c::Luv) where T
-    h = rad2deg(atan2(c.v, c.u))
+    h = rad2deg(atan(c.v, c.u))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
     LCHuv{T}(c.l, sqrt(c.u^2 + c.v^2), h)
@@ -573,7 +573,7 @@ cnvt(::Type{LCHuv{T}}, c::Color3) where {T} = cnvt(LCHuv{T}, convert(Luv{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHab{T}}, c::Lab) where T
-    h = rad2deg(atan2(c.b, c.a))
+    h = rad2deg(atan(c.b, c.a))
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
     LCHab{T}(c.l, sqrt(c.a^2 + c.b^2), h)
@@ -656,8 +656,8 @@ function cnvt(::Type{DIN99d{T}}, c::XYZ{T}) where T
 
     # Calculate hue/chroma
     C = 22.5*log(1+0.06*G)
-    # FIXME: Clean this up (why is there no atan2d?)
-    h = rad2deg(atan2(f,ee)) + 50
+    # FIXME: Clean this up (why is there no atand?)
+    h = rad2deg(atan(f,ee)) + 50
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
 
@@ -692,7 +692,7 @@ function cnvt(::Type{DIN99o{T}}, c::Lab) where T
 
     # Temporary value for chroma
     go = sqrt(eo^2 + fo^2)
-    ho = atan2(fo,eo)
+    ho = atan(fo,eo)
     # rotation of the color space by 26°
     h  = rad2deg(ho) + 26
 
