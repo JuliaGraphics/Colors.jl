@@ -39,7 +39,7 @@ simulating color blindness, parsing colors, and generating color scales for grap
 [travis-url]: https://travis-ci.org/JuliaGraphics/Colors.jl
 
 [appvey-img]: https://ci.appveyor.com/api/projects/status/trgtxvpfwrhm65w5?svg=true
-[appvey-url]: https://ci.appveyor.com/project/juliagraphics/colors-jl/branch/master
+[appvey-url]: https://ci.appveyor.com/project/cormullion/colors-jl/branch/master
 
 [codecov-img]: https://codecov.io/gh/JuliaGraphics/Colors.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/JuliaGraphics/Colors.jl
