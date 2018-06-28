@@ -1,25 +1,37 @@
 using Luxor
 
-@svg begin
-    k = 35
-    k1 = 220
-    stepping = pi/10
-    setopacity(0.9)
-    for (n, theta) in enumerate(0:stepping:2pi)
-        thickness = 15
-        setline(0.5)
-        i = k
-        while i < k1
-            thickness *= 1.1
-            @layer begin
-                rotate(rescale(i, k, k1, 0, 2pi))
-                col = Colors.HSL(rescale(theta, 0, 2pi, 0, 360), 1, rescale(i, k, k1, 0.7, 0.5))
-                sethue(col)
-                sector(O, i, i + thickness-3, theta, theta + stepping - 0.05, 10, :fill)
-                sethue("black")
-                sector(O, i, i + thickness-3, theta, theta + stepping - 0.05, 10, :stroke)
-            end
-            i += thickness
+function main()
+    Drawing(500, 500, "/tmp/colorslogo.png")
+    # transparent background
+    origin()
+    juliadarkercolors = [Luxor.darker_green, Luxor.darker_purple, Luxor.darker_red]
+    julialightercolors = [Luxor.lighter_green, Luxor.lighter_purple, Luxor.lighter_red]
+    pts = ngon(O + (0, 30), 110, 3, -pi/2, vertices=true)
+    # I don't think I can draw it with compositing modes
+    diskradius = 140
+    # basic circles
+    for (n, p) in enumerate(pts)
+        sethue(juliadarkercolors[n])
+        circle(pts[mod1(n-1, 3)], diskradius, :fill)
+        sethue(julialightercolors[n])
+        circle(pts[mod1(n-1, 3)], diskradius-15, :fill)
+    end
+    @layer begin
+        for (n, p) in enumerate(pts)
+            circle(p, diskradius, :clip)
+            sethue(["cyan", "magenta", "yellow"][mod1(n, 3)])
+            circle(pts[mod1(n+1, 3)], diskradius, :fill)
+            clipreset()
         end
     end
-end 500 500 "/tmp/colorslogo.svg"
+    # center
+    sethue("azure")
+    circle(pts[1], diskradius, :clip)
+    circle(pts[2], diskradius, :clip)
+    circle(pts[3], diskradius, :fill)
+    clipreset()
+    finish()
+    preview()
+end
+
+main()
