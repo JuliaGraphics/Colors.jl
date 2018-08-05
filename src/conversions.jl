@@ -167,8 +167,8 @@ cnvt(::Type{CV}, c::LCHab) where {CV<:AbstractRGB}  = cnvt(CV, convert(Lab{eltyp
 cnvt(::Type{CV}, c::LCHuv) where {CV<:AbstractRGB}  = cnvt(CV, convert(Luv{eltype(c)}, c))
 cnvt(::Type{CV}, c::Color3) where {CV<:AbstractRGB}    = cnvt(CV, convert(XYZ{eltype(c)}, c))
 
-cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB{N0f8}} = CV(N0f8(c.color&0x00ff0000>>>16,0), N0f8(c.color&0x0000ff00>>>8,0), N0f8(c.color&0x000000ff,0))
-cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB} = CV((c.color&0x00ff0000>>>16)/255, ((c.color&0x0000ff00)>>>8)/255, (c.color&0x000000ff)/255)
+cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB{N0f8}} = CV(N0f8((c.color&0x00ff0000)>>>16,0), N0f8((c.color&0x0000ff00)>>>8,0), N0f8(c.color&0x000000ff,0))
+cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB} = CV(((c.color&0x00ff0000)>>>16)/255, (((c.color&0x0000ff00))>>>8)/255, (c.color&0x000000ff)/255)
 
 function cnvt(::Type{CV}, c::AbstractGray) where CV<:AbstractRGB
     g = convert(eltype(CV), gray(c))

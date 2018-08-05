@@ -1,5 +1,3 @@
-__precompile__()
-
 module Colors
 
 using FixedPointNumbers, ColorTypes, Reexport, Printf
