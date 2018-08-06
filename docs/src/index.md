@@ -4,7 +4,7 @@ This library provides a wide array of functions for dealing with color.
 
 Supported colorspaces include:
 
-- RGB, BGR, RGB1, RGB4, RGB24, plus transparent versions ARGB, RGBA, ABGR, BGRA, and ARGB32,
+- RGB, BGR, RGB1, RGB4, RGB24, plus transparent versions ARGB, RGBA, ABGR, BGRA, and ARGB32
 - HSV, HSL, HSI, plus all 6 transparent variants (AHSV, HSVA, AHSL, HSLA, AHSI, HSIA)
 - XYZ, xyY, LMS and all 6 transparent variants
 - Lab, Luv, LCHab, LCHuv and all 8 transparent variants

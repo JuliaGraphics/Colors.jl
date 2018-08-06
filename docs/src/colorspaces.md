@@ -155,7 +155,7 @@ Three functions are provided that map colors to a reduced gamut to simulate diff
 
 *Protanopia*, *deuteranopia*, and *tritanopia* are the loss of long, middle, and short wavelength photopigment, respectively.
 
-These functions take a color and return a new, altered color in the same colorspace .
+These functions take a color and return a new, altered color in the same colorspace.
 
 ```julia
 protanopic(c::Color, p::Float64)
