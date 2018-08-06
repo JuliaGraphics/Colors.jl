@@ -126,9 +126,9 @@ Options are as follows:
 |`DE_BFD(kl::Float64, kc::Float64)`                      |                                                                   |
 |`DE_BFD()`                                              | - when not specified, the constants default to 1, and the white point defaults to CIED65.                                                                   |
 |`DE_AB()`                                               | Specify the original, Euclidean color difference equation.                                                                                                  |
-|`DE_DIN99()`                                            | Specify the Euclidean color difference equation applied in the `DIN99` uniform color space.                                                                 |
-|`DE_DIN99d()`                                           | Specify the Euclidean color difference equation applied in the `DIN99d` uniform color space.                                                                 |
-|`DE_DIN99o()`                                           | Specify the Euclidean color difference equation applied in the `DIN99o` uniform color space.                                                                 |
+|`DE_DIN99()`                                            | Specify the Euclidean color difference equation applied in the `DIN99` uniform colorspace.                                                                 |
+|`DE_DIN99d()`                                           | Specify the Euclidean color difference equation applied in the `DIN99d` uniform colorspace.                                                                 |
+|`DE_DIN99o()`                                           | Specify the Euclidean color difference equation applied in the `DIN99o` uniform colorspace.                                                                 |
 
 [need docstrings?]
 ```@docs

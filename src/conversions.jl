@@ -693,7 +693,7 @@ function cnvt(::Type{DIN99o{T}}, c::Lab) where T
     # Temporary value for chroma
     go = sqrt(eo^2 + fo^2)
     ho = atan(fo,eo)
-    # rotation of the color space by 26°
+    # rotation of the colorspace by 26°
     h  = rad2deg(ho) + 26
 
     # DIN99o chroma (logarithmic compression)
