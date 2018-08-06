@@ -35,19 +35,19 @@ Depending on the source and destination colorspace, this may not be perfectly lo
 
 ```
 julia> c = colorant"red"
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> parse(Colorant, "red")
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> parse(Colorant, HSL(1, 1, 1))
-HSL{Float32}(1.0f0,1.0f0,1.0f0)
+HSL{Float32}(1.0f0, 1.0f0, 1.0f0)
 
 julia> colorant"#FF0000"
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> parse(Colorant, RGBA(1, 0.5, 1, 0.5))
-RGBA{Float64}(1.0,0.5,1.0,0.5)
+RGBA{Float64}(1.0, 0.5, 1.0, 0.5)
 ```
 
 You can parse any [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color) with the exception of `currentColor` (and `rebeccapurple`).
@@ -56,9 +56,9 @@ All CSS/SVG named colors are supported, in addition to X11 named colors, when th
 
 Returns a `RGB{U8}` color, unless:
 
-- `"hsl(h,s,l)"` was used, in which case an `HSL` color is returned
-- `"rgba(r,g,b,a)"` was used, in which case an `RGBA` color is returned
-- `"hsla(h,s,l,a)"` was used, in which case an `HSLA` color is returned
+- `"hsl(h, s, l)"` was used, in which case an `HSL` color is returned
+- `"rgba(r, g, b, a)"` was used, in which case an `RGBA` color is returned
+- `"hsla(h, s, l, a)"` was used, in which case an `HSLA` color is returned
 - a specific `Colorant` type was specified in the first argument
 
 When writing functions the `colorant"red"` version is preferred, because the slow step runs when the code is parsed (i.e., during compilation rather than run-time).
@@ -163,7 +163,7 @@ deuteranopic(c::Color, p::Float64)
 tritanopic(c::Color, p::Float64)
 ```
 
-Also provided are versions of these functions with an extra parameter `p` in `[0,1]`, giving the degree of photopigment loss, where 1.0 is a complete loss, and 0.0 is no loss at all.
+Also provided are versions of these functions with an extra parameter `p` in `[0, 1]`, giving the degree of photopigment loss, where 1.0 is a complete loss, and 0.0 is no loss at all.
 
 ```@docs
 protanopic
