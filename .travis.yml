@@ -9,15 +9,15 @@ notifications:
     email: false
 script:
     - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-    - julia -e 'Pkg.clone(pwd()); Pkg.build("Colors"); Pkg.test("Colors"; coverage=true)';
+    - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("Colors"); Pkg.test("Colors"; coverage=true)';
 jobs:
   include:
     - stage: deploy
       julia: 0.7
       os: linux
       script:
-        - julia -e 'Pkg.clone(pwd()); Pkg.build("Colors")'
-        - julia -e 'Pkg.add("Documenter")'
-        - julia -e 'cd(Pkg.dir("Colors")); include("docs/make.jl")'
+        - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("Colors")'
+        - julia -e 'using Pkg; Pkg.add("Documenter")'
+        - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'import Colors; cd(joinpath(pathof(Colors),"..","..")); include("docs/make.jl")'; else julia -e 'cd(Pkg.dir("Colors")); include("docs/make.jl")'; fi
 after_success:
-    - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'cd(Pkg.dir("Colors")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'; fi
+    - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'using Pkg; import Colors; cd(joinpath(pathof(Colors),"..","..")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'; else julia -e 'cd(Pkg.dir("Colors")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'; fi
