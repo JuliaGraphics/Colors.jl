@@ -809,6 +809,6 @@ const unsafe_trunc = Base.unsafe_trunc
 
 convert(::Type{Gray{T}}, x::Gray{T}) where {T} = x
 convert(::Type{Gray{T}}, x::Gray) where {T} = Gray{T}(gray(x))
-convert(::Type{Gray{T}}, x::AbstractRGB{T}) where {T<:Normed} = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
+convert(::Type{Gray{T}}, x::AbstractRGB{T}) where {T<:Normed} = (TU = FixedPointNumbers.rawtype(T); Gray{T}(T(round(TU, digits=min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))), 0)))
 convert(::Type{Gray{T}}, x::AbstractRGB) where {T} = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
 convert(::Type{Gray{T}}, x::Color) where {T} = convert(Gray{T}, convert(RGB{T}, x))
