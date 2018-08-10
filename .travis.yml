@@ -18,6 +18,6 @@ jobs:
       script:
         - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("Colors")'
         - julia -e 'using Pkg; Pkg.add("Documenter")'
-        - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'import Colors; cd(joinpath(pathof(Colors),"..","..")); include("docs/make.jl")'; else julia -e 'cd(Pkg.dir("Colors")); include("docs/make.jl")'; fi
+        - julia -e 'import Colors; cd(joinpath(pathof(Colors),"..","..")); include("docs/make.jl")'
 after_success:
-    - if [ $TRAVIS_JULIA_VERSION = "nightly" ]; then julia -e 'using Pkg; import Colors; cd(joinpath(pathof(Colors),"..","..")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'; else julia -e 'cd(Pkg.dir("Colors")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'; fi
+    - julia -e 'using Pkg; import Colors; cd(joinpath(pathof(Colors),"..","..")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
