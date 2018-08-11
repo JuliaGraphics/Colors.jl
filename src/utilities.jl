@@ -58,8 +58,10 @@ function range(start::T; stop::T, length::Integer=100) where T<:Colorant
     return T[weighted_color_mean(w1, start, stop) for w1 in range(1.0,stop=0.0,length=length)]
 end
 
+if VERSION < v"1.0.0-"
 import Base: linspace
 Base.@deprecate linspace(start::Colorant, stop::Colorant, n::Integer=100) range(start, stop=stop, length=n)
+end
 
 #Double quadratic Bezier curve
 function Bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real

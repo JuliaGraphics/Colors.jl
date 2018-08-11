@@ -23,10 +23,6 @@ export weighted_color_mean,
        colormatch, CIE1931_CMF, CIE1964_CMF, CIE1931J_CMF, CIE1931JV_CMF
 
 # atan(x,y) was introduced after 0.7.0-alpha
-@static if VERSION < v"0.7.0-alpha.44"
-    atan(x, y) = atan2(x, y)
-    atan(x) = Base.atan(x)
-end
 
 # Early utilities
 include("utilities.jl")
