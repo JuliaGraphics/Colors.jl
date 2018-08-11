@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Migrating from Color.jl · Colors</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="index.html"><img class="logo" src="assets/logo.png" alt="Colors logo"/></a><h1>Colors</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Introduction</a></li><li><a class="toctext" href="colorspaces.html">Colorspaces</a></li><li><a class="toctext" href="colorscales.html">Colorscales</a></li><li><a class="toctext" href="colormaps.html">Colormaps</a></li><li><a class="toctext" href="namedcolors.html">Named colors</a></li><li><a class="toctext" href="references.html">References</a></li><li class="current"><a class="toctext" href="migratingfromcolor.html">Migrating from Color.jl</a><ul class="internal"></ul></li><li><a class="toctext" href="functionindex.html">Index</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="migratingfromcolor.html">Migrating from Color.jl</a></li></ul><a class="edit-page" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/migratingfromcolor.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Migrating from Color.jl</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Migrating-from-Color.jl-1" href="#Migrating-from-Color.jl-1">Migrating from Color.jl</a></h1><p>Colors.jl was forked from an original repository called <code>Color.jl</code> created by Daniel Jones.</p><p>The following script can be helpful if you intending to migrate from <code>Color.jl</code> to <code>Colors.jl</code>.</p><pre><code class="language-sh"># Intended to be run from the top directory in a package
+# Do not run this twice on the same source tree without discarding
+# the first set of changes.
+sed -i &#39;s/\bColor\b/Colors/g&#39; REQUIRE
+
+fls=$(find . -name &quot;*.jl&quot;)
+sed -i &#39;s/\bColor\b/Colors/g&#39; $fls               # Color -&gt; Colors
+sed -i -r &#39;s/\bcolor\(&quot;(.*?)&quot;\)/colorant\&quot;\1\&quot;/g&#39; $fls   # color(&quot;red&quot;) -&gt; colorant&quot;red&quot;
+sed -i &#39;s/AbstractAlphaColorValue/TransparentColor/g&#39; $fls
+sed -i &#39;s/AlphaColorValue/TransparentColor/g&#39; $fls   # might mean ColorAlpha
+sed -i &#39;s/ColorValue/Color/g&#39; $fls
+sed -i &#39;s/ColourValue/Color/g&#39; $fls
+sed -i -r &#39;s/\bLAB\b/Lab/g&#39; $fls
+sed -i -r &#39;s/\bLUV\b/Luv/g&#39; $fls
+sed -i -r &#39;s/\b([a-zA-Z0-9_\.]+)\.c\.(\w)\b/\1\.\2/g&#39; $fls      # colval.c.r -&gt; colval.c
+# This next one is quite dangerous, esp. for LCHab types...
+# ...on the other hand, git diff is nice about showing the things we should fix
+sed -i -r &#39;s/\b([a-zA-Z0-9_\.]+)\.c\b/color(\1)/g&#39; $fls
+
+# These are not essential, but they generalize to RGB24 better
+# However, they are too error-prone to use by default since other color
+# types like Lab have fields with the same names
+#sed -i -r &#39;s/\b([a-zA-Z0-9_\.]+)\.r\b/red(\1)/g&#39; $fls          # c.r -&gt; red(c)
+#sed -i -r &#39;s/\b([a-zA-Z0-9_\.]+)\.g\b/green(\1)/g&#39; $fls
+#sed -i -r &#39;s/\b([a-zA-Z0-9_\.]+)\.b\b/blue(\1)/g&#39; $fls
+#sed -i -r &#39;s/\b([a-zA-Z0-9_\.]+)\.alpha\b/alpha(\1)/g&#39; $fls     # c.alpha -&gt; alpha(c)</code></pre><p>You are strongly advised to check the results carefully; for example, any object <code>obj</code> with a field named <code>c</code> will get converted from <code>obj.c</code> to <code>color(obj)</code>, and if <code>obj</code> is not a <code>Colorant</code> this is surely not what you want.  You can use <code>git add -p</code> to review/edit each change individually.</p><footer><hr/><a class="previous" href="references.html"><span class="direction">Previous</span><span class="title">References</span></a><a class="next" href="functionindex.html"><span class="direction">Next</span><span class="title">Index</span></a></footer></article></body></html>
