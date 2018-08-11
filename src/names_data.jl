@@ -558,6 +558,7 @@ const color_names = Dict(
     "purple2"              => (145,  44, 238),
     "purple3"              => (125,  38, 205),
     "purple4"              => ( 85,  26, 139),
+    "rebeccapurple"        => (102,  51, 153),
     "red"                  => (255,   0,   0),
     "red1"                 => (255,   0,   0),
     "red2"                 => (238,   0,   0),
