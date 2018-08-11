@@ -9,6 +9,7 @@ makedocs(
         "Colorspaces"              => "colorspaces.md",
         "Colorscales"              => "colorscales.md",
         "Colormaps"                => "colormaps.md",
+        "Named colors"             => "namedcolors.md",
         "References"               => "references.md",
         "Migrating from Color.jl"  => "migratingfromcolor.md",
         "Index"                    => "functionindex.md",
