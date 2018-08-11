@@ -95,7 +95,8 @@ end
 #
 
 pow7(x) = (y = x*x*x; y*y*x)
-const twentyfive7 = 25^7
+pow7(x::Integer) = pow7(Float64(x))
+const twentyfive7 = pow7(25)
 
 # Delta E 2000
 function colordiff(ai::Color, bi::Color, m::DE_2000)
