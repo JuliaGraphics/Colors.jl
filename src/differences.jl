@@ -385,7 +385,7 @@ function colordiff(ai::Color, bi::Color, m::DE_DIN99)
 
 end
 
-# A color difference formula for the DIN99d uniform color space
+# A color difference formula for the DIN99d uniform colorspace
 function colordiff(ai::Color, bi::Color, m::DE_DIN99d)
 
     a = convert(DIN99d, ai)
