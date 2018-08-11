@@ -224,7 +224,7 @@ function diverging_palette(h1,
     N2 = Int(max(n-N1, 1))
 
     pal1 = sequential_palette(h1, N1+1, w=w, d=d1, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor1, logscale=logscale)
-    pal1 = flipdim(pal1, 1)
+    pal1 = reverse(pal1; dims=1)
 
     pal2 = sequential_palette(h2, N2+1, w=w, d=d2, c=c, s=s, b=b, wcolor=wcolor, dcolor=dcolor2, logscale=logscale)
 
