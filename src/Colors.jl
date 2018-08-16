@@ -8,8 +8,6 @@ using Printf
 
 AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
 AbstractGrayA{C<:AbstractGray,T} = ColorAlpha{C,T,2}
-Color3{T} = Color{T,3}
-Transparent4{C<:Color3,T} = TransparentColor{C,T,4}
 
 import Base: ==, +, -, *, /
 import Base: convert, eltype, hex, isless, range, show, typemin, typemax
