@@ -1,10 +1,11 @@
 module Colors
 
-using FixedPointNumbers, ColorTypes, Reexport, Printf
+using FixedPointNumbers
+using Reexport
+using Printf
+
 @reexport using ColorTypes
 
-AbstractGray{T} = Color{T,1}
-using ColorTypes: TransparentGray
 AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
 AbstractGrayA{C<:AbstractGray,T} = ColorAlpha{C,T,2}
 Color3{T} = Color{T,3}
