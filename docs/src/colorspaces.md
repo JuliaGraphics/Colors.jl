@@ -50,7 +50,7 @@ julia> parse(Colorant, RGBA(1, 0.5, 1, 0.5))
 RGBA{Float64}(1.0, 0.5, 1.0, 0.5)
 ```
 
-You can parse any [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color) with the exception of `currentColor` (and `rebeccapurple`).
+You can parse any [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color) with the exception of `currentColor`.
 
 All CSS/SVG named colors are supported, in addition to X11 named colors, when their definitions do not clash with SVG.
 
