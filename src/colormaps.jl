@@ -18,7 +18,7 @@ in the palette.
 Args:
 
 - `n`: Number of colors to generate.
-- `seed`: Initial color(s) included in the palette.  Default is `Vector{RGB{N0f8}}(0)`.
+- `seed`: Initial color(s) included in the palette.  Default is `Vector{RGB{N0f8}}()`.
 
 Keyword arguments:
 
