@@ -8,17 +8,15 @@ julia:
     - nightly
 notifications:
     email: false
-script:
-    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-    - julia -e 'import Pkg; Pkg.build("Colors"); Pkg.test("Colors"; coverage=true)';
 jobs:
   include:
     - stage: deploy
       julia: 0.7
       os: linux
       script:
-        - julia -e 'import Pkg; Pkg.build("Colors")'
+        - julia -e 'mv("_Project.toml", "Project.toml")'
+        - julia -e 'import Pkg; Pkg.build()'
         - julia -e 'import Pkg; Pkg.add("Documenter")'
-        - julia -e 'import Colors; include("docs/make.jl")'
+        - julia docs/make.jl
 after_success:
-    - julia -e 'using Pkg; import Colors; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+    - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
