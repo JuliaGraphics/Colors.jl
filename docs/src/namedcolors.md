@@ -10,12 +10,12 @@ color_names = Dict(
     ...
 ```
 
-Named colors are available using:
+Named colors are available as `RGB{N0f8}` using:
 
 ```julia
 julia> using Colors
 
-julia> colorant"indianred"
+julia> color = colorant"indianred"
 RGB{N0f8}(0.804,0.361,0.361)
 ```
 
@@ -25,7 +25,7 @@ or
 julia> cname = "indianred"
 "indianred"
 
-julia> parse(Colorant, cname)
+julia> color = parse(Colorant, cname)
 RGB{N0f8}(0.804,0.361,0.361)
 ```
 
@@ -50,3 +50,12 @@ RGB{N0f8}(0.804,0.361,0.361)
 ![Whites](assets/figures/namedcolorchart-whites.svg)
 
 ![Grays](assets/figures/namedcolorchart-grays.svg)
+
+
+These colors can be converted to `RGB{N0f32}` (for example) using:
+
+```
+julia> RGB{N0f32}(color)
+RGB{N0f32}(0.803922,0.360784,0.360784)
+```
+
