@@ -10,6 +10,25 @@ color_names = Dict(
     ...
 ```
 
+Named colors are available using:
+
+```julia
+julia> using Colors
+
+julia> colorant"indianred"
+RGB{N0f8}(0.804,0.361,0.361)
+```
+
+or
+
+```julia
+julia> cname = "indianred"
+"indianred"
+
+julia> parse(Colorant, cname)
+RGB{N0f8}(0.804,0.361,0.361)
+```
+
 ![Reds](assets/figures/namedcolorchart-reds.svg)
 
 ![Oranges](assets/figures/namedcolorchart-oranges.svg)
