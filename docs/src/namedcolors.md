@@ -2,7 +2,7 @@
 
 The names of available colors are stored in alphabetical order in the dictionary `Colors.color_names`:
 
-```
+```julia
 color_names = Dict(
     "aliceblue"            => (240, 248, 255),
     "antiquewhite"         => (250, 235, 215),
@@ -54,7 +54,7 @@ RGB{N0f8}(0.804,0.361,0.361)
 
 These colors can be converted to `RGB{N0f32}` (for example) using:
 
-```
+```julia
 julia> RGB{N0f32}(color)
 RGB{N0f32}(0.803922,0.360784,0.360784)
 ```
