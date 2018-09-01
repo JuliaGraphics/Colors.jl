@@ -55,6 +55,7 @@ RGB{N0f8}(0.804,0.361,0.361)
 These colors can be converted to `RGB{N0f32}` (for example) using:
 
 ```julia
+julia> using FixedPointNumbers
 julia> RGB{N0f32}(color)
 RGB{N0f32}(0.803922,0.360784,0.360784)
 ```
