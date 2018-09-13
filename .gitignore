@@ -3,3 +3,4 @@
 docs/build/
 docs/site/
 .DS_Store
+/docs/Manifest.toml
