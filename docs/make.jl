@@ -19,7 +19,7 @@ makedocs(
 deploydocs(
     repo = "github.com/JuliaGraphics/Colors.jl.git",
     target = "build",
-    julia  = "0.7",
+    julia  = "1.0",
     osname = "linux",
     deps = nothing,
     make = nothing
