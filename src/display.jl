@@ -19,9 +19,9 @@ function Base.show(io::IO, ::MIME"image/svg+xml", c::Color)
         """)
 end
 
-function Base.show(io::IO, ::MIME"image/svg+xml", 
+function Base.show(io::IO, ::MIME"image/svg+xml",
                    cs::AbstractVector{T}) where T <: Color
-    show(io, MIME"image/svg+xml"(), reshape(cs, (1, length(cs))))
+    show(io, MIME"image/svg+xml"(), Base.ReshapedArray(cs, (1, length(cs)), ()))
 end
 
 function Base.show(io::IO, ::MIME"image/svg+xml",
