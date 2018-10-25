@@ -261,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Named colors",
     "title": "Named colors",
     "category": "section",
-    "text": "The names of available colors are stored in alphabetical order in the dictionary Colors.color_names:color_names = Dict(\n    \"aliceblue\"            => (240, 248, 255),\n    \"antiquewhite\"         => (250, 235, 215),\n    \"antiquewhite1\"        => (255, 239, 219),\n    ...(Image: Reds)(Image: Oranges)(Image: Yellows)(Image: Greens)(Image: Greens)(Image: Blues)(Image: Purples)(Image: Browns)(Image: Pinks)(Image: Whites)(Image: Grays)"
+    "text": "The names of available colors are stored in alphabetical order in the dictionary Colors.color_names:color_names = Dict(\n    \"aliceblue\"            => (240, 248, 255),\n    \"antiquewhite\"         => (250, 235, 215),\n    \"antiquewhite1\"        => (255, 239, 219),\n    ...Named colors are available as RGB{N0f8} using:julia> using Colors\n\njulia> color = colorant\"indianred\"\nRGB{N0f8}(0.804,0.361,0.361)orjulia> cname = \"indianred\"\n\"indianred\"\n\njulia> color = parse(Colorant, cname)\nRGB{N0f8}(0.804,0.361,0.361)(Image: Reds)(Image: Oranges)(Image: Yellows)(Image: Greens)(Image: Greens)(Image: Blues)(Image: Purples)(Image: Browns)(Image: Pinks)(Image: Whites)(Image: Grays)These colors can be converted to RGB{N0f32} (for example) using:julia> using FixedPointNumbers\njulia> RGB{N0f32}(color)\nRGB{N0f32}(0.803922,0.360784,0.360784)"
 },
 
 {
