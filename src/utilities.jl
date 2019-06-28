@@ -58,6 +58,50 @@ function range(start::T; stop::T, length::Integer=100) where T<:Colorant
     return T[weighted_color_mean(w1, start, stop) for w1 in range(1.0,stop=0.0,length=length)]
 end
 
+"""
+    wavelength_to_rgb(wavelength;gamma=0.8)
+
+An approximate conversion of optical wavelength (nm) to RGB.
+Based on https://gist.github.com/friendly/67a7df339aa999e2bcfcfec88311abfc
+Which is a conversion of code by Dan Bruton http://www.physics.sfasu.edu/astro/color/spectra.html
+And discussed: https://stackoverflow.com/questions/1472514/convert-light-frequency-to-rgb
+"""
+
+function wavelength_to_rgb(wavelength;gamma=0.8)
+    if (wavelength >= 380) && (wavelength <= 440)
+        attenuation = 0.3 + 0.7 * (wavelength - 380) / (440 - 380)
+        R = ((-(wavelength - 440) / (440 - 380)) * attenuation) ^ gamma
+        G = 0.0
+        B = (1.0 * attenuation) ^ gamma
+    elseif (wavelength >= 440) && (wavelength <= 490)
+        R = 0.0
+        G = ((wavelength - 440) / (490 - 440)) ^ gamma
+        B = 1.0
+    elseif (wavelength >= 490) && (wavelength <= 510)
+        R = 0.0
+        G = 1.0
+        B = (-(wavelength - 510) / (510 - 490)) ^ gamma
+    elseif (wavelength >= 510) && (wavelength <= 580)
+        R = ((wavelength - 510) / (580 - 510)) ^ gamma
+        G = 1.0
+        B = 0.0
+    elseif (wavelength >= 580) && (wavelength <= 645)
+        R = 1.0
+        G = (-(wavelength - 645) / (645 - 580)) ^ gamma
+        B = 0.0
+    elseif (wavelength >= 645) && (wavelength <= 750)
+        attenuation = 0.3 + 0.7 * (750 - wavelength) / (750 - 645)
+        R = (1.0 * attenuation) ^ gamma
+        G = 0.0
+        B = 0.0
+    else
+        R = 0.0
+        G = 0.0
+        B = 0.0
+    end
+    return RGB(R,G,B)
+end
+
 if VERSION < v"1.0.0-"
 import Base: linspace
 Base.@deprecate linspace(start::Colorant, stop::Colorant, n::Integer=100) range(start, stop=stop, length=n)
