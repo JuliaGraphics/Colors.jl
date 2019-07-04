@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Colorspaces",
     "title": "Color match for CIE Standard Observer",
     "category": "section",
-    "text": "The colormatch() function returns an XYZ color corresponding to a wavelength specified in nanometers.colormatch(wavelen::Real)The CIE defines a standard observer, defining a typical frequency response curve for each of the three human eye cones.colormatch"
+    "text": "The colormatch() function returns an XYZ color corresponding to a wavelength specified in nanometers.colormatch(wavelen::Real)The CIE defines a standard observer, defining a typical frequency response curve for each of the three human eye cones.For instance, conversion from optical wavelength to RGB can be achieved with:RGB.(colormatch.(350:10:750))(Image: wavelength to RGB)colormatch"
 },
 
 {
