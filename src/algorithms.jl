@@ -18,19 +18,17 @@ const Linear3 = Union{XYZ, LMS}
 
 Whitebalance a color.
 
-Input a source (adopted) and destination (reference) white. E.g., if you have
-a photo taken under florencent lighting that you then want to appear correct
-under regular sunlight, you might do something like
-`whitebalance(c, WP_F2, WP_D65)`.
+Input a source (adopted) and destination (reference) white. For example, if you want a photo
+taken under fluorescent lighting to appear correct in regular sunlight, you might do
+something like `whitebalance(c, WP_F2, WP_D65)`.
 
-Args:
+# Arguments
 
 - `c`: An observed color.
 - `src_white`: Adopted or source white corresponding to `c`
 - `ref_white`: Reference or destination white.
 
-Returns:
-  A whitebalanced color.
+Returns a whitebalanced color.
 """
 function whitebalance(c::T, src_white::Color, ref_white::Color) where T <: Color
     c_lms = convert(LMS, c)
@@ -80,7 +78,7 @@ end
     protanopic(c, p)
 
 Convert a color to simulate protanopic color deficiency (lack of the
-long-wavelength photopigment).  `c` is the input color; the optional
+long-wavelength photopigment). `c` is the input color; the optional
 argument `p` is the fraction of photopigment loss, in the range 0 (no
 loss) to 1 (complete loss).
 """
@@ -103,7 +101,7 @@ end
     deuteranopic(c, p)
 
 Convert a color to simulate deuteranopic color deficiency (lack of the
-middle-wavelength photopigment).  See the description of `protanopic` for detail about the arguments.
+middle-wavelength photopigment). See [`protanopic`](@ref) for detail about the arguments.
 """
 function deuteranopic(q::T, p, neutral::LMS) where T <: Color
     q = convert(LMS, q)
@@ -124,7 +122,7 @@ end
     tritanopic(c, p)
 
 Convert a color to simulate tritanopic color deficiency (lack of the
-short-wavelength photogiment).  See `protanopic` for more detail about
+short-wavelength photopigment). See [`protanopic`](@ref) for detail about
 the arguments.
 """
 function tritanopic(q::T, p, neutral::LMS) where T <: Color
@@ -156,7 +154,7 @@ tritanopic(c::Color)   = tritanopic(c, 1.0)
     MSC(h)
     MSC(h, l)
 
-Calculates the most saturated color for any given hue `h` by
+Calculate the most saturated color for any given hue `h` by
 finding the corresponding corner in LCHuv space. Optionally,
 the lightness `l` may also be specified.
 """

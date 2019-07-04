@@ -29,6 +29,10 @@ julia> color = parse(Colorant, cname)
 RGB{N0f8}(0.804,0.361,0.361)
 ```
 
+![Whites](assets/figures/namedcolorchart-whites.svg)
+
+![Grays](assets/figures/namedcolorchart-grays.svg)
+
 ![Reds](assets/figures/namedcolorchart-reds.svg)
 
 ![Oranges](assets/figures/namedcolorchart-oranges.svg)
@@ -37,7 +41,7 @@ RGB{N0f8}(0.804,0.361,0.361)
 
 ![Greens](assets/figures/namedcolorchart-greens.svg)
 
-![Greens](assets/figures/namedcolorchart-cyans.svg)
+![Cyans](assets/figures/namedcolorchart-cyans.svg)
 
 ![Blues](assets/figures/namedcolorchart-blues.svg)
 
@@ -47,11 +51,6 @@ RGB{N0f8}(0.804,0.361,0.361)
 
 ![Pinks](assets/figures/namedcolorchart-pinks.svg)
 
-![Whites](assets/figures/namedcolorchart-whites.svg)
-
-![Grays](assets/figures/namedcolorchart-grays.svg)
-
-
 These colors can be converted to `RGB{N0f32}` (for example) using:
 
 ```julia
@@ -59,4 +58,3 @@ julia> using FixedPointNumbers
 julia> RGB{N0f32}(color)
 RGB{N0f32}(0.803922,0.360784,0.360784)
 ```
-

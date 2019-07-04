@@ -15,20 +15,19 @@ lightness values (in LCHab space), it repeatedly chooses the next color as the
 one that maximizes the minimum pairwise distance to any of the colors already
 in the palette.
 
-Args:
+# Arguments
 
 - `n`: Number of colors to generate.
 - `seed`: Initial color(s) included in the palette.  Default is `Vector{RGB{N0f8}}()`.
 
-Keyword arguments:
+# Keyword arguments
 
 - `transform`: Transform applied to colors before measuring distance. Default is the identity; other choices include `deuteranopic` to simulate color-blindness.
 - `lchoices`: Possible lightness values (default `range(0,stop=100,start=15)`)
 - `cchoices`: Possible chroma values (default `range(0,stop=100,start=15)`)
 - `hchoices`: Possible hue values (default `range(0,stop=340,start=20)`)
 
-Returns:
-  A `Vector` of colors of length `n`, of the type specified in `seed`.
+Returns a `Vector` of colors of length `n`, of the type specified in `seed`.
 """
 function distinguishable_colors(n::Integer,
                   seed::AbstractVector{T};
@@ -92,28 +91,28 @@ distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Vector
                                 cs::Vector{Float64},
                                 hs::Vector{Float64})    distinguishable_colors(n, [seed], transform = transform, lchoices = ls, cchoices = cs, hchoices = hs)
 
-# Sequential palette
-# ----------------------
-# Sequential_palette implements the color palette creation technique by
-# Wijffelaars, M., et al. (2008)
-# http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf
-#
-# Colormaps are formed using Bezier curves in LCHuv colorspace
-# with some constant hue. In addition, start and end points can be given
-# that are then blended to the original hue smoothly.
-#
-# The arguments are:
-# N        - number of colors
-# h        - the main hue [0,360]
-# c        - the overall lightness contrast [0,1]
-# s        - saturation [0,1]
-# b        - brightness [0,1]
-# w        - cold/warm parameter, i.e. the strength of the starting color [0,1]
-# d        - depth of the ending color [0,1]
-# wcolor   - starting color (warmness)
-# dcolor   - ending color (depth)
-# logscale - true/false for toggling logspacing
-#
+"""
+    sequential_palette(h, N::Int=100; <keyword arguments>)
+
+Implements the color palette creation technique by [Wijffelaars, M., et al. (2008)](http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf).
+
+Colormaps are formed using Bézier curves in LCHuv colorspace
+with some constant hue. In addition, start and end points can be given
+that are then blended to the original hue smoothly.
+
+# Arguments
+
+- N        - number of colors
+- h        - the main hue [0,360]
+- c        - the overall lightness contrast [0,1]
+- s        - saturation [0,1]
+- b        - brightness [0,1]
+- w        - cold/warm parameter, i.e. the strength of the starting color [0,1]
+- d        - depth of the ending color [0,1]
+- wcolor   - starting color (warmness)
+- dcolor   - ending color (depth)
+- logscale - true/false for toggling logspacing
+"""
 function sequential_palette(h,
                             N::Int=100;
                             c=0.88,
@@ -180,26 +179,27 @@ function sequential_palette(h,
     pal
 end
 
+"""
+    diverging_palette(h1, h2, N::Int=100; <keyword arguments>)
 
-# Diverging palettes
-# ----------------------
-# Create diverging palettes by combining 2 sequential palettes
-#
-# The arguments are:
-# N        - number of colors
-# h1       - the main hue of the left side [0,360]
-# h2       - the main hue of the right side [0,360]
-# c        - the overall lightness contrast [0,1]
-# s        - saturation [0,1]
-# b        - brightness [0,1]
-# w        - cold/warm parameter, i.e. the strength of the starting color [0,1]
-# d1       - depth of the ending color in the left side [0,1]
-# d2       - depth of the ending color in the right side [0,1]
-# wcolor   - starting color (warmness)
-# dcolor1  - ending color of the left side (depth)
-# dcolor2  - ending color of the right side (depth)
-# logscale - true/false for toggling logspacing
-#
+Create diverging palettes by combining 2 sequential palettes
+
+# Arguments
+
+- N        - number of colors
+- h1       - the main hue of the left side [0,360]
+- h2       - the main hue of the right side [0,360]
+- c        - the overall lightness contrast [0,1]
+- s        - saturation [0,1]
+- b        - brightness [0,1]
+- w        - cold/warm parameter, i.e. the strength of the starting color [0,1]
+- d1       - depth of the ending color in the left side [0,1]
+- d2       - depth of the ending color in the right side [0,1]
+- wcolor   - starting color (warmness)
+- dcolor1  - ending color of the left side (depth)
+- dcolor2  - ending color of the right side (depth)
+- logscale - true/false for toggling logspacing
+"""
 function diverging_palette(h1,
                            h2,
                            N::Int=100;
@@ -245,11 +245,21 @@ end
     colormap(cname, [N; mid, logscale, kvs...])
 
 Returns a predefined sequential or diverging colormap computed using
-the algorithm by Wijffelaars, M., et al. (2008).  Sequential colormaps
-`cname` choices are `Blues`, `Greens`, `Grays`, `Oranges`, `Purples`,
-and `Reds`.  Diverging colormap choices are `RdBu`.  Optionally, you
-can specify the number of colors `N` (default 100). Keyword arguments
-include the position of the middle point `mid` (default 0.5) and the
+the algorithm by Wijffelaars, M., et al. (2008).
+
+Sequential colormaps `cname` choices are:
+
+- `Blues`
+- `Greens`
+- `Grays`
+- `Oranges`
+- `Purples`,
+- `Reds`
+
+Diverging colormap choices are `RdBu`.
+
+Optionally, you can specify the number of colors `N` (default 100).
+Keyword arguments include the position of the middle point `mid` (default 0.5) and the
 possibility to switch to log scaling with `logscale` (default false).
 """
 function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)

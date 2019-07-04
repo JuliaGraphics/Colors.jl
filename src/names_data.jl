@@ -1,6 +1,5 @@
 # This is the union of every color defined in X11 and in SVG, prefering the SVG
 # definition when they clash.
-
 const color_names = Dict(
     "aliceblue"            => (240, 248, 255),
     "antiquewhite"         => (250, 235, 215),
