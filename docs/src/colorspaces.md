@@ -78,6 +78,13 @@ The `colormatch()` function returns an XYZ color corresponding to a wavelength s
 
 The CIE defines a *standard observer*, defining a typical frequency response curve for each of the three human eye cones.
 
+For instance, conversion from optical wavelength to RGB can be achieved with:
+
+```julia
+RGB.(colormatch.(350:10:750))
+```
+![wavelength to RGB](assets/figures/wavelength_to_RGB.png)
+
 ```@docs
 colormatch
 ```
