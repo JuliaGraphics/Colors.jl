@@ -99,7 +99,7 @@ pow7(x::Integer) = pow7(Float64(x))
 const twentyfive7 = pow7(25)
 
 # Delta E 2000
-function colordiff(ai::Color, bi::Color, m::DE_2000)
+function _colordiff(ai::Color, bi::Color, m::DE_2000)
     # Ensure that the input values are in L*a*b* space
     a_Lab = convert(Lab, ai)
     b_Lab = convert(Lab, bi)
@@ -162,7 +162,7 @@ function colordiff(ai::Color, bi::Color, m::DE_2000)
 end
 
 # Delta E94
-function colordiff(ai::Color, bi::Color, m::DE_94)
+function _colordiff(ai::Color, bi::Color, m::DE_94)
 
     a = convert(LCHab, ai)
     b = convert(LCHab, bi)
@@ -192,7 +192,7 @@ function colordiff(ai::Color, bi::Color, m::DE_94)
 end
 
 # Metric form of jpc79 color difference equation (mostly obsolete)
-function colordiff(ai::Color, bi::Color, m::DE_JPC79)
+function _colordiff(ai::Color, bi::Color, m::DE_JPC79)
 
     # Convert directly into LCh
     a = convert(LCHab, ai)
@@ -242,7 +242,7 @@ end
 
 
 # Metric form of the cmc color difference
-function colordiff(ai::Color, bi::Color, m::DE_CMC)
+function _colordiff(ai::Color, bi::Color, m::DE_CMC)
 
     # Convert directly into LCh
     a = convert(LCHab, ai)
@@ -297,7 +297,7 @@ function colordiff(ai::Color, bi::Color, m::DE_CMC)
 end
 
 # The BFD color difference equation
-function colordiff(ai::Color, bi::Color, m::DE_BFD)
+function _colordiff(ai::Color, bi::Color, m::DE_BFD)
 
     # We have to start back in XYZ because BFD uses a different L equation
     a_XYZ = convert(XYZ, ai, m.wp)
@@ -357,7 +357,7 @@ function colordiff(ai::Color, bi::Color, m::DE_BFD)
 end
 
 # Delta E*ab (the original)
-function colordiff(ai::Color, bi::Color, m::DE_AB)
+function _colordiff(ai::Color, bi::Color, m::DE_AB)
 
     # Convert directly into L*a*b*
     a = convert(Lab, ai)
@@ -377,7 +377,7 @@ end
 #
 # Returns:
 #   The DIN99 color difference metric evaluated between a and b.
-function colordiff(ai::Color, bi::Color, m::DE_DIN99)
+function _colordiff(ai::Color, bi::Color, m::DE_DIN99)
 
     a = convert(DIN99, ai)
     b = convert(DIN99, bi)
@@ -387,7 +387,7 @@ function colordiff(ai::Color, bi::Color, m::DE_DIN99)
 end
 
 # A color difference formula for the DIN99d uniform colorspace
-function colordiff(ai::Color, bi::Color, m::DE_DIN99d)
+function _colordiff(ai::Color, bi::Color, m::DE_DIN99d)
 
     a = convert(DIN99d, ai)
     b = convert(DIN99d, bi)
@@ -397,7 +397,7 @@ function colordiff(ai::Color, bi::Color, m::DE_DIN99d)
 end
 
 # The DIN99o color difference metric evaluated between colors a and b.
-function colordiff(ai::Color, bi::Color, m::DE_DIN99o)
+function _colordiff(ai::Color, bi::Color, m::DE_DIN99o)
 
     a = convert(DIN99o, ai)
     b = convert(DIN99o, bi)
@@ -408,12 +408,12 @@ end
 
 # Default to Delta E 2000
 """
-    colordiff(a, b)
-    colordiff(a, b, metric)
+    colordiff(a, b; metric::DifferenceMetric=DE_2000())
 
 Compute an approximate measure of the perceptual difference between
 colors `a` and `b`.  Optionally, a `metric` may be supplied, chosen
 among `DE_2000` (the default), `DE_94`, `DE_JPC79`, `DE_CMC`,
 `DE_BFD`, `DE_AB`, `DE_DIN99`, `DE_DIN99d`, `DE_DIN99o`.
 """
-colordiff(ai::Color, bi::Color) = colordiff(ai::Color, bi::Color, DE_2000())
+colordiff(ai::Color, bi::Color; metric::DifferenceMetric=DE_2000()) = _colordiff(ai, bi, metric)
+@deprecate colordiff(ai::Color, bi::Color, metric::DifferenceMetric) colordiff(ai, bi; metric=metric)
