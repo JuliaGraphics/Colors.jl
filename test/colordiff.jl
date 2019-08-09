@@ -56,4 +56,7 @@ using Colors
         end
     end
 
+    a, b = rand(100), rand(100)
+    @test all(@. colordiff(a, b) == colordiff(Gray(a), b) == colordiff(a, Gray(b)) == colordiff(Gray(a), Gray(b)))
+
 end # @testset

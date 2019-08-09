@@ -415,5 +415,11 @@ colors `a` and `b`.  Optionally, a `metric` may be supplied, chosen
 among `DE_2000` (the default), `DE_94`, `DE_JPC79`, `DE_CMC`,
 `DE_BFD`, `DE_AB`, `DE_DIN99`, `DE_DIN99d`, `DE_DIN99o`.
 """
-colordiff(ai::Color, bi::Color; metric::DifferenceMetric=DE_2000()) = _colordiff(ai, bi, metric)
+colordiff(ai::Union{Number, Color},
+          bi::Union{Number, Color};
+          metric::DifferenceMetric=DE_2000()) = _colordiff(ai, bi, metric)
 @deprecate colordiff(ai::Color, bi::Color, metric::DifferenceMetric) colordiff(ai, bi; metric=metric)
+
+_colordiff(ai::AbstractGray, bi::Number, metric::DifferenceMetric) = _colordiff(ai, Gray(bi), metric)
+_colordiff(ai::Number, bi::AbstractGray, metric::DifferenceMetric) = _colordiff(Gray(ai), Gray(bi), metric)
+_colordiff(ai::Number, bi::Number, metric::DifferenceMetric) = _colordiff(Gray(ai), Gray(bi), metric)
