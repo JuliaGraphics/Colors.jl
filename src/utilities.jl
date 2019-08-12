@@ -58,7 +58,9 @@ function range(start::T; stop::T, length::Integer=100) where T<:Colorant
     return T[weighted_color_mean(w1, start, stop) for w1 in range(1.0,stop=0.0,length=length)]
 end
 
-range(start::T, stop::T; kwargs...) where T<:Colorant = range(start; stop=stop, kwargs...)
+if VERSION >= v"1.1"
+    range(start::T, stop::T; kwargs...) where T<:Colorant = range(start; stop=stop, kwargs...)
+end
 
 if VERSION < v"1.0.0-"
 import Base: linspace
