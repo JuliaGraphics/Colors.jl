@@ -421,5 +421,5 @@ colordiff(ai::Union{Number, Color},
 @deprecate colordiff(ai::Color, bi::Color, metric::DifferenceMetric) colordiff(ai, bi; metric=metric)
 
 _colordiff(ai::AbstractGray, bi::Number, metric::DifferenceMetric) = _colordiff(ai, Gray(bi), metric)
-_colordiff(ai::Number, bi::AbstractGray, metric::DifferenceMetric) = _colordiff(Gray(ai), Gray(bi), metric)
+_colordiff(ai::Number, bi::AbstractGray, metric::DifferenceMetric) = _colordiff(Gray(ai), bi, metric)
 _colordiff(ai::Number, bi::Number, metric::DifferenceMetric) = _colordiff(Gray(ai), Gray(bi), metric)
