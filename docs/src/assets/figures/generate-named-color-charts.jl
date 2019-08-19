@@ -82,7 +82,7 @@ function inversecolor(foregroundcolor, backgroundcolor;
     return foreground
 end
 
-function main()
+function makeallcolorcharts()
     colornames = collect(keys(Colors.color_names))
     colordictionary = classifycolornames(colornames)
     categoryorder = ["whites", "yellows", "greens", "cyans", "blues", "purples", "pinks", "reds", "oranges",  "browns", "grays"]
@@ -111,7 +111,7 @@ function main()
         fontface("Helvetica-Bold")
         text(titlecase(colorcategory), BoundingBox()[1] + (margin, 30), halign=:left)
         setline(0.5)
-        line(Point(-pagewidth/2 + margin, 40 + -currentdrawing.height/2), Point(pagewidth/2 - margin, 40 + -currentdrawing.height/2), :stroke)
+        line(Point(-pagewidth/2 + margin, 40 + -Luxor.current_height()/2), Point(pagewidth/2 - margin, 40 + -Luxor.current_height()/2), :stroke)
         table = Table(numberrows, numbercols,
             (pagewidth - 2margin)/numbercols, # cell width
             rowheight, # row height
@@ -127,7 +127,7 @@ function main()
             # if overlapping text on swatch, choose color wisely
             # sethue(inversecolor("white", backgroundcolor, tolerance=60))
             sethue("black")
-            fontface("DINNextLTPro-BoldCondensed")
+            fontface("IBMPlexSansCond-Medium")
             fontsize(12)
             text(col, pts[n] + (0, -table.rowheights[1]/3), halign=:center)
             fontsize(9)
@@ -143,4 +143,4 @@ function main()
     return colordictionary
 end
 
-main()
+makeallcolorcharts()

@@ -46,7 +46,6 @@ function parse_alpha_num(num::AbstractString)
     end
 end
 
-
 function _parse_colorant(desc::AbstractString)
     desc_ = replace(desc, " " => "")
     mat = match(col_pat_hex2, desc_)
@@ -117,31 +116,41 @@ _parse_colorant(::Type{C}, ::Type{SUP}, desc::AbstractString) where {C<:Colorant
 
 Parse a color description.
 
-This parses subset of HTML/CSS color specifications. In particular, everything
-is supported but: "currentColor".
+This parses a subset of HTML/CSS color specifications. In particular, everything
+is supported but: `currentColor`.
 
 It does support named colors (though it uses X11 named colors, which are
-slightly different than W3C named colors in some cases), "rgb()", "hsl()",
-"#RGB", and "#RRGGBB' syntax.
+slightly different than W3C named colors in some cases), `rgb()`, `hsl()`,
+`#RGB`, and `#RRGGBB` syntax.
 
-Args:
-- `Colorant`: literal "Colorant" will parse according to the `desc`
-string (usually returning an `RGB`); any more specific choice will
-return a color of the specified type.
-- `desc`: A color name or description.
+# Arguments
 
-Returns:
-  An `RGB{N0f8}` color, unless:
-    - "hsl(h,s,l)" was used, in which case an `HSL` color;
-    - "rgba(r,g,b,a)" was used, in which case an `RGBA` color;
-    - "hsla(h,s,l,a)" was used, in which case an `HSLA` color;
-    - a specific `Colorant` type was specified in the first argument
+- `Colorant`: literal Colorant
+- `desc`: color name or description
+
+A literal Colorant will parse according to the `desc` string (usually returning an `RGB`); any more specific choice will return a color of the specified type.
+
+# Returns
+
+- an `RGB{N0f8}` color, or
+
+- an `HSL` color if `hsl(h, s, l)` was used
+
+- an `RGBA` color if `rgba(r, g, b, a)` was used
+
+- an `HSLA` color if `hsla(h, s, l, a)` was used
+
+- a specific `Colorant` type as specified in the first argument
 """
 Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant} = _parse_colorant(C, supertype(C), desc)
 Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
 Base.parse(::Type{C}, c::Colorant) where {C<:Colorant} = c
 
+"""
+    @colorant_str(ex)
 
+Parse a literal color name as a Colorant.
+"""
 macro colorant_str(ex)
     isa(ex, AbstractString) || error("colorant requires literal strings")
     col = parse(Colorant, ex)

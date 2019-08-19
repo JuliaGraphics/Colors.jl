@@ -4,7 +4,7 @@ abstract type DifferenceMetric end
 
 # TODO?: make the DifferenMetrics parametric, to preserve type-stability
 
-# CIE Delta E 2000 recommendation
+"CIE Delta E 2000 recommendation"
 struct DE_2000 <: DifferenceMetric
     kl::Float64
     kc::Float64
@@ -13,7 +13,7 @@ struct DE_2000 <: DifferenceMetric
     DE_2000() = new(1,1,1)
 end
 
-# CIE Delta E 94 recommendation
+"CIE Delta E 94 recommendation"
 struct DE_94 <: DifferenceMetric
     kl::Float64
     kc::Float64
@@ -22,12 +22,12 @@ struct DE_94 <: DifferenceMetric
     DE_94() = new(1,1,1)
 end
 
-# McDonald "JP Coates Thread Company" formulation
+"McDonald \"JP Coates Thread Company\" formulation"
 struct DE_JPC79 <: DifferenceMetric
 
 end
 
-# CMC recommendation
+"CMC recommendation"
 struct DE_CMC <: DifferenceMetric
     kl::Float64
     kc::Float64
@@ -35,7 +35,7 @@ struct DE_CMC <: DifferenceMetric
     DE_CMC() = new(1,1)
 end
 
-# BFD recommendation
+"BFD recommendation"
 struct DE_BFD <: DifferenceMetric
     wp::XYZ{Float64}
     kl::Float64
@@ -45,22 +45,22 @@ struct DE_BFD <: DifferenceMetric
     DE_BFD(kl, kc) = new(WP_DEFAULT,kl, kc)
 end
 
-# The original CIE Delta E equation (Euclidian)
+"The original CIE Delta E equation (Euclidian)"
 struct DE_AB <: DifferenceMetric
 
 end
 
-# DIN99 color difference (Euclidian)
+"DIN99 color difference (Euclidian)"
 struct DE_DIN99 <: DifferenceMetric
 
 end
 
-# DIN99d color difference (Euclidian)
+"DIN99d color difference (Euclidian)"
 struct DE_DIN99d <: DifferenceMetric
 
 end
 
-# DIN99o color difference (Euclidian)
+"DIN99o color difference (Euclidian)"
 struct DE_DIN99o <: DifferenceMetric
 
 end

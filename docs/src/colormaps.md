@@ -9,9 +9,9 @@ This package provides some pre-defined colormaps (described below). There are al
 
 ## Predefined sequential and diverging colormaps
 
-`colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])`
+The `colormap()` function returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).
 
-Returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).
+`colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])`
 
 The optional arguments are:
 

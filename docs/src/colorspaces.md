@@ -54,16 +54,8 @@ You can parse any [CSS color specification](https://developer.mozilla.org/en-US/
 
 All CSS/SVG named colors are supported, in addition to X11 named colors, when their definitions do not clash with SVG.
 
-Returns a `RGB{U8}` color, unless:
-
-- `"hsl(h, s, l)"` was used, in which case an `HSL` color is returned
-- `"rgba(r, g, b, a)"` was used, in which case an `RGBA` color is returned
-- `"hsla(h, s, l, a)"` was used, in which case an `HSLA` color is returned
-- a specific `Colorant` type was specified in the first argument
-
 When writing functions the `colorant"red"` version is preferred, because the slow step runs when the code is parsed (i.e., during compilation rather than run-time).
 
-[need docstrings too?]
 ```@docs
 @colorant_str
 hex
@@ -137,23 +129,8 @@ Options are as follows:
 |`DE_DIN99d()`                                           | Specify the Euclidean color difference equation applied in the `DIN99d` uniform colorspace.                                                                 |
 |`DE_DIN99o()`                                           | Specify the Euclidean color difference equation applied in the `DIN99o` uniform colorspace.                                                                 |
 
-[need docstrings?]
 ```@docs
 colordiff
-DE_2000
-DE_94
-DE_JPC79
-DE_CMC
-DE_BFD
-DE_AB
-DE_DIN99
-DE_DIN99d
-DE_DIN99o
-MSC
-CIE1931_CMF
-CIE1964_CMF
-CIE1931J_CMF
-CIE1931JV_CMF
 ```
 
 ## Simulation of color deficiency ("color blindness")
