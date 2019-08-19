@@ -51,9 +51,12 @@ using Colors
 
     let a, b
         for (i, (a, b, dexpect)) in enumerate(abds)
-            @test abs(dexpect - colordiff(Lab(a...), Lab(b...), metric)) < eps_cdiff
-            @test abs(dexpect - colordiff(Lab(b...), Lab(a...), metric)) < eps_cdiff
+            @test abs(dexpect - colordiff(Lab(a...), Lab(b...); metric=metric)) < eps_cdiff
+            @test abs(dexpect - colordiff(Lab(b...), Lab(a...); metric=metric)) < eps_cdiff
         end
     end
+
+    a, b = rand(100), rand(100)
+    @test all(@. colordiff(a, b) == colordiff(Gray(a), b) == colordiff(a, Gray(b)) == colordiff(Gray(a), Gray(b)))
 
 end # @testset

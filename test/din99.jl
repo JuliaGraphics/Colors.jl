@@ -39,7 +39,7 @@ using Colors
             # This is not a real test of the color difference metric, but at least
             # makes sure it isn't doing anything really crazy.
             metric = DE_DIN99()
-            @test (abs(colordiff(convert(DIN99, Lab(a...)), DIN99(b...), metric)) < diffeps)
+            @test (abs(colordiff(convert(DIN99, Lab(a...)), DIN99(b...); metric=metric)) < diffeps)
         end
     end
 end  # @testset

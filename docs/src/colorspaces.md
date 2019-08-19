@@ -95,22 +95,18 @@ whitebalance
 
 ## Color Difference
 
-The `colordiff()` function gives an approximate value for the difference between two colors.
+The `colordiff` function gives an approximate value for the difference between two colors.
 
 ```
 julia> colordiff(colorant"red", parse(Colorant, HSB(360, 0.75, 1)))
 8.178248292426845
 ```
 
-`colordiff(a::Color, b::Color)`
+`colordiff(a::Color, b::Color; metric::DifferenceMetric=DE_2000())`
 
-Evaluate the [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) color difference formula. This gives an approximate measure of the perceptual difference between two colors to a typical viewer. A larger number is returned for increasingly distinguishable colors.
+Evaluate the [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) color difference formula by default. This gives an approximate measure of the perceptual difference between two colors to a typical viewer. A larger number is returned for increasingly distinguishable colors.
 
-`colordiff(a::Color, b::Color, m::DifferenceMetric)`
-
-Evaluate the color difference formula specified by the supplied `DifferenceMetric`.
-
-Options are as follows:
+Options for `DifferenceMetric` are as follows:
 
 | Option                                                 | Action                                        |
 | ----------                                             | -------                                       |
