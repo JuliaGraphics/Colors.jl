@@ -51,5 +51,8 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
         @test linc1c2[end] == c2
         @test linc1c2[22] == Gray(T(0.5))
         @test typeof(linc1c2) == Array{Gray{T},1}
+        if VERSION >= v"1.1"
+            @test range(c1,c2,length=43) == range(c1,stop=c2,length=43)
+        end
     end
 end
