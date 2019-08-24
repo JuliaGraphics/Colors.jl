@@ -152,14 +152,33 @@ using ColorTypes: eltype_default
     @test_throws MethodError AlphaColor(RGB(1,0,0), r8(0xff))
 
     # whitepoint conversions
-    @test isa(convert(XYZ, convert(Lab, redF64), Colors.WP_DEFAULT), XYZ{Float64})
-    @test isa(convert(XYZ{Float32}, convert(Lab, redF64), Colors.WP_DEFAULT), XYZ{Float32})
-    @test isa(convert(XYZ, convert(Luv, redF64), Colors.WP_DEFAULT), XYZ{Float64})
-    @test isa(convert(XYZ{Float32}, convert(Luv, redF64), Colors.WP_DEFAULT), XYZ{Float32})
-    @test isa(convert(Lab, convert(XYZ, redF64), Colors.WP_DEFAULT), Lab{Float64})
-    @test isa(convert(Lab{Float32}, convert(XYZ, redF64), Colors.WP_DEFAULT), Lab{Float32})
-    @test isa(convert(Luv, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float64})
-    @test isa(convert(Luv{Float32}, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float32})
+    wp = Colors.WP_DEFAULT
+    wp_dummy = XYZ(0.1, 1.0, 0.2)
+    redxyzF64 = convert(XYZ, redF64)
+    for C in (Lab, Luv, LCHab, LCHuv, DIN99, DIN99o)
+        cF64 = convert(C, redF64)
+        @test isa(convert(XYZ, cF64, wp), XYZ{Float64})
+        @test isa(convert(XYZ{Float32}, redF64, wp), XYZ{Float32})
+        @test isa(convert(C, redxyzF64, wp), C{Float64})
+        @test isa(convert(C{Float32}, redxyzF64, wp), C{Float32})
+        @test convert(XYZ, cF64) ≈ convert(XYZ, cF64, wp) atol=3eps()
+        @test convert(XYZ, cF64, wp_dummy) != convert(XYZ, cF64, wp)
+        @test convert(C, redxyzF64) ≈ convert(C, redxyzF64, wp) atol=3eps()
+        @test convert(C, redxyzF64, wp_dummy) != convert(C, redxyzF64, wp)
+
+        @test isa(convert(RGB, cF64, wp), RGB{Float64})
+        @test isa(convert(C, redF64, wp), C{Float64})
+        @test convert(RGB, cF64) ≈ convert(RGB, cF64, wp) atol=3eps()
+        @test convert(RGB, cF64, wp_dummy) != convert(RGB, cF64, wp)
+        @test convert(C, redF64) ≈ convert(C, redF64, wp) atol=3eps()
+        @test convert(C, redF64, wp_dummy) != convert(C, redF64, wp)
+    end
+    @test isa(convert(XYZ, redF64, wp), XYZ{Float64})
+    @test isa(convert(XYZ{Float32}, redF64, wp), XYZ{Float32})
+    @test convert(XYZ, redF64) === convert(XYZ, redF64, wp)
+    @test convert(XYZ, redF64, wp_dummy) === convert(XYZ, redF64, wp)
+    @test convert(RGB, redxyzF64) === convert(RGB, redxyzF64, wp)
+    @test convert(RGB, redxyzF64, wp_dummy) === convert(RGB, redxyzF64, wp)
 
     # Test vector space operations
     @test LMS{Float64}(0.125,0.5,0.0)+LMS{Float64}(0.2,0.7,0.4) ≈ LMS{Float64}(0.325,1.2,0.4) atol=91eps()
