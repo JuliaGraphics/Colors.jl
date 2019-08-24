@@ -10,43 +10,6 @@ const Linear3 = Union{XYZ, LMS}
 # Algorithms relating to color processing and generation
 
 
-# Chromatic Adaptation / Whitebalancing
-# -------------------------------------
-
-"""
-    whitebalance(c, src_white, ref_white)
-
-Whitebalance a color.
-
-Input a source (adopted) and destination (reference) white. For example, if you want a photo
-taken under fluorescent lighting to appear correct in regular sunlight, you might do
-something like `whitebalance(c, WP_F2, WP_D65)`.
-
-# Arguments
-
-- `c`: An observed color.
-- `src_white`: Adopted or source white corresponding to `c`
-- `ref_white`: Reference or destination white.
-
-Returns a whitebalanced color.
-"""
-function whitebalance(c::T, src_white::Color, ref_white::Color) where T <: Color
-    c_lms = convert(LMS, c)
-    src_wp = convert(LMS, src_white)
-    dest_wp = convert(LMS, ref_white)
-
-    # This is sort of simplistic, it sets the degree of adaptation term in
-    # CAT02 to 0.
-    # Setting the degree of adaptation to 0 is rather odd. Wouldn’t setting
-    # it to 1.0 make more sense as a temporary default value?
-    ans = LMS(c_lms.l * dest_wp.l / src_wp.l,
-              c_lms.m * dest_wp.m / src_wp.m,
-              c_lms.s * dest_wp.s / src_wp.s)
-
-    convert(T, ans)
-end
-
-
 # Simulation of color deficiency (color "blindness")
 # ----------------------------
 

@@ -26,6 +26,7 @@ export weighted_color_mean,
 include("utilities.jl")
 
 # Include other module components
+include("adaptation.jl")
 include("conversions.jl")
 include("promotions.jl")
 include("algorithms.jl")

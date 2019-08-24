@@ -1,6 +1,15 @@
 # Helper data for CIE observer functions
 include("cie_data.jl")
 
+macro mul3x3(T, M, c1, c2, c3)
+    esc(quote
+        @inbounds ret = $T($M[1,1]*$c1 + $M[1,2]*$c2 + $M[1,3]*$c3,
+                           $M[2,1]*$c1 + $M[2,2]*$c2 + $M[2,3]*$c3,
+                           $M[3,1]*$c1 + $M[3,2]*$c2 + $M[3,3]*$c3)
+        ret
+        end)
+end
+
 
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.

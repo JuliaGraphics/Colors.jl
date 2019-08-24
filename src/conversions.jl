@@ -61,15 +61,6 @@ convert(::Type{C}, c, wp::XYZ) where {C<:Color} = cnvt(C, c)
 cnvt(::Type{C}, g::AbstractGray) where {C<:Color3}  = cnvt(C, convert(RGB{eltype(C)}, g))
 
 
-macro mul3x3(T, M, c1, c2, c3)
-    esc(quote
-        @inbounds ret = $T($M[1,1]*$c1 + $M[1,2]*$c2 + $M[1,3]*$c3,
-                           $M[2,1]*$c1 + $M[2,2]*$c2 + $M[2,3]*$c3,
-                           $M[3,1]*$c1 + $M[3,2]*$c2 + $M[3,3]*$c3)
-        ret
-        end)
-end
-
 # Everything to RGB
 # -----------------
 
@@ -740,20 +731,6 @@ cnvt(::Type{DIN99o{T}}, c::Color3) where {T} = cnvt(DIN99o{T}, convert(Lab{T}, c
 
 # Everything to LMS
 # -----------------
-
-# Chromatic adaptation from CIECAM97s
-const CAT97s = [ 0.8562  0.3372 -0.1934
-                -0.8360  1.8327  0.0033
-                 0.0357 -0.0469  1.0112 ]
-
-const CAT97s_INV = inv(CAT97s)
-
-# Chromatic adaptation from CIECAM02
-const CAT02 = [ 0.7328 0.4296 -0.1624
-               -0.7036 1.6975  0.0061
-                0.0030 0.0136  0.9834 ]
-
-const CAT02_INV = inv(CAT02)
 
 
 function cnvt(::Type{LMS{T}}, c::XYZ) where T
