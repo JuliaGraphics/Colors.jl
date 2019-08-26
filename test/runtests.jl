@@ -1,6 +1,7 @@
 using Colors, Test
 @test isempty(detect_ambiguities(Colors, Base, Core))
 
+include("adaptation.jl")
 include("algorithms.jl")
 include("conversion.jl")
 include("colormaps.jl")

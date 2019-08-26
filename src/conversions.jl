@@ -383,9 +383,16 @@ function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
 end
 
+function convert(::Type{XYZ}, c::LMS, wp::XYZ; cat::AbstractCAT=CAT_02())
+    lms_to_xyz(c, cat, wp)
+end
+
+function convert(::Type{XYZ{T}}, c::LMS, wp::XYZ; cat::AbstractCAT=CAT_02()) where T
+    cnvt(XYZ{T}, lms_to_xyz(c, cat, wp))
+end
 
 function cnvt(::Type{XYZ{T}}, c::LMS) where T
-    @mul3x3 XYZ{T} CAT02_INV c.l c.m c.s
+    @mul3x3lms XYZ{T} CAT02_INV c
 end
 
 
@@ -732,9 +739,16 @@ cnvt(::Type{DIN99o{T}}, c::Color3) where {T} = cnvt(DIN99o{T}, convert(Lab{T}, c
 # Everything to LMS
 # -----------------
 
+function convert(::Type{LMS}, c, wp::XYZ; cat::AbstractCAT=CAT_02())
+    xyz_to_lms(cnvt(XYZ{eltype(wp)}, c, wp), wp, cat)
+end
+
+function convert(::Type{LMS{T}}, c, wp::XYZ; cat::AbstractCAT=CAT_02()) where T
+    xyz_to_lms(cnvt(XYZ{T}, c, wp), wp, cat)
+end
 
 function cnvt(::Type{LMS{T}}, c::XYZ) where T
-    @mul3x3 LMS{T} CAT02 c.x c.y c.z
+    @mul3x3xyz LMS{T} CAT02 c
 end
 
 

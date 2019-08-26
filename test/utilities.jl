@@ -1,6 +1,40 @@
 using Colors, FixedPointNumbers, Test, InteractiveUtils
 
+const test_matf = Float64[1 -2 1;-1 3 -2;-3 4 3]
+const test_matb = inv(test_matf)
+
 @testset "Utilities" begin
+    # test macros
+
+    vecxyz = XYZ{Float64}(0.125, 0.25, 0.5)
+    veclms = LMS{Float64}(0.125, -0.375, 2.125)
+    @test (Colors.@mul3x3 LMS{Float64} test_matf vecxyz.x vecxyz.y vecxyz.z) ≈ veclms
+    @test (Colors.@mul3x3xyz LMS{Float64} test_matf vecxyz) ≈ veclms
+    @test (Colors.@mul3x3lms XYZ{Float64} test_matb veclms) ≈ vecxyz
+
+    if false # benchmark
+        getmatf() = test_matf
+        getmatb() = test_matb
+        function with_macro(::Type{T}, n) where{T}
+            x = XYZ{T}(vecxyz)
+            xyz2lms(c::XYZ{T}) where{T} = (Colors.@mul3x3xyz LMS{T} getmatf() c)
+            lms2xyz(c::LMS{T}) where{T} = (Colors.@mul3x3lms XYZ{T} getmatb() c)
+            for i = 1:n; l = xyz2lms(x); x = lms2xyz(l) end
+            @show x
+        end
+        function without_macro(::Type{T}, n) where{T}
+            x = XYZ{T}(vecxyz)
+            xyz2lms(c::XYZ{T}) where{T} = (v=getmatf()*[c.x,c.y,c.z];LMS{T}(v[1],v[2],v[3]))
+            lms2xyz(c::LMS{T}) where{T} = (v=getmatb()*[c.l,c.m,c.s];XYZ{T}(v[1],v[2],v[3]))
+            for i = 1:n; l = xyz2lms(x); x = lms2xyz(l) end
+            @show x
+        end
+        @time with_macro(Float64, 1)
+        @time without_macro(Float64, 1)
+        @time with_macro(Float64, 100000)
+        @time without_macro(Float64, 100000)
+    end
+
     # test utility function weighted_color_mean
     parametric2 = [GrayA,AGray32,AGray]
     parametric3 = ColorTypes.parametric3

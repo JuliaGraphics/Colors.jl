@@ -10,6 +10,13 @@ macro mul3x3(T, M, c1, c2, c3)
         end)
 end
 
+macro mul3x3xyz(T, M, xyz)
+    :(@mul3x3 $(esc(T)) $(esc(M)) $(esc(xyz)).x $(esc(xyz)).y $(esc(xyz)).z)
+end
+
+macro mul3x3lms(T, M, lms)
+    :(@mul3x3 $(esc(T)) $(esc(M)) $(esc(lms)).l $(esc(lms)).m $(esc(lms)).s)
+end
 
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
