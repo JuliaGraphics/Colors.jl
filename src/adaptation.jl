@@ -2,7 +2,7 @@
 # -------------------------------------
 
 # Define an abstract type to represent chromatic adaptation transform
-abstract type CAT end
+abstract type AbstractCAT end
 
 """
 There is incompatibility between `MatrixCAT` and `NonLinearCAT`.
@@ -17,9 +17,9 @@ In the `NonLinearCAT` adaptation, the flow is as follows:
     `XYZ` -(CAT w/ white balancing)-> `LMS` -(inv. CAT w/ white balancing)-> `XYZ`
 
 """
-abstract type MatrixCAT <: CAT end
+abstract type MatrixCAT <: AbstractCAT end
 
-abstract type NonLinearCAT<: CAT end
+abstract type NonLinearCAT<: AbstractCAT end
 
 const EYE3x3 = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
 
