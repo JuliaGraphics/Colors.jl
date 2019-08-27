@@ -99,7 +99,7 @@ end
 # xyz_to_lms()
 # ------------
 function xyz_to_lms(c::XYZ{T}, ::XYZ, cat::MatrixCAT) where T
-    @mul3x3 LMS{T} cat_cnvt(cat) c.x c.y c.z
+    @mul3x3xyz LMS{T} cat_cnvt(cat) c
 end
 
 function xyz_to_lms(c::XYZ{T}, wp::XYZ, cat::CAT_BFD_NL) where T
