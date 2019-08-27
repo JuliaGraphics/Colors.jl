@@ -188,7 +188,7 @@ Returns:
 function adaptation(c::T;
                     src_white::Color=WP_DEFAULT,
                     ref_white::Color=WP_DEFAULT,
-                    cat::AbstractCAT=CAT02()) where T <: Color
+                    cat::AbstractCAT=CAT_02()) where T <: Color
     convert(T, adaptation_xyz(c, src_white, ref_white, cat), ref_white)
 end
 
