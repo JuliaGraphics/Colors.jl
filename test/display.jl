@@ -4,7 +4,7 @@
         i = firstindex(svg)
         while true
             r = findnext(r"<rect[^>]*\sfill=\"#[0-9A-F]{6}\"[^>]+>", svg, i)
-            isnothing(r) && return n
+            r === nothing && return n
             n += 1
             i = last(r)
         end
