@@ -10,6 +10,17 @@
         end
     end
 
+    function count_colored_stroke(svg::AbstractString)
+        n = 0
+        i = firstindex(svg)
+        while true
+            r = findnext(r"<path[^>]*\sstroke=\"#[0-9A-F]{6}\"[^>]+>", svg, i)
+            r === nothing && return n
+            n += 1
+            i = last(r)
+        end
+    end
+
     # test ability to add to previously shown array of colors - issue #328
     a = [colorant"white", colorant"red"]
     buf = IOBuffer()
@@ -63,7 +74,7 @@
     # square swatches
     m2x2 = [colorant"white" colorant"blue"
             colorant"black" colorant"cyan"]
-            show(buf, MIME"image/svg+xml"(), m2x2)
+    show(buf, MIME"image/svg+xml"(), m2x2)
     mat2x2 = String(take!(buf))
     @test occursin(r"<svg[^>]*\swidth=\"50mm\"", mat2x2)
     @test occursin(r"<svg[^>]*\sheight=\"50mm\"", mat2x2)
@@ -101,27 +112,23 @@
     # n * max_swatch_size > max_width &&
     # m * max_swatch_size > max_height &&
     # max_width / n * m >= max_swatch_size
-    # square swatches
+    # square swatches (strokes)
     show(buf, MIME"image/svg+xml"(), rand(RGB, 28, 181))
     mat28x181 = String(take!(buf))
     @test occursin(r"<svg[^>]*\swidth=\"180mm\"", mat28x181) # max_width
     @test occursin(r"<svg[^>]*\sheight=\"27.85mm\"", mat28x181) # 180mm/181 * 28
-    @test occursin(r"<rect[^>]*\swidth=\"1\"", mat28x181) # no padding
-    @test occursin(r"<rect[^>]*\sheight=\"1\"", mat28x181) # no padding
-    @test count_filled_rect(mat28x181) == 28*181
+    @test occursin(r"<path[^>]*\sd=\"[^\"]+h1\"", mat28x181) # no padding
+    @test count_colored_stroke(mat28x181) == 28*181
 
     # issue #341
     # n * max_swatch_size > max_width &&
     # m * max_swatch_size > max_height &&
     # max_height / m * n < max_swatch_size
-    # rectangle swatches
-    # Keeping the aspect ratio 1:1 (i.e. square) seems to be more important
-    # than keeping the width/height >= 25mm, for large matrices.
+    # square swatches (strokes)
     show(buf, MIME"image/svg+xml"(), rand(RGB, 200, 28))
     mat200x28 = String(take!(buf))
-    @test occursin(r"<svg[^>]*\swidth=\"25mm\"", mat200x28) # max_swatch_size
+    @test occursin(r"<svg[^>]*\swidth=\"21mm\"", mat200x28) # 150mm/200*28
     @test occursin(r"<svg[^>]*\sheight=\"150mm\"", mat200x28) # max_height
-    @test occursin(r"<rect[^>]*\swidth=\"1\"", mat200x28) # no padding
-    @test occursin(r"<rect[^>]*\sheight=\"1\"", mat200x28) # no padding
-    @test count_filled_rect(mat200x28) == 200*28
+    @test occursin(r"<path[^>]*\sd=\"[^\"]+h1\"", mat200x28) # no padding
+    @test count_colored_stroke(mat200x28) == 200*28
 end

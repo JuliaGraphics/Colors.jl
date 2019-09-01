@@ -4,6 +4,7 @@
 const max_width = 180
 const max_height = 150
 const max_swatch_size = 25
+const max_num_of_swatches = 128 * 128
 
 function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
     write_declaration(io, mime)
@@ -36,6 +37,9 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",
     simplify(x) = replace(string(round(x, digits=2)), r"(^0(?=\.))|(.0+$)"=>"")
     sw = simplify(1 - (w / n < 3.6 ? 0 : n / w))
     sh = simplify(1 - (h / m < 3.6 ? 0 : m / h))
+    if sw == "1" && sh == "1"
+        return show_strokes(io, mime, cs)
+    end
 
     comp(x) = round(x)==round(x, digits=2) ? Int(round(x)) : round(x, digits=2)
     write_declaration(io, mime)
@@ -52,6 +56,40 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",
         write(io,
             """
             <rect width="$sw" height="$sh" x="$(j-1)" y="$(i-1)" fill="#$c" />
+            """)
+    end
+
+    write(io, "</svg>")
+    flush(io) # return nothing
+end
+
+function show_strokes(io::IO, mime::MIME"image/svg+xml",
+                      cs::AbstractMatrix{T}) where T <: Color
+    m, n = size(cs)
+    w = max_width
+    h = max_height
+    if max_width * m > max_height * n
+        w = n / m * h
+    else
+        h = m / n * w
+    end
+    d = Int(ceil(sqrt(m * n / max_num_of_swatches))) # decimation factor
+
+    comp(x) = round(x)==round(x, digits=2) ? Int(round(x)) : round(x, digits=2)
+    write_declaration(io, mime)
+    write(io,
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+             width="$(comp(w))mm" height="$(comp(h))mm" viewBox="0 0.5 $n $m"
+             stroke-width="1" stroke-linecap="butt"
+             shape-rendering="crispEdges">
+        """)
+
+    for i in 1:d:m, j in 1:d:n
+        c = hex(cs[i, j])
+        write(io,
+            """
+            <path d="M$(j-1),$(i)h$d" stroke="#$c" />
             """)
     end
 
