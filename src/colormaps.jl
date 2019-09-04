@@ -242,7 +242,7 @@ end
 # Main function to handle different predefined colormaps
 #
 """
-    colormap(cname, [N; mid, logscale, kvs...])
+    colormap(cname, N=100; mid=0.5, logscale=false, kvs...])
 
 Returns a predefined sequential or diverging colormap computed using
 the algorithm by Wijffelaars, M., et al. (2008).
@@ -259,8 +259,12 @@ Sequential colormaps `cname` choices are:
 Diverging colormap choices are `RdBu`.
 
 Optionally, you can specify the number of colors `N` (default 100).
-Keyword arguments include the position of the middle point `mid` (default 0.5) and the
-possibility to switch to log scaling with `logscale` (default false).
+
+Extra control is provided by keyword arguments.
+- `mid` sets the position of the midpoint for diverging colormaps.
+- `logscale=true` uses logarithmically-spaced steps in the colormap.
+You can also use keyword argument names that match the argument names in
+[`sequential_palette`](@ref) or [`diverging_palette`](@ref).
 """
 function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)
 
