@@ -541,8 +541,7 @@ cnvt(::Type{Luv{T}}, c::Color3) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHuv{T}}, c::Luv) where T
-    h = rad2deg(atan(c.v, c.u))
-    while h > 360; h -= 360; end
+    h = atand(c.v, c.u)
     while h < 0;   h += 360; end
     LCHuv{T}(c.l, sqrt(c.u^2 + c.v^2), h)
 end
@@ -555,8 +554,7 @@ cnvt(::Type{LCHuv{T}}, c::Color3) where {T} = cnvt(LCHuv{T}, convert(Luv{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHab{T}}, c::Lab) where T
-    h = rad2deg(atan(c.b, c.a))
-    while h > 360; h -= 360; end
+    h = atand(c.b, c.a)
     while h < 0;   h += 360; end
     LCHab{T}(c.l, sqrt(c.a^2 + c.b^2), h)
 end
