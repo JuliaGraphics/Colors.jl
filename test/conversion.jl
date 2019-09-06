@@ -225,7 +225,7 @@ using ColorTypes: eltype_default
             end
             errmax = max(errmax, diff/mag)
         end
-        errmax > eps && warn("Error on conversions from ", eltype(from), " to ", eltype(to), ", relative error = ", errmax)
+        errmax > eps && @warn("Error on conversions from $(eltype(from)) to $(eltype(to)), relative error = $errmax")
         errmax <= eps
     end
 

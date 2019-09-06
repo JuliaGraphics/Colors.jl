@@ -354,8 +354,7 @@ cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, convert(Luv{T}, c))
 function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
     # Go back to C-h space
-    # FIXME: Clean this up (why is there no atand?)
-    h = rad2deg(atan(c.b,c.a)) + 50
+    h = atand(c.b, c.a) - 50
     while h > 360; h -= 360; end
     while h < 0;   h += 360; end
 
@@ -363,14 +362,14 @@ function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
     # Intermediate terms
     G = (exp(C/22.5)-1)/0.06
-    f = G*sind(h - 50)
-    ee = G*cosd(h - 50)
+    f = G*sind(h)
+    ee = G*cosd(h)
 
-    l = (exp(c.l/325.22)-1)/0.0036
+    l = (exp(c.l/325.221)-1)/0.0036
     # a = ee*cosd(50) - f/1.14*sind(50)
-    a = ee*0.6427876096865393 - f/1.14*0.766044443118978
+    a = ee*0.6427876096865394 - f/1.14*0.766044443118978
     # b = ee*sind(50) - f/1.14*cosd(50)
-    b = ee*0.766044443118978 - f/1.14*0.6427876096865393
+    b = ee*0.766044443118978 + f/1.14*0.6427876096865394
 
     adj = convert(XYZ, Lab(l, a, b))
 
@@ -443,30 +442,16 @@ function cnvt(::Type{Lab{T}}, c::DIN99) where T
     # Calculate Chroma (C99) in the DIN99 space
     cc = sqrt(c.a^2 + c.b^2)
 
-    # NOTE: This is calculated in degrees, against the standard, to save
-    # computation steps later.
-    if (c.a > 0 && c.b >= 0)
-        h = atand(c.b/c.a)
-    elseif (c.a == 0 && c.b > 0)
-        h = 90
-    elseif (c.a < 0)
-        h = 180+atand(c.b/c.a)
-    elseif (c.a == 0 && c.b < 0)
-        h = 270
-    elseif (c.a > 0 && c.b <= 0)
-        h = 360 + atand(c.b/c.a)
-    else
-        h = 0
-    end
+    h = atan(c.b, c.a)
 
     # Temporary variable for chroma
     g = (exp(0.045*cc*kch*ke)-1)/0.045
 
     # Temporary redness
-    ee = g*cosd(h)
+    ee = g*cos(h)
 
     # Temporary yellowness
-    f = g*sind(h)
+    f = g*sin(h)
 
     # CIELAB a*b*
     # ciea = ee*cosd(16) - (f/0.7)*sind(16)
@@ -492,19 +477,16 @@ function cnvt(::Type{Lab{T}}, c::DIN99o) where T
     co = sqrt(c.a^2 + c.b^2)
 
     # hue angle h99o
-    h = atan(c.b, c.a)
-
-    # revert rotation by 26°
-    ho= rad2deg(h)-26
+    h = atan(c.b, c.a) - 26*π/180
 
     # revert logarithmic chroma compression
     g = (exp(co*kch*ke/23.0)-1)/0.075
 
     # Temporary redness
-    eo = g*cosd(ho)
+    eo = g*cos(h)
 
     # Temporary yellowness
-    fo = g*sind(ho)
+    fo = g*sin(h)
 
     # CIELAB a*b* (revert b* axis compression)
     # ciea = eo*cosd(26) - (fo/0.83)*sind(26)
@@ -559,8 +541,7 @@ cnvt(::Type{Luv{T}}, c::Color3) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHuv{T}}, c::Luv) where T
-    h = rad2deg(atan(c.v, c.u))
-    while h > 360; h -= 360; end
+    h = atand(c.v, c.u)
     while h < 0;   h += 360; end
     LCHuv{T}(c.l, sqrt(c.u^2 + c.v^2), h)
 end
@@ -573,8 +554,7 @@ cnvt(::Type{LCHuv{T}}, c::Color3) where {T} = cnvt(LCHuv{T}, convert(Luv{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHab{T}}, c::Lab) where T
-    h = rad2deg(atan(c.b, c.a))
-    while h > 360; h -= 360; end
+    h = atand(c.b, c.a)
     while h < 0;   h += 360; end
     LCHab{T}(c.l, sqrt(c.a^2 + c.b^2), h)
 end
@@ -606,26 +586,13 @@ function cnvt(::Type{DIN99{T}}, c::Lab) where T
     g = sqrt(ee^2 + f^2)
 
     # Hue angle
-    # Calculated in degrees, against the specification.
-    if (ee > 0 && f >= 0)
-        h = atand(f/ee)
-    elseif (ee == 0 && f > 0)
-        h = 90
-    elseif (ee < 0)
-        h = 180+atand(f/ee)
-    elseif (ee == 0 && f < 0)
-        h = 270
-    elseif (ee > 0 && f <= 0)
-        h = 360 + atand(f/ee)
-    else
-        h = 0
-    end
+    h = atan(f, ee)
 
     # DIN99 chroma
     cc = log(1+0.045*g)/(0.045*kch*ke)
 
     # DIN99 chromaticities
-    a99, b99 = cc*cosd(h), cc*sind(h)
+    a99, b99 = cc*cos(h), cc*sin(h)
 
     DIN99{T}(l99, a99, b99)
 
@@ -645,23 +612,22 @@ function cnvt(::Type{DIN99d{T}}, c::XYZ{T}) where T
 
     # Apply L*a*b*-space correction
     lab = convert(Lab, adj_c)
-    adj_L = 325.22*log(1+0.0036*lab.l)
+    adj_L = 325.221*log(1+0.0036*lab.l)
 
     # Calculate intermediate parameters
     # ee = lab.a*cosd(50) + lab.b*sind(50)
-    ee = lab.a*0.6427876096865393 + lab.b*0.766044443118978
+    ee = lab.a*0.6427876096865394 + lab.b*0.766044443118978
     # f = 1.14*(lab.b*cosd(50) - lab.a*sind(50))
-    f = 1.14*(lab.b*0.6427876096865393 - lab.a*0.766044443118978)
+    f = 1.14*(lab.b*0.6427876096865394 - lab.a*0.766044443118978)
     G = sqrt(ee^2+f^2)
 
     # Calculate hue/chroma
     C = 22.5*log(1+0.06*G)
-    # FIXME: Clean this up (why is there no atand?)
-    h = rad2deg(atan(f,ee)) + 50
-    while h > 360; h -= 360; end
-    while h < 0;   h += 360; end
+    h = atan(f, ee) + 50*π/180
+    while h > 2π; h -= 2π; end
+    while h < 0;   h += 2π; end
 
-    DIN99d{T}(adj_L, C*cosd(h), C*sind(h))
+    DIN99d{T}(adj_L, C*cos(h), C*sin(h))
 
 end
 
@@ -692,15 +658,13 @@ function cnvt(::Type{DIN99o{T}}, c::Lab) where T
 
     # Temporary value for chroma
     go = sqrt(eo^2 + fo^2)
-    ho = atan(fo,eo)
-    # rotation of the colorspace by 26°
-    h  = rad2deg(ho) + 26
+    h = atan(fo, eo) + 26*π/180
 
     # DIN99o chroma (logarithmic compression)
     cc = 23.0*log(1+0.075*go)/(kch*ke)
 
     # DIN99o chromaticities
-    a99, b99 = cc*cosd(h), cc*sind(h)
+    a99, b99 = cc*cos(h), cc*sin(h)
 
     DIN99o{T}(l99, a99, b99)
 

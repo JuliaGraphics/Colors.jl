@@ -15,4 +15,7 @@ using Test, Colors
         end
     end
     @test mindiff > 8
+
+    cols = distinguishable_colors(1)
+    @test colordiff(distinguishable_colors(1, cols; dropseed=true)[1], cols[1]) > 50
 end

@@ -42,4 +42,14 @@ using Colors
             @test (abs(colordiff(convert(DIN99, Lab(a...)), DIN99(b...); metric=metric)) < diffeps)
         end
     end
+
+    # From #256
+    for c in (RGB(1, 0.5, 0),)
+        @test colordiff(convert(RGB,convert(DIN99d, c)), c) < 1e-3
+    end
+    for c in (RGBA(1,0.5,0,0.4),)
+        cc = convert(RGBA,convert(DIN99dA, c))
+        @test colordiff(color(cc), color(c)) < 1e-3
+        @test cc.alpha ≈ c.alpha atol=1e-3
+    end
 end  # @testset

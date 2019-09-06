@@ -5,7 +5,12 @@ include("maps_data.jl")
 # ----------------------
 
 """
-    distinguishable_colors(n, [seed]; [transform, lchoices, cchoices, hchoices])
+    colors = distinguishable_colors(n, seed=RGB{N0f8}[];
+                                    dropseed=false,
+                                    transform=identity,
+                                    lchoices=range(0, stop=100, length=15),
+                                    cchoices=range(0, stop=100, length=15),
+                                    hchoices=range(0, stop=342, length=20))
 
 Generate n maximally distinguishable colors.
 
@@ -18,24 +23,30 @@ in the palette.
 # Arguments
 
 - `n`: Number of colors to generate.
-- `seed`: Initial color(s) included in the palette.  Default is `Vector{RGB{N0f8}}()`.
+- `seed`: Initial color(s) included in the palette.
 
 # Keyword arguments
 
-- `transform`: Transform applied to colors before measuring distance. Default is the identity; other choices include `deuteranopic` to simulate color-blindness.
-- `lchoices`: Possible lightness values (default `range(0,stop=100,start=15)`)
-- `cchoices`: Possible chroma values (default `range(0,stop=100,start=15)`)
-- `hchoices`: Possible hue values (default `range(0,stop=340,start=20)`)
+- `dropseed`: if true, the `seed` values will be dropped. This provides an easy
+  mechanism to ensure that the chosen colors are distinguishable from the seed value(s).
+  When true, `n` does not include the seed color(s).
+- `transform`: Transform applied to colors before measuring distance. Default is `identity`;
+  other choices include `deuteranopic` to simulate color-blindness.
+- `lchoices`: Possible lightness values
+- `cchoices`: Possible chroma values
+- `hchoices`: Possible hue values
 
 Returns a `Vector` of colors of length `n`, of the type specified in `seed`.
 """
 function distinguishable_colors(n::Integer,
-                  seed::AbstractVector{T};
-                  transform::Function = identity,
-                  lchoices::AbstractVector = range(0, stop=100, length=15),
-                  cchoices::AbstractVector = range(0, stop=100, length=15),
-                  hchoices::AbstractVector = range(0, stop=340, length=20)) where T<:Color
-    if n <= length(seed)
+        seed::AbstractVector{T};
+        dropseed = false,
+        transform::Function = identity,
+        lchoices::AbstractVector = range(0, stop=100, length=15),
+        cchoices::AbstractVector = range(0, stop=100, length=15),
+        hchoices::AbstractVector = range(0, stop=342, length=20)) where T<:Color
+
+    if n <= length(seed) && !dropseed
         return seed[1:n]
     end
 
@@ -55,6 +66,7 @@ function distinguishable_colors(n::Integer,
     end
 
     # Start with the seed colors
+    n += dropseed ? length(seed) : 0
     colors = Vector{T}(undef, n)
     copyto!(colors, seed)
 
@@ -77,7 +89,9 @@ function distinguishable_colors(n::Integer,
         end
     end
 
-    colors
+    dropseed && deleteat!(colors, 1:length(seed))
+
+    return colors
 end
 
 
@@ -242,7 +256,7 @@ end
 # Main function to handle different predefined colormaps
 #
 """
-    colormap(cname, [N; mid, logscale, kvs...])
+    colormap(cname, N=100; mid=0.5, logscale=false, kvs...])
 
 Returns a predefined sequential or diverging colormap computed using
 the algorithm by Wijffelaars, M., et al. (2008).
@@ -259,8 +273,12 @@ Sequential colormaps `cname` choices are:
 Diverging colormap choices are `RdBu`.
 
 Optionally, you can specify the number of colors `N` (default 100).
-Keyword arguments include the position of the middle point `mid` (default 0.5) and the
-possibility to switch to log scaling with `logscale` (default false).
+
+Extra control is provided by keyword arguments.
+- `mid` sets the position of the midpoint for diverging colormaps.
+- `logscale=true` uses logarithmically-spaced steps in the colormap.
+You can also use keyword argument names that match the argument names in
+[`sequential_palette`](@ref) or [`diverging_palette`](@ref).
 """
 function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)
 
