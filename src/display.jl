@@ -4,7 +4,7 @@
 const max_width = 180
 const max_height = 150
 const max_swatch_size = 25
-const max_num_of_swatches = 128 * 128
+const default_max_swatches = 128 * 128
 
 function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
     write_declaration(io, mime)
@@ -18,14 +18,19 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
     flush(io) # return nothing
 end
 
-function Base.show(io::IO, mime::MIME"image/svg+xml",
-                   cs::AbstractVector{T}) where T <: Color
-    show(io, mime, Base.ReshapedArray(cs, (1, length(cs)), ()))
+function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractVector{T};
+                   max_swatches::Integer=0) where T <: Color
+    mat = Base.ReshapedArray(cs, (1, length(cs)), ())
+    show(io, mime, mat, max_swatches=max_swatches)
 end
 
-function Base.show(io::IO, mime::MIME"image/svg+xml",
-                           cs::AbstractMatrix{T}) where T <: Color
+function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
+                   max_swatches::Integer=0) where T <: Color
     m, n = size(cs)
+    actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
+    if m * n > actual_max_swatches
+        return show_strokes(io, mime, cs, max_swatches=max_swatches)
+    end
     w = min(n * max_swatch_size, max_width)
     h = min(m * max_swatch_size, max_height)
     if max_width * m > max_height * n
@@ -38,7 +43,7 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",
     sw = simplify(1 - (w / n < 3.6 ? 0 : n / w))
     sh = simplify(1 - (h / m < 3.6 ? 0 : m / h))
     if sw == "1" && sh == "1"
-        return show_strokes(io, mime, cs)
+        return show_strokes(io, mime, cs, max_swatches=max_swatches)
     end
 
     comp(x) = round(x)==round(x, digits=2) ? Int(round(x)) : round(x, digits=2)
@@ -63,9 +68,17 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",
     flush(io) # return nothing
 end
 
-function show_strokes(io::IO, mime::MIME"image/svg+xml",
-                      cs::AbstractMatrix{T}) where T <: Color
+function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
+                      max_swatches::Integer=0) where T <: Color
     m, n = size(cs)
+    actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
+    # When `max_swatches` is specified, the following warning is suppressed.
+    if max_swatches == 0 && m * n > actual_max_swatches
+        @warn """
+            Output swatches are reduced due to the large size ($m×$n).
+            Load the ImageShow package for large images."""
+        yield()
+    end
     w = max_width
     h = max_height
     if max_width * m > max_height * n
@@ -73,23 +86,35 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml",
     else
         h = m / n * w
     end
-    d = Int(ceil(sqrt(m * n / max_num_of_swatches))) # decimation factor
+
+    # decimation factor `d` is rounded to integer to simplify the SVG document
+    d = Int(ceil(sqrt(m * n / actual_max_swatches)))
 
     comp(x) = round(x)==round(x, digits=2) ? Int(round(x)) : round(x, digits=2)
     write_declaration(io, mime)
     write(io,
         """
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-             width="$(comp(w))mm" height="$(comp(h))mm" viewBox="0 0.5 $n $m"
-             stroke-width="1" stroke-linecap="butt"
-             shape-rendering="crispEdges">
+             width="$(comp(w))mm" height="$(comp(h))mm"
+             viewBox="0 -$(comp(d/2)) $n $m" stroke-width="$d"
+             stroke-linecap="butt" shape-rendering="crispEdges">
         """)
 
     for i in 1:d:m, j in 1:d:n
-        c = hex(cs[i, j])
+        # since there is no universal way,
+        # calculate the mean color in "RGB space"
+        csum = Float32[0, 0, 0]
+        u = min(n-j+1, d) # cell width
+        v = min(m-i+1, d) # cell height
+        for y in i:i+v-1, x in j:j+u-1
+            rgb = convert(RGB{Float32}, cs[y, x])
+            csum += [red(rgb), green(rgb), blue(rgb)]
+        end
+        csum /= (u * v)
+        c = hex(RGB{Float32}(csum[1], csum[2], csum[3]))
         write(io,
             """
-            <path d="M$(j-1),$(i)h$d" stroke="#$c" />
+            <path d="M$(j-1),$(i-1)h$d" stroke="#$c" />
             """)
     end
 
