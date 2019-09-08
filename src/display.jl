@@ -12,7 +12,7 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
         """
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
              width="25mm" height="25mm" viewBox="0 0 1 1">
-             <rect width="1" height="1" fill="#$(hex(c))" stroke="none"/>
+            <rect width="1" height="1" fill="#$(hex(c))" stroke="none"/>
         </svg>
         """)
     flush(io) # return nothing
@@ -108,7 +108,9 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
         v = min(m-i+1, d) # cell height
         for y in i:i+v-1, x in j:j+u-1
             rgb = convert(RGB{Float32}, cs[y, x])
-            csum += [red(rgb), green(rgb), blue(rgb)]
+            csum[1] += red(rgb) # avoid array allocation
+            csum[2] += green(rgb)
+            csum[3] += blue(rgb)
         end
         csum /= (u * v)
         c = hex(RGB{Float32}(csum[1], csum[2], csum[3]))
