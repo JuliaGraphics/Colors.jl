@@ -2,6 +2,8 @@
 # Define an abstract type to represent color difference metrics
 abstract type DifferenceMetric end
 
+abstract type EuclideanDifferenceMetric{T<:Color3} <: DifferenceMetric end
+
 # TODO?: make the DifferenMetrics parametric, to preserve type-stability
 
 struct DE_2000 <: DifferenceMetric
@@ -86,7 +88,7 @@ DE_BFD() = DE_BFD(WP_DEFAULT,1,1)
 DE_BFD(kl, kc) = DE_BFD(WP_DEFAULT,kl, kc)
 
 
-struct DE_AB <: DifferenceMetric
+struct DE_AB <: EuclideanDifferenceMetric{Lab}
 
 end
 """
@@ -97,7 +99,7 @@ color difference equation in the `Lab` (CIELAB) colorspace.
 """
 DE_AB()
 
-struct DE_DIN99 <: DifferenceMetric
+struct DE_DIN99 <: EuclideanDifferenceMetric{DIN99}
 
 end
 """
@@ -108,7 +110,7 @@ Construct a metric using Euclidean color difference equation applied in the
 """
 DE_DIN99()
 
-struct DE_DIN99d <: DifferenceMetric
+struct DE_DIN99d <: EuclideanDifferenceMetric{DIN99d}
 
 end
 """
@@ -119,7 +121,7 @@ Construct a metric using Euclidean color difference equation applied in the
 """
 DE_DIN99d()
 
-struct DE_DIN99o <: DifferenceMetric
+struct DE_DIN99o <: EuclideanDifferenceMetric{DIN99o}
 
 end
 """
@@ -417,54 +419,13 @@ function _colordiff(ai::Color, bi::Color, m::DE_BFD)
     sqrt((dl/m.kl)^2 + (dc/(m.kc*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
 end
 
-# Delta E*ab (the original)
-function _colordiff(ai::Color, bi::Color, m::DE_AB)
+function _colordiff(ai::Color, bi::Color,
+                    m::EuclideanDifferenceMetric{T}) where {T <: Color3}
+    a, b = convert(T, ai), convert(T, bi)
 
-    # Convert directly into L*a*b*
-    a = convert(Lab, ai)
-    b = convert(Lab, bi)
+    d1, d2, d3 = comp1(a) - comp1(b), comp2(a) - comp2(b), comp3(a) - comp3(b)
 
-    dl, da, db = (b.l - a.l), (b.a - a.a), (b.b - a.b)
-
-    sqrt(dl^2 + da^2 + db^2)
-
-end
-
-# Evaluate the DIN99 color difference formula, implemented according to the
-# DIN 6176 specification.
-#
-# Args:
-#   a, b: Any two colors.
-#
-# Returns:
-#   The DIN99 color difference metric evaluated between a and b.
-function _colordiff(ai::Color, bi::Color, m::DE_DIN99)
-
-    a = convert(DIN99, ai)
-    b = convert(DIN99, bi)
-
-    sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
-
-end
-
-# A color difference formula for the DIN99d uniform colorspace
-function _colordiff(ai::Color, bi::Color, m::DE_DIN99d)
-
-    a = convert(DIN99d, ai)
-    b = convert(DIN99d, bi)
-
-    sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
-
-end
-
-# The DIN99o color difference metric evaluated between colors a and b.
-function _colordiff(ai::Color, bi::Color, m::DE_DIN99o)
-
-    a = convert(DIN99o, ai)
-    b = convert(DIN99o, bi)
-
-    sqrt((a.l - b.l)^2 + (a.a - b.a)^2 + (a.b - b.b)^2)
-
+    sqrt(d1^2 + d2^2 + d3^2)
 end
 
 # Default to Delta E 2000
