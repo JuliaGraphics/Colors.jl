@@ -152,54 +152,50 @@ tritanopic(c::Color)   = tritanopic(c, 1.0)
 
 """
     MSC(h)
-    MSC(h, l)
+    MSC(h, l; linear=false)
 
-Calculate the most saturated color for any given hue `h` by
-finding the corresponding corner in LCHuv space. Optionally,
-the lightness `l` may also be specified.
+Calculate the most saturated color in sRGB gamut for any given hue `h` by
+finding the corresponding corner in LCHuv space. Optionally, the lightness `l`
+may also be specified.
+
+# Arguments
+
+- `h`: Hue [0,360] in LCHuv space
+- `l`: Lightness [0,100] in LCHuv space
+
+# Keyword arguments
+
+- `linear` : If true, the saturation is linearly interpolated between black/
+  white and `MSC(h)` as the gamut is approximately triangular in L-C section.
+
+!!! note
+    `MSC(h)` returns an `LCHuv` color, but `MSC(h, l)` returns a saturation
+    value. This behavior might change in a future release.
+
 """
 function MSC(h)
 
-    #Corners of RGB cube
-    h0 = 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
-    h1 = 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
-    h2 = 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
-    h3 = 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
-    h4 = 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
-    h5 = 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
-
-    #Wrap h to [0, 360] range]
+    #Wrap h to [0, 360] range
     h = mod(h, 360)
 
-    p=0 #variable
-    o=0 #min
-    t=0 #max
-
     #Selecting edge of RGB cube; R=1 G=2 B=3
-    if h0 <= h < h1
-        p=2; o=3; t=1
-    elseif h1 <= h < h2
-        p=1; o=3; t=2
-    elseif h2 <= h < h3
-        p=3; o=1; t=2
-    elseif h3 <= h < h4
-        p=2; o=1; t=3
-    elseif h4 <= h < h5
-        p=1; o=2; t=3
-    elseif h5 <= h || h < h0
-        p=3; o=2; t=1
-    end
-
-    col=zeros(3)
-
-    #check if we are directly on the edge of the RGB cube (within some tolerance)
-    for edge in [h0, h1, h2, h3, h4, h5]
-        if edge - 200eps() < h < edge + 200eps()
-            col[p] = edge in [h0, h2, h4] ? 0.0 : 1.0
-            col[o] = 0.0
-            col[t] = 1.0
-            return convert(LCHuv, RGB(col[1],col[2],col[3]))
-        end
+    # p #variable
+    # o #min
+    # t #max
+    if     h < 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
+        p=3; t=1
+    elseif h < 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
+        p=2; t=1
+    elseif h < 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
+        p=1; t=2
+    elseif h < 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
+        p=3; t=2
+    elseif h < 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
+        p=2; t=3
+    elseif h < 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
+        p=1; t=3
+    else
+        p=3; t=1
     end
 
     alpha=-sind(h)
@@ -214,7 +210,6 @@ function MSC(h)
     M = [0.4124564  0.3575761  0.1804375;
          0.2126729  0.7151522  0.0721750;
          0.0193339  0.1191920  0.9503041]'
-    g = 2.4
 
     m_tx=M[t,1]
     m_ty=M[t,2]
@@ -223,20 +218,17 @@ function MSC(h)
     m_py=M[p,2]
     m_pz=M[p,3]
 
-    f1=(4alpha*m_px+9beta*m_py)
-    a1=(4alpha*m_tx+9beta*m_ty)
-    f2=(m_px+15m_py+3m_pz)
-    a2=(m_tx+15m_ty+3m_tz)
+    f1 = 4alpha*m_px+9beta*m_py
+    a1 = 4alpha*m_tx+9beta*m_ty
+    f2 = m_px+15m_py+3m_pz
+    a2 = m_tx+15m_ty+3m_tz
 
     cp=((alpha*un+beta*vn)*a2-a1)/(f1-(alpha*un+beta*vn)*f2)
 
-    #gamma inversion
-    cp = cp <= 0.003 ? 12.92cp : 1.055cp^(1.0/g)-0.05
-    #cp = 1.055cp^(1.0/g)-0.05
-
-    col[p]=clamp01(cp)
-    col[o]=0.0
-    col[t]=1.0
+    col = zeros(3)
+    col[p] = clamp01(srgb_compand(cp))
+    # col[o] = 0.0
+    col[t] = 1.0
 
     return convert(LCHuv, RGB(col[1],col[2],col[3]))
 end
@@ -247,15 +239,55 @@ end
 
 # Maximally saturated color for a specific hue and lightness
 # is found by looking for the edge of LCHuv space.
-function MSC(h,l)
-    pmid=MSC(h)
-
-    if l <= pmid.l
-        pend=LCHuv(0,0,0)
-    elseif l > pmid.l
-        pend=LCHuv(100,0,0)
+function MSC(h, l; linear::Bool=false)
+    if linear
+        pmid = MSC(h)
+        pend_l = l > pmid.l ? 100 : 0
+        return (pend_l-l)/(pend_l-pmid.l) * pmid.c
     end
-
-    a=(pend.l-l)/(pend.l-pmid.l)
-    a*(pmid.c-pend.c)+pend.c
+    return find_maximum_chroma(LCHuv(l, 0, h))
 end
+
+# This function finds the maximum chroma for the lightness `c.l` and hue `c.h`
+# by means of the binary search. Even though this requires more than 20
+# iterations, somehow, this is fast.
+function find_maximum_chroma(c::T,
+                             low::Real=0,
+                             high::Real=180) where {T<:Union{LCHab, LCHuv}}
+    err = 1e-6
+    high-low < err && return low
+
+    mid = (low + high) / 2
+    lchm = T(c.l, mid, c.h)
+    rgbm = convert(RGB, lchm)
+    clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
+              min(red(rgbm), green(rgbm), blue(rgbm)) < err
+    if clamped
+        return find_maximum_chroma(c, low, mid)
+    else
+        return find_maximum_chroma(c, mid, high)
+    end
+end
+
+function find_maximum_chroma(c::LCHab)
+    maxc = find_maximum_chroma(c, 0, 135)
+
+    # The sRGB gamut in LCHab space has a *hollow* around the yellow corner.
+    # Since the following boundary is based on the D65 white point, the values
+    # should be modified on other conditions.
+    if 97 < c.h < 108 && c.l > 92
+        err = 1e-6
+        h_yellow = 102.85124420310268 # convert(LCHab,RGB{Float64}(1,1,0)).h
+        for chroma in range(maxc, stop=100, length=10000)
+            rgb = convert(RGB, LCHab(c.l, chroma, c.h))
+            blue(rgb) < err && continue
+            y = c.h < h_yellow ? red(rgb) : green(rgb)
+            if y < 1-err
+                maxc = chroma
+            end
+        end
+    end
+    return maxc
+end
+find_maximum_chroma(c::Lab) = find_maximum_chroma(convert(LCHab, c))
+find_maximum_chroma(c::Luv) = find_maximum_chroma(convert(LCHuv, c))

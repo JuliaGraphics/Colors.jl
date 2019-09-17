@@ -1,21 +1,46 @@
 using Test, Colors
 
 @testset "Algorithms" begin
-    @test isconcretetype(eltype(colormap("Grays")))
 
-    @test_throws ArgumentError colormap("Grays", N=10)
-
-    col = distinguishable_colors(10)
-    @test isconcretetype(eltype(col))
-    local mindiff
-    mindiff = Inf
-    for i = 1:10
-        for j = i+1:10
-            mindiff = min(mindiff, colordiff(col[i], col[j]))
-        end
+    # issue #349
+    msc_h_diff = 0
+    for hsv_h in 0:0.1:360
+        hsv = HSV(hsv_h, 1.0, 1.0) # most saturated
+        lch = convert(LCHuv, hsv)
+        msc = MSC(lch.h)
+        msc_h_diff = max(msc_h_diff, colordiff(msc, lch))
     end
-    @test mindiff > 8
+    @test msc_h_diff < 1
 
-    cols = distinguishable_colors(1)
-    @test colordiff(distinguishable_colors(1, cols; dropseed=true)[1], cols[1]) > 50
+    @test MSC(123.45, 100) ≈ 0
+    @test MSC(123.45, 0) ≈ 0
+
+    msc_h_l_sat = 1
+    for h = 0:0.1:359.9, l = 1:1:99
+        c = MSC(h, l)
+        hsv = convert(HSV, LCHuv(l, c, h))
+        # When the color is saturated (except black/white), `s` or `v` is 1.
+        msc_h_l_sat = min(msc_h_l_sat, max(hsv.s, hsv.v))
+    end
+    @test msc_h_l_sat > 1 - 1e-4
+
+    # the linear interpolation introduces some approximation errors.(issue #349)
+    @test MSC(0, 90, linear=true) > MSC(0, 90)
+    @test MSC(280, 50, linear=true) < MSC(280, 50)
+
+    @testset "find_maximum_chroma hsv_h=$hsv_h" for hsv_h in 0:60:300
+        hsv = HSV(hsv_h, 1.0, 1.0) # corner
+        lchab = convert(LCHab, hsv)
+        lchuv = convert(LCHuv, hsv)
+        lab = convert(Lab, hsv)
+        luv = convert(Luv, hsv)
+        @test Colors.find_maximum_chroma(lchab) ≈ lchab.c atol=0.01
+        @test Colors.find_maximum_chroma(lchuv) ≈ lchuv.c atol=0.01
+        @test Colors.find_maximum_chroma(lab) ≈ lchab.c atol=0.01
+        @test Colors.find_maximum_chroma(luv) ≈ lchuv.c atol=0.01
+    end
+
+    # yellow in LCHab
+    @test Colors.find_maximum_chroma(LCHab(94.2, 0, 100)) ≈ 93.749 atol=0.01
+    @test Colors.find_maximum_chroma(LCHab(97.6, 0, 105)) ≈ 68.828 atol=0.01
 end
