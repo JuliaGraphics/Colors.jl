@@ -43,6 +43,18 @@ using ColorTypes: eltype_default
     @test hex(RGB(1,0.5,0)) == "FF8000"
     @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
 
+    # srgb_compand / invert_srgb_compand
+    @test Colors.srgb_compand(0.5) ≈ 0.7353569830524494 atol=eps()
+    @test Colors.invert_srgb_compand(0.7353569830524494) ≈ 0.5 atol=eps()
+    # issue #351
+    l_pow_x_y() = for i=1:1000; (i/1000)^(1/2.4) end
+    l_exp_y_log_x() = for i=1:1000; exp(1/2.4*log(i/1000)) end
+    l_pow_x_y(); t_pow_x_y = @elapsed l_pow_x_y()
+    l_exp_y_log_x(); t_exp_y_log_x = @elapsed l_exp_y_log_x()
+    if t_exp_y_log_x > t_pow_x_y
+        @warn "Optimization in `[invert_]srgb_compand()` may have the opposite effect."
+    end
+
     fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
     red24 = reinterpret(RGB24, 0x00ff0000)
