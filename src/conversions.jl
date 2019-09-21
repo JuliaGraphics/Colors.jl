@@ -73,8 +73,10 @@ end
 correct_gamut(c::CV) where {CV<:AbstractRGB} = CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)))
 clamp01(v::T) where {T<:Fractional} = ifelse(v < zero(T), zero(T), ifelse(v > one(T), one(T), v))
 
-function srgb_compand(v)
-    v <= 0.0031308 ? 12.92v : 1.055v^(1/2.4) - 0.055
+function srgb_compand(v::Fractional)
+    # the following is an optimization technique for `1.055v^(1/2.4) - 0.055`.
+    # x^y ≈ exp(y*log(x)) ≈ exp2(y*log2(y)); the middle form is faster
+    v <= 0.0031308 ? 12.92v : 1.055 * exp(1/2.4 * log(v)) - 0.055
 end
 
 cnvt(::Type{CV}, c::AbstractRGB) where {CV<:AbstractRGB} = CV(red(c), green(c), blue(c))
@@ -166,9 +168,6 @@ end
 cnvt(::Type{CV}, c::LCHab) where {CV<:AbstractRGB}  = cnvt(CV, convert(Lab{eltype(c)}, c))
 cnvt(::Type{CV}, c::LCHuv) where {CV<:AbstractRGB}  = cnvt(CV, convert(Luv{eltype(c)}, c))
 cnvt(::Type{CV}, c::Color3) where {CV<:AbstractRGB}    = cnvt(CV, convert(XYZ{eltype(c)}, c))
-
-cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB{N0f8}} = CV(N0f8((c.color&0x00ff0000)>>>16,0), N0f8((c.color&0x0000ff00)>>>8,0), N0f8(c.color&0x000000ff,0))
-cnvt(::Type{CV}, c::RGB24) where {CV<:AbstractRGB} = CV(((c.color&0x00ff0000)>>>16)/255, (((c.color&0x0000ff00))>>>8)/255, (c.color&0x000000ff)/255)
 
 function cnvt(::Type{CV}, c::AbstractGray) where CV<:AbstractRGB
     g = convert(eltype(CV), gray(c))
@@ -271,12 +270,22 @@ cnvt(::Type{HSI{T}}, c::Color3) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
 # Everything to XYZ
 # -----------------
 
-function invert_rgb_compand(v)
-    v <= 0.04045 ? v/12.92 : ((v+0.055) /1.055)^2.4
+function invert_srgb_compand(v::Fractional)
+    v <= 0.04045 && return v/12.92
+    # the following is an optimization technique for `((v+0.055) /1.055)^2.4`.
+    # see also: srgb_compand(v::Fractional)
+    x = (v + 0.055) / 1.055
+    return x^2 * exp(0.4 * log(x)) # 2.4 == 2 + 0.4
+end
+
+const invert_srgb_compand_n0f8 = [invert_srgb_compand(v/255) for v = 0:255] # LUT
+
+function invert_srgb_compand(v::N0f8)
+    invert_srgb_compand_n0f8[reinterpret(UInt8, v) + 1]
 end
 
 function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T
-    r, g, b = invert_rgb_compand(red(c)), invert_rgb_compand(green(c)), invert_rgb_compand(blue(c))
+    r, g, b = invert_srgb_compand(red(c)), invert_srgb_compand(green(c)), invert_srgb_compand(blue(c))
     XYZ{T}(0.4124564*r + 0.3575761*g + 0.1804375*b,
            0.2126729*r + 0.7151522*g + 0.0721750*b,
            0.0193339*r + 0.1191920*g + 0.9503041*b)
@@ -385,8 +394,6 @@ end
 
 cnvt(::Type{XYZ{T}}, c::YIQ) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
 cnvt(::Type{XYZ{T}}, c::YCbCr) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
-
-cnvt(::Type{XYZ{T}}, c::RGB24) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
 
 # Everything to xyY
 # -----------------
