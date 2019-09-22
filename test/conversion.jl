@@ -1,6 +1,6 @@
 using Colors, FixedPointNumbers, JLD2
 using Test
-using ColorTypes: eltype_default
+using ColorTypes: eltype_default, parametric3
 
 @testset "Conversion" begin
     r8(x) = reinterpret(N0f8, x)
@@ -31,79 +31,62 @@ using ColorTypes: eltype_default
 
     fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
-    redF64 = RGB{Float64}(1, 0, 0)
+    redF64 = RGB{Float64}(1,0,0)
+    redF32 = RGB{Float32}(1,0,0)
     red24 = reinterpret(RGB24, 0x00ff0000)
     red32 = reinterpret(ARGB32, 0xffff0000)
-    for T in (Float64, Float32, N0f8)
+    @testset "type check: RGB, RGB{$T}" for T in (Float64, Float32, N0f8)
         c = RGB(one(T), zero(T), zero(T))
         @test eltype(c) == T
-        c64 = convert(RGB{Float64}, c)
-        @test typeof(c64) == RGB{Float64}
-        @test c64 == redF64
-        cr = convert(RGB{T}, redF64)
-        @test cr == c
+        @test convert(RGB{Float64}, c) === redF64
+        @test convert(RGB{T}, redF64) == c
     end
     @test RGB(1,0,0) == redF64
-    @test RGB(convert(UInt8, 1),0,0) == redF64
-    @test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == redF64
+    @test RGB(UInt8(1), 0, 0) == redF64
+    @test RGB(UInt8(1), UInt8(0), UInt8(0)) == redF64 # != colorant"#010000"
     @test convert(RGB, red24) == redF64
 
-    @test convert(Gray{N0f8}, Gray{N0f8}(0.1)) == Gray{N0f8}(0.1)
-    @test convert(Gray{N0f8}, Gray(0.1))     == Gray{N0f8}(0.1)
-    @test convert(Gray{N0f8}, Gray24(0.1))   == Gray{N0f8}(0.1)
-    @test convert(Gray24, Gray{N0f8}(0.1))   == Gray24(0.1)
-
-    @test convert(RGB{N0f8}, Gray{N0f8}(0.1)) == RGB{N0f8}(0.1,0.1,0.1)
-    @test convert(RGB{N0f8}, Gray24(0.1))   == RGB{N0f8}(0.1,0.1,0.1)
-
-    for Cto in ColorTypes.parametric3
-        for Cfrom in ColorTypes.parametric3
-            for Tto in (Float32, Float64)
-                for Tfrom in (Float32, Float64)
-                    c = convert(Cfrom{Tfrom}, redF64)
-                    @test typeof(c) == Cfrom{Tfrom}
-                    c1 = convert(Cto, c)
-                    @test eltype(c1) == Tfrom
-                    c2 = convert(Cto{Tto}, c)
-                    @test typeof(c2) == Cto{Tto}
-                end
-            end
-        end
-    end
-    for Cto in ColorTypes.parametric3
+    @testset "type check: RGB24-->$Cto" for Cto in parametric3
         @test typeof(convert(Cto, red24)) == Cto{eltype_default(Cto)}
         @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
     end
 
+    @testset "type check: C{Float}-->C{Float}" for Cfrom in parametric3, Tfrom in (Float32, Float64)
+        c = convert(Cfrom{Tfrom}, redF64)
+        @test typeof(c) == Cfrom{Tfrom}
+        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in parametric3
+            c1 = convert(Cto, c)
+            @test eltype(c1) == Tfrom
+        end
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in parametric3, Tto in (Float32, Float64)
+            c2 = convert(Cto{Tto}, c)
+            @test typeof(c2) == Cto{Tto}
+        end
+    end
+
+    normed_types = (N0f8, N6f10, N4f12, N2f14, N0f16)
     # Test conversion from Normed types
-    for Cto in ColorTypes.parametric3
-        for Cfrom in fractional_types
-            for Tto in (Float32, Float64)
-                for Tfrom in (N0f8, N6f10, N4f12, N2f14, N0f16)
-                    c = convert(Cfrom{Tfrom}, redF64)
-                    @test typeof(c) == Cfrom{Tfrom}
-                    if !(eltype_default(Cto) <: FixedPoint)
-                        c1 = convert(Cto, c)
-                        @test eltype(c1) == eltype_default(Cto)
-                    end
-                    c2 = convert(Cto{Tto}, c)
-                    @test typeof(c2) == Cto{Tto}
-                end
-            end
+    @testset "type check: C{Normed}-->C{Float}" for Cfrom in fractional_types, Tfrom in normed_types
+        c = convert(Cfrom{Tfrom}, redF64)
+        @test typeof(c) == Cfrom{Tfrom}
+        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in parametric3
+            eltype_default(Cto) <: FixedPoint && continue
+            c1 = convert(Cto, c)
+            @test eltype(c1) == eltype_default(Cto)
+        end
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in parametric3, Tto in (Float32, Float64)
+            c2 = convert(Cto{Tto}, c)
+            @test typeof(c2) == Cto{Tto}
         end
     end
 
     # Test conversion to Normed types
-    for Cto in fractional_types
-        for Cfrom in ColorTypes.parametric3
-            for Tto in (N0f8, N6f10, N4f12, N2f14, N0f16)
-                for Tfrom in (Float32, Float64)
-                    c = convert(Cfrom{Tfrom}, redF64)
-                    @test typeof(c) == Cfrom{Tfrom}
-                    c2 = convert(Cto{Tto}, c)
-                    @test typeof(c2) == Cto{Tto}
-                end
-            end
+    @testset "type check: C{Float}-->C{Normed}" for Cfrom in parametric3, Tfrom in (Float32, Float64)
+        c = convert(Cfrom{Tfrom}, redF64)
+        @test typeof(c) == Cfrom{Tfrom}
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in fractional_types, Tto in normed_types
+            c2 = convert(Cto{Tto}, c)
+            @test typeof(c2) == Cto{Tto}
         end
     end
 
@@ -169,15 +152,34 @@ using ColorTypes: eltype_default
     @test convert(RGB, YIQ(0.0,0.0,-1.0)) == RGB(0,-0.6474*v,0)
 
     # Gray
-    c = Gray{N0f16}(0.8)
-    @test convert(RGB, c) == RGB{N0f16}(0.8,0.8,0.8)
-    @test convert(RGB{Float32}, c) == RGB{Float32}(0.8,0.8,0.8)
+    @test convert(Gray{N0f8}, Gray{N0f8}(0.1)) == Gray{N0f8}(0.1)
+    @test convert(Gray{N0f8}, Gray(0.1))     == Gray{N0f8}(0.1)
+    @test convert(Gray{N0f8}, Gray24(0.1))   == Gray{N0f8}(0.1)
+    @test convert(Gray24, Gray{N0f8}(0.1))   == Gray24(0.1)
 
-    for C in ColorTypes.parametric3
+    @test convert(RGB{N0f8}, Gray{N0f8}(0.1)) == RGB{N0f8}(0.1,0.1,0.1)
+    @test convert(RGB{N0f8}, Gray24(0.1))   == RGB{N0f8}(0.1,0.1,0.1)
+
+    grayN0f16 = Gray{N0f16}(0.8)
+    @test convert(RGB, grayN0f16) == RGB{N0f16}(0.8,0.8,0.8)
+    @test convert(RGB{Float32}, grayN0f16) == RGB{Float32}(0.8,0.8,0.8)
+
+    @testset "$C-->Gray" for C in parametric3
         c = convert(C, RGB(1,1,1))
-        @test gray(convert(Gray, c)) ≈ 1 atol=0.01
-        @test gray(convert(Gray{Float64}, c)) ≈ 1 atol=0.01
+        g1 = convert(Gray, c)
+        @test isa(g1, Gray)
+        @test gray(g1) ≈ 1 atol=0.01
+        g2 = convert(Gray{Float64}, c)
+        @test typeof(g2) == Gray{Float64}
+        @test gray(g2) ≈ 1 atol=0.01
     end
+
+    # Images issue #382
+    @test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
+
+    # https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
+    @test convert(Gray, RGB{N0f8}(0.145,0.145,0.145)) == Gray{N0f8}(0.145)
+
 
     # More AbstractRGB
     r4 = RGB4(1,0,0)
@@ -186,6 +188,11 @@ using ColorTypes: eltype_default
     @test convert(RGB4{N0f8}, r4) == RGB4{N0f8}(1,0,0)
     @test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
     @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
+
+    # Issue #257
+    c = RGB{Float16}(0.9473,0.962,0.9766)
+    hsi = convert(HSI, c)
+    @test hsi.i > 0.96 && hsi.h ≈ 210
 
     # Test accuracy of conversion
     csconv = jldopen(joinpath(dirname(@__FILE__), "test_conversions.jld2")) do file
@@ -209,21 +216,9 @@ using ColorTypes: eltype_default
         errmax <= eps
     end
 
-    for i = 1:length(csconv)
+    base_t(i, from_to) = base_color_type(eltype(csconv[i][from_to]))
+    @testset "accuracy test: $(base_t(i,1))-->$(base_t(i,2)) (index $i)" for i = 1:length(csconv)
         f, t = csconv[i]
-        if !convcompare(f, t, 1e-3)
-            println("  index $i")
-        end
+        @test convcompare(f, t, 1e-3)
     end
-
-    # Images issue #382
-    @test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
-
-    # https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
-    @test convert(Gray, RGB{N0f8}(0.145,0.145,0.145)) == Gray{N0f8}(0.145)
-
-    # Issue #257
-    c = RGB{Float16}(0.9473,0.962,0.9766)
-    hsi = convert(HSI, c)
-    @test hsi.i > 0.96 && hsi.h ≈ 210
 end
