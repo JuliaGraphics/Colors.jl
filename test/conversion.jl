@@ -17,32 +17,6 @@ using ColorTypes: eltype_default
     a, b = promote(RGB(1,0,0), AGray(0.8))
     @test isa(a, ARGB{Float64}) && isa(b, ARGB{Float64})
 
-    # Color parsing
-    redN0f8 = parse(Colorant, "red")
-    @test colorant"red" == redN0f8
-    @test isa(redN0f8, RGB{N0f8})
-    @test redN0f8 == RGB(1,0,0)
-    redF64 = convert(RGB{Float64}, redN0f8)
-    @test parse(RGB{Float64}, "red") === RGB{Float64}(1,0,0)
-    @test isa(parse(HSV, "blue"), HSV)
-    @test parse(Colorant, "rgb(55,217,127)") === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
-    @test colorant"rgb(55,217,127)" === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
-    @test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{N0f8}(r8(0x37),r8(0xd9),r8(0x7f),0.5)
-    @test parse(Colorant, "rgb(55,217,127)") === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
-    @test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{N0f8}(r8(0x37),r8(0xd9),r8(0x7f),0.5)
-    @test parse(Colorant, "hsl(120, 100%, 50%)") === HSL{Float32}(120,1.0,.5)
-    @test colorant"hsl(120, 100%, 50%)" === HSL{Float32}(120,1.0,.5)
-    @test parse(RGB{N0f8}, "hsl(120, 100%, 50%)") === convert(RGB{N0f8}, HSL{Float32}(120,1.0,.5))
-    @test_throws ErrorException  parse(Colorant, "hsl(120, 100, 50)")
-    @test parse(Colorant, "#D0FF58") === RGB(r8(0xD0),r8(0xFF),r8(0x58))
-    @test parse(Colorant, "#FB0") === RGB(r8(0xFF),r8(0xBB),r8(0x00))
-
-    @test parse(Colorant, :red) === colorant"red"
-    @test parse(Colorant, colorant"red") === colorant"red"
-
-    @test hex(RGB(1,0.5,0)) == "FF8000"
-    @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
-
     # srgb_compand / invert_srgb_compand
     @test Colors.srgb_compand(0.5) ≈ 0.7353569830524494 atol=eps()
     @test Colors.invert_srgb_compand(0.7353569830524494) ≈ 0.5 atol=eps()
@@ -57,6 +31,7 @@ using ColorTypes: eltype_default
 
     fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
+    redF64 = RGB{Float64}(1, 0, 0)
     red24 = reinterpret(RGB24, 0x00ff0000)
     red32 = reinterpret(ARGB32, 0xffff0000)
     for T in (Float64, Float32, N0f8)
@@ -172,13 +147,6 @@ using ColorTypes: eltype_default
     @test isa(convert(Lab{Float32}, convert(XYZ, redF64), Colors.WP_DEFAULT), Lab{Float32})
     @test isa(convert(Luv, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float64})
     @test isa(convert(Luv{Float32}, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float32})
-
-    # Test vector space operations
-    @test LMS{Float64}(0.125,0.5,0.0)+LMS{Float64}(0.2,0.7,0.4) ≈ LMS{Float64}(0.325,1.2,0.4) atol=91eps()
-    @test 3LMS{Float64}(0.125,0.5,0.03) ≈ LMS{Float64}(0.375,1.5,0.09) atol=91eps()
-
-    @test XYZ{Float64}(0.125,0.5,0.0)+XYZ{Float64}(0.2,0.7,0.4) ≈ XYZ{Float64}(0.325,1.2,0.4) atol=91eps()
-    @test 3XYZ{Float64}(0.125,0.5,0.03) ≈ XYZ{Float64}(0.375,1.5,0.09) atol=91eps()
 
     #59
     @test Colors.xyz_to_uv(XYZ{Float64}(0.0, 0.0, 0.0)) === (0.0, 0.0)
