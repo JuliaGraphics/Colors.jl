@@ -199,26 +199,61 @@ using ColorTypes: eltype_default, parametric3
         read(file, "csconv")
     end
 
-    function convcompare(from, to, eps; showfailure::Bool=false)
+    # Since `colordiff`(e.g. `DE_2000`) involves a color space conversion, it is
+    # not suitable for evaluating the conversion itself. On the other hand,
+    # since the tolerance varies from component to component, a homogeneous
+    # error evaluation function (e.g. a simple sum of differences) is also not
+    # appropriate. Therefore, a series of `diffnorm`, which returns the
+    # normalized Euclidian distance, is defined as follows. They are just for
+    # testing purposes as the cyclicity of hue is ignored.
+    sqd(a, b, s=1.0) = ((float(a) - float(b))/s)^2
+    function diffnorm(a::T, b::T) where {T<:Color3} # RGB,XYZ,xyY,LMS
+        sqrt(sqd(comp1(a), comp1(b)) + sqd(comp2(a), comp2(b)) + sqd(comp3(a),comp3(b)))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{HSV,HSL,HSI}}
+        sqrt(sqd(a.h, b.h, 360) + sqd(a.s, b.s) + sqd(comp3(a), comp3(b)))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{Lab,Luv}}
+        sqrt(sqd(a.l, b.l, 100) + sqd(comp2(a), comp2(b), 200) + sqd(comp3(a), comp3(b), 200))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{LCHab,LCHuv}}
+        sqrt(sqd(a.l, b.l, 100) + sqd(a.c, b.c, 100) + sqd(a.h, b.h, 360))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{DIN99,DIN99d,DIN99o}} # csconv has no DIN99 case
+        sqrt(sqd(a.l, b.l, 100) + sqd(a.a, b.a, 100) + sqd(a.b, b.b, 100))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:YIQ}
+        sqrt(sqd(a.y, b.y) + sqd(a.i, b.i, 1.2) + sqd(a.q, b.q, 1.2))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:YCbCr}
+        sqrt(sqd(a.y, b.y, 219) + sqd(a.cb, b.cb, 224) + sqd(a.cr, b.cr, 224))/sqrt(3)
+    end
+
+    for C in ColorTypes.parametric3
+        y = convert(C, RGB(1.0,1.0,0.0))
+        b = convert(C, RGB(0.1,0.1,0.2))
+        diffnorm(y, b) < 0.5 && @warn("`diffnorm` for $C may be broken")
+    end
+
+    function convcompare(from, to, tol; showfailure::Bool=false)
         errmax = 0.0
         for i = 1:length(from)
             t = to[i]
             f = convert(typeof(t), from[i])
-            diff = abs(comp1(t)-comp1(f)) + abs(comp2(t)-comp2(f)) + abs(comp3(t)-comp3(f))
-            mag = abs(comp1(t)+comp1(f)) + abs(comp2(t)+comp2(f)) + abs(comp3(t)+comp3(f))
-            if showfailure && diff>eps*mag
+            diff = diffnorm(t, f)
+            if showfailure && diff>tol
                 original = from[i]
-                @show original f t
+                @show original f t diff
             end
-            errmax = max(errmax, diff/mag)
+            errmax = max(errmax, diff)
         end
-        errmax > eps && @warn("Error on conversions from $(eltype(from)) to $(eltype(to)), relative error = $errmax")
-        errmax <= eps
+        errmax > tol && @warn("Error on conversions from $(eltype(from)) to $(eltype(to)), relative error = $errmax")
+        errmax <= tol
     end
 
     base_t(i, from_to) = base_color_type(eltype(csconv[i][from_to]))
     @testset "accuracy test: $(base_t(i,1))-->$(base_t(i,2)) (index $i)" for i = 1:length(csconv)
         f, t = csconv[i]
-        @test convcompare(f, t, 1e-3)
+        @test convcompare(f, t, 2e-3, showfailure=false)
     end
 end
