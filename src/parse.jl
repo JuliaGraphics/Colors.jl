@@ -5,19 +5,20 @@ include("names_data.jl")
 # Color Parsing
 # -------------
 
-const col_pat_hex1 = r"(#|0x)([[:xdigit:]])([[:xdigit:]])([[:xdigit:]])"
-const col_pat_hex2 = r"(#|0x)([[:xdigit:]]{2})([[:xdigit:]]{2})([[:xdigit:]]{2})"
-const col_pat_rgb  = r"rgb\((\d+%?),(\d+%?),(\d+%?)\)"
-const col_pat_hsl  = r"hsl\((\d+%?),(\d+%?),(\d+%?)\)"
-const col_pat_rgba = r"rgba\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
-const col_pat_hsla = r"hsla\((\d+%?),(\d+%?),(\d+%?),(\d+(?:\.\d*)?%?)\)"
+const col_pat_hex  = r"^\s*(#|0x)([[:xdigit:]]{3,8})\s*$"
+const col_pat_rgb  = r"^\s*rgb\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*\)\s*$"
+const col_pat_hsl  = r"^\s*hsl\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*\)\s*$"
+const col_pat_rgba = r"^\s*rgba?\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,/]\s*((?:\d+|(?=\.\d))(?:\.\d*)?%?)\s*\)\s*$"
+const col_pat_hsla = r"^\s*hsla?\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,/]\s*((?:\d+|(?=\.\d))(?:\.\d*)?%?)\s*\)\s*$"
+
+chop1(x) = SubString(x, 1, lastindex(x) - 1) # `chop` is slightly slow
 
 # Parse a number used in the "rgb()" or "hsl()" color.
 function parse_rgb(num::AbstractString)
     if num[end] == '%'
-        return clamp(parse(Int, num[1:end-1], base=10) / 100, 0, 1)
+        return N0f8(clamp(parse(Int, chop1(num), base=10) / 100, 0, 1))
     else
-        return clamp(parse(Int, num, base=10) / 255, 0, 1)
+        return reinterpret(N0f8, UInt8(clamp(parse(Int, num, base=10), 0, 255)))
     end
 end
 
@@ -33,78 +34,95 @@ function parse_hsl_sl(num::AbstractString)
     if num[end] != '%'
         error("saturation and lightness must end in %")
     else
-        return parse(Int, num[1:end-1], base=10) / 100
+        return parse(Int, chop1(num), base=10) / 100
     end
 end
 
 # Parse a number used in the alpha field of "rgba()" and "hsla()".
 function parse_alpha_num(num::AbstractString)
     if num[end] == '%'
-        return parse(Int, num[1:end-1]) / 100
+        return parse(Int, chop1(num), base=10) / 100f0
     else
+        # `parse(Float32, num)` is somewhat slow on Windows(x86_64-w64-mingw32).
+        # However, the following has the opposite effect on Linux.
+        # m = match(r"0?\.(\d{1,9})", num)
+        # if m != nothing
+        #     d = m.captures[1]
+        #     return parse(Int, d, base=10) / Float32(exp10(length(d)))
+        # end
         return parse(Float32, num)
     end
 end
 
 function _parse_colorant(desc::AbstractString)
-    desc_ = replace(desc, " " => "")
-    mat = match(col_pat_hex2, desc_)
+    mat = match(col_pat_hex, desc)
     if mat != nothing
-        return RGB{N0f8}(parse(Int, mat.captures[2], base=16) / 255,
-                       parse(Int, mat.captures[3], base=16) / 255,
-                       parse(Int, mat.captures[4], base=16) / 255)
+        prefix = mat.captures[1]
+        len = length(mat.captures[2])
+        digits = parse(UInt32, mat.captures[2], base=16)
+        if len == 6
+            return convert(RGB{N0f8}, reinterpret(RGB24, digits))
+        elseif len == 3
+            return RGB{N0f8}(reinterpret(N0f8, UInt8(((digits&0xF00)>>8) * 17)),
+                             reinterpret(N0f8, UInt8(((digits&0x0F0)>>4) * 17)),
+                             reinterpret(N0f8, UInt8(((digits&0x00F))    * 17)))
+        elseif len == 8 || len == 4
+            error("8-digit and 4-digit hex notations are not supported yet.")
+        end
     end
-
-    mat = match(col_pat_hex1, desc_)
-    if mat != nothing
-        return RGB{N0f8}(parse(Int, mat.captures[2], base=16) / 15,
-                       parse(Int, mat.captures[3], base=16) / 15,
-                       parse(Int, mat.captures[4], base=16) / 15)
-    end
-
-    mat = match(col_pat_rgb, desc_)
+    mat = match(col_pat_rgb, desc)
     if mat != nothing
         return RGB{N0f8}(parse_rgb(mat.captures[1]),
-                       parse_rgb(mat.captures[2]),
-                       parse_rgb(mat.captures[3]))
+                         parse_rgb(mat.captures[2]),
+                         parse_rgb(mat.captures[3]))
     end
 
-    mat = match(col_pat_hsl, desc_)
+    mat = match(col_pat_hsl, desc)
     if mat != nothing
-        return HSL{ColorTypes.eltype_default(HSL)}(parse_hsl_hue(mat.captures[1]),
-                                        parse_hsl_sl(mat.captures[2]),
-                                        parse_hsl_sl(mat.captures[3]))
+        T = ColorTypes.eltype_default(HSL)
+        return HSL{T}(parse_hsl_hue(mat.captures[1]),
+                      parse_hsl_sl(mat.captures[2]),
+                      parse_hsl_sl(mat.captures[3]))
     end
 
-    mat = match(col_pat_rgba, desc_)
+    mat = match(col_pat_rgba, desc)
     if mat != nothing
         return RGBA{N0f8}(parse_rgb(mat.captures[1]),
-                        parse_rgb(mat.captures[2]),
-                        parse_rgb(mat.captures[3]),
-                        parse_alpha_num(mat.captures[4]))
+                          parse_rgb(mat.captures[2]),
+                          parse_rgb(mat.captures[3]),
+                          parse_alpha_num(mat.captures[4]))
     end
 
-    mat = match(col_pat_hsla, desc_)
+    mat = match(col_pat_hsla, desc)
     if mat != nothing
-        return HSLA{ColorTypes.eltype_default(HSLA)}(parse_hsl_hue(mat.captures[1]),
-                                          parse_hsl_sl(mat.captures[2]),
-                                          parse_hsl_sl(mat.captures[3]),
-                                          parse_alpha_num(mat.captures[4]))
+        T = ColorTypes.eltype_default(HSLA)
+        return HSLA{T}(parse_hsl_hue(mat.captures[1]),
+                       parse_hsl_sl(mat.captures[2]),
+                       parse_hsl_sl(mat.captures[3]),
+                       parse_alpha_num(mat.captures[4]))
     end
 
+    sdesc = strip(desc)
+    c = get(color_names, sdesc, nothing)
+    if c != nothing
+        return RGB{N0f8}(reinterpret(N0f8, UInt8(c[1])),
+                         reinterpret(N0f8, UInt8(c[2])),
+                         reinterpret(N0f8, UInt8(c[3])))
+    end
+    # since `lowercase` is slightly slow, it is applied only when needed
+    ldesc = lowercase(sdesc)
+    c = get(color_names, ldesc, nothing)
+    if c != nothing
+        return RGB{N0f8}(reinterpret(N0f8, UInt8(c[1])),
+                         reinterpret(N0f8, UInt8(c[2])),
+                         reinterpret(N0f8, UInt8(c[3])))
+    end
 
-    desc_ = lowercase(desc_)
-
-    if desc_ == "transparent"
+    if ldesc == "transparent"
         return RGBA{N0f8}(0,0,0,0)
     end
 
-    if !haskey(color_names, desc_)
-        error("Unknown color: ", desc)
-    end
-
-    c = color_names[desc_]
-    return RGB{N0f8}(c[1] / 255, c[2] / 255, c[3] / 255)
+    error("Unknown color: ", desc)
 end
 
 # note: these exist to enable proper dispatch, since super(Colorant) == Any
