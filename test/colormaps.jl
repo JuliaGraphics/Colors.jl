@@ -13,12 +13,39 @@
     cols = distinguishable_colors(1)
     @test colordiff(distinguishable_colors(1, cols; dropseed=true)[1], cols[1]) > 50
 
-    
+
     @test length(colormap("RdBu", 100)) == 100
 
     @test isconcretetype(eltype(colormap("Grays")))
 
     @test_throws ArgumentError colormap("Grays", N=10) # optional arguments, not keyword
+
+    # not return values to check here, just checking that keywords can be used
+    # Sequential
+    colormap("Blues", 10; mid=0.5)
+    colormap("Blues", 10; logscale=true)
+    colormap("Blues", 10; h=0.5)
+    colormap("Blues", 10; w=0.5)
+    colormap("Blues", 10; d=0.5)
+    colormap("Blues", 10; c=0.5)
+    colormap("Blues", 10; s=0.5)
+    colormap("Blues", 10; b=0.5)
+    colormap("Blues", 10; wcolor=colorant"white")
+    colormap("Blues", 10; dcolor=colorant"black")
+    # Diverging
+    colormap("RdBu", 10; mid=0.5)
+    colormap("RdBu", 10; logscale=true)
+    colormap("RdBu", 10; h1=0.5)
+    colormap("RdBu", 10; h2=0.5)
+    colormap("RdBu", 10; w=0.5)
+    colormap("RdBu", 10; d1=0.5)
+    colormap("RdBu", 10; d2=0.5)
+    colormap("RdBu", 10; c=0.5)
+    colormap("RdBu", 10; s=0.5)
+    colormap("RdBu", 10; b=0.5)
+    colormap("RdBu", 10; wcolor=colorant"white")
+    colormap("RdBu", 10; dcolor1=colorant"black")
+    colormap("RdBu", 10; dcolor2=colorant"black")
 
     # The outputs of `colormap()` were slightly affected by the bug fix of
     # `MSC(h)` (issue #349).
