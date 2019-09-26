@@ -289,7 +289,7 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
 
         for (k,v) in kvs
             ind = findfirst(e->e==k, allowedkeys)
-            ind != nothing || throw(ArgumentError("Unknown keyword argument $k"))
+            ind == nothing && throw(ArgumentError("Unknown keyword argument $k"))
             if ind > 0
                 p[ind] = v
             end
@@ -304,7 +304,7 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
 
         for (k,v) in kvs
             ind = findfirst(e->e==k, allowedkeys)
-            ind != nothing || throw(ArgumentError("Unknown keyword argument $k"))
+            ind == nothing && throw(ArgumentError("Unknown keyword argument $k"))
             if ind > 0
                 p[ind] = v
             end
