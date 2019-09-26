@@ -22,30 +22,36 @@
 
     # not return values to check here, just checking that keywords can be used
     # Sequential
-    colormap("Blues", 10; mid=0.5)
-    colormap("Blues", 10; logscale=true)
-    colormap("Blues", 10; h=0.5)
-    colormap("Blues", 10; w=0.5)
-    colormap("Blues", 10; d=0.5)
-    colormap("Blues", 10; c=0.5)
-    colormap("Blues", 10; s=0.5)
-    colormap("Blues", 10; b=0.5)
-    colormap("Blues", 10; wcolor=colorant"white")
-    colormap("Blues", 10; dcolor=colorant"black")
+    default_blues = colormap("Blues", 10)
+    @test colormap("Blues", 10; mid=0.9) == default_blues # `mid` is for diverging colormaps only (issue #300)
+    @test colormap("Blues", 10; logscale=true) != default_blues
+    @test colormap("Blues", 10; h=0.5) != default_blues
+    @test colormap("Blues", 10; w=0.5) != default_blues
+    @test colormap("Blues", 10; d=0.5) != default_blues
+    @test colormap("Blues", 10; c=0.5) != default_blues
+    @test colormap("Blues", 10; s=0.5) != default_blues
+    @test colormap("Blues", 10; b=0.5) != default_blues
+    @test colormap("Blues", 10; wcolor=colorant"white") != default_blues
+    @test colormap("Blues", 10; dcolor=colorant"black") != default_blues
+    @test_throws ArgumentError colormap("Blues", 10; h1=0.5)
+
     # Diverging
-    colormap("RdBu", 10; mid=0.5)
-    colormap("RdBu", 10; logscale=true)
-    colormap("RdBu", 10; h1=0.5)
-    colormap("RdBu", 10; h2=0.5)
-    colormap("RdBu", 10; w=0.5)
-    colormap("RdBu", 10; d1=0.5)
-    colormap("RdBu", 10; d2=0.5)
-    colormap("RdBu", 10; c=0.5)
-    colormap("RdBu", 10; s=0.5)
-    colormap("RdBu", 10; b=0.5)
-    colormap("RdBu", 10; wcolor=colorant"white")
-    colormap("RdBu", 10; dcolor1=colorant"black")
-    colormap("RdBu", 10; dcolor2=colorant"black")
+    default_rdbu = colormap("RdBu", 10)
+    @test colormap("RdBu", 10; mid=0.9) != default_rdbu
+    @test colormap("RdBu", 10; logscale=true) != default_rdbu
+    @test colormap("RdBu", 10; h1=0.5) != default_rdbu
+    @test colormap("RdBu", 10; h2=0.5) != default_rdbu
+    @test colormap("RdBu", 10; w=0.5) != default_rdbu
+    @test colormap("RdBu", 10; d1=0.5) != default_rdbu
+    @test colormap("RdBu", 10; d2=0.5) != default_rdbu
+    @test colormap("RdBu", 10; c=0.5) != default_rdbu
+    @test colormap("RdBu", 10; s=0.5) != default_rdbu
+    @test colormap("RdBu", 10; b=0.5) != default_rdbu
+    @test colormap("RdBu", 10; wcolor=colorant"white") != default_rdbu
+    @test colormap("RdBu", 10; dcolor1=colorant"black") != default_rdbu
+    # `dcolor2` is disabled by the default `d2`(=0)
+    @test colormap("RdBu", 10; dcolor2=colorant"black", d2=1) != default_rdbu
+    @test_throws ArgumentError colormap("RdBu", 10; h=0.5)
 
     # The outputs of `colormap()` were slightly affected by the bug fix of
     # `MSC(h)` (issue #349).
