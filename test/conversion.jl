@@ -1,4 +1,4 @@
-using Colors, FixedPointNumbers, JLD2
+using Colors, FixedPointNumbers
 using Test
 using ColorTypes: eltype_default, parametric3
 
@@ -203,9 +203,7 @@ using ColorTypes: eltype_default, parametric3
     @test hsi.i > 0.96 && hsi.h ≈ 210
 
     # Test accuracy of conversion
-    csconv = jldopen(joinpath(dirname(@__FILE__), "test_conversions.jld2")) do file
-        read(file, "csconv")
-    end
+    include("test_conversions.jl")
 
     # Since `colordiff`(e.g. `DE_2000`) involves a color space conversion, it is
     # not suitable for evaluating the conversion itself. On the other hand,
@@ -259,9 +257,9 @@ using ColorTypes: eltype_default, parametric3
         errmax <= tol
     end
 
-    base_t(i, from_to) = base_color_type(eltype(csconv[i][from_to]))
-    @testset "accuracy test: $(base_t(i,1))-->$(base_t(i,2)) (index $i)" for i = 1:length(csconv)
-        f, t = csconv[i]
+    @testset "accuracy test: $Cfrom-->$Cto" for Cto in keys(csconv), Cfrom in keys(csconv)
+        f = csconv[Cfrom]
+        t = csconv[Cto]
         @test convcompare(f, t, 2e-3, showfailure=false)
     end
 end
