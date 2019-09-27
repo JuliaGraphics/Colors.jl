@@ -284,31 +284,35 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
 
     cname = lowercase(cname)
     if haskey(colormaps_sequential, cname)
+        allowedkeys = [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
         p = copy(colormaps_sequential[cname][1:8])
 
-        allowedkeys = [:h, :w, :d, :c, :s, :b, :wcolor, :dcolor]
         for (k,v) in kvs
-            k in allowedkeys || throw(ArgumentError("Unknown keyword argument $k"))
-            ind = findfirst(allowedkeys, k)
+            ind = findfirst(e->e==k, allowedkeys)
+            ind == nothing && throw(ArgumentError("Unknown keyword argument $k"))
             if ind > 0
                 p[ind] = v
             end
         end
 
-        return sequential_palette(p[1], N, w=p[2], d=p[3], c=p[4], s=p[5], b=p[6], wcolor=p[7], dcolor=p[8], logscale=logscale)
+        return sequential_palette(p[1], N, w=p[2], d=p[3], c=p[4], s=p[5], b=p[6], wcolor=p[7],
+                                  dcolor=p[8], logscale=logscale)
 
     elseif haskey(colormaps_diverging, cname)
+        allowedkeys = [:h1, :h2, :w, :d1, :d2, :c, :s, :b, :wcolor, :dcolor1, :dcolor2]
         p = copy(colormaps_diverging[cname][1:11])
 
         for (k,v) in kvs
-            k in allowedkeys || throw(ArgumentError("Unknown keyword argument $k"))
-            ind = findfirst(allowedkeys, k)
+            ind = findfirst(e->e==k, allowedkeys)
+            ind == nothing && throw(ArgumentError("Unknown keyword argument $k"))
             if ind > 0
                 p[ind] = v
             end
         end
 
-        return diverging_palette(p[1], p[2], N, w=p[3], d1=p[4], d2=p[5], c=p[6], s=p[7], b=p[8], wcolor=p[9], dcolor1=p[10], dcolor2=p[11], mid=mid, logscale=logscale)
+        return diverging_palette(p[1], p[2], N, w=p[3], d1=p[4], d2=p[5], c=p[6], s=p[7],
+                                 b=p[8], wcolor=p[9], dcolor1=p[10], dcolor2=p[11], mid=mid,
+                                 logscale=logscale)
 
     else
         throw(ArgumentError(string("Unknown colormap: ", cname)))
