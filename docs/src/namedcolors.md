@@ -27,6 +27,9 @@ julia> cname = "indianred"
 
 julia> color = parse(Colorant, cname)
 RGB{N0f8}(0.804,0.361,0.361)
+
+julia> color = parse(RGB, cname)
+RGB{N0f8}(0.804,0.361,0.361)
 ```
 
 or
@@ -36,27 +39,50 @@ julia> color = parse(RGB, cname)
 RGB{N0f8}(0.804,0.361,0.361)
 ```
 
-![Whites](assets/figures/namedcolorchart-whites.svg)
+```@example chart
+using Main: NamedColorCharts # hide
+NamedColorCharts.ColorChartSVG("whites") # hide
+```
 
-![Grays](assets/figures/namedcolorchart-grays.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("reds") # hide
+```
 
-![Reds](assets/figures/namedcolorchart-reds.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("oranges") # hide
+```
 
-![Oranges](assets/figures/namedcolorchart-oranges.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("yellows") # hide
+```
 
-![Yellows](assets/figures/namedcolorchart-yellows.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("greens") # hide
+```
 
-![Greens](assets/figures/namedcolorchart-greens.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("cyans") # hide
+```
 
-![Cyans](assets/figures/namedcolorchart-cyans.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("blues") # hide
+```
 
-![Blues](assets/figures/namedcolorchart-blues.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("purples") # hide
+```
 
-![Purples](assets/figures/namedcolorchart-purples.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("pinks") # hide
+```
 
-![Browns](assets/figures/namedcolorchart-browns.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("browns") # hide
+```
 
-![Pinks](assets/figures/namedcolorchart-pinks.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("grays") # hide
+```
 
 These colors can be converted to `RGB{N0f32}` (for example) using:
 

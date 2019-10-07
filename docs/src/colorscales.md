@@ -79,6 +79,12 @@ julia> range(c1, stop=c2, length=15)
  RGB{N0f8}(0.071,0.467,0.0)
  RGB{N0f8}(0.0,0.502,0.0)
 ```
+If you use Julia through Juno or IJulia, you can get the following color swatches.
+```@example
+using Colors # hide
+showable(::MIME"text/plain", ::AbstractVector{C}) where {C<:Colorant} = false # hide
+range(colorant"red", stop=colorant"green", length=15)
+```
 
 ## Weighted color means
 

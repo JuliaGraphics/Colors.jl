@@ -36,6 +36,7 @@ Depending on the source and destination colorspace, this may not be perfectly lo
 
 ## Color Parsing
 
+
 ```jldoctest example
 julia> c = colorant"red"
 RGB{N0f8}(1.0,0.0,0.0)
@@ -75,10 +76,11 @@ The CIE defines a *standard observer*, defining a typical frequency response cur
 
 For instance, conversion from optical wavelength to RGB can be achieved with:
 
-```julia
+```@example
+using Colors # hide
+showable(::MIME"text/plain", ::AbstractVector{C}) where {C<:Colorant} = false # hide
 RGB.(colormatch.(350:10:750))
 ```
-![wavelength to RGB](assets/figures/wavelength_to_RGB.png)
 
 ```@docs
 colormatch
