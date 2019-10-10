@@ -14,6 +14,19 @@ end
 # mod6 supports the input `x` in [-2^28, 2^29]
 mod6(::Type{T}, x::Int32) where T = unsafe_trunc(T, x - 6 * ((widemul(x, 0x2aaaaaaa) + Int64(0x20000000)) >> 0x20))
 
+# TODO: move `pow7` from "src/differences.jl" to here
+
+pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
+
+# `pow5_12` is called from `srgb_compand`.
+# `cbrt` generates a function call, so there is little benefit of `@fastmath`.
+pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
+
+# `pow12_5` is called from `invert_srgb_compand`.
+# x^y ≈ exp(y*log(x)) ≈ exp2(y*log2(y)); the middle form is faster
+@noinline pow12_5(x) = x^2 * exp(0.4 * log(x)) # 12/5 == 2.4 == 2 + 0.4
+
+
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
 function lerp(x, a, b)
