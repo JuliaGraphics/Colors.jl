@@ -12,17 +12,79 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
         """
         <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
              width="25mm" height="25mm" viewBox="0 0 1 1">
-             <rect width="1" height="1" fill="#$(hex(c))" stroke="none"/>
+            <rect width="1" height="1" fill="#$(hex(c))" stroke="none"/>
         </svg>
         """)
     flush(io) # return nothing
 end
+
+function Base.show(io::IO, mime::MIME"image/svg+xml", c::TransparentColor)
+    show(io, mime, [c], max_swatches=default_max_swatches)
+end
+
 
 function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractVector{T};
                    max_swatches::Integer=0) where T <: Color
     mat = Base.ReshapedArray(cs, (1, length(cs)), ())
     show(io, mime, mat, max_swatches=max_swatches)
 end
+
+function Base.show(io::IO, mime::MIME"image/svg+xml",cs::AbstractVector{T};
+                   max_swatches::Integer=0) where T <: TransparentColor
+
+    # use random id to avoid id collision when the SVG is embedded inline
+    id = "pat_" * string(rand(UInt32), base=62)
+    n = length(cs)
+    actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
+    # When `max_swatches` is specified, the following warning is suppressed.
+    if max_swatches == 0 && n > actual_max_swatches
+        trunc = n - actual_max_swatches
+        @warn """Last $trunc swatches (of $n-element Array) are truncated."""
+        yield()
+    end
+    w = min(n * max_swatch_size, max_width)
+
+    scale = n * max_swatch_size / w # 1 for square, >1 for portrait
+    rscale = round(scale, digits=3)
+    pat_scale = rscale == 1 ? "" : """patternTransform="scale($rscale,1)" """
+
+    # the following are with the assumption that scale >= 1 (i.e. not landscape)
+    if rscale == 1
+        shape = "0v1h-1z" # triangle
+    else # rscale > 1
+        simplify(x) = replace(string(round(x, digits=2)), r"^0"=>"")
+        d1 = simplify((1 - 1 / scale) / 2)
+        d2 = simplify((1 + 1 / scale) / 2)
+        shape = """$(d1)V1h-1V$(d2)z""" # trapezoid
+    end
+    write_declaration(io, mime)
+    write(io,
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+             width="$(w)mm" height="25mm" viewBox="0 0 $n 1" stroke="none"
+             preserveAspectRatio="none" shape-rendering="crispEdges">
+        <defs>
+            <pattern id="$id" width=".2" height=".2"
+                     patternUnits="userSpaceOnUse" $pat_scale>
+                <path d="M.1,0h.1v.1h-.2v.1h.1z" fill="#999" opacity=".5" />
+            </pattern>
+        </defs>
+        <rect width="$n" height="1" fill="url(#$id)" />
+        """)
+    for i in 1:min(n, actual_max_swatches)
+        hexc = hex(color(cs[i]))
+        opacity = string(round(alpha(cs[i]), digits=4))
+        op = replace(opacity, r"(^0(?!\.0$))|(\.0$)"=>"")
+        write(io,
+            """
+            <path d="M$i,$shape" fill="#$hexc" />
+            <path d="M$(i-1),0h1v1h-1z" fill="#$hexc" fill-opacity="$op" />
+            """)
+    end
+    write(io, "</svg>")
+    flush(io) # return nothing
+end
+
 
 function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
                    max_swatches::Integer=0) where T <: Color
@@ -68,6 +130,15 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
     flush(io) # return nothing
 end
 
+# TODO: add `show` method for `AbstractMatrix{T} where T<:TransparentColor`
+# Unlike the case of opaque `Color`, hasty generalization has some problems:
+#  - Large matrices (i.e. images) may cause performance (size or speed) issue
+#  - User may expect a raster image to be displayed instead of swatches
+#  - ImageShow.jl(v0.2.0) suppresses only the SVG matrices of opaque `Color`
+#  - Checker pattern is less useful when each swatch is smaller than the checker
+#  - Area-average as reduction method is perceptually meaningless for alpha
+
+
 function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
                       max_swatches::Integer=0) where T <: Color
     m, n = size(cs)
@@ -108,7 +179,9 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
         v = min(m-i+1, d) # cell height
         for y in i:i+v-1, x in j:j+u-1
             rgb = convert(RGB{Float32}, cs[y, x])
-            csum += [red(rgb), green(rgb), blue(rgb)]
+            csum[1] += red(rgb) # avoid array allocation
+            csum[2] += green(rgb)
+            csum[3] += blue(rgb)
         end
         csum /= (u * v)
         c = hex(RGB{Float32}(csum[1], csum[2], csum[3]))

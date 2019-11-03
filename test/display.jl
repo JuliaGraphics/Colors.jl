@@ -1,25 +1,20 @@
 @testset "Display" begin
-    function count_filled_rect(svg::AbstractString)
+    function count_element(pattern::Regex, svg::AbstractString)
         n = 0
         i = firstindex(svg)
         while true
-            r = findnext(r"<rect[^>]*\sfill=\"#[0-9A-F]{6}\"[^>]+>", svg, i)
+            r = findnext(pattern, svg, i)
             r === nothing && return n
             n += 1
             i = last(r)
         end
     end
-
-    function count_colored_stroke(svg::AbstractString)
-        n = 0
-        i = firstindex(svg)
-        while true
-            r = findnext(r"<path[^>]*\sstroke=\"#[0-9A-F]{6}\"[^>]+>", svg, i)
-            r === nothing && return n
-            n += 1
-            i = last(r)
-        end
-    end
+    count_filled_rect(svg) =
+        count_element(r"<rect[^>]*\sfill=\"#[0-9A-F]{6}\"[^>]+>", svg)
+    count_colored_stroke(svg) =
+        count_element(r"<path[^>]*\sstroke=\"#[0-9A-F]{6}\"[^>]+>", svg)
+    count_transparently_filled(svg) =
+        count_element(r"<[^>]*\sfill-opacity=\"[\d.]+\"[^>]+>", svg)
 
     # test ability to add to previously shown array of colors - issue #328
     a = [colorant"white", colorant"red"]
@@ -32,8 +27,8 @@
 
     # the following tests depend on the constants in "src/display.jl"
 
-    # single color
-    # ------------
+    # single `Color`
+    # --------------
     show(buf, "image/svg+xml", colorant"hsl(120, 100%, 50%)")
     single = String(take!(buf))
     @test occursin(r"<svg[^>]+\swidth=\"25mm\"", single)
@@ -42,8 +37,8 @@
     @test occursin(r"</svg>$", single)
 
 
-    # vectors
-    # -------
+    # vectors of `Color`
+    # ------------------
     # square swatches
     v3 = [colorant"red", colorant"green", colorant"blue"]
     show(buf, "image/svg+xml", v3)
@@ -90,8 +85,8 @@
     @test count_colored_stroke(lim_vector3) == 2 # <= max_swatches
 
 
-    # m * n matrices
-    # --------------
+    # m * n matrices of `Color`
+    # -------------------------
     # n * max_swatch_size <= max_width &&
     # m * max_swatch_size <= max_height
     # square swatches
@@ -191,4 +186,62 @@
     # the mean RGB of 2x2 elements
     @test occursin(r"stroke=\"#4080BF\"[^/]*/>\s*</svg>", lim_mat2x2)
     @test count_colored_stroke(lim_mat2x2) == 1 # <= max_swatches
+
+
+    # single `TransparentColor`
+    # -------------------------
+    show(buf, "image/svg+xml", colorant"hsla(120, 100%, 50%, 0.2)")
+    tp_single = String(take!(buf))
+    @test occursin(r"<svg[^>]+\swidth=\"25mm\"", tp_single)
+    @test occursin(r"<svg[^>]+\sheight=\"25mm\"", tp_single)
+    @test occursin(r"M1,0v1h-1z", tp_single) # triangle
+    @test occursin(r"\sfill=\"#00FF00\"", tp_single)
+    @test occursin(r"\sfill-opacity=\".2\"", tp_single)
+    @test occursin(r"</svg>$", tp_single)
+    @test count_transparently_filled(tp_single) == 1
+
+    # vectors of `TransparentColor`
+    # -----------------------------
+    # square swatches
+    tp_v3 = RGBA[colorant"transparent", RGBA(0,0.5,0,0.5), colorant"blue"]
+    show(buf, "image/svg+xml", tp_v3)
+    tp_vector3 = String(take!(buf))
+    @test occursin(r"<svg[^>]*\swidth=\"75mm\"", tp_vector3)
+    @test occursin(r"<svg[^>]*\sheight=\"25mm\"", tp_vector3)
+    @test occursin(r"M1,0v1h-1z", tp_vector3) # triangle
+    @test occursin(r"\sfill-opacity=\"0\"", tp_vector3)
+    @test occursin(r"\sfill-opacity=\".5\"", tp_vector3)
+    @test occursin(r"\sfill-opacity=\"1\"", tp_vector3)
+
+    @test count_transparently_filled(tp_vector3) == 3
+
+    # rectangle swatches
+    show(buf, "image/svg+xml", LuvA.(colormap("Greens", 100), 0.8))
+    tp_vec100 = String(take!(buf))
+    @test occursin(r"<svg[^>]*\swidth=\"180mm\"", tp_vec100) # max_width
+    @test occursin(r"<svg[^>]*\sheight=\"25mm\"", tp_vec100)
+    # scale = 13.889 = 1 / 0.072
+    @test occursin(r"M1,.46V1h-1V.54z", tp_vec100) # 0.5±(0.072/2), trapezoid
+    @test count_transparently_filled(tp_vec100) == 100
+
+    # implicitly limits max swatches (but explicitly warns)
+    # n > default_max_swatches
+    # warning of length
+    warning_tpv = r"Last 16 swatches \(of 16400-element Array\) are truncated\."
+    tp_vec16400 = [LCHabA(70, 40, i/100, i/16400) for i = 1:128*128+16]
+    @test_logs (:warn, warning_tpv) show(buf, "image/svg+xml", tp_vec16400)
+    tp_v16400 = String(take!(buf))
+    @test occursin(r"<svg[^>]*\swidth=\"180mm\"", tp_v16400) # max_width
+    @test occursin(r"<svg[^>]*\sheight=\"25mm\"", tp_v16400)
+    @test count_transparently_filled(tp_v16400) == 128 * 128
+
+    # limits max swatches
+    # the length warning should be suppressed
+    show(buf, MIME"image/svg+xml"(), tp_v3, max_swatches=2)
+    lim_tp_vec3 = String(take!(buf))
+    @test occursin(r"<svg[^>]*\swidth=\"75mm\"", lim_tp_vec3)
+    @test occursin(r"<svg[^>]*\sheight=\"25mm\"", lim_tp_vec3)
+    # viewBox is based on the original length (=3)
+    @test occursin(r"<svg[^>]*\sviewBox=\"0 0 3 1\"", lim_tp_vec3)
+    @test count_transparently_filled(lim_tp_vec3) == 2 # max_swatches
 end
