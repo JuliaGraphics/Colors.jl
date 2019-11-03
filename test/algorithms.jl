@@ -1,7 +1,13 @@
 using Test, Colors
 
 @testset "Algorithms" begin
+    # Test vector space operations
+    @test LMS{Float64}(0.125,0.5,0.0)+LMS{Float64}(0.2,0.7,0.4) ≈ LMS{Float64}(0.325,1.2,0.4) atol=91eps()
+    @test 3LMS{Float64}(0.125,0.5,0.03) ≈ LMS{Float64}(0.375,1.5,0.09) atol=91eps()
 
+    @test XYZ{Float64}(0.125,0.5,0.0)+XYZ{Float64}(0.2,0.7,0.4) ≈ XYZ{Float64}(0.325,1.2,0.4) atol=91eps()
+    @test 3XYZ{Float64}(0.125,0.5,0.03) ≈ XYZ{Float64}(0.375,1.5,0.09) atol=91eps()
+    
     # issue #349
     msc_h_diff = 0
     for hsv_h in 0:0.1:360

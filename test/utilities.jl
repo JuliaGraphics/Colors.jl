@@ -1,6 +1,10 @@
 using Colors, FixedPointNumbers, Test, InteractiveUtils
 
 @testset "Utilities" begin
+
+    @test hex(RGB(1,0.5,0)) == "FF8000"
+    @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
+
     # test utility function weighted_color_mean
     parametric2 = [GrayA,AGray32,AGray]
     parametric3 = ColorTypes.parametric3

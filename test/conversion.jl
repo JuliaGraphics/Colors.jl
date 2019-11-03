@@ -1,6 +1,6 @@
 using Colors, FixedPointNumbers, JLD2
 using Test
-using ColorTypes: eltype_default
+using ColorTypes: eltype_default, parametric3
 
 @testset "Conversion" begin
     r8(x) = reinterpret(N0f8, x)
@@ -17,32 +17,6 @@ using ColorTypes: eltype_default
     a, b = promote(RGB(1,0,0), AGray(0.8))
     @test isa(a, ARGB{Float64}) && isa(b, ARGB{Float64})
 
-    # Color parsing
-    redN0f8 = parse(Colorant, "red")
-    @test colorant"red" == redN0f8
-    @test isa(redN0f8, RGB{N0f8})
-    @test redN0f8 == RGB(1,0,0)
-    redF64 = convert(RGB{Float64}, redN0f8)
-    @test parse(RGB{Float64}, "red") === RGB{Float64}(1,0,0)
-    @test isa(parse(HSV, "blue"), HSV)
-    @test parse(Colorant, "rgb(55,217,127)") === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
-    @test colorant"rgb(55,217,127)" === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
-    @test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{N0f8}(r8(0x37),r8(0xd9),r8(0x7f),0.5)
-    @test parse(Colorant, "rgb(55,217,127)") === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
-    @test parse(Colorant, "rgba(55,217,127,0.5)") === RGBA{N0f8}(r8(0x37),r8(0xd9),r8(0x7f),0.5)
-    @test parse(Colorant, "hsl(120, 100%, 50%)") === HSL{Float32}(120,1.0,.5)
-    @test colorant"hsl(120, 100%, 50%)" === HSL{Float32}(120,1.0,.5)
-    @test parse(RGB{N0f8}, "hsl(120, 100%, 50%)") === convert(RGB{N0f8}, HSL{Float32}(120,1.0,.5))
-    @test_throws ErrorException  parse(Colorant, "hsl(120, 100, 50)")
-    @test parse(Colorant, "#D0FF58") === RGB(r8(0xD0),r8(0xFF),r8(0x58))
-    @test parse(Colorant, "#FB0") === RGB(r8(0xFF),r8(0xBB),r8(0x00))
-
-    @test parse(Colorant, :red) === colorant"red"
-    @test parse(Colorant, colorant"red") === colorant"red"
-
-    @test hex(RGB(1,0.5,0)) == "FF8000"
-    @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
-
     # srgb_compand / invert_srgb_compand
     @test Colors.srgb_compand(0.5) ≈ 0.7353569830524494 atol=eps()
     @test Colors.invert_srgb_compand(0.7353569830524494) ≈ 0.5 atol=eps()
@@ -57,78 +31,62 @@ using ColorTypes: eltype_default
 
     fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
 
+    redF64 = RGB{Float64}(1,0,0)
+    redF32 = RGB{Float32}(1,0,0)
     red24 = reinterpret(RGB24, 0x00ff0000)
     red32 = reinterpret(ARGB32, 0xffff0000)
-    for T in (Float64, Float32, N0f8)
+    @testset "type check: RGB, RGB{$T}" for T in (Float64, Float32, N0f8)
         c = RGB(one(T), zero(T), zero(T))
         @test eltype(c) == T
-        c64 = convert(RGB{Float64}, c)
-        @test typeof(c64) == RGB{Float64}
-        @test c64 == redF64
-        cr = convert(RGB{T}, redF64)
-        @test cr == c
+        @test convert(RGB{Float64}, c) === redF64
+        @test convert(RGB{T}, redF64) == c
     end
     @test RGB(1,0,0) == redF64
-    @test RGB(convert(UInt8, 1),0,0) == redF64
-    @test RGB(convert(UInt8, 1),convert(UInt8, 0),convert(UInt8, 0)) == redF64
+    @test RGB(UInt8(1), 0, 0) == redF64
+    @test RGB(UInt8(1), UInt8(0), UInt8(0)) == redF64 # != colorant"#010000"
     @test convert(RGB, red24) == redF64
 
-    @test convert(Gray{N0f8}, Gray{N0f8}(0.1)) == Gray{N0f8}(0.1)
-    @test convert(Gray{N0f8}, Gray(0.1))     == Gray{N0f8}(0.1)
-    @test convert(Gray{N0f8}, Gray24(0.1))   == Gray{N0f8}(0.1)
-    @test convert(Gray24, Gray{N0f8}(0.1))   == Gray24(0.1)
-
-    @test convert(RGB{N0f8}, Gray{N0f8}(0.1)) == RGB{N0f8}(0.1,0.1,0.1)
-    @test convert(RGB{N0f8}, Gray24(0.1))   == RGB{N0f8}(0.1,0.1,0.1)
-
-    for Cto in ColorTypes.parametric3
-        for Cfrom in ColorTypes.parametric3
-            for Tto in (Float32, Float64)
-                for Tfrom in (Float32, Float64)
-                    c = convert(Cfrom{Tfrom}, redF64)
-                    @test typeof(c) == Cfrom{Tfrom}
-                    c1 = convert(Cto, c)
-                    @test eltype(c1) == Tfrom
-                    c2 = convert(Cto{Tto}, c)
-                    @test typeof(c2) == Cto{Tto}
-                end
-            end
-        end
-    end
-    for Cto in ColorTypes.parametric3
+    @testset "type check: RGB24-->$Cto" for Cto in parametric3
         @test typeof(convert(Cto, red24)) == Cto{eltype_default(Cto)}
         @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
     end
 
+    @testset "type check: C{Float}-->C{Float}" for Cfrom in parametric3, Tfrom in (Float32, Float64)
+        c = convert(Cfrom{Tfrom}, redF64)
+        @test typeof(c) == Cfrom{Tfrom}
+        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in parametric3
+            c1 = convert(Cto, c)
+            @test eltype(c1) == Tfrom
+        end
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in parametric3, Tto in (Float32, Float64)
+            c2 = convert(Cto{Tto}, c)
+            @test typeof(c2) == Cto{Tto}
+        end
+    end
+
+    normed_types = (N0f8, N6f10, N4f12, N2f14, N0f16)
     # Test conversion from Normed types
-    for Cto in ColorTypes.parametric3
-        for Cfrom in fractional_types
-            for Tto in (Float32, Float64)
-                for Tfrom in (N0f8, N6f10, N4f12, N2f14, N0f16)
-                    c = convert(Cfrom{Tfrom}, redF64)
-                    @test typeof(c) == Cfrom{Tfrom}
-                    if !(eltype_default(Cto) <: FixedPoint)
-                        c1 = convert(Cto, c)
-                        @test eltype(c1) == eltype_default(Cto)
-                    end
-                    c2 = convert(Cto{Tto}, c)
-                    @test typeof(c2) == Cto{Tto}
-                end
-            end
+    @testset "type check: C{Normed}-->C{Float}" for Cfrom in fractional_types, Tfrom in normed_types
+        c = convert(Cfrom{Tfrom}, redF64)
+        @test typeof(c) == Cfrom{Tfrom}
+        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in parametric3
+            eltype_default(Cto) <: FixedPoint && continue
+            c1 = convert(Cto, c)
+            @test eltype(c1) == eltype_default(Cto)
+        end
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in parametric3, Tto in (Float32, Float64)
+            c2 = convert(Cto{Tto}, c)
+            @test typeof(c2) == Cto{Tto}
         end
     end
 
     # Test conversion to Normed types
-    for Cto in fractional_types
-        for Cfrom in ColorTypes.parametric3
-            for Tto in (N0f8, N6f10, N4f12, N2f14, N0f16)
-                for Tfrom in (Float32, Float64)
-                    c = convert(Cfrom{Tfrom}, redF64)
-                    @test typeof(c) == Cfrom{Tfrom}
-                    c2 = convert(Cto{Tto}, c)
-                    @test typeof(c2) == Cto{Tto}
-                end
-            end
+    @testset "type check: C{Float}-->C{Normed}" for Cfrom in parametric3, Tfrom in (Float32, Float64)
+        c = convert(Cfrom{Tfrom}, redF64)
+        @test typeof(c) == Cfrom{Tfrom}
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in fractional_types, Tto in normed_types
+            c2 = convert(Cto{Tto}, c)
+            @test typeof(c2) == Cto{Tto}
         end
     end
 
@@ -173,13 +131,6 @@ using ColorTypes: eltype_default
     @test isa(convert(Luv, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float64})
     @test isa(convert(Luv{Float32}, convert(XYZ, redF64), Colors.WP_DEFAULT), Luv{Float32})
 
-    # Test vector space operations
-    @test LMS{Float64}(0.125,0.5,0.0)+LMS{Float64}(0.2,0.7,0.4) ≈ LMS{Float64}(0.325,1.2,0.4) atol=91eps()
-    @test 3LMS{Float64}(0.125,0.5,0.03) ≈ LMS{Float64}(0.375,1.5,0.09) atol=91eps()
-
-    @test XYZ{Float64}(0.125,0.5,0.0)+XYZ{Float64}(0.2,0.7,0.4) ≈ XYZ{Float64}(0.325,1.2,0.4) atol=91eps()
-    @test 3XYZ{Float64}(0.125,0.5,0.03) ≈ XYZ{Float64}(0.375,1.5,0.09) atol=91eps()
-
     #59
     @test Colors.xyz_to_uv(XYZ{Float64}(0.0, 0.0, 0.0)) === (0.0, 0.0)
     @test Colors.xyz_to_uv(XYZ{Float64}(0.0, 1.0, 0.0)) === (0.0, 0.6)
@@ -201,15 +152,34 @@ using ColorTypes: eltype_default
     @test convert(RGB, YIQ(0.0,0.0,-1.0)) == RGB(0,-0.6474*v,0)
 
     # Gray
-    c = Gray{N0f16}(0.8)
-    @test convert(RGB, c) == RGB{N0f16}(0.8,0.8,0.8)
-    @test convert(RGB{Float32}, c) == RGB{Float32}(0.8,0.8,0.8)
+    @test convert(Gray{N0f8}, Gray{N0f8}(0.1)) == Gray{N0f8}(0.1)
+    @test convert(Gray{N0f8}, Gray(0.1))     == Gray{N0f8}(0.1)
+    @test convert(Gray{N0f8}, Gray24(0.1))   == Gray{N0f8}(0.1)
+    @test convert(Gray24, Gray{N0f8}(0.1))   == Gray24(0.1)
 
-    for C in ColorTypes.parametric3
+    @test convert(RGB{N0f8}, Gray{N0f8}(0.1)) == RGB{N0f8}(0.1,0.1,0.1)
+    @test convert(RGB{N0f8}, Gray24(0.1))   == RGB{N0f8}(0.1,0.1,0.1)
+
+    grayN0f16 = Gray{N0f16}(0.8)
+    @test convert(RGB, grayN0f16) == RGB{N0f16}(0.8,0.8,0.8)
+    @test convert(RGB{Float32}, grayN0f16) == RGB{Float32}(0.8,0.8,0.8)
+
+    @testset "$C-->Gray" for C in parametric3
         c = convert(C, RGB(1,1,1))
-        @test gray(convert(Gray, c)) ≈ 1 atol=0.01
-        @test gray(convert(Gray{Float64}, c)) ≈ 1 atol=0.01
+        g1 = convert(Gray, c)
+        @test isa(g1, Gray)
+        @test gray(g1) ≈ 1 atol=0.01
+        g2 = convert(Gray{Float64}, c)
+        @test typeof(g2) == Gray{Float64}
+        @test gray(g2) ≈ 1 atol=0.01
     end
+
+    # Images issue #382
+    @test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
+
+    # https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
+    @test convert(Gray, RGB{N0f8}(0.145,0.145,0.145)) == Gray{N0f8}(0.145)
+
 
     # More AbstractRGB
     r4 = RGB4(1,0,0)
@@ -219,43 +189,71 @@ using ColorTypes: eltype_default
     @test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
     @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
 
+    # Issue #257
+    c = RGB{Float16}(0.9473,0.962,0.9766)
+    hsi = convert(HSI, c)
+    @test hsi.i > 0.96 && hsi.h ≈ 210
+
     # Test accuracy of conversion
     csconv = jldopen(joinpath(dirname(@__FILE__), "test_conversions.jld2")) do file
         read(file, "csconv")
     end
 
-    function convcompare(from, to, eps; showfailure::Bool=false)
+    # Since `colordiff`(e.g. `DE_2000`) involves a color space conversion, it is
+    # not suitable for evaluating the conversion itself. On the other hand,
+    # since the tolerance varies from component to component, a homogeneous
+    # error evaluation function (e.g. a simple sum of differences) is also not
+    # appropriate. Therefore, a series of `diffnorm`, which returns the
+    # normalized Euclidian distance, is defined as follows. They are just for
+    # testing purposes as the cyclicity of hue is ignored.
+    sqd(a, b, s=1.0) = ((float(a) - float(b))/s)^2
+    function diffnorm(a::T, b::T) where {T<:Color3} # RGB,XYZ,xyY,LMS
+        sqrt(sqd(comp1(a), comp1(b)) + sqd(comp2(a), comp2(b)) + sqd(comp3(a),comp3(b)))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{HSV,HSL,HSI}}
+        sqrt(sqd(a.h, b.h, 360) + sqd(a.s, b.s) + sqd(comp3(a), comp3(b)))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{Lab,Luv}}
+        sqrt(sqd(a.l, b.l, 100) + sqd(comp2(a), comp2(b), 200) + sqd(comp3(a), comp3(b), 200))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{LCHab,LCHuv}}
+        sqrt(sqd(a.l, b.l, 100) + sqd(a.c, b.c, 100) + sqd(a.h, b.h, 360))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Union{DIN99,DIN99d,DIN99o}} # csconv has no DIN99 case
+        sqrt(sqd(a.l, b.l, 100) + sqd(a.a, b.a, 100) + sqd(a.b, b.b, 100))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:YIQ}
+        sqrt(sqd(a.y, b.y) + sqd(a.i, b.i, 1.2) + sqd(a.q, b.q, 1.2))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:YCbCr}
+        sqrt(sqd(a.y, b.y, 219) + sqd(a.cb, b.cb, 224) + sqd(a.cr, b.cr, 224))/sqrt(3)
+    end
+
+    for C in ColorTypes.parametric3
+        y = convert(C, RGB(1.0,1.0,0.0))
+        b = convert(C, RGB(0.1,0.1,0.2))
+        diffnorm(y, b) < 0.5 && @warn("`diffnorm` for $C may be broken")
+    end
+
+    function convcompare(from, to, tol; showfailure::Bool=false)
         errmax = 0.0
         for i = 1:length(from)
             t = to[i]
             f = convert(typeof(t), from[i])
-            diff = abs(comp1(t)-comp1(f)) + abs(comp2(t)-comp2(f)) + abs(comp3(t)-comp3(f))
-            mag = abs(comp1(t)+comp1(f)) + abs(comp2(t)+comp2(f)) + abs(comp3(t)+comp3(f))
-            if showfailure && diff>eps*mag
+            diff = diffnorm(t, f)
+            if showfailure && diff>tol
                 original = from[i]
-                @show original f t
+                @show original f t diff
             end
-            errmax = max(errmax, diff/mag)
+            errmax = max(errmax, diff)
         end
-        errmax > eps && @warn("Error on conversions from $(eltype(from)) to $(eltype(to)), relative error = $errmax")
-        errmax <= eps
+        errmax > tol && @warn("Error on conversions from $(eltype(from)) to $(eltype(to)), relative error = $errmax")
+        errmax <= tol
     end
 
-    for i = 1:length(csconv)
+    base_t(i, from_to) = base_color_type(eltype(csconv[i][from_to]))
+    @testset "accuracy test: $(base_t(i,1))-->$(base_t(i,2)) (index $i)" for i = 1:length(csconv)
         f, t = csconv[i]
-        if !convcompare(f, t, 1e-3)
-            println("  index $i")
-        end
+        @test convcompare(f, t, 2e-3, showfailure=false)
     end
-
-    # Images issue #382
-    @test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
-
-    # https://github.com/timholy/Images.jl/pull/445#issuecomment-189866806
-    @test convert(Gray, RGB{N0f8}(0.145,0.145,0.145)) == Gray{N0f8}(0.145)
-
-    # Issue #257
-    c = RGB{Float16}(0.9473,0.962,0.9766)
-    hsi = convert(HSI, c)
-    @test hsi.i > 0.96 && hsi.h ≈ 210
 end
