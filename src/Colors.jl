@@ -35,4 +35,7 @@ include("colormaps.jl")
 include("display.jl")
 include("colormatch.jl")
 
+include("precompile.jl")
+_precompile_()
+
 end # module
