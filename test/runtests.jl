@@ -4,6 +4,7 @@ using Colors, Test
 include("algorithms.jl")
 include("conversion.jl")
 include("colormaps.jl")
+include("colormatch.jl")
 include("colordiff.jl")
 include("din99.jl")
 include("display.jl")

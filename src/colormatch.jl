@@ -15,16 +15,24 @@ Evaluate the CIE standard observer color match function.
 
 # Arguments
 
-- matchingfunction (optional): a type used to specify the matching function. Choices include:
-
-- - `CIE1931_CMF` (the default, the CIE 1931 2° matching function)
-- - `CIE1964_CMF` (the CIE 1964 10° color matching function)
-- - `CIE1931J_CMF` (Judd adjustment to `CIE1931_CMF`)
-- - `CIE1931JV_CMF` (Judd-Vos adjustment to `CIE1931_CMF`)
-
-- wavelength: Wavelength of stimulus in nanometers.
+- `matchingfunction` (optional): a type used to specify the matching function.
+  Choices include:
+  - `CIE1931_CMF` (the default, the CIE 1931 2° matching function)
+  - `CIE1964_CMF` (the CIE 1964 10° color matching function)
+  - `CIE1931J_CMF` (Judd adjustment to `CIE1931_CMF`)
+  - `CIE1931JV_CMF` (Judd-Vos adjustment to `CIE1931_CMF`)
+  - `CIE2006_2_CMF` (transformed from the CIE 2006 2° LMS cone fundamentals)
+  - `CIE2006_10_CMF` (transformed from the CIE 2006 10° LMS cone fundamentals)
+- `wavelength`: Wavelength of stimulus in nanometers.
 
 Returns the XYZ value of perceived color.
+
+!!! note
+    As of February 2020, only `CIE1931_CMF` and `CIE1964_CMF` have been
+    standardized by the ISO/CIE. `CIE2006_2_CMF` and `CIE2006_10_CMF` are
+    proposals which have yet to be ratified by the CIE, even though they are
+    sometimes referred to as CIE 2012 CMFs.
+
 """
 function colormatch(wavelen::Real)
     return colormatch(CIE1931_CMF, wavelen)
@@ -42,15 +50,15 @@ function interpolate_table(tbl, start, step, wavelen)
     i = (wavelen - start) / step
 
     a = floor(Integer, i) + 1
-    ac = 1 <= a <= n ? tbl[a,:] : [0.0, 0.0, 0.0]
+    @inbounds ac = 1 <= a <= n ? tbl[a,:] : [0.0, 0.0, 0.0]
 
     b = ceil(Integer, i) + 1
-    bc = 1 <= b <= n ? tbl[b,:] : [0.0, 0.0, 0.0]
+    @inbounds bc = 1 <= b <= n ? tbl[b,:] : [0.0, 0.0, 0.0]
 
     p = i % 1.0
     ac = p * bc + (1.0 - p) * ac
 
-    return XYZ(ac[1], ac[2], ac[3])
+    return @inbounds XYZ(ac[1], ac[2], ac[3])
 end
 
 
@@ -1179,7 +1187,7 @@ function colormatch(::Type{CIE2006_2_CMF}, wavelen::Real)
     return interpolate_table(cie2006_2deg_xyz_cmf_table, 380.0, 1.0, wavelen)
 end
 
-const cie2006_2deg_xyz_cmftable=
+const cie2006_2deg_xyz_cmf_table=
     [0.000000e+00  0.000000e+00  0.000000e+00;
      0.000000e+00  0.000000e+00  0.000000e+00;
      0.000000e+00  0.000000e+00  0.000000e+00;
