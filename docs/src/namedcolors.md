@@ -12,7 +12,7 @@ color_names = Dict(
 
 Named colors are available as `RGB{N0f8}` using:
 
-```julia
+```jldoctest example
 julia> using Colors
 
 julia> color = colorant"indianred"
@@ -21,7 +21,7 @@ RGB{N0f8}(0.804,0.361,0.361)
 
 or
 
-```julia
+```jldoctest example
 julia> cname = "indianred"
 "indianred"
 
@@ -29,32 +29,78 @@ julia> color = parse(Colorant, cname)
 RGB{N0f8}(0.804,0.361,0.361)
 ```
 
-![Whites](assets/figures/namedcolorchart-whites.svg)
+or
 
-![Grays](assets/figures/namedcolorchart-grays.svg)
+```jldoctest example
+julia> color = parse(RGB, cname)
+RGB{N0f8}(0.804,0.361,0.361)
+```
 
-![Reds](assets/figures/namedcolorchart-reds.svg)
+```@example chart
+using Main: NamedColorCharts # hide
+NamedColorCharts.ColorChartSVG("whites") # hide
+```
 
-![Oranges](assets/figures/namedcolorchart-oranges.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("reds") # hide
+```
 
-![Yellows](assets/figures/namedcolorchart-yellows.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("oranges") # hide
+```
 
-![Greens](assets/figures/namedcolorchart-greens.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("yellows") # hide
+```
 
-![Cyans](assets/figures/namedcolorchart-cyans.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("greens") # hide
+```
 
-![Blues](assets/figures/namedcolorchart-blues.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("cyans") # hide
+```
 
-![Purples](assets/figures/namedcolorchart-purples.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("blues") # hide
+```
 
-![Browns](assets/figures/namedcolorchart-browns.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("purples") # hide
+```
 
-![Pinks](assets/figures/namedcolorchart-pinks.svg)
+```@example chart
+NamedColorCharts.ColorChartSVG("pinks") # hide
+```
+
+```@example chart
+NamedColorCharts.ColorChartSVG("browns") # hide
+```
+
+```@example chart
+NamedColorCharts.ColorChartSVG("grays") # hide
+```
+
+!!! info
+    Colors.jl supports the CSS/SVG named colors and the X11 named colors. The
+    CSS/SVG named colors come from the 16 colors defined in HTML3.2 and the X11
+    named colors. There are some unnatural definitions due to the different
+    origins. For example, "LightGray" is lighter than "Gray", but "DarkGray" is
+    also lighter than "Gray".
+
 
 These colors can be converted to `RGB{N0f32}` (for example) using:
 
-```julia
+```jldoctest example
 julia> using FixedPointNumbers
+
 julia> RGB{N0f32}(color)
+RGB{N0f32}(0.803922,0.360784,0.360784)
+```
+
+or
+
+```jldoctest example
+julia> parse(RGB{N0f32}, cname)
 RGB{N0f32}(0.803922,0.360784,0.360784)
 ```

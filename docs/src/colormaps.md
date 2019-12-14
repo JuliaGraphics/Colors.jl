@@ -25,20 +25,45 @@ The currently supported colormap names are:
 
 ### Sequential
 
-| Name       | Example                                       |
-| ---------- | -------                                       |
-| Blues      | ![Blues](assets/figures/Blues.png)            |
-| Greens     | ![Greens](assets/figures/Greens.png)          |
-| Grays      |                                               |
-| Oranges    | ![Oranges](assets/figures/Oranges.png)        |
-| Purples    | ![Purples](assets/figures/Purples.png)        |
-| Reds       | ![Reds](assets/figures/Reds.png)              |
+- "Blues"
+```@example colormap
+using Colors # hide
+using Main: Colormaps # hide
+Colormaps.ColormapSVG(colormap("Blues", 32)) # hide
+```
+
+- "Greens"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Greens", 32)) # hide
+```
+
+- "Grays"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Grays", 32)) # hide
+```
+
+- "Oranges"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Oranges", 32)) # hide
+```
+
+- "Purples"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Purples", 32)) # hide
+```
+
+- "Reds"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Reds", 32)) # hide
+```
 
 ### Diverging
 
-| Name       | Example                                       |
-| ---------- | -------                                       |
-| RdBu (from red to blue) | ![RdBu](assets/figures/RdBu.png)  |
+- "RdBu" (from red to blue)
+```@example colormap
+Colormaps.ColormapSVG(colormap("RdBu", 32)) # hide
+```
+
 
 ```@docs
 colormap

@@ -25,29 +25,33 @@ Colors.jl allows you to convert from one colorspace to another using the `conver
 
 For example:
 
-```julia
-convert(RGB, HSL(270, 0.5, 0.5))
+```jldoctest example
+julia> using Colors
+
+julia> convert(RGB, HSL(270, 0.5, 0.5))
+RGB{Float64}(0.5,0.25,0.75)
 ```
 
 Depending on the source and destination colorspace, this may not be perfectly lossless.
 
 ## Color Parsing
 
-```
+
+```jldoctest example
 julia> c = colorant"red"
-RGB{N0f8}(1.0, 0.0, 0.0)
+RGB{N0f8}(1.0,0.0,0.0)
 
 julia> parse(Colorant, "red")
-RGB{N0f8}(1.0, 0.0, 0.0)
+RGB{N0f8}(1.0,0.0,0.0)
 
 julia> parse(Colorant, HSL(1, 1, 1))
-HSL{Float32}(1.0f0, 1.0f0, 1.0f0)
+HSL{Float32}(1.0f0,1.0f0,1.0f0)
 
 julia> colorant"#FF0000"
-RGB{N0f8}(1.0, 0.0, 0.0)
+RGB{N0f8}(1.0,0.0,0.0)
 
 julia> parse(Colorant, RGBA(1, 0.5, 1, 0.5))
-RGBA{Float64}(1.0, 0.5, 1.0, 0.5)
+RGBA{Float64}(1.0,0.5,1.0,0.5)
 ```
 
 You can parse any [CSS color specification](https://developer.mozilla.org/en-US/docs/CSS/color) with the exception of `currentColor`.
@@ -72,10 +76,11 @@ The CIE defines a *standard observer*, defining a typical frequency response cur
 
 For instance, conversion from optical wavelength to RGB can be achieved with:
 
-```julia
+```@example
+using Colors # hide
+showable(::MIME"text/plain", ::AbstractVector{C}) where {C<:Colorant} = false # hide
 RGB.(colormatch.(350:10:750))
 ```
-![wavelength to RGB](assets/figures/wavelength_to_RGB.png)
 
 ```@docs
 colormatch
@@ -97,8 +102,8 @@ whitebalance
 
 The `colordiff` function gives an approximate value for the difference between two colors.
 
-```
-julia> colordiff(colorant"red", parse(Colorant, HSB(360, 0.75, 1)))
+```jldoctest example
+julia> colordiff(colorant"red", parse(Colorant, HSV(360, 0.75, 1)))
 8.178248292426845
 ```
 
