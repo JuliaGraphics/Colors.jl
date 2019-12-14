@@ -27,9 +27,6 @@ julia> cname = "indianred"
 
 julia> color = parse(Colorant, cname)
 RGB{N0f8}(0.804,0.361,0.361)
-
-julia> color = parse(RGB, cname)
-RGB{N0f8}(0.804,0.361,0.361)
 ```
 
 or
@@ -83,6 +80,14 @@ NamedColorCharts.ColorChartSVG("browns") # hide
 ```@example chart
 NamedColorCharts.ColorChartSVG("grays") # hide
 ```
+
+!!! info
+    Colors.jl supports the CSS/SVG named colors and the X11 named colors. The
+    CSS/SVG named colors come from the 16 colors defined in HTML3.2 and the X11
+    named colors. There are some unnatural definitions due to the different
+    origins. For example, "LightGray" is lighter than "Gray", but "DarkGray" is
+    also lighter than "Gray".
+
 
 These colors can be converted to `RGB{N0f32}` (for example) using:
 
