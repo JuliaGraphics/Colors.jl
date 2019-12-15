@@ -779,11 +779,17 @@ end
 const unsafe_trunc = Base.unsafe_trunc
 
 convert(::Type{Gray{T}}, x::Gray{T}) where {T} = x
-convert(::Type{Gray{T}}, x::Gray) where {T} = Gray{T}(gray(x))
-function convert(::Type{Gray{T}}, x::AbstractRGB{T}) where {T<:Normed}
-    TU = FixedPointNumbers.rawtype(T)
-    val = min(typemax(TU), 0.299f0*reinterpret(x.r) + 0.587f0*reinterpret(x.g) + 0.114f0*reinterpret(x.b))
-    return Gray{T}(T(round(TU, val), 0))
+convert(::Type{Gray24}, x::Gray24) = x
+
+convert(::Type{G}, x::AbstractGray) where {G<:AbstractGray} = G(gray(x))
+
+function convert(::Type{G}, x::AbstractRGB{T}) where {G<:AbstractGray,T<:Normed}
+    TU, Tf = FixedPointNumbers.rawtype(T), floattype(T)
+    val = min(typemax(TU), Tf(0.299)*reinterpret(red(x)) + Tf(0.587)*reinterpret(green(x)) + Tf(0.114)*reinterpret(blue(x)))
+    return G(reinterpret(T, round(TU, val)))
 end
-convert(::Type{Gray{T}}, x::AbstractRGB) where {T} = convert(Gray{T}, 0.299f0*x.r + 0.587f0*x.g + 0.114f0*x.b)
-convert(::Type{Gray{T}}, x::Color) where {T} = convert(Gray{T}, convert(RGB{T}, x))
+convert(::Type{G}, x::AbstractRGB) where {G<:AbstractGray} =
+    G(0.299f0*red(x) + 0.587f0*green(x) + 0.114f0*blue(x))
+
+convert(::Type{G}, x::Color) where {G<:AbstractGray} =
+    convert(G, convert(RGB, x))
