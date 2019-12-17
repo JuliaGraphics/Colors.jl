@@ -173,6 +173,9 @@ using ColorTypes: eltype_default, parametric3
         @test typeof(g2) == Gray{Float64}
         @test gray(g2) ≈ 1 atol=0.01
     end
+    # Issue #377
+    @test convert(Gray, RGB24(1,0,0)) === convert(Gray, RGB(1,0,0)) === Gray{N0f8}(0.298)
+    @test convert(Gray24, RGB(1,0,0)) === Gray24(0.298)
 
     # Images issue #382
     @test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
