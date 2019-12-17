@@ -10,10 +10,10 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-julia = "1"
 ColorTypes = "0.7, 0.8"
-FixedPointNumbers = "0.6"
+FixedPointNumbers = "0.6, 0.7"
 Reexport = "0.2"
+julia = "1"
 
 [extras]
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
