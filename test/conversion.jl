@@ -29,7 +29,7 @@ using ColorTypes: eltype_default, parametric3
         @warn "Optimization in `[invert_]srgb_compand()` may have the opposite effect."
     end
 
-    fractional_types = (RGB, BGR, RGB1, RGB4)  # types that support Fractional
+    fractional_types = (RGB, BGR, XRGB, RGBX)  # types that support Fractional
 
     redF64 = RGB{Float64}(1,0,0)
     redF32 = RGB{Float32}(1,0,0)
@@ -185,11 +185,11 @@ using ColorTypes: eltype_default, parametric3
 
 
     # More AbstractRGB
-    r4 = RGB4(1,0,0)
+    r4 = RGBX(1,0,0)
     @test convert(RGB, r4) == RGB(1,0,0)
     @test convert(RGB{N0f8}, r4) == RGB{N0f8}(1,0,0)
-    @test convert(RGB4{N0f8}, r4) == RGB4{N0f8}(1,0,0)
-    @test convert(RGB4{Float32}, r4) == RGB4{Float32}(1,0,0)
+    @test convert(RGBX{N0f8}, r4) == RGBX{N0f8}(1,0,0)
+    @test convert(RGBX{Float32}, r4) == RGBX{Float32}(1,0,0)
     @test convert(BGR{Float32}, r4) == BGR{Float32}(1,0,0)
 
     # Issue #257

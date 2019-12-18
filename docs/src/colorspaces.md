@@ -5,7 +5,7 @@
 
 The colorspaces used by Colors are defined in [ColorTypes](https://github.com/JuliaGraphics/ColorTypes.jl). Briefly, the defined spaces are:
 
-- Red-Green-Blue spaces: `RGB`, `BGR`, `RGB1`, `RGB4`, `RGB24`, plus transparent versions `ARGB`, `RGBA`, `ABGR`, `BGRA`, and `ARGB32`.
+- Red-Green-Blue spaces: `RGB`, `BGR`, `XRGB`, `RGBX`, `RGB24`, plus transparent versions `ARGB`, `RGBA`, `ABGR`, `BGRA`, and `ARGB32`.
 
 - `HSV`, `HSL`, `HSI`, plus all 6 transparent variants (`AHSV`, `HSVA`, `AHSL`, `HSLA`, `AHSI`, `HSIA`)
 

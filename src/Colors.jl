@@ -5,6 +5,8 @@ using Reexport
 using Printf
 
 @reexport using ColorTypes
+Base.@deprecate_binding RGB1 XRGB
+Base.@deprecate_binding RGB4 RGBX
 
 # TODO: why these types are defined here? Can they move to ColorTypes.jl?
 AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
