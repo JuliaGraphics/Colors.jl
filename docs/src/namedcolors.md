@@ -3,8 +3,10 @@
 The names of available colors are stored in alphabetical order in the dictionary `Colors.color_names`:
 
 ```julia
-color_names = Dict(
+const color_names = Dict(
+    "alice blue"           => (240, 248, 255),
     "aliceblue"            => (240, 248, 255),
+    "antique white"        => (250, 235, 215),
     "antiquewhite"         => (250, 235, 215),
     "antiquewhite1"        => (255, 239, 219),
     ...
@@ -88,6 +90,8 @@ NamedColorCharts.ColorChartSVG("grays") # hide
     origins. For example, "LightGray" is lighter than "Gray", but "DarkGray" is
     also lighter than "Gray".
 
+    The X11 named colors include 96 traditional names with spaces (e.g. "deep
+    sky blue"), but they are invalid as the CSS/SVG named colors.
 
 These colors can be converted to `RGB{N0f32}` (for example) using:
 

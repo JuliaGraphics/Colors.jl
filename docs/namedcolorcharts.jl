@@ -77,14 +77,18 @@ function ColorChartSVG(colorcategory)
         if len <= 12
             write(io, """<tspan x="$cx" y="4.2">$name</tspan>""")
         else
-            m = match(r"^(dark|pale|light|lemon|medium|blanched|(?:.+(?=white|blue|purple|blush)))(.+)$", name)
-            if m != nothing
-                write(io, """<tspan x="$cx" y="2.3">$(m.captures[1])</tspan>""")
-                write(io, """<tspan x="$cx" y="4.5">$(m.captures[2])</tspan>""")
+            if name == "light goldenrod yellow"
+                name1, name2 = "light goldenrod", " yellow"
             else
-                write(io, """<tspan x="$cx" y="2.3">$(name[1:(len÷2)])</tspan>""")
-                write(io, """<tspan x="$cx" y="4.5">$(name[(len÷2+1):end])</tspan>""")
+                m = match(r"^(dark|pale|light|lemon|medium|blanched|(?:.+(?=white|blue|purple|blush)))(.+)$", name)
+                if m != nothing
+                    name1, name2 = m.captures[1], m.captures[2]
+                else
+                    name1, name2 = name[1:(len÷2)], name[(len÷2+1):end]
+                end
             end
+            write(io, """<tspan x="$cx" y="2.3">$name1</tspan>""")
+            write(io, """<tspan x="$cx" y="4.5">$name2</tspan>""")
         end
         write(io, "</text>")
 
@@ -133,9 +137,9 @@ function classifycolornames(colornames)
             push!(colorcategories["oranges"], colorname)
         elseif occursin(r"chartreuse|olive|marine|lime|green", colorname)
             push!(colorcategories["greens"], colorname)
-        elseif occursin(r"maroon|violetred|pink", colorname)
+        elseif occursin(r"maroon|violet ?red|pink", colorname)
             push!(colorcategories["pinks"], colorname)
-        elseif occursin(r"mistyrose|plum|thistle|lavender|violet|orchid|magenta|fuchsia|purple", colorname)
+        elseif occursin(r"rose|plum|thistle|lavender|violet|orchid|magenta|fuchsia|purple", colorname)
             push!(colorcategories["purples"], colorname)
         elseif occursin(r"azure|gains|slate|navy|indigo|blue", colorname)
             push!(colorcategories["blues"], colorname)

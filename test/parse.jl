@@ -12,6 +12,8 @@ using FixedPointNumbers
     @test parse(RGB{Float64}, "red") === RGB{Float64}(1,0,0)
     @test isa(parse(HSV, "blue"), HSV)
     @test_throws ErrorException parse(Colorant, "p ink")
+    @test parse(Colorant, "Sea Green") === RGB{N0f8}(r8(0x2E),r8(0x8B),r8(0x57)) # issue #386
+    @test_throws ErrorException parse(Colorant, "Sea Green 4")
     @test parse(Colorant, "transparent") === RGBA{N0f8}(0,0,0,0)
     @test parse(Colorant, "\nSeaGreen ") === RGB{N0f8}(r8(0x2E),r8(0x8B),r8(0x57))
 
