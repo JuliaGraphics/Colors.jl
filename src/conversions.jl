@@ -363,7 +363,7 @@ cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, convert(Luv{T}, c))
 function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
     # Go back to C-h space
-    C = sqrt(c.a^2 + c.b^2)
+    C = chroma(c)
     h = atan(c.b, c.a) - 50π/180
 
     # Intermediate terms
@@ -443,7 +443,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99) where T
     ke = 1
 
     # Calculate Chroma (C99) in the DIN99 space
-    cc = sqrt(c.a^2 + c.b^2)
+    cc = chroma(c)
 
     # Temporary variable for chroma
     g = (exp(0.045*cc*kch*ke)-1)/0.045
@@ -475,7 +475,7 @@ function cnvt(::Type{Lab{T}}, c::DIN99o) where T
     ke = 1
 
     # Calculate Chroma (C99) in the DIN99o space
-    co = sqrt(c.a^2 + c.b^2)
+    co = chroma(c)
 
     # hue angle h99o
     h = atan(c.b, c.a) - 26π/180
@@ -539,9 +539,7 @@ cnvt(::Type{Luv{T}}, c::Color3) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHuv{T}}, c::Luv) where T
-    h = atand(c.v, c.u)
-    while h < 0;   h += 360; end
-    LCHuv{T}(c.l, sqrt(c.u^2 + c.v^2), h)
+    LCHuv{T}(c.l, chroma(c), hue(c))
 end
 
 
@@ -552,9 +550,7 @@ cnvt(::Type{LCHuv{T}}, c::Color3) where {T} = cnvt(LCHuv{T}, convert(Luv{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHab{T}}, c::Lab) where T
-    h = atand(c.b, c.a)
-    while h < 0;   h += 360; end
-    LCHab{T}(c.l, sqrt(c.a^2 + c.b^2), h)
+    LCHab{T}(c.l, chroma(c), hue(c))
 end
 
 

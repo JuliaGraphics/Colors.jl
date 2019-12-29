@@ -105,15 +105,12 @@ function _colordiff(ai::Color, bi::Color, m::DE_2000)
     b_Lab = convert(Lab, bi)
 
     # Calculate some necessary factors from the L*a*b* values
-    ac, bc = sqrt(a_Lab.a^2 + a_Lab.b^2), sqrt(b_Lab.a^2 + b_Lab.b^2)
-    mc = (ac + bc)/2
+    mc = (chroma(a_Lab) + chroma(b_Lab))/2
     g = (1 - sqrt(pow7(mc) / (pow7(mc) + twentyfive7))) / 2
-    a_Lab = Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b)
-    b_Lab = Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b)
 
     # Convert to L*C*h, where the remainder of the calculations are performed
-    a = convert(LCHab, a_Lab)
-    b = convert(LCHab, b_Lab)
+    a = convert(LCHab, Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b))
+    b = convert(LCHab, Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b))
 
     # Calculate the delta values for each channel
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
@@ -309,12 +306,10 @@ function _colordiff(ai::Color, bi::Color, m::DE_BFD)
     # Convert into LCh with the proper white point
     a_Lab = convert(Lab, a_XYZ, m.wp)
     b_Lab = convert(Lab, b_XYZ, m.wp)
-    a1 = convert(LCHab, a_Lab)
-    b1 = convert(LCHab, b_Lab)
 
     # Substitute in the different L values into the L*C*h values
-    a = LCHab(la, a1.c, a1.h)
-    b = LCHab(lb, b1.c, b1.h)
+    a = LCHab(la, chroma(a_Lab), hue(a_Lab))
+    b = LCHab(lb, chroma(b_Lab), hue(b_Lab))
 
     # Calculate deltas in each direction
     dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
