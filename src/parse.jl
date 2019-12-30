@@ -122,6 +122,20 @@ function _parse_colorant(desc::AbstractString)
         return RGBA{N0f8}(0,0,0,0)
     end
 
+    wo_spaces = replace(ldesc, r"(?<=[^ ]{3}) (?=[^ ]{3})" => "")
+    c = get(color_names, wo_spaces, nothing)
+    if c != nothing
+        camel = replace(titlecase(ldesc), " " => "")
+        Base.depwarn(
+            """
+            The X11 color names with spaces are not recommended because they are not allowed in the SVG/CSS.
+            Use "$camel" or "$wo_spaces" instead.
+            """, :parse)
+        return RGB{N0f8}(reinterpret(N0f8, UInt8(c[1])),
+                         reinterpret(N0f8, UInt8(c[2])),
+                         reinterpret(N0f8, UInt8(c[3])))
+    end
+
     error("Unknown color: ", desc)
 end
 
@@ -159,6 +173,10 @@ A literal Colorant will parse according to the `desc` string (usually returning 
 - an `HSLA` color if `hsla(h, s, l, a)` was used
 
 - a specific `Colorant` type as specified in the first argument
+
+!!! note
+    The X11 color names with spaces (e.g. "sea green") are not recommended
+    because they are not allowed in the SVG/CSS.
 """
 Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant} = _parse_colorant(C, supertype(C), desc)
 Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
