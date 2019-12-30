@@ -176,6 +176,11 @@ using ColorTypes: eltype_default, parametric3
     # Issue #377
     @test convert(Gray, RGB24(1,0,0)) === convert(Gray, RGB(1,0,0)) === Gray{N0f8}(0.298)
     @test convert(Gray24, RGB(1,0,0)) === Gray24(0.298)
+    # Check for roundoff error
+    for N in (N0f8, N0f16, N0f32)
+        @test convert(Gray{N}, RGB{N}(1,1,1)) === Gray{N}(1)
+    end
+    @test gray(convert(Gray{N0f64}, RGB{N0f64}(1,1,1))) ≈ 1.0
 
     # Images issue #382
     @test convert(Gray, RGBA(1,1,1,1)) == Gray(N0f8(1))
