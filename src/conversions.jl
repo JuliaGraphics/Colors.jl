@@ -785,7 +785,11 @@ convert(::Type{G}, x::AbstractGray) where {G<:AbstractGray} = G(gray(x))
 
 function convert(::Type{G}, x::AbstractRGB{T}) where {G<:AbstractGray,T<:Normed}
     TU, Tf = FixedPointNumbers.rawtype(T), floattype(T)
-    val = min(typemax(TU), Tf(0.299)*reinterpret(red(x)) + Tf(0.587)*reinterpret(green(x)) + Tf(0.114)*reinterpret(blue(x)))
+    if sizeof(TU) < sizeof(UInt)
+        val = Tf(0.001)*(299*reinterpret(red(x)) + 587*reinterpret(green(x)) + 114*reinterpret(blue(x)))
+    else
+        val = Tf(0.299)*reinterpret(red(x)) + Tf(0.587)*reinterpret(green(x)) + Tf(0.114)*reinterpret(blue(x))
+    end
     return G(reinterpret(T, round(TU, val)))
 end
 convert(::Type{G}, x::AbstractRGB) where {G<:AbstractGray} =
