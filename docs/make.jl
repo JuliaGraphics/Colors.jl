@@ -14,7 +14,7 @@ makedocs(
     clean = false,
     modules = [Colors],
     format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true",
-                             assets = ["assets/resize_svg.js"]),
+                             assets = ["assets/resize_svg.js", "assets/favicon.ico"]),
     sitename = "Colors",
     pages    = Any[
         "Introduction"             => "index.md",
