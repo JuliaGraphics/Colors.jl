@@ -21,11 +21,13 @@ using FixedPointNumbers
     @test parse(Colorant, "#D0FF58") === RGB(r8(0xD0),r8(0xFF),r8(0x58))
     @test parse(Colorant, "0xd0ff58") === RGB(r8(0xD0),r8(0xFF),r8(0x58))
     @test parse(Colorant, "#FB0") === RGB(r8(0xFF),r8(0xBB),r8(0x00))
-    @test_throws ErrorException parse(Colorant, "#FB0A")
+    @test parse(Colorant, "#FB0A") === RGBA(r8(0xFF),r8(0xBB),r8(0x00),r8(0xAA))
+    @test parse(Colorant, "0xFB0A") === ARGB(r8(0xBB),r8(0x00),r8(0xAA),r8(0xFF))
+    @test parse(Colorant, "#FFBB00AA") === RGBA(r8(0xFF),r8(0xBB),r8(0x00),r8(0xAA))
+    @test parse(Colorant, "0xFFBB00AA") === ARGB(r8(0xBB),r8(0x00),r8(0xAA),r8(0xFF))
     @test_throws ErrorException parse(Colorant, "#BAD05")
     @test_throws ErrorException parse(Colorant, "#BAD0007")
-    @test_throws ErrorException parse(Colorant, "#FFBB00AA") # not supported yet
-    @test_throws ErrorException parse(Colorant, "0xFFBB00AA") # not supported yet
+    @test_throws ErrorException parse(Colorant, "#BAD000009")
 
     # rgb()
     @test parse(Colorant, "rgb(55,217,127)")      === RGB{N0f8}(r8(0x37),r8(0xd9),r8(0x7f))
