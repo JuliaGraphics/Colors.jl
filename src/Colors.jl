@@ -2,7 +2,6 @@ module Colors
 
 using FixedPointNumbers
 using Reexport
-using Printf
 
 @reexport using ColorTypes
 Base.@deprecate_binding RGB1 XRGB
@@ -13,7 +12,7 @@ AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
 AbstractGrayA{C<:AbstractGray,T} = ColorAlpha{C,T,2}
 
 import Base: ==, +, -, *, /
-import Base: convert, eltype, hex, isless, range, show, typemin, typemax
+import Base: convert, eltype, isless, range, show, typemin, typemax
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,

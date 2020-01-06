@@ -2,8 +2,101 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
 
 @testset "Utilities" begin
 
-    @test hex(RGB(1,0.5,0)) == "FF8000"
-    @test hex(RGBA(1,0.5,0,0.25)) == "40FF8000"
+    @testset "hex" begin
+        base_hex = @test_logs (:warn, r"Base\.hex\(c\) has been moved") Base.hex(RGB(1,0.5,0))
+        @test base_hex == hex(RGB(1,0.5,0))
+
+        @test hex(RGB(1,0.5,0)) == "FF8000"
+        rgba = @test_logs (:warn, r"will soon be changed") hex(RGBA(1,0.5,0,0.25))
+        @test rgba == "40FF8000" # TODO: change it to "FF800040"
+        @test hex(ARGB(1,0.5,0,0.25)) == "40FF8000"
+        @test hex(HSV(30,1.0,1.0)) == "FF8000"
+
+        @test hex(RGB(1,0.5,0), :AUTO) == "FF8000"
+        @test hex(RGBA(1,0.5,0,0.25), :AUTO) == "FF800040"
+        @test hex(ARGB(1,0.5,0,0.25), :AUTO) == "40FF8000"
+        @test hex(HSV(30,1.0,1.0), :AUTO) == "FF8000"
+        @test hex(RGB(1,0.5,0), :SomethingUnknown) == "FF8000"
+
+        @test hex(RGB(1,0.5,0), :S) == "FF8000"
+        @test hex(RGBA(1,0.5,0,0.25), :S) == "FF800040"
+        @test hex(ARGB(1,0.5,0,0.25), :S) == "40FF8000"
+        @test hex(RGB(1,0.533,0), :S) == "F80"
+        @test hex(RGBA(1,0.533,0,0.267), :S) == "F804"
+        @test hex(ARGB(1,0.533,0,0.267), :S) == "4F80"
+
+        @test hex(RGB(1,0.5,0), :s) == "ff8000"
+        @test hex(RGBA(1,0.5,0,0.25), :s) == "ff800040"
+        @test hex(ARGB(1,0.5,0,0.25), :s) == "40ff8000"
+        @test hex(RGB(1,0.533,0), :s) == "f80"
+        @test hex(RGBA(1,0.533,0,0.267), :s) == "f804"
+        @test hex(ARGB(1,0.533,0,0.267), :s) == "4f80"
+
+        @test hex(RGB(1,0.5,0), :RGB) == "F80"
+        @test hex(RGBA(1,0.5,0,0.25), :RGB) == "F80"
+        @test hex(ARGB(1,0.5,0,0.25), :RGB) == "F80"
+        @test hex(HSV(30,1.0,1.0), :RGB) == "F80"
+
+        @test hex(RGB(1,0.5,0), :rgb) == "f80"
+        @test hex(RGBA(1,0.5,0,0.25), :rgb) == "f80"
+        @test hex(ARGB(1,0.5,0,0.25), :rgb) == "f80"
+        @test hex(HSV(30,1.0,1.0), :rgb) == "f80"
+
+        @test hex(RGB(1,0.5,0), :ARGB) == "FF80"
+        @test hex(RGBA(1,0.5,0,0.25), :ARGB) == "4F80"
+        @test hex(ARGB(1,0.5,0,0.25), :ARGB) == "4F80"
+        @test hex(HSV(30,1.0,1.0), :ARGB) == "FF80"
+
+        @test hex(RGB(1,0.5,0), :argb) == "ff80"
+        @test hex(RGBA(1,0.5,0,0.25), :argb) == "4f80"
+        @test hex(ARGB(1,0.5,0,0.25), :argb) == "4f80"
+        @test hex(HSV(30,1.0,1.0), :argb) == "ff80"
+
+        @test hex(RGB(1,0.5,0), :RGBA) == "F80F"
+        @test hex(RGBA(1,0.5,0,0.25), :RGBA) == "F804"
+        @test hex(ARGB(1,0.5,0,0.25), :RGBA) == "F804"
+        @test hex(HSV(30,1.0,1.0), :RGBA) == "F80F"
+
+        @test hex(RGB(1,0.5,0), :rgba) == "f80f"
+        @test hex(RGBA(1,0.5,0,0.25), :rgba) == "f804"
+        @test hex(ARGB(1,0.5,0,0.25), :rgba) == "f804"
+        @test hex(HSV(30,1.0,1.0), :rgba) == "f80f"
+
+        @test hex(RGB(1,0.5,0), :rrggbb) == "ff8000"
+        @test hex(RGBA(1,0.5,0,0.25), :rrggbb) == "ff8000"
+        @test hex(ARGB(1,0.5,0,0.25), :rrggbb) == "ff8000"
+        @test hex(HSV(30,1.0,1.0), :rrggbb) == "ff8000"
+
+        @test hex(RGB(1,0.5,0), :RRGGBB) == "FF8000"
+        @test hex(RGBA(1,0.5,0,0.25), :RRGGBB) == "FF8000"
+        @test hex(ARGB(1,0.5,0,0.25), :RRGGBB) == "FF8000"
+        @test hex(HSV(30,1.0,1.0), :RRGGBB) == "FF8000"
+
+        @test hex(RGB(1,0.5,0), :rrggbb) == "ff8000"
+        @test hex(RGBA(1,0.5,0,0.25), :rrggbb) == "ff8000"
+        @test hex(ARGB(1,0.5,0,0.25), :rrggbb) == "ff8000"
+        @test hex(HSV(30,1.0,1.0), :rrggbb) == "ff8000"
+
+        @test hex(RGB(1,0.5,0), :AARRGGBB) == "FFFF8000"
+        @test hex(RGBA(1,0.5,0,0.25), :AARRGGBB) == "40FF8000"
+        @test hex(ARGB(1,0.5,0,0.25), :AARRGGBB) == "40FF8000"
+        @test hex(HSV(30,1.0,1.0), :AARRGGBB) == "FFFF8000"
+
+        @test hex(RGB(1,0.5,0), :aarrggbb) == "ffff8000"
+        @test hex(RGBA(1,0.5,0,0.25), :aarrggbb) == "40ff8000"
+        @test hex(ARGB(1,0.5,0,0.25), :aarrggbb) == "40ff8000"
+        @test hex(HSV(30,1.0,1.0), :aarrggbb) == "ffff8000"
+
+        @test hex(RGB(1,0.5,0), :RRGGBBAA) == "FF8000FF"
+        @test hex(RGBA(1,0.5,0,0.25), :RRGGBBAA) == "FF800040"
+        @test hex(ARGB(1,0.5,0,0.25), :RRGGBBAA) == "FF800040"
+        @test hex(HSV(30,1.0,1.0), :RRGGBBAA) == "FF8000FF"
+
+        @test hex(RGB(1,0.5,0), :rrggbbaa) == "ff8000ff"
+        @test hex(RGBA(1,0.5,0,0.25), :rrggbbaa) == "ff800040"
+        @test hex(ARGB(1,0.5,0,0.25), :rrggbbaa) == "ff800040"
+        @test hex(HSV(30,1.0,1.0), :rrggbbaa) == "ff8000ff"
+    end
 
     # test utility function weighted_color_mean
     parametric2 = [GrayA,AGray32,AGray]

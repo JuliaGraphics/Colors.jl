@@ -8,29 +8,137 @@ function lerp(x, a, b)
     a + (b - a) * max(min(x, one(x)), zero(x))
 end
 
+"""
+    HexNotation{C, A, N}
+
+This is a private type for specifying the style of hex notations. It is not
+recommended to use this type and its derived types in user scripts or other
+packages, since they may change in the future without notice.
+
+# Arguments
+- `C`: a base colorant type.
+- `A`: a symbol (`:upper` or `:lower`) to specify the letter casing.
+- `N`: a total number of digits.
+"""
+abstract type HexNotation{C, A, N} end
+abstract type HexAuto <: HexNotation{Colorant,:upper,0} end
+abstract type HexShort{A} <: HexNotation{Colorant,A,0} end
 
 """
+    hex(c::Colorant)
+    hex(c::Colorant, style::Symbol)
+
+Convert a color to a hexadecimal string, optionally specifying its style.
+
+# Arguments
+- `c`: a target color.
+- `style`: a symbol to specify the hexadecimal notation. Spesifying the
+  uppercase symbols means the return values are in uppercase. The following
+  symbols are available:
+  - `:AUTO`: notation automatically selected according to the type of `c`
+  - `:RRGGBB`/`:rrggbb`: 6-digit opaque notation
+  - `:AARRGGBB`/`:aarrggbb`: 8-digit notation with alpha at the head
+  - `:RRGGBBAA`/`:rrggbbaa`: 8-digit notation with alpha at the tail
+  - `:RGB`/`:rgb`/`:ARGB`/`:argb`/`:RGBA`/`:rgba`: 3-digit or 4-digit noatation
+  - `:S`/`:s`: short notation if available
+
+# Examples
+```jldoctest; setup = :(using Colors)
+julia> hex(RGB(1,0.5,0))
+"FF8000"
+
+julia> hex(ARGB(1,0.5,0,0.25))
+"40FF8000"
+
+julia> hex(HSV(30,1.0,1.0), :AARRGGBB)
+"FFFF8000"
+
+julia> hex(ARGB(1,0.533,0,0.267), :rrggbbaa)
+"ff880044"
+
+julia> hex(ARGB(1,0.533,0,0.267), :rgba)
+"f804"
+
+julia> hex(ARGB(1,0.533,0,0.267), :S)
+"4F80"
+```
+
+!!! compat
+    For backward compatibility, `hex(c::ColorAlpha)` currently returns an
+    "AARRGGBB" style string. This is inconsistent with `hex(c, :AUTO)` returning
+    an "RRGGBBAA" style string. The alpha position for `ColorAlpha` will soon be
+    changed to the tail.
+"""
+hex(c::Colorant) = _hex(HexAuto, c) # there is no need to search the dictionary
+hex(c::Colorant, style::Symbol) = _hex(get(_hex_styles, style, HexAuto), c)
+
+function Base.hex(c::Colorant)
+    Base.depwarn("Base.hex(c) has been moved to the package Colors.jl, i.e. Colors.hex(c).", :hex)
     hex(c)
-
-Print a color as a RGB hex triple, or a transparent paint as an ARGB
-hex quadruplet.
-"""
-function hex(c::RGB)
-    @sprintf("%02X%02X%02X",
-             round(Int, lerp(c.r, 0.0, 255.0)),
-             round(Int, lerp(c.g, 0.0, 255.0)),
-             round(Int, lerp(c.b, 0.0, 255.0)))
-end
-function hex(c::ARGB)
-    @sprintf("%02X%02X%02X%02X",
-             round(Int, lerp(alpha(c), 0.0, 255.0)),
-             round(Int, lerp(red(c), 0.0, 255.0)),
-             round(Int, lerp(green(c), 0.0, 255.0)),
-             round(Int, lerp(blue(c), 0.0, 255.0)))
 end
 
-hex(c::Color) = hex(convert(RGB, c))
-hex(c::Colorant) = hex(convert(ARGB, c))
+# TODO: abolish the transitional measure (i.e. remove the following method)
+function hex(c::ColorAlpha)
+    Base.depwarn("""
+        The alpha position for $(typeof(c)) (<:ColorAlpha) will soon be changed.
+        You can get the alpha-first style string by `hex(c, :AARRGGBB)` or `hex(c |> ARGB32)`.
+        """, :hex)
+    #_hex(HexNotation{RGBA,:upper,8}, c) # breaking change in v1.0
+    _hex( HexNotation{ARGB,:upper,8}, c) # backward compatible
+end
+
+const _hex_styles = Dict{Symbol, Type}(
+    :AUTO => HexAuto,
+    :S => HexShort{:upper}, :s => HexShort{:lower},
+    :RGB => HexNotation{RGB,:upper,3}, :rgb => HexNotation{RGB,:lower,3},
+    :ARGB => HexNotation{ARGB,:upper,4}, :argb => HexNotation{ARGB,:lower,4},
+    :RGBA => HexNotation{RGBA,:upper,4}, :rgba => HexNotation{RGBA,:lower,4},
+    :RRGGBB => HexNotation{RGB,:upper,6}, :rrggbb => HexNotation{RGB,:lower,6},
+    :AARRGGBB => HexNotation{ARGB,:upper,8}, :aarrggbb => HexNotation{ARGB,:lower,8},
+    :RRGGBBAA => HexNotation{RGBA,:upper,8}, :rrggbbaa => HexNotation{RGBA,:lower,8},
+)
+@inline function _hexstring(::Type{T}, u::U, itr) where {C, T <: HexNotation{C,:upper}, U <: Unsigned}
+    s = UInt8(8sizeof(u) - 4)
+    @inbounds String([b"0123456789ABCDEF"[((u << i) >> s) + 1] for i in itr])
+end
+@inline function _hexstring(::Type{T}, u::U, itr) where {C, T <: HexNotation{C,:lower}, U <: Unsigned}
+    s = UInt8(8sizeof(u) - 4)
+    @inbounds String([b"0123456789abcdef"[((u << i) >> s) + 1] for i in itr])
+end
+
+_hex(t::Type, c::Colorant) = _hex(t, reinterpret(UInt32, ARGB32(c)))
+
+_hex(::Type{HexAuto}, c::Color) = _hex(HexNotation{RGB,:upper,6}, c)
+_hex(::Type{HexAuto}, c::AlphaColor) = _hex(HexNotation{ARGB,:upper,8}, c)
+_hex(::Type{HexAuto}, c::ColorAlpha) = _hex(HexNotation{RGBA,:upper,8}, c)
+
+function _hex(::Type{HexShort{A}}, c::Colorant) where A
+    u = reinterpret(UInt32, ARGB32(c))
+    s = u == (u & 0x0F0F0F0F) * 0x11
+    c isa AlphaColor && return _hex(HexNotation{ARGB, A, s ? 4 : 8}, u)
+    c isa ColorAlpha && return _hex(HexNotation{RGBA, A, s ? 4 : 8}, u)
+    _hex(HexNotation{RGB, A, s ? 3 : 6}, u)
+end
+
+# for 3-digit or 4-digit notations
+function _hex(t::Type{T}, u::UInt32) where {C <:Union{RGB, ARGB, RGBA}, A, T <: HexNotation{C,A}}
+    # To double the number of digits, we multiply each element by 17 (= 0x11).
+    # Thus, we divide each element by 17 here, to halve the number of digits.
+    u64 = UInt64(u)
+    # TODO: use SIMD `move` with zero extension (e.g. vpmovzxbw)
+    unpacked = ((u64 & 0xFF00FF00)<<24) | (u64 & 0x00FF00FF) # 0x00AA00GG00RR00BB
+    # `all(x -> round(x / 17) == (x * 15 + 135) >> 8, 0:255) == true`
+    q = muladd(unpacked, 0xF,  0x0087_0087_0087_0087) # 0x0Aaa0Ggg0Rrr0Bbb
+    t <: HexNotation{ARGB} && return _hexstring(t, q, (0x04, 0x24, 0x14, 0x34))
+    t <: HexNotation{RGBA} && return _hexstring(t, q, (0x24, 0x14, 0x34, 0x04))
+    _hexstring(t, q, (0x24, 0x14, 0x34))
+end
+
+# for 6-digit or 8-digit notations
+_hex(t::Type{HexNotation{ RGB,A,6}}, u::UInt32) where {A} = _hexstring(t, u, 0x8:0x4:0x1C)
+_hex(t::Type{HexNotation{ARGB,A,8}}, u::UInt32) where {A} = _hexstring(t, u, 0x0:0x4:0x1C)
+_hex(t::Type{HexNotation{RGBA,A,8}}, u::UInt32) where {A} =
+    _hexstring(t, u, (0x8, 0xC, 0x10, 0x14, 0x18, 0x1C, 0x0, 0x4))
 
 """
     weighted_color_mean(w1, c1, c2)
