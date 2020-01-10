@@ -7,9 +7,6 @@ using Reexport
 Base.@deprecate_binding RGB1 XRGB
 Base.@deprecate_binding RGB4 RGBX
 
-# TODO: why these types are defined here? Can they move to ColorTypes.jl?
-AbstractAGray{C<:AbstractGray,T} = AlphaColor{C,T,2}
-AbstractGrayA{C<:AbstractGray,T} = ColorAlpha{C,T,2}
 
 import Base: ==, +, -, *, /
 import Base: convert, eltype, isless, range, show, typemin, typemax
@@ -29,7 +26,6 @@ include("utilities.jl")
 
 # Include other module components
 include("conversions.jl")
-include("promotions.jl")
 include("algorithms.jl")
 include("parse.jl")
 include("differences.jl")
