@@ -363,16 +363,12 @@ cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, convert(Luv{T}, c))
 function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
 
     # Go back to C-h space
-    h = atand(c.b, c.a) - 50
-    while h > 360; h -= 360; end
-    while h < 0;   h += 360; end
-
-    C = sqrt(c.a^2 + c.b^2)
+    C = chroma(c)
+    h = atan(c.b, c.a) - 50π/180
 
     # Intermediate terms
     G = (exp(C/22.5)-1)/0.06
-    f = G*sind(h)
-    ee = G*cosd(h)
+    f, ee = G .* sincos(h)
 
     l = (exp(c.l/325.221)-1)/0.0036
     # a = ee*cosd(50) - f/1.14*sind(50)
@@ -434,8 +430,8 @@ cnvt(::Type{Lab{T}}, c::XYZ{T}) where {T} = cnvt(Lab{T}, c, WP_DEFAULT)
 
 
 function cnvt(::Type{Lab{T}}, c::LCHab) where T
-    hr = deg2rad(c.h)
-    Lab{T}(c.l, c.c * cos(hr), c.c * sin(hr))
+    b, a = c.c .* sincos(deg2rad(c.h))
+    Lab{T}(c.l, a, b)
 end
 
 
@@ -447,18 +443,16 @@ function cnvt(::Type{Lab{T}}, c::DIN99) where T
     ke = 1
 
     # Calculate Chroma (C99) in the DIN99 space
-    cc = sqrt(c.a^2 + c.b^2)
-
-    h = atan(c.b, c.a)
+    cc = chroma(c)
 
     # Temporary variable for chroma
     g = (exp(0.045*cc*kch*ke)-1)/0.045
 
     # Temporary redness
-    ee = g*cos(h)
+    ee = cc > 0 ? g * c.a / cc : zero(g)
 
     # Temporary yellowness
-    f = g*sin(h)
+    f = cc > 0 ? g * c.b / cc : zero(g)
 
     # CIELAB a*b*
     # ciea = ee*cosd(16) - (f/0.7)*sind(16)
@@ -481,19 +475,16 @@ function cnvt(::Type{Lab{T}}, c::DIN99o) where T
     ke = 1
 
     # Calculate Chroma (C99) in the DIN99o space
-    co = sqrt(c.a^2 + c.b^2)
+    co = chroma(c)
 
     # hue angle h99o
-    h = atan(c.b, c.a) - 26*π/180
+    h = atan(c.b, c.a) - 26π/180
 
     # revert logarithmic chroma compression
     g = (exp(co*kch*ke/23.0)-1)/0.075
 
-    # Temporary redness
-    eo = g*cos(h)
-
-    # Temporary yellowness
-    fo = g*sin(h)
+    # Temporary yellowness and redness
+    fo, eo = g .* sincos(h)
 
     # CIELAB a*b* (revert b* axis compression)
     # ciea = eo*cosd(26) - (fo/0.83)*sind(26)
@@ -536,8 +527,8 @@ end
 
 
 function cnvt(::Type{Luv{T}}, c::LCHuv) where T
-    hr = deg2rad(c.h)
-    Luv{T}(c.l, c.c * cos(hr), c.c * sin(hr))
+    v, u = c.c .* sincos(deg2rad(c.h))
+    Luv{T}(c.l, u, v)
 end
 
 
@@ -548,9 +539,7 @@ cnvt(::Type{Luv{T}}, c::Color3) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHuv{T}}, c::Luv) where T
-    h = atand(c.v, c.u)
-    while h < 0;   h += 360; end
-    LCHuv{T}(c.l, sqrt(c.u^2 + c.v^2), h)
+    LCHuv{T}(c.l, chroma(c), hue(c))
 end
 
 
@@ -561,9 +550,7 @@ cnvt(::Type{LCHuv{T}}, c::Color3) where {T} = cnvt(LCHuv{T}, convert(Luv{T}, c))
 # -------------------
 
 function cnvt(::Type{LCHab{T}}, c::Lab) where T
-    h = atand(c.b, c.a)
-    while h < 0;   h += 360; end
-    LCHab{T}(c.l, sqrt(c.a^2 + c.b^2), h)
+    LCHab{T}(c.l, chroma(c), hue(c))
 end
 
 
@@ -592,14 +579,12 @@ function cnvt(::Type{DIN99{T}}, c::Lab) where T
     # Temporary value for chroma
     g = sqrt(ee^2 + f^2)
 
-    # Hue angle
-    h = atan(f, ee)
-
     # DIN99 chroma
     cc = log(1+0.045*g)/(0.045*kch*ke)
 
     # DIN99 chromaticities
-    a99, b99 = cc*cos(h), cc*sin(h)
+    a99 = g > 0 ? cc * ee / g : zero(T)
+    b99 = g > 0 ? cc * f / g : zero(T)
 
     DIN99{T}(l99, a99, b99)
 
@@ -630,11 +615,11 @@ function cnvt(::Type{DIN99d{T}}, c::XYZ{T}) where T
 
     # Calculate hue/chroma
     C = 22.5*log(1+0.06*G)
-    h = atan(f, ee) + 50*π/180
-    while h > 2π; h -= 2π; end
-    while h < 0;   h += 2π; end
+    h = atan(f, ee) + 50π/180
 
-    DIN99d{T}(adj_L, C*cos(h), C*sin(h))
+    b99, a99 = C .* sincos(h)
+
+    DIN99d{T}(adj_L, a99, b99)
 
 end
 
@@ -665,13 +650,13 @@ function cnvt(::Type{DIN99o{T}}, c::Lab) where T
 
     # Temporary value for chroma
     go = sqrt(eo^2 + fo^2)
-    h = atan(fo, eo) + 26*π/180
+    h = atan(fo, eo) + 26π/180
 
     # DIN99o chroma (logarithmic compression)
     cc = 23.0*log(1+0.075*go)/(kch*ke)
 
     # DIN99o chromaticities
-    a99, b99 = cc*cos(h), cc*sin(h)
+    b99, a99 = cc .* sincos(h)
 
     DIN99o{T}(l99, a99, b99)
 
