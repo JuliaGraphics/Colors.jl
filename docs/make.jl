@@ -18,14 +18,14 @@ makedocs(
     checkdocs = :exports,
     sitename = "Colors",
     pages    = Any[
-        "Introduction"             => "index.md",
-        "Colorspaces"              => "colorspaces.md",
-        "Colorscales"              => "colorscales.md",
-        "Colormaps"                => "colormaps.md",
-        "Named colors"             => "namedcolors.md",
-        "References"               => "references.md",
-        "Migrating from Color.jl"  => "migratingfromcolor.md",
-        "Index"                    => "functionindex.md",
+        "Introduction"                => "index.md",
+        "Construction and Conversion" => "constructionandconversion.md",
+        "Color Differences"           => "colordifferences.md",
+        "Colormaps and Colorscales"   => "colormapsandcolorscales.md",
+        "Named Colors"                => "namedcolors.md",
+        "Advanced Functions"          => "advancedfunctions.md",
+        "References"                  => "references.md",
+        "Index"                       => "functionindex.md",
         ]
     )
 
