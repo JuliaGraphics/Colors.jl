@@ -34,7 +34,7 @@ whitebalance
 ```
 
 
-## Simulation of color deficiency ("color blindness")
+## [Simulation of color deficiency ("color blindness")](@id color_deficiency)
 
 Three functions are provided that map colors to a reduced gamut to simulate different types of *dichromacy*, the loss of one of the three types of human photopigments.
 

@@ -2,9 +2,7 @@
 
 The `colordiff` function gives an approximate value for the difference between two colors.
 
-```jldoctest example
-julia> using Colors; #hide
-
+```jldoctest example; setup = :(using Colors)
 julia> colordiff(colorant"red", parse(Colorant, HSV(360, 0.75, 1)))
 8.178248292426845
 ```
