@@ -1,4 +1,4 @@
-# Named colors
+# Named Colors
 
 The names of available colors are stored in alphabetical order in the dictionary `Colors.color_names`:
 
