@@ -62,6 +62,7 @@ When writing functions the `colorant"red"` version is preferred, because the slo
 
 ```@docs
 @colorant_str
-hex
 parse
+hex
+normalize_hue
 ```

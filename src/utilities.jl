@@ -141,26 +141,52 @@ _hex(t::Type{HexNotation{RGBA,A,8}}, u::UInt32) where {A} =
     _hexstring(t, u, (0x8, 0xC, 0x10, 0x14, 0x18, 0x1C, 0x0, 0x4))
 
 """
+    normalize_hue(h::Real)
+    normalize_hue(c::Colorant)
+
+Returns a normalized (wrapped-around) hue angle, or a color with the normalized
+hue, in degrees, in [0, 360]. The normalization is essentially equivalent to
+`mod(h, 360)`, but is faster at the expense of some accuracy.
+"""
+@fastmath normalize_hue(h::Real) = max(fma(floor(h / 360), -360, h), zero(h))
+@fastmath normalize_hue(h::Float16) = Float16(normalize_hue(Float32(h)))
+normalize_hue(c::C) where {C <: Union{HSV, HSL, HSI}} = C(normalize_hue(c.h), c.s, comp3(c))
+normalize_hue(c::C) where {Cb <: Union{HSV, HSL, HSI}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
+    C(normalize_hue(c.h), c.s, comp3(c), alpha(c))
+normalize_hue(c::C) where C <: Union{LCHab, LCHuv} = C(c.l, c.c, normalize_hue(c.h))
+normalize_hue(c::C) where {Cb <: Union{LCHab, LCHuv}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
+    C(c.l, c.c, normalize_hue(c.h), c.alpha)
+
+"""
     weighted_color_mean(w1, c1, c2)
 
 Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and
 `c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
 """
-function weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
-    weight1 = convert(promote_type(eltype(c1), eltype(c2)),w1)
-    weight2 = weight1 >= 0 && weight1 <= 1 ? oftype(weight1,1-weight1) : throw(DomainError())
-    mapc((x,y)->weight1*x+weight2*y, c1, c2)
+weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant) = _weighted_color_mean(w1, c1, c2)
+function weighted_color_mean(w1::Real, c1::C, c2::C) where {Cb <: Union{HSV, HSL, HSI, LCHab, LCHuv},
+                                                            C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    normalize_hue(_weighted_color_mean(w1, c1, c2))
 end
 function weighted_color_mean(w1::Real, c1::Gray{Bool}, c2::Gray{Bool})
     # weighting of two Gray{Bool} would return different color type and therefore omitted
     throw(DomainError())
 end
+function _weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
+    weight1 = convert(promote_type(eltype(c1), eltype(c2)),w1)
+    weight2 = weight1 >= 0 && weight1 <= 1 ? oftype(weight1,1-weight1) : throw(DomainError())
+    mapc((x,y)->weight1*x+weight2*y, c1, c2)
+end
 
 """
-    range(start::Color; stop::Color, length=100)
+    range(start::T; stop::T, length=100) where T<:Colorant
+    range(start::T, stop::T; length=100) where T<:Colorant
 
-Generates `n`>2 colors in a linearly interpolated ramp from `start` to`stop`,
+Generates N (=`length`) >2 colors in a linearly interpolated ramp from `start` to`stop`,
 inclusive, returning an `Array` of colors.
+
+!!! compat "Julia 1.1"
+    `stop` as a positional argument requires at least Julia 1.1.
 """
 function range(start::T; stop::T, length::Integer=100) where T<:Colorant
     return T[weighted_color_mean(w1, start, stop) for w1 in range(1.0,stop=0.0,length=length)]

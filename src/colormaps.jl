@@ -138,9 +138,9 @@ function sequential_palette(h,
                             dcolor=RGB(0,0,1),
                             logscale=false)
 
-    function MixHue(a,h0,h1)
-        M=mod(180.0+h1-h0, 360)-180.0
-        mod(h0+a*M, 360)
+    function mix_hue(a, h0, h1)
+        m = normalize_hue(180.0 + h1 - h0) - 180.0
+        normalize_hue(h0 + a * m)
     end
     function mix_linearly(a::C, b::C, s) where C<:Color
         base_color_type(C)((1-s)*comp1(a)+s*comp1(b), (1-s)*comp2(a)+s*comp2(b), (1-s)*comp3(a)+s*comp3(b))
@@ -153,13 +153,13 @@ function sequential_palette(h,
 
     #multi-hue start point
     p2l = 100 * (1. - w) + w * pstart.l
-    p2h=MixHue(w,h,pstart.h)
+    p2h=mix_hue(w,h,pstart.h)
     p2c=min(MSC(p2h,p2l), w*s*pstart.c)
     p2=LCHuv(p2l,p2c,p2h)
 
     #multi-hue ending point
     p0l=20.0*d
-    p0h=MixHue(d,h,pend.h)
+    p0h=mix_hue(d,h,pend.h)
     p0c=min(MSC(p0h,p0l), d*s*pend.c)
     p0=LCHuv(p0l,p0c,p0h)
 

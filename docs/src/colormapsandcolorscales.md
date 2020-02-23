@@ -4,12 +4,14 @@
 
 ### Generating a range of colors
 
-The `range()` function has a method that accepts colors:
+The [`range()`](@ref) function has a method that accepts colors:
 
-`range(start::Color; stop::Color, length=100)`
+```julia
+    Base.range(start::T; stop::T, length=100) where T<:Colorant
+```
 
-This generates `n` colors in a linearly interpolated ramp from `start` to
-`stop`, inclusive, returning an `Array` of colors.
+This generates N (=`length`) colors in a linearly interpolated ramp from `start`
+to `stop`, inclusive, returning an `Array` of colors.
 
 ```jldoctest example
 julia> using Colors
@@ -39,15 +41,33 @@ julia> range(c1, stop=c2, length=15)
  RGB{N0f8}(0.0,0.502,0.0)
 ```
 If you use Julia through Juno or IJulia, you can get the following color swatches.
-```@example
+```@example range
 using Colors # hide
 showable(::MIME"text/plain", ::AbstractVector{C}) where {C<:Colorant} = false # hide
 range(colorant"red", stop=colorant"green", length=15)
 ```
+The intermediate colors depend on their colorspace. For example:
+```@example range
+range(HSL(colorant"red"), stop=HSL(colorant"green"), length=15)
+```
+The [`range`](@ref) and [`weighted_color_mean`](@ref) described below support
+colors with hues which are out of the range [0, 360]. The hues of generated
+colors are normalized into [0, 360].
+```@example range
+range(HSV(0,1,1), stop=HSV(-360,1,1), length=90) # inverse rotation
+```
+```@example range
+range(LCHab(70,70,0), stop=LCHab(70,70,720), length=90) # multiple rotations
+```
+While sometimes useful in particular circumstances, typically it is recommended
+that the hue be within [0, 360]. See [`normalize_hue`](@ref).
 
+```@docs
+Base.range
+```
 ### Weighted color means
 
-The `weighted_color_mean()` function returns a color that is the weighted mean of `c1` and `c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
+The [`weighted_color_mean()`](@ref) function returns a color that is the weighted mean of `c1` and `c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
 
 For example:
 
