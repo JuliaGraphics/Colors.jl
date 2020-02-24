@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Colormaps and Colorscales · Colors</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><script src="../assets/resize_svg.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Colors logo"/></a><div class="docs-package-name"><span class="docs-autofit">Colors</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../constructionandconversion/">Construction and Conversion</a></li><li><a class="tocitem" href="../colordifferences/">Color Differences</a></li><li class="is-active"><a class="tocitem" href>Colormaps and Colorscales</a><ul class="internal"><li><a class="tocitem" href="#Color-interpolation-1"><span>Color interpolation</span></a></li><li><a class="tocitem" href="#Colormaps-1"><span>Colormaps</span></a></li><li><a class="tocitem" href="#Generating-distinguishable-colors-1"><span>Generating distinguishable colors</span></a></li></ul></li><li><a class="tocitem" href="../namedcolors/">Named Colors</a></li><li><a class="tocitem" href="../advancedfunctions/">Advanced Functions</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Colormaps and Colorscales</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Colormaps and Colorscales</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/colormapsandcolorscales.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Colormaps-and-Colorscales-1"><a class="docs-heading-anchor" href="#Colormaps-and-Colorscales-1">Colormaps and Colorscales</a><a class="docs-heading-anchor-permalink" href="#Colormaps-and-Colorscales-1" title="Permalink"></a></h1><h2 id="Color-interpolation-1"><a class="docs-heading-anchor" href="#Color-interpolation-1">Color interpolation</a><a class="docs-heading-anchor-permalink" href="#Color-interpolation-1" title="Permalink"></a></h2><h3 id="Generating-a-range-of-colors-1"><a class="docs-heading-anchor" href="#Generating-a-range-of-colors-1">Generating a range of colors</a><a class="docs-heading-anchor-permalink" href="#Generating-a-range-of-colors-1" title="Permalink"></a></h3><p>The <code>range()</code> function has a method that accepts colors:</p><p><code>range(start::Color; stop::Color, length=100)</code></p><p>This generates <code>n</code> colors in a linearly interpolated ramp from <code>start</code> to <code>stop</code>, inclusive, returning an <code>Array</code> of colors.</p><pre><code class="language-julia-repl">julia&gt; using Colors
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Colormaps and Colorscales · Colors</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><script src="../assets/resize_svg.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Colors logo"/></a><div class="docs-package-name"><span class="docs-autofit">Colors</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../constructionandconversion/">Construction and Conversion</a></li><li><a class="tocitem" href="../colordifferences/">Color Differences</a></li><li class="is-active"><a class="tocitem" href>Colormaps and Colorscales</a><ul class="internal"><li><a class="tocitem" href="#Color-interpolation-1"><span>Color interpolation</span></a></li><li><a class="tocitem" href="#Colormaps-1"><span>Colormaps</span></a></li><li><a class="tocitem" href="#Generating-distinguishable-colors-1"><span>Generating distinguishable colors</span></a></li></ul></li><li><a class="tocitem" href="../namedcolors/">Named Colors</a></li><li><a class="tocitem" href="../advancedfunctions/">Advanced Functions</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Colormaps and Colorscales</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Colormaps and Colorscales</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/colormapsandcolorscales.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Colormaps-and-Colorscales-1"><a class="docs-heading-anchor" href="#Colormaps-and-Colorscales-1">Colormaps and Colorscales</a><a class="docs-heading-anchor-permalink" href="#Colormaps-and-Colorscales-1" title="Permalink"></a></h1><h2 id="Color-interpolation-1"><a class="docs-heading-anchor" href="#Color-interpolation-1">Color interpolation</a><a class="docs-heading-anchor-permalink" href="#Color-interpolation-1" title="Permalink"></a></h2><h3 id="Generating-a-range-of-colors-1"><a class="docs-heading-anchor" href="#Generating-a-range-of-colors-1">Generating a range of colors</a><a class="docs-heading-anchor-permalink" href="#Generating-a-range-of-colors-1" title="Permalink"></a></h3><p>The <a href="#Base.range"><code>range()</code></a> function has a method that accepts colors:</p><pre><code class="language-julia">    Base.range(start::T; stop::T, length=100) where T&lt;:Colorant</code></pre><p>This generates N (=<code>length</code>) colors in a linearly interpolated ramp from <code>start</code> to <code>stop</code>, inclusive, returning an <code>Array</code> of colors.</p><pre><code class="language-julia-repl">julia&gt; using Colors
 
 julia&gt; c1 = colorant&quot;red&quot;
 RGB{N0f8}(1.0,0.0,0.0)
@@ -45,7 +45,224 @@ julia&gt; range(c1, stop=c2, length=15)
 <rect width=".92" height=".96" x="12" y="0" fill="#246E00" />
 <rect width=".92" height=".96" x="13" y="0" fill="#127700" />
 <rect width=".92" height=".96" x="14" y="0" fill="#008000" />
-</svg><h3 id="Weighted-color-means-1"><a class="docs-heading-anchor" href="#Weighted-color-means-1">Weighted color means</a><a class="docs-heading-anchor-permalink" href="#Weighted-color-means-1" title="Permalink"></a></h3><p>The <code>weighted_color_mean()</code> function returns a color that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p><p>For example:</p><pre><code class="language-julia-repl">julia&gt; weighted_color_mean(0.5, colorant&quot;red&quot;, colorant&quot;green&quot;)
+</svg><p>The intermediate colors depend on their colorspace. For example:</p><pre><code class="language-julia">range(HSL(colorant&quot;red&quot;), stop=HSL(colorant&quot;green&quot;), length=15)</code></pre><?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="180mm" height="25mm"
+     viewBox="0 0 15 1" preserveAspectRatio="none"
+     shape-rendering="crispEdges" stroke="none">
+<rect width=".92" height=".96" x="0" y="0" fill="#FF0000" />
+<rect width=".92" height=".96" x="1" y="0" fill="#F62300" />
+<rect width=".92" height=".96" x="2" y="0" fill="#ED4400" />
+<rect width=".92" height=".96" x="3" y="0" fill="#E46200" />
+<rect width=".92" height=".96" x="4" y="0" fill="#DB7D00" />
+<rect width=".92" height=".96" x="5" y="0" fill="#D29600" />
+<rect width=".92" height=".96" x="6" y="0" fill="#C9AC00" />
+<rect width=".92" height=".96" x="7" y="0" fill="#C0C000" />
+<rect width=".92" height=".96" x="8" y="0" fill="#9CB600" />
+<rect width=".92" height=".96" x="9" y="0" fill="#7CAD00" />
+<rect width=".92" height=".96" x="10" y="0" fill="#5EA400" />
+<rect width=".92" height=".96" x="11" y="0" fill="#439B00" />
+<rect width=".92" height=".96" x="12" y="0" fill="#2A9200" />
+<rect width=".92" height=".96" x="13" y="0" fill="#148900" />
+<rect width=".92" height=".96" x="14" y="0" fill="#008000" />
+</svg><p>The <a href="#Base.range"><code>range</code></a> and <a href="#Colors.weighted_color_mean"><code>weighted_color_mean</code></a> described below support colors with hues which are out of the range [0, 360]. The hues of generated colors are normalized into [0, 360].</p><pre><code class="language-julia">range(HSV(0,1,1), stop=HSV(-360,1,1), length=90) # inverse rotation</code></pre><?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="180mm" height="25mm"
+     viewBox="0 0 90 1" preserveAspectRatio="none"
+     shape-rendering="crispEdges" stroke="none">
+<rect width="1" height=".96" x="0" y="0" fill="#FF0000" />
+<rect width="1" height=".96" x="1" y="0" fill="#FF0011" />
+<rect width="1" height=".96" x="2" y="0" fill="#FF0022" />
+<rect width="1" height=".96" x="3" y="0" fill="#FF0034" />
+<rect width="1" height=".96" x="4" y="0" fill="#FF0045" />
+<rect width="1" height=".96" x="5" y="0" fill="#FF0056" />
+<rect width="1" height=".96" x="6" y="0" fill="#FF0067" />
+<rect width="1" height=".96" x="7" y="0" fill="#FF0078" />
+<rect width="1" height=".96" x="8" y="0" fill="#FF008A" />
+<rect width="1" height=".96" x="9" y="0" fill="#FF009B" />
+<rect width="1" height=".96" x="10" y="0" fill="#FF00AC" />
+<rect width="1" height=".96" x="11" y="0" fill="#FF00BD" />
+<rect width="1" height=".96" x="12" y="0" fill="#FF00CE" />
+<rect width="1" height=".96" x="13" y="0" fill="#FF00DF" />
+<rect width="1" height=".96" x="14" y="0" fill="#FF00F1" />
+<rect width="1" height=".96" x="15" y="0" fill="#FC00FF" />
+<rect width="1" height=".96" x="16" y="0" fill="#EB00FF" />
+<rect width="1" height=".96" x="17" y="0" fill="#DA00FF" />
+<rect width="1" height=".96" x="18" y="0" fill="#C900FF" />
+<rect width="1" height=".96" x="19" y="0" fill="#B700FF" />
+<rect width="1" height=".96" x="20" y="0" fill="#A600FF" />
+<rect width="1" height=".96" x="21" y="0" fill="#9500FF" />
+<rect width="1" height=".96" x="22" y="0" fill="#8400FF" />
+<rect width="1" height=".96" x="23" y="0" fill="#7300FF" />
+<rect width="1" height=".96" x="24" y="0" fill="#6100FF" />
+<rect width="1" height=".96" x="25" y="0" fill="#5000FF" />
+<rect width="1" height=".96" x="26" y="0" fill="#3F00FF" />
+<rect width="1" height=".96" x="27" y="0" fill="#2E00FF" />
+<rect width="1" height=".96" x="28" y="0" fill="#1D00FF" />
+<rect width="1" height=".96" x="29" y="0" fill="#0B00FF" />
+<rect width="1" height=".96" x="30" y="0" fill="#0006FF" />
+<rect width="1" height=".96" x="31" y="0" fill="#0017FF" />
+<rect width="1" height=".96" x="32" y="0" fill="#0028FF" />
+<rect width="1" height=".96" x="33" y="0" fill="#0039FF" />
+<rect width="1" height=".96" x="34" y="0" fill="#004AFF" />
+<rect width="1" height=".96" x="35" y="0" fill="#005CFF" />
+<rect width="1" height=".96" x="36" y="0" fill="#006DFF" />
+<rect width="1" height=".96" x="37" y="0" fill="#007EFF" />
+<rect width="1" height=".96" x="38" y="0" fill="#008FFF" />
+<rect width="1" height=".96" x="39" y="0" fill="#00A0FF" />
+<rect width="1" height=".96" x="40" y="0" fill="#00B2FF" />
+<rect width="1" height=".96" x="41" y="0" fill="#00C3FF" />
+<rect width="1" height=".96" x="42" y="0" fill="#00D4FF" />
+<rect width="1" height=".96" x="43" y="0" fill="#00E5FF" />
+<rect width="1" height=".96" x="44" y="0" fill="#00F6FF" />
+<rect width="1" height=".96" x="45" y="0" fill="#00FFF6" />
+<rect width="1" height=".96" x="46" y="0" fill="#00FFE5" />
+<rect width="1" height=".96" x="47" y="0" fill="#00FFD4" />
+<rect width="1" height=".96" x="48" y="0" fill="#00FFC3" />
+<rect width="1" height=".96" x="49" y="0" fill="#00FFB2" />
+<rect width="1" height=".96" x="50" y="0" fill="#00FFA0" />
+<rect width="1" height=".96" x="51" y="0" fill="#00FF8F" />
+<rect width="1" height=".96" x="52" y="0" fill="#00FF7E" />
+<rect width="1" height=".96" x="53" y="0" fill="#00FF6D" />
+<rect width="1" height=".96" x="54" y="0" fill="#00FF5C" />
+<rect width="1" height=".96" x="55" y="0" fill="#00FF4A" />
+<rect width="1" height=".96" x="56" y="0" fill="#00FF39" />
+<rect width="1" height=".96" x="57" y="0" fill="#00FF28" />
+<rect width="1" height=".96" x="58" y="0" fill="#00FF17" />
+<rect width="1" height=".96" x="59" y="0" fill="#00FF06" />
+<rect width="1" height=".96" x="60" y="0" fill="#0BFF00" />
+<rect width="1" height=".96" x="61" y="0" fill="#1DFF00" />
+<rect width="1" height=".96" x="62" y="0" fill="#2EFF00" />
+<rect width="1" height=".96" x="63" y="0" fill="#3FFF00" />
+<rect width="1" height=".96" x="64" y="0" fill="#50FF00" />
+<rect width="1" height=".96" x="65" y="0" fill="#61FF00" />
+<rect width="1" height=".96" x="66" y="0" fill="#73FF00" />
+<rect width="1" height=".96" x="67" y="0" fill="#84FF00" />
+<rect width="1" height=".96" x="68" y="0" fill="#95FF00" />
+<rect width="1" height=".96" x="69" y="0" fill="#A6FF00" />
+<rect width="1" height=".96" x="70" y="0" fill="#B7FF00" />
+<rect width="1" height=".96" x="71" y="0" fill="#C9FF00" />
+<rect width="1" height=".96" x="72" y="0" fill="#DAFF00" />
+<rect width="1" height=".96" x="73" y="0" fill="#EBFF00" />
+<rect width="1" height=".96" x="74" y="0" fill="#FCFF00" />
+<rect width="1" height=".96" x="75" y="0" fill="#FFF100" />
+<rect width="1" height=".96" x="76" y="0" fill="#FFDF00" />
+<rect width="1" height=".96" x="77" y="0" fill="#FFCE00" />
+<rect width="1" height=".96" x="78" y="0" fill="#FFBD00" />
+<rect width="1" height=".96" x="79" y="0" fill="#FFAC00" />
+<rect width="1" height=".96" x="80" y="0" fill="#FF9B00" />
+<rect width="1" height=".96" x="81" y="0" fill="#FF8A00" />
+<rect width="1" height=".96" x="82" y="0" fill="#FF7800" />
+<rect width="1" height=".96" x="83" y="0" fill="#FF6700" />
+<rect width="1" height=".96" x="84" y="0" fill="#FF5600" />
+<rect width="1" height=".96" x="85" y="0" fill="#FF4500" />
+<rect width="1" height=".96" x="86" y="0" fill="#FF3400" />
+<rect width="1" height=".96" x="87" y="0" fill="#FF2200" />
+<rect width="1" height=".96" x="88" y="0" fill="#FF1100" />
+<rect width="1" height=".96" x="89" y="0" fill="#FF0000" />
+</svg><pre><code class="language-julia">range(LCHab(70,70,0), stop=LCHab(70,70,720), length=90) # multiple rotations</code></pre><?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="180mm" height="25mm"
+     viewBox="0 0 90 1" preserveAspectRatio="none"
+     shape-rendering="crispEdges" stroke="none">
+<rect width="1" height=".96" x="0" y="0" fill="#FF6DAE" />
+<rect width="1" height=".96" x="1" y="0" fill="#FF6D9C" />
+<rect width="1" height=".96" x="2" y="0" fill="#FF6F8B" />
+<rect width="1" height=".96" x="3" y="0" fill="#FF727B" />
+<rect width="1" height=".96" x="4" y="0" fill="#FF786B" />
+<rect width="1" height=".96" x="5" y="0" fill="#FF7E5B" />
+<rect width="1" height=".96" x="6" y="0" fill="#FF854D" />
+<rect width="1" height=".96" x="7" y="0" fill="#FF8C3F" />
+<rect width="1" height=".96" x="8" y="0" fill="#F59432" />
+<rect width="1" height=".96" x="9" y="0" fill="#E99B27" />
+<rect width="1" height=".96" x="10" y="0" fill="#DBA11C" />
+<rect width="1" height=".96" x="11" y="0" fill="#CDA715" />
+<rect width="1" height=".96" x="12" y="0" fill="#BDAD15" />
+<rect width="1" height=".96" x="13" y="0" fill="#ADB21B" />
+<rect width="1" height=".96" x="14" y="0" fill="#9BB626" />
+<rect width="1" height=".96" x="15" y="0" fill="#88BA32" />
+<rect width="1" height=".96" x="16" y="0" fill="#73BE40" />
+<rect width="1" height=".96" x="17" y="0" fill="#5BC14F" />
+<rect width="1" height=".96" x="18" y="0" fill="#39C35F" />
+<rect width="1" height=".96" x="19" y="0" fill="#00C570" />
+<rect width="1" height=".96" x="20" y="0" fill="#00C781" />
+<rect width="1" height=".96" x="21" y="0" fill="#00C893" />
+<rect width="1" height=".96" x="22" y="0" fill="#00C9A5" />
+<rect width="1" height=".96" x="23" y="0" fill="#00C9B7" />
+<rect width="1" height=".96" x="24" y="0" fill="#00C9C8" />
+<rect width="1" height=".96" x="25" y="0" fill="#00C9D9" />
+<rect width="1" height=".96" x="26" y="0" fill="#00C8EA" />
+<rect width="1" height=".96" x="27" y="0" fill="#00C7F9" />
+<rect width="1" height=".96" x="28" y="0" fill="#00C6FF" />
+<rect width="1" height=".96" x="29" y="0" fill="#00C3FF" />
+<rect width="1" height=".96" x="30" y="0" fill="#00C1FF" />
+<rect width="1" height=".96" x="31" y="0" fill="#00BDFF" />
+<rect width="1" height=".96" x="32" y="0" fill="#00B9FF" />
+<rect width="1" height=".96" x="33" y="0" fill="#00B4FF" />
+<rect width="1" height=".96" x="34" y="0" fill="#00AFFF" />
+<rect width="1" height=".96" x="35" y="0" fill="#5DA9FF" />
+<rect width="1" height=".96" x="36" y="0" fill="#87A2FF" />
+<rect width="1" height=".96" x="37" y="0" fill="#A79BFF" />
+<rect width="1" height=".96" x="38" y="0" fill="#C293FF" />
+<rect width="1" height=".96" x="39" y="0" fill="#D88BFF" />
+<rect width="1" height=".96" x="40" y="0" fill="#EB84F7" />
+<rect width="1" height=".96" x="41" y="0" fill="#FA7CE9" />
+<rect width="1" height=".96" x="42" y="0" fill="#FF76D9" />
+<rect width="1" height=".96" x="43" y="0" fill="#FF71C8" />
+<rect width="1" height=".96" x="44" y="0" fill="#FF6EB6" />
+<rect width="1" height=".96" x="45" y="0" fill="#FF6CA5" />
+<rect width="1" height=".96" x="46" y="0" fill="#FF6D94" />
+<rect width="1" height=".96" x="47" y="0" fill="#FF7083" />
+<rect width="1" height=".96" x="48" y="0" fill="#FF7573" />
+<rect width="1" height=".96" x="49" y="0" fill="#FF7B63" />
+<rect width="1" height=".96" x="50" y="0" fill="#FF8254" />
+<rect width="1" height=".96" x="51" y="0" fill="#FF8946" />
+<rect width="1" height=".96" x="52" y="0" fill="#FB9039" />
+<rect width="1" height=".96" x="53" y="0" fill="#EF972C" />
+<rect width="1" height=".96" x="54" y="0" fill="#E29E21" />
+<rect width="1" height=".96" x="55" y="0" fill="#D4A418" />
+<rect width="1" height=".96" x="56" y="0" fill="#C5AA14" />
+<rect width="1" height=".96" x="57" y="0" fill="#B5B017" />
+<rect width="1" height=".96" x="58" y="0" fill="#A4B420" />
+<rect width="1" height=".96" x="59" y="0" fill="#92B82C" />
+<rect width="1" height=".96" x="60" y="0" fill="#7EBC39" />
+<rect width="1" height=".96" x="61" y="0" fill="#68BF48" />
+<rect width="1" height=".96" x="62" y="0" fill="#4CC257" />
+<rect width="1" height=".96" x="63" y="0" fill="#1CC467" />
+<rect width="1" height=".96" x="64" y="0" fill="#00C678" />
+<rect width="1" height=".96" x="65" y="0" fill="#00C78A" />
+<rect width="1" height=".96" x="66" y="0" fill="#00C89C" />
+<rect width="1" height=".96" x="67" y="0" fill="#00C9AE" />
+<rect width="1" height=".96" x="68" y="0" fill="#00C9C0" />
+<rect width="1" height=".96" x="69" y="0" fill="#00C9D1" />
+<rect width="1" height=".96" x="70" y="0" fill="#00C9E2" />
+<rect width="1" height=".96" x="71" y="0" fill="#00C8F1" />
+<rect width="1" height=".96" x="72" y="0" fill="#00C6FF" />
+<rect width="1" height=".96" x="73" y="0" fill="#00C5FF" />
+<rect width="1" height=".96" x="74" y="0" fill="#00C2FF" />
+<rect width="1" height=".96" x="75" y="0" fill="#00BFFF" />
+<rect width="1" height=".96" x="76" y="0" fill="#00BBFF" />
+<rect width="1" height=".96" x="77" y="0" fill="#00B7FF" />
+<rect width="1" height=".96" x="78" y="0" fill="#00B2FF" />
+<rect width="1" height=".96" x="79" y="0" fill="#3EACFF" />
+<rect width="1" height=".96" x="80" y="0" fill="#74A6FF" />
+<rect width="1" height=".96" x="81" y="0" fill="#989EFF" />
+<rect width="1" height=".96" x="82" y="0" fill="#B597FF" />
+<rect width="1" height=".96" x="83" y="0" fill="#CD8FFF" />
+<rect width="1" height=".96" x="84" y="0" fill="#E287FE" />
+<rect width="1" height=".96" x="85" y="0" fill="#F380F0" />
+<rect width="1" height=".96" x="86" y="0" fill="#FF79E1" />
+<rect width="1" height=".96" x="87" y="0" fill="#FF73D0" />
+<rect width="1" height=".96" x="88" y="0" fill="#FF6FBF" />
+<rect width="1" height=".96" x="89" y="0" fill="#FF6DAE" />
+</svg><p>While sometimes useful in particular circumstances, typically it is recommended that the hue be within [0, 360]. See <a href="../constructionandconversion/#Colors.normalize_hue"><code>normalize_hue</code></a>.</p><article class="docstring"><header><a class="docstring-binding" id="Base.range" href="#Base.range"><code>Base.range</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">range(start::T; stop::T, length=100) where T&lt;:Colorant
+range(start::T, stop::T; length=100) where T&lt;:Colorant</code></pre><p>Generates N (=<code>length</code>) &gt;2 colors in a linearly interpolated ramp from <code>start</code> to<code>stop</code>, inclusive, returning an <code>Array</code> of colors.</p><div class="admonition is-compat"><header class="admonition-header">Julia 1.1</header><div class="admonition-body"><p><code>stop</code> as a positional argument requires at least Julia 1.1.</p></div></div></div></section></article><h3 id="Weighted-color-means-1"><a class="docs-heading-anchor" href="#Weighted-color-means-1">Weighted color means</a><a class="docs-heading-anchor-permalink" href="#Weighted-color-means-1" title="Permalink"></a></h3><p>The <a href="#Colors.weighted_color_mean"><code>weighted_color_mean()</code></a> function returns a color that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p><p>For example:</p><pre><code class="language-julia-repl">julia&gt; weighted_color_mean(0.5, colorant&quot;red&quot;, colorant&quot;green&quot;)
 RGB{N0f8}(0.502,0.251,0.0)</code></pre><article class="docstring"><header><a class="docstring-binding" id="Colors.weighted_color_mean" href="#Colors.weighted_color_mean"><code>Colors.weighted_color_mean</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">weighted_color_mean(w1, c1, c2)</code></pre><p>Returns the color <code>w1*c1 + (1-w1)*c2</code> that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p></div></section></article><h2 id="Colormaps-1"><a class="docs-heading-anchor" href="#Colormaps-1">Colormaps</a><a class="docs-heading-anchor-permalink" href="#Colormaps-1" title="Permalink"></a></h2><p>This package provides some pre-defined colormaps (described below). There are also several other packages which provide colormaps:</p><ul><li><a href="https://github.com/peterkovesi/PerceptualColourMaps.jl">PerceptualColourMaps</a></li><li><a href="https://github.com/timothyrenner/ColorBrewer.jl">ColorBrewer</a></li><li><a href="https://github.com/JuliaGraphics/ColorSchemes.jl">ColorSchemes.jl</a></li><li><a href="https://github.com/randyzwitch/NoveltyColors.jl">NoveltyColors</a></li></ul><h3 id="Predefined-sequential-and-diverging-colormaps-1"><a class="docs-heading-anchor" href="#Predefined-sequential-and-diverging-colormaps-1">Predefined sequential and diverging colormaps</a><a class="docs-heading-anchor-permalink" href="#Predefined-sequential-and-diverging-colormaps-1" title="Permalink"></a></h3><p>The <code>colormap()</code> function returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).</p><p><code>colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])</code></p><p>The optional arguments are:</p><ul><li>the number of colors <code>N</code></li><li>position of the middle point <code>mid</code></li><li>the use of logarithmic scaling with the <code>logscale</code> keyword</li></ul><p>Colormaps computed by this algorithm are guaranteed to have an increasing perceived depth or saturation making them ideal for data visualization. This also means that they are (in most cases) color-blind friendly and suitable for black-and-white printing.</p><p>The currently supported colormap names are:</p><h4 id="Sequential-1"><a class="docs-heading-anchor" href="#Sequential-1">Sequential</a><a class="docs-heading-anchor-permalink" href="#Sequential-1" title="Permalink"></a></h4><ul><li>&quot;Blues&quot;</li></ul><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
@@ -317,4 +534,4 @@ legend(vars, loc=&quot;upper right&quot;, bbox_to_anchor=[1.1, 1.])</code></pre>
                                 transform=identity,
                                 lchoices=range(0, stop=100, length=15),
                                 cchoices=range(0, stop=100, length=15),
-                                hchoices=range(0, stop=342, length=20))</code></pre><p>Generate n maximally distinguishable colors.</p><p>This uses a greedy brute-force approach to choose n colors that are maximally distinguishable. Given seed color(s), and a set of possible hue, chroma, and lightness values (in LCHab space), it repeatedly chooses the next color as the one that maximizes the minimum pairwise distance to any of the colors already in the palette.</p><p><strong>Arguments</strong></p><ul><li><code>n</code>: Number of colors to generate.</li><li><code>seed</code>: Initial color(s) included in the palette.</li></ul><p><strong>Keyword arguments</strong></p><ul><li><code>dropseed</code>: if true, the <code>seed</code> values will be dropped. This provides an easy mechanism to ensure that the chosen colors are distinguishable from the seed value(s). When true, <code>n</code> does not include the seed color(s).</li><li><code>transform</code>: Transform applied to colors before measuring distance. Default is <code>identity</code>; other choices include <code>deuteranopic</code> to simulate color-blindness.</li><li><code>lchoices</code>: Possible lightness values</li><li><code>cchoices</code>: Possible chroma values</li><li><code>hchoices</code>: Possible hue values</li></ul><p>Returns a <code>Vector</code> of colors of length <code>n</code>, of the type specified in <code>seed</code>.</p></div></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../colordifferences/">« Color Differences</a><a class="docs-footer-nextpage" href="../namedcolors/">Named Colors »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 22 February 2020 13:56">Saturday 22 February 2020</span>. Using Julia version 1.0.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+                                hchoices=range(0, stop=342, length=20))</code></pre><p>Generate n maximally distinguishable colors.</p><p>This uses a greedy brute-force approach to choose n colors that are maximally distinguishable. Given seed color(s), and a set of possible hue, chroma, and lightness values (in LCHab space), it repeatedly chooses the next color as the one that maximizes the minimum pairwise distance to any of the colors already in the palette.</p><p><strong>Arguments</strong></p><ul><li><code>n</code>: Number of colors to generate.</li><li><code>seed</code>: Initial color(s) included in the palette.</li></ul><p><strong>Keyword arguments</strong></p><ul><li><code>dropseed</code>: if true, the <code>seed</code> values will be dropped. This provides an easy mechanism to ensure that the chosen colors are distinguishable from the seed value(s). When true, <code>n</code> does not include the seed color(s).</li><li><code>transform</code>: Transform applied to colors before measuring distance. Default is <code>identity</code>; other choices include <code>deuteranopic</code> to simulate color-blindness.</li><li><code>lchoices</code>: Possible lightness values</li><li><code>cchoices</code>: Possible chroma values</li><li><code>hchoices</code>: Possible hue values</li></ul><p>Returns a <code>Vector</code> of colors of length <code>n</code>, of the type specified in <code>seed</code>.</p></div></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../colordifferences/">« Color Differences</a><a class="docs-footer-nextpage" href="../namedcolors/">Named Colors »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 24 February 2020 13:52">Monday 24 February 2020</span>. Using Julia version 1.0.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
