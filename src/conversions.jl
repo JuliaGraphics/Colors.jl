@@ -100,9 +100,7 @@ function cnvt(::Type{CV}, c::HSV) where CV<:AbstractRGB
 end
 
 function qtrans(u, v, hue)
-    if     hue > 360; hue -= 360
-    elseif hue < 0;   hue += 360
-    end
+    hue = normalize_hue(hue)
 
     if     hue < 60;  u + (v - u) * hue / 60
     elseif hue < 180; v
@@ -123,9 +121,7 @@ function cnvt(::Type{CV}, c::HSL) where CV<:AbstractRGB
 end
 
 function cnvt(::Type{CV}, c::HSI) where CV<:AbstractRGB
-    h, s, i = c.h, c.s, c.i
-    while(h > 360) h -= 360 end
-    while(h < 0) h += 360 end
+    h, s, i = normalize_hue(c.h), c.s, c.i
     is = i*s
     if h < 120
         cosr = cosd(h) / cosd(60-h)
@@ -230,14 +226,7 @@ function cnvt(::Type{HSL{T}}, c::AbstractRGB) where T
         h = convert(T, 4) + (r - g) / (c_max - c_min)
     end
 
-    h *= 60
-    if h < 0
-        h += 360
-    elseif h > 360
-        h -= 360
-    end
-
-    HSL{T}(h,s,l)
+    HSL{T}(normalize_hue(h * 60), s, l)
 end
 
 

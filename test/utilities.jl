@@ -98,6 +98,40 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
         @test hex(HSV(30,1.0,1.0), :rrggbbaa) == "ff8000ff"
     end
 
+    @testset "normalize_hue" begin
+        function test_normalize_hue(h::T) where T<:AbstractFloat
+            hn, he = normalize_hue(h), T(mod(h, BigFloat(360)))
+            !signbit(hn) & (hn <= 360) || return false
+            hn ≈ he || (hn == 360 && he == 0) || (hn == 0 && he == 360)
+        end
+
+        hues = -1500:1:1500
+        @test all(h -> test_normalize_hue(Float64(h)), hues)
+        @test all(h -> test_normalize_hue(prevfloat(Float64(h))), hues)
+        @test all(h -> test_normalize_hue(nextfloat(Float64(h))), hues)
+
+        @test all(h -> test_normalize_hue(Float32(h)), hues)
+        @test all(h -> test_normalize_hue(prevfloat(Float32(h))), hues)
+        @test all(h -> test_normalize_hue(nextfloat(Float32(h))), hues)
+
+        @test all(h -> test_normalize_hue(Float16(h)), hues)
+        @test all(h -> test_normalize_hue(prevfloat(Float16(h))), hues)
+        @test all(h -> test_normalize_hue(nextfloat(Float16(h))), hues)
+
+        @test normalize_hue(HSV{Float64}( 876.5, 0.4, 0.3)) === HSV{Float64}(156.5, 0.4, 0.3)
+        @test normalize_hue(HSL{Float32}( 87.65, 0.4, 0.3)) === HSL{Float32}(87.65, 0.4, 0.3)
+        @test normalize_hue(HSI{Float16}(-876.5, 0.4, 0.3)) === HSI{Float16}(203.5, 0.4, 0.3)
+
+        @test normalize_hue(AHSV{Float32}(360.5, 0.4, 0.3, 0.2)) === AHSV{Float32}(0.5, 0.4, 0.3, 0.2)
+        @test normalize_hue(HSLA{Float64}(360.5, 0.4, 0.3, 0.2)) === HSLA{Float64}(0.5, 0.4, 0.3, 0.2)
+
+        @test normalize_hue(LCHab{Float64}(30, 40,  5.6e7)) === LCHab{Float64}(30, 40, 200)
+        @test normalize_hue(LCHuv{Float32}(30, 40, -5.6e7)) === LCHuv{Float32}(30, 40, 160)
+
+        @test normalize_hue(ALCHab{Float32}(30, 40, -0.5, 0.6)) === ALCHab{Float32}(30, 40, 359.5, 0.6)
+        @test normalize_hue(LCHuvA{Float64}(30, 40, -0.5, 0.6)) === LCHuvA{Float64}(30, 40, 359.5, 0.6)
+    end
+
     # test utility function weighted_color_mean
     parametric2 = [GrayA,AGray32,AGray]
     parametric3 = ColorTypes.parametric3
@@ -135,6 +169,14 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
         end
         end
     end
+
+    @test weighted_color_mean(0.5, HSV(-360.0,1,0), HSV(180.0,0,1)) === HSV{Float64}(270,0.5,0.5)
+    alchab1 = ALCHab{Float32}(0,100,-360,1)
+    alchab2 = ALCHab{Float32}(100,0,-180,0)
+    @test weighted_color_mean(0.5, alchab1, alchab2) === ALCHab{Float32}(50,50,90,0.5)
+    lchuva1 = LCHuvA{Float16}(0,100, 90,1)
+    lchuva2 = LCHuvA{Float16}(100,0,810,0)
+    @test weighted_color_mean(0.5, lchuva1, lchuva2) === LCHuvA{Float16}(50,50,90,0.5)
 
     # test utility function range
     # range uses weighted_color_mean which is extensively tested.

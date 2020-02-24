@@ -176,7 +176,7 @@ may also be specified.
 function MSC(h)
 
     #Wrap h to [0, 360] range
-    h = mod(h, 360)
+    h = normalize_hue(h)
 
     #Selecting edge of RGB cube; R=1 G=2 B=3
     # p #variable
