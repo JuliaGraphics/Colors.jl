@@ -4,66 +4,132 @@ abstract type DifferenceMetric end
 
 # TODO?: make the DifferenMetrics parametric, to preserve type-stability
 
-"CIE Delta E 2000 recommendation"
 struct DE_2000 <: DifferenceMetric
     kl::Float64
     kc::Float64
     kh::Float64
-    DE_2000(kl,kc,kh) = new(kl,kc,kh)
-    DE_2000() = new(1,1,1)
 end
+"""
+    DE_2000()
+    DE_2000(kl, kc, kh)
 
-"CIE Delta E 94 recommendation"
+Construct a metric of the CIE Delta E 2000 recommendation, with weighting
+parameters `kl`, `kc` and `kh` as provided for in the recommendation. When not
+provided, these parameters default to `1`.
+"""
+DE_2000() = DE_2000(1,1,1)
+
+
 struct DE_94 <: DifferenceMetric
     kl::Float64
     kc::Float64
     kh::Float64
-    DE_94(kl,kc,kh) = new(kl,kc,kh)
-    DE_94() = new(1,1,1)
 end
+"""
+    DE_94()
+    DE_94(kl, kc, kh)
 
-"McDonald \"JP Coates Thread Company\" formulation"
+Construct a metric of CIE Delta E 94 recommendation (1994), with weighting
+parameters `kl`, `kc` and `kh` as provided for in the recommendation. When not
+provided, these parameters default to `1`.
+The `DE_94` is more perceptually uniform than the [`DE_AB`](@ref), but has some
+non-uniformities resolved by the [`DE_2000`](@ref).
+"""
+DE_94() = DE_94(1,1,1)
+
+
 struct DE_JPC79 <: DifferenceMetric
 
 end
+"""
+    DE_JPC79()
 
-"CMC recommendation"
+Construct a metric using McDonald's "JP Coates Thread Company" color difference
+formula.
+"""
+DE_JPC79()
+
+
 struct DE_CMC <: DifferenceMetric
     kl::Float64
     kc::Float64
-    DE_CMC(kl,kc) = new(kl,kc)
-    DE_CMC() = new(1,1)
 end
+"""
+    DE_CMC()
+    DE_CMC(kl, kc)
 
-"BFD recommendation"
+Construct a metric using the CMC equation (CMC l:c), with weighting parameters
+`kl` and `kc`. When not provided, these parameters default to `1`.
+!!! note
+    The `DE_CMC` is a quasimetric, i.e. violates symmetry. Therefore,
+    `colordiff(a, b, metric=DE_CMC())` may not equal to
+    `colordiff(b, a, metric=DE_CMC())`.
+"""
+DE_CMC() = DE_CMC(1,1)
+
+
 struct DE_BFD <: DifferenceMetric
     wp::XYZ{Float64}
     kl::Float64
     kc::Float64
-    DE_BFD(wp,kl,kc) = new(wp,kl,kc)
-    DE_BFD() = new(WP_DEFAULT,1,1)
-    DE_BFD(kl, kc) = new(WP_DEFAULT,kl, kc)
 end
+"""
+    DE_BFD()
+    DE_BFD([wp,] kl, kc)
 
-"The original CIE Delta E equation (Euclidian)"
+Construct a metric using the BFD equation, with weighting parameters `kl` and
+`kc`. Additionally, a whitepoint `wp` can be specified, because the BFD equation
+must convert between `XYZ` and `Lab` during the computation. When not provided,
+`kl` and `kc` default to `1`, and `wp` defaults to CIE D65 (`Colors.WP_D65`).
+"""
+DE_BFD() = DE_BFD(WP_DEFAULT,1,1)
+DE_BFD(kl, kc) = DE_BFD(WP_DEFAULT,kl, kc)
+
+
 struct DE_AB <: DifferenceMetric
 
 end
+"""
+    DE_AB()
 
-"DIN99 color difference (Euclidian)"
+Construct a metric of the original CIE Delta E equation (ΔE*ab), or Euclidean
+color difference equation in the `Lab` (CIELAB) colorspace.
+"""
+DE_AB()
+
 struct DE_DIN99 <: DifferenceMetric
 
 end
+"""
+    DE_DIN99()
 
-"DIN99d color difference (Euclidian)"
+Construct a metric using Euclidean color difference equation applied in the
+`DIN99` colorspace.
+"""
+DE_DIN99()
+
 struct DE_DIN99d <: DifferenceMetric
 
 end
+"""
+    DE_DIN99d()
 
-"DIN99o color difference (Euclidian)"
+Construct a metric using Euclidean color difference equation applied in the
+`DIN99d` colorspace.
+"""
+DE_DIN99d()
+
 struct DE_DIN99o <: DifferenceMetric
 
 end
+"""
+    DE_DIN99o()
+
+Construct a metric using Euclidean color difference equation applied in the
+`DIN99o` colorspace.
+"""
+DE_DIN99o()
+
 
 # Compute the mean of two hue angles
 function mean_hue(h1, h2)
@@ -403,12 +469,24 @@ end
 
 # Default to Delta E 2000
 """
-    colordiff(a, b; metric::DifferenceMetric=DE_2000())
+    colordiff(a, b; metric=DE_2000())
 
-Compute an approximate measure of the perceptual difference between
-colors `a` and `b`.  Optionally, a `metric` may be supplied, chosen
-among `DE_2000` (the default), `DE_94`, `DE_JPC79`, `DE_CMC`,
-`DE_BFD`, `DE_AB`, `DE_DIN99`, `DE_DIN99d`, `DE_DIN99o`.
+Compute an approximate measure of the perceptual difference between colors `a`
+and `b`. Optionally, a `metric` may be supplied, chosen among [`DE_2000`](@ref)
+(the default), [`DE_94`](@ref), [`DE_JPC79`](@ref), [`DE_CMC`](@ref),
+[`DE_BFD`](@ref), [`DE_AB`](@ref), [`DE_DIN99`](@ref), [`DE_DIN99d`](@ref) and
+[`DE_DIN99o`](@ref).
+
+The return value is a non-negative number in a type depending on the colors and
+metric.
+
+!!! note
+    The supported metrics measure the difference within `Lab` or its variant
+    colorspaces. When the input colors are not in the colorspace internally used
+    by the metric, the colors (e.g. in `RGB`) are converted with the default
+    whitepoint CIE D65 (`Colors.WP_D65`). If you want to use another whitepoint,
+    convert the colors into the colorspace used by metric (e.g. `Lab` for
+    [`DE_2000`](@ref)) in advance.
 """
 colordiff(ai::Union{Number, Color},
           bi::Union{Number, Color};
