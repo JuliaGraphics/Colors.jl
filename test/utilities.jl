@@ -96,6 +96,16 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
         @test hex(RGBA(1,0.5,0,0.25), :rrggbbaa) == "ff800040"
         @test hex(ARGB(1,0.5,0,0.25), :rrggbbaa) == "ff800040"
         @test hex(HSV(30,1.0,1.0), :rrggbbaa) == "ff8000ff"
+
+        @test hex(Gray(0.5)) == "808080"
+        @test hex(AGray(1.0, 0.5), :aarrggbb) == "80ffffff"
+
+        # clamping
+        @test hex(RGB(2.0,-1.0,0.5)) == "FF0080"
+        @test hex(ARGB(2.0,-1.0,0.5,-10), :rrggbbaa) == "ff008000"
+        @test hex(AHSV(30,1.0,1.0,-10), :RRGGBBAA) == "FF800000"
+        @test hex(Gray(2.0)) == "FFFFFF"
+        @test hex(AGray(1.0, -0.5), :rrggbbaa) == "ffffff00"
     end
 
     @testset "normalize_hue" begin
