@@ -10,31 +10,6 @@ color_names = Dict(
     ...
 ```
 
-Named colors are available as `RGB{N0f8}` using:
-
-```jldoctest example
-julia> using Colors
-
-julia> color = colorant"indianred"
-RGB{N0f8}(0.804,0.361,0.361)
-```
-
-or
-
-```jldoctest example
-julia> cname = "indianred"
-"indianred"
-
-julia> color = parse(Colorant, cname)
-RGB{N0f8}(0.804,0.361,0.361)
-```
-
-or
-
-```jldoctest example
-julia> color = parse(RGB, cname)
-RGB{N0f8}(0.804,0.361,0.361)
-```
 
 ```@example chart
 using Main: NamedColorCharts # hide
@@ -87,20 +62,3 @@ NamedColorCharts.ColorChartSVG("grays") # hide
     named colors. There are some unnatural definitions due to the different
     origins. For example, "LightGray" is lighter than "Gray", but "DarkGray" is
     also lighter than "Gray".
-
-
-These colors can be converted to `RGB{N0f32}` (for example) using:
-
-```jldoctest example
-julia> using FixedPointNumbers
-
-julia> RGB{N0f32}(color)
-RGB{N0f32}(0.803922,0.360784,0.360784)
-```
-
-or
-
-```jldoctest example
-julia> parse(RGB{N0f32}, cname)
-RGB{N0f32}(0.803922,0.360784,0.360784)
-```

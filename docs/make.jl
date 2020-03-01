@@ -6,6 +6,7 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", svg::SVG)
     flush(io)
 end
 
+include("crosssectionalcharts.jl")
 include("colormaps.jl")
 include("namedcolorcharts.jl")
 
