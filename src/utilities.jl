@@ -1,12 +1,27 @@
 # Helper data for CIE observer functions
 include("cie_data.jl")
 
+# for optimization
+div60(x) = x / 60
+_div60(x::T) where T = muladd(x, T(1/960), x * T(0x1p-6))
+if reduce(max, _div60.((90.0f0,))) == 1.5f0
+    div60(x::T) where T <: Union{Float32, Float64} = _div60(x)
+else
+    # force two-step multiplication
+    div60(x::T) where T <: Union{Float32, Float64} = x * T(0x1p-6) + x * T(1/960)
+end
+
+# mod6 supports the input `x` in [-2^28, 2^29]
+mod6(::Type{T}, x::Int32) where T = unsafe_trunc(T, x - 6 * ((widemul(x, 0x2aaaaaaa) + Int64(0x20000000)) >> 0x20))
 
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
 function lerp(x, a, b)
     a + (b - a) * max(min(x, one(x)), zero(x))
 end
+
+clamp01(v::T) where {T<:Fractional} = ifelse(v < zero(T), zero(T), ifelse(v > oneunit(T), oneunit(T), v))
+clamp01(v::T) where {T<:Union{N0f8,N0f16,N0f32,N0f64}} = v
 
 """
     HexNotation{C, A, N}
@@ -148,7 +163,7 @@ Returns a normalized (wrapped-around) hue angle, or a color with the normalized
 hue, in degrees, in [0, 360]. The normalization is essentially equivalent to
 `mod(h, 360)`, but is faster at the expense of some accuracy.
 """
-@fastmath normalize_hue(h::Real) = max(fma(floor(h / 360), -360, h), zero(h))
+@fastmath normalize_hue(h::Real) = max(muladd(floor(h / 360), -360, h), zero(h))
 @fastmath normalize_hue(h::Float16) = Float16(normalize_hue(Float32(h)))
 normalize_hue(c::C) where {C <: Union{HSV, HSL, HSI}} = C(normalize_hue(c.h), c.s, comp3(c))
 normalize_hue(c::C) where {Cb <: Union{HSV, HSL, HSI}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =

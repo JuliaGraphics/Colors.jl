@@ -117,7 +117,7 @@ using ColorTypes: eltype_default, parametric3
 
     @test convert(RGB{N0f8}, red24) == RGB{N0f8}(1,0,0)
     @test convert(RGBA{N0f8}, red32) == RGBA{N0f8}(1,0,0,1)
-    @test convert(HSVA{Float64}, red32) == HSVA{Float64}(360, 1, 1, 1)
+    @test convert(HSVA{Float64}, red32) == HSVA{Float64}(0, 1, 1, 1)
 
     @test_throws MethodError AlphaColor(RGB(1,0,0), r8(0xff))
 
@@ -201,6 +201,30 @@ using ColorTypes: eltype_default, parametric3
     c = RGB{Float16}(0.9473,0.962,0.9766)
     hsi = convert(HSI, c)
     @test hsi.i > 0.96 && hsi.h ≈ 210
+
+    # {HSV, HSL, HSI} --> RGB (issue #379)
+    @testset "HSx --> RGB" begin
+        @test convert(RGB, HSV{Float32}( 780, 1, 1)) === RGB{Float32}(1,1,0)
+        @test convert(RGB, HSV{Float32}(   0, 1, 1)) === RGB{Float32}(1,0,0)
+        @test convert(RGB, HSV{Float32}(-780, 1, 1)) === RGB{Float32}(1,0,1)
+        @test convert(RGB, HSV{Float32}(30,  2, .5)) === RGB{Float32}(.5,.25,0)
+        @test convert(RGB, HSV{Float32}(30, .5, -1)) === RGB{Float32}(0,0,0)
+        @test convert(RGB{Float64}, HSV{BigFloat}(-360120, 2, 1)) === RGB{Float64}(0,0,1)
+
+        @test convert(RGB, HSL{Float32}( 780, 1, .5)) === RGB{Float32}(1,1,0)
+        @test convert(RGB, HSL{Float32}(   0, 1, .5)) === RGB{Float32}(1,0,0)
+        @test convert(RGB, HSL{Float32}(-780, 1, .5)) === RGB{Float32}(1,0,1)
+        @test convert(RGB, HSL{Float32}(30,  2, .25)) === RGB{Float32}(.5,.25,0)
+        @test convert(RGB, HSL{Float32}(30, .5,  -1)) === RGB{Float32}(0,0,0)
+        @test convert(RGB{Float64}, HSL{BigFloat}(-360120, 2, .5)) === RGB{Float64}(0,0,1)
+
+        @test convert(RGB, HSI{Float32}( 780, .5, .5)) ≈ RGB{Float32}(.625,.625,.25)
+        @test convert(RGB, HSI{Float32}(   0, .5, .5)) ≈ RGB{Float32}(1,.25,.25)
+        @test convert(RGB, HSI{Float32}(-780, .5, .5)) ≈ RGB{Float32}(.625,.25,.625)
+        @test convert(RGB, HSI{Float32}(30,  2, .25)) ≈ RGB{Float32}(.5,.25,0)
+        @test convert(RGB, HSI{Float32}(30, .5,  -1)) ≈ RGB{Float32}(0,0,0)
+        @test convert(RGB{Float64}, HSI{BigFloat}(-360120, .5, .5)) ≈ RGB{Float64}(.25,.25,1)
+    end
 
     # Test accuracy of conversion
     include("test_conversions.jl")

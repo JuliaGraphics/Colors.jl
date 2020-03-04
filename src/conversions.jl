@@ -71,7 +71,8 @@ end
 # -----------------
 
 correct_gamut(c::CV) where {CV<:AbstractRGB} = CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)))
-clamp01(v::T) where {T<:Fractional} = ifelse(v < zero(T), zero(T), ifelse(v > one(T), one(T), v))
+correct_gamut(c::CV) where {T<:Union{N0f8,N0f16,N0f32,N0f64},
+                            CV<:Union{AbstractRGB{T},TransparentRGB{T}}} = c
 
 function srgb_compand(v::Fractional)
     # the following is an optimization technique for `1.055v^(1/2.4) - 0.055`.
@@ -81,58 +82,79 @@ end
 
 cnvt(::Type{CV}, c::AbstractRGB) where {CV<:AbstractRGB} = CV(red(c), green(c), blue(c))
 
-function cnvt(::Type{CV}, c::HSV) where CV<:AbstractRGB
-    h = c.h / 60
-    i = floor(Int, h)
-    f = h - i
-    if i & 1 == 0
-        f = 1 - f
-    end
-    m = c.v * (1 - c.s)
-    n = c.v * (1 - c.s * f)
-    if i == 6 || i == 0; CV(c.v, n, m)
-    elseif i == 1;       CV(n, c.v, m)
-    elseif i == 2;       CV(m, c.v, n)
-    elseif i == 3;       CV(m, n, c.v)
-    elseif i == 4;       CV(n, m, c.v)
-    else;                CV(c.v, m, n)
-    end
+
+function _hsx_to_rgb(im::UInt8, v, n, m)
+    #=
+    if     hue <  60; im = 0b000001 # ---------+
+    elseif hue < 120; im = 0b000010 # --------+|
+    elseif hue < 180; im = 0b000100 # -------+||
+    elseif hue < 240; im = 0b001000 # ------+|||
+    elseif hue < 300; im = 0b010000 # -----+||||
+    else            ; im = 0b100000 # ----+|||||
+    end                             #     ||||||
+    (hue < 60 || hue >= 300) === ((im & 0b100001) != 0x0)
+    =#
+    r = ifelse((im & 0b100001) == 0x0, ifelse((im & 0b010010) == 0x0, m, n), v)
+    g = ifelse((im & 0b000110) == 0x0, ifelse((im & 0b001001) == 0x0, m, n), v)
+    b = ifelse((im & 0b011000) == 0x0, ifelse((im & 0b100100) == 0x0, m, n), v)
+    return (r, g, b)
+end
+function _hsx_to_rgb(im::UInt8, v::T, n::T, m::T) where T <:Union{Float16, Float32, Float64}
+    vu, nu, mu = reinterpret.(Unsigned, (v, n, m)) # prompt the compiler to use conditional moves
+    r = ifelse((im & 0b100001) == 0x0, ifelse((im & 0b010010) == 0x0, mu, nu), vu)
+    g = ifelse((im & 0b000110) == 0x0, ifelse((im & 0b001001) == 0x0, mu, nu), vu)
+    b = ifelse((im & 0b011000) == 0x0, ifelse((im & 0b100100) == 0x0, mu, nu), vu)
+    return reinterpret.(T, (r, g, b))
 end
 
-function qtrans(u, v, hue)
-    hue = normalize_hue(hue)
+function cnvt(::Type{CV}, c::HSV) where {T, CV<:AbstractRGB{T}}
+    F = promote_type(T, eltype(c))
+    h, s, v = div60(F(c.h)), clamp01(F(c.s)), clamp01(F(c.v))
+    hi = unsafe_trunc(Int32, h) # instead of floor
+    i = h < 0 ? hi - one(hi) : hi
+    f = i & one(i) == zero(i) ? 1 - (h - i) : h - i
+    im = 0x1 << (mod6(UInt8, i) & 0x07)
+    # use `@fastmath` just to reduce the estimated costs for inlining
+    @fastmath m = v * (1 - s)
+    @fastmath n = v * (1 - s * f)
 
-    if     hue < 60;  u + (v - u) * hue / 60
-    elseif hue < 180; v
-    elseif hue < 240; u + (v - u) * (240 - hue) / 60
-    else;             u
-    end
+    r, g, b = _hsx_to_rgb(im, v, n, m)
+    T <: FixedPoint && typemax(T) >= 1 ? CV(r % T, g % T, b % T) : CV(r, g, b)
 end
 
-function cnvt(::Type{CV}, c::HSL) where CV<:AbstractRGB
-    v = c.l <= 0.5 ? c.l * (1 + c.s) : c.l + c.s - (c.l * c.s)
-    u = 2 * c.l - v
+function cnvt(::Type{CV}, c::HSL) where {T, CV<:AbstractRGB{T}}
+    F = promote_type(T, eltype(c))
+    h, s, l = div60(F(c.h)), clamp01(F(c.s)), clamp01(F(c.l))
+    a = @fastmath min(l, 1 - l) * s
+    v = l + a
+    hi = unsafe_trunc(Int32, h) # instead of floor
+    i = h < 0 ? hi - one(hi) : hi
+    f = i & one(i) == zero(i) ? 1 - (h - i) : h - i
+    im = 0x1 << (mod6(UInt8, i) & 0x07)
+    # use `@fastmath` just to reduce the estimated costs for inlining
+    @fastmath m = l - a # v - 2 * a
+    @fastmath n = v - 2 * a * f
 
-    if c.s == 0; CV(c.l, c.l, c.l)
-    else;        CV(qtrans(u, v, c.h + 120),
-                    qtrans(u, v, c.h),
-                    qtrans(u, v, c.h - 120))
-    end
+    r, g, b = _hsx_to_rgb(im, v, n, m)
+    T <: FixedPoint && typemax(T) >= 1 ? CV(r % T, g % T, b % T) : CV(r, g, b)
 end
 
-function cnvt(::Type{CV}, c::HSI) where CV<:AbstractRGB
-    h, s, i = normalize_hue(c.h), c.s, c.i
-    is = i*s
-    if h < 120
-        cosr = cosd(h) / cosd(60-h)
-        CV(i+is*cosr, i+is*(1-cosr), i-is)
-    elseif h < 240
-        cosr = cosd(h-120) / cosd(180-h)
-        CV(i-is, i+is*cosr, i+is*(1-cosr))
+function cnvt(::Type{CV}, c::HSI) where {T, CV<:AbstractRGB{T}}
+    F = promote_type(T, eltype(c))
+    h, s, i = deg2rad(normalize_hue(F(c.h))), clamp01(F(c.s)), clamp01(F(c.i))
+    is = i * s
+    if h < F(2π/3)
+        @fastmath cosr = cos(h) / cos(F(π/3)-h)
+        r0, g0, b0 = muladd(is, cosr, i), muladd(is, 1-cosr, i), i - is
+    elseif h < F(4π/3)
+        @fastmath cosr = cos(h-F(2π/3)) / cos(F(π)-h)
+        r0, g0, b0 = i - is, muladd(is, cosr, i), muladd(is, 1-cosr, i)
     else
-        cosr = cosd(h-240) / cosd(300-h)
-        CV(i+is*(1-cosr), i-is, i+is*cosr)
+        @fastmath cosr = cos(h-F(4π/3)) / cos(F(5π/3)-h)
+        r0, g0, b0 = muladd(is, 1-cosr, i), i - is, muladd(is, cosr, i)
     end
+    r, g, b = min(r0, oneunit(F)), min(g0, oneunit(F)), min(b0, oneunit(F))
+    T <: FixedPoint && typemax(T) >= 1 ? CV(r % T, g % T, b % T) : CV(r, g, b)
 end
 
 function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
@@ -175,26 +197,20 @@ end
 # -----------------
 
 function cnvt(::Type{HSV{T}}, c::AbstractRGB) where T
-    c_min = Float64(min(red(c), green(c), blue(c)))
-    c_max = Float64(max(red(c), green(c), blue(c)))
-    if c_min == c_max
-        return HSV{T}(zero(T), zero(T), c_max)
-    end
+    F = promote_type(T, eltype(c))
+    r, g, b = F.((red(c), green(c), blue(c)))
+    c_min = @fastmath min(min(r, g), b)
+    c_max = @fastmath max(max(r, g), b)
+    s0 = c_max - c_min
+    s0 == zero(F) && return HSV{T}(zero(T), zero(T), T(c_max))
+    s = @fastmath s0 / c_max
 
-    if c_min == red(c)
-        f = Float64(green(c)) - Float64(blue(c))
-        i = 3
-    elseif c_min == green(c)
-        f = Float64(blue(c)) - Float64(red(c))
-        i = 5
-    else
-        f = Float64(red(c)) - Float64(green(c))
-        i = 1
-    end
+    # In general, it is dangerous to compare floating point numbers with `===`.
+    diff = ifelse(c_max === r,  g - b,         ifelse(c_max === g,  b - r,  r - g))
+    ofs  = ifelse(c_max === r, (g < b)*F(360), ifelse(c_max === g, F(120), F(240)))
+    h0 = @fastmath diff * F(60) / s0
 
-    HSV{T}(60 * (i - f / (c_max - c_min)),
-        (c_max - c_min) / c_max,
-        c_max)
+    HSV{T}(h0 + ofs, s, c_max)
 end
 
 
@@ -205,28 +221,22 @@ cnvt(::Type{HSV{T}}, c::Color3) where {T} = cnvt(HSV{T}, convert(RGB{T}, c))
 # -----------------
 
 function cnvt(::Type{HSL{T}}, c::AbstractRGB) where T
-    r, g, b = T(red(c)), T(green(c)), T(blue(c))
-    c_min = min(r, g, b)
-    c_max = max(r, g, b)
-    l = (c_max + c_min) / 2
+    F = promote_type(T, eltype(c))
+    r, g, b = F(red(c)), F(green(c)), F(blue(c))
+    c_min = @fastmath min(min(r, g), b)
+    c_max = @fastmath max(max(r, g), b)
+    l0 = c_max + c_min
+    s0 = c_max - c_min
+    l = l0 * F(0.5)
+    s0 == zero(F) && return HSL{T}(zero(T), zero(T), T(l))
+    s = @fastmath s0 / min(l0, F(2) - l0)
 
-    if c_max == c_min
-        return HSL(zero(T), zero(T), l)
-    end
+    # In general, it is dangerous to compare floating point numbers with `===`.
+    diff = ifelse(c_max === r,  g - b,         ifelse(c_max === g,  b - r,  r - g))
+    ofs  = ifelse(c_max === r, (g < b)*F(360), ifelse(c_max === g, F(120), F(240)))
+    h0 = @fastmath diff * F(60) / s0
 
-    if l < 0.5; s = (c_max - c_min) / (c_max + c_min)
-    else;       s = (c_max - c_min) / (convert(T, 2) - c_max - c_min)
-    end
-
-    if c_max == red(c)
-        h = (g - b) / (c_max - c_min)
-    elseif c_max == green(c)
-        h = convert(T, 2) + (b - r) / (c_max - c_min)
-    else
-        h = convert(T, 4) + (r - g) / (c_max - c_min)
-    end
-
-    HSL{T}(normalize_hue(h * 60), s, l)
+    HSL{T}(h0 + ofs, s, l)
 end
 
 
@@ -236,22 +246,20 @@ cnvt(::Type{HSL{T}}, c::Color3) where {T} = cnvt(HSL{T}, convert(RGB{T}, c))
 # Everything to HSI
 # -----------------
 
-function cnvt(::Type{HSI{T}}, c::AbstractRGB) where T
+# Since acosd() is slow, the following is "inline-worthy".
+@inline function cnvt(::Type{HSI{T}}, c::AbstractRGB) where T
     rgb = correct_gamut(c)
-    r, g, b = float(red(rgb)), float(green(rgb)), float(blue(rgb))
-    isum = r+g+b
-    dnorm = sqrt(((r-g)^2 + (r-b)^2 + (g-b)^2)/2)
-    dnorm = dnorm == 0 ? oftype(dnorm, 1) : dnorm
-    i = isum/3
-    m = min(r, g, b)
-    s = i > 0 ? 1-m/i : zero(1 - m/i)
-    val = (r-(g+b)/2)/dnorm
-    val = clamp(val, -oneunit(val), oneunit(val))
-    h = acosd(val)
-    if b > g
-        h = 360-h
-    end
-    HSI{T}(h, s, i)
+    F = promote_type(T, eltype(c))
+    r, g, b = F(red(rgb)), F(green(rgb)), F(blue(rgb))
+    dnorm = @fastmath sqrt(((r-g)^2 + (r-b)^2 + (g-b)^2) * F(0.5))
+    isum = r + g + b
+    i = isum / F(3)
+    dnorm == zero(F) && return HSI{T}(T(90), zero(T), T(i))
+    val = muladd(g + b, F(-0.5), r) / dnorm
+    h = @fastmath acosd(clamp(val, -oneunit(F), oneunit(F)))
+    m = @fastmath min(min(r, g), b)
+    s = oneunit(F) - m/i
+    HSI{T}(b > g ? F(360) - h : h, s, i)
 end
 
 cnvt(::Type{HSI{T}}, c::Color3) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
