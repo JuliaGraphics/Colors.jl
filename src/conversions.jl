@@ -73,6 +73,8 @@ end
 correct_gamut(c::CV) where {CV<:AbstractRGB} = CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)))
 correct_gamut(c::CV) where {T<:Union{N0f8,N0f16,N0f32,N0f64},
                             CV<:Union{AbstractRGB{T},TransparentRGB{T}}} = c
+correct_gamut(c::CV) where {CV<:TransparentRGB} =
+    CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)), clamp01(alpha(c))) # for `hex`
 
 function srgb_compand(v::Fractional)
     # the following is an optimization technique for `1.055v^(1/2.4) - 0.055`.

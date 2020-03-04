@@ -121,14 +121,21 @@ end
     @inbounds String([b"0123456789abcdef"[((u << i) >> s) + 1] for i in itr])
 end
 
-_hex(t::Type, c::Colorant) = _hex(t, reinterpret(UInt32, ARGB32(c)))
+_to_uint32(c::Colorant) = reinterpret(UInt32, ARGB32(c))
+_to_uint32(c::TransparentColor) = reinterpret(UInt32, alphacolor(RGB24(c), clamp01(alpha(c))))
+_to_uint32(c::C) where C <: Union{AbstractRGB, TransparentRGB} =
+    reinterpret(UInt32, ARGB32(correct_gamut(c)))
+_to_uint32(c::C) where C <: Union{AbstractGray, TransparentGray} =
+    reinterpret(UInt32, AGray32(clamp01(gray(c)), clamp01(alpha(c))))
+
+_hex(t::Type, c::Colorant) = _hex(t, _to_uint32(c))
 
 _hex(::Type{HexAuto}, c::Color) = _hex(HexNotation{RGB,:upper,6}, c)
 _hex(::Type{HexAuto}, c::AlphaColor) = _hex(HexNotation{ARGB,:upper,8}, c)
 _hex(::Type{HexAuto}, c::ColorAlpha) = _hex(HexNotation{RGBA,:upper,8}, c)
 
 function _hex(::Type{HexShort{A}}, c::Colorant) where A
-    u = reinterpret(UInt32, ARGB32(c))
+    u = _to_uint32(c)
     s = u == (u & 0x0F0F0F0F) * 0x11
     c isa AlphaColor && return _hex(HexNotation{ARGB, A, s ? 4 : 8}, u)
     c isa ColorAlpha && return _hex(HexNotation{RGBA, A, s ? 4 : 8}, u)
