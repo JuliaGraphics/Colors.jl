@@ -5,6 +5,7 @@ const Linear3 = Union{XYZ, LMS}
 -(a::C, b::C) where {C<:Linear3} = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
 -(a::Linear3) = typeof(a)(-comp1(a), -comp2(a), -comp3(a))
 *(c::Number, a::Linear3) = base_color_type(a)(c*comp1(a), c*comp2(a), c*comp3(a))
+*(a::Linear3, c::Number) = c * a
 /(a::Linear3, c::Number) = base_color_type(a)(comp1(a)/c, comp2(a)/c, comp3(a)/c)
 
 # Algorithms relating to color processing and generation
@@ -206,17 +207,8 @@ function MSC(h)
     un = 0.19783982482140777 #4.0X/(X+15.0Y+3.0Z)
     vn = 0.46833630293240970 #9.0Y/(X+15.0Y+3.0Z)
 
-    #sRGB matrix
-    M = [0.4124564  0.3575761  0.1804375;
-         0.2126729  0.7151522  0.0721750;
-         0.0193339  0.1191920  0.9503041]'
-
-    m_tx=M[t,1]
-    m_ty=M[t,2]
-    m_tz=M[t,3]
-    m_px=M[p,1]
-    m_py=M[p,2]
-    m_pz=M[p,3]
+    m_tx, m_ty, m_tz = @view M_sRGB_RGB2XYZ[1:3, t]
+    m_px, m_py, m_pz = @view M_sRGB_RGB2XYZ[1:3, p]
 
     f1 = 4alpha*m_px+9beta*m_py
     a1 = 4alpha*m_tx+9beta*m_ty
@@ -226,7 +218,7 @@ function MSC(h)
     cp=((alpha*un+beta*vn)*a2-a1)/(f1-(alpha*un+beta*vn)*f2)
 
     col = zeros(3)
-    col[p] = clamp01(srgb_compand(cp))
+    col[p] = clamp01(gamma_compand(Gamut_sRGB, cp))
     # col[o] = 0.0
     col[t] = 1.0
 
@@ -277,7 +269,7 @@ function find_maximum_chroma(c::LCHab)
     # should be modified on other conditions.
     if 97 < c.h < 108 && c.l > 92
         err = 1e-6
-        h_yellow = 102.85124420310268 # convert(LCHab,RGB{Float64}(1,1,0)).h
+        h_yellow = 102.85123437653249 # convert(LCHab,RGB{Float64}(1,1,0)).h
         for chroma in range(maxc, stop=100, length=10000)
             rgb = convert(RGB, LCHab(c.l, chroma, c.h))
             blue(rgb) < err && continue

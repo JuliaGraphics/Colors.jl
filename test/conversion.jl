@@ -5,10 +5,10 @@ using ColorTypes: eltype_default, parametric3
 @testset "Conversion" begin
     r8(x) = reinterpret(N0f8, x)
 
-    # srgb_compand / invert_srgb_compand
-    @test Colors.srgb_compand(0.5) ≈ 0.7353569830524494 atol=eps()
-    @test Colors.invert_srgb_compand(0.7353569830524494) ≈ 0.5 atol=eps()
-    @test Colors.invert_srgb_compand(0.735357f0) ≈ 0.5f0 atol=eps(Float32)
+    # sRGB gamma compand/expand
+    @test Colors.gamma_compand(Colors.Gamut_sRGB, 0.5) ≈ 0.7353569830524494 atol=eps()
+    @test Colors.gamma_expand(Colors.Gamut_sRGB, 0.7353569830524494) ≈ 0.5 atol=eps()
+    @test Colors.gamma_expand(Colors.Gamut_sRGB, 0.735357f0) ≈ 0.5f0 atol=eps(Float32)
 
     fractional_types = (RGB, BGR, XRGB, RGBX)  # types that support Fractional
 

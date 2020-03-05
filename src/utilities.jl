@@ -26,6 +26,25 @@ pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
 # x^y ≈ exp(y*log(x)) ≈ exp2(y*log2(y)); the middle form is faster
 @noinline pow12_5(x) = x^2 * exp(0.4 * log(x)) # 12/5 == 2.4 == 2 + 0.4
 
+pow256_563(x) = x ^ (256/563)
+pow563_256(x) = x ^ (563/256)
+
+macro mul3x3(M, c1, c2, c3)
+    esc(quote
+        @inbounds ($M[1,1]*$c1 + $M[1,2]*$c2 + $M[1,3]*$c3,
+                   $M[2,1]*$c1 + $M[2,2]*$c2 + $M[2,3]*$c3,
+                   $M[3,1]*$c1 + $M[3,2]*$c2 + $M[3,3]*$c3)
+        end)
+end
+
+macro mul3x3xyz(M, xyz)
+    :(@mul3x3 $(esc(M)) $(esc(xyz)).x $(esc(xyz)).y $(esc(xyz)).z)
+end
+
+macro mul3x3lms(M, lms)
+    :(@mul3x3 $(esc(M)) $(esc(lms)).l $(esc(lms)).m $(esc(lms)).s)
+end
+
 
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.

@@ -60,15 +60,6 @@ cnvt(::Type{C}, c) where {C} = convert(C, c)
 cnvt(::Type{C}, g::AbstractGray) where {C<:Color3}  = cnvt(C, convert(RGB{eltype(C)}, g))
 
 
-macro mul3x3(T, M, c1, c2, c3)
-    esc(quote
-        @inbounds ret = $T($M[1,1]*$c1 + $M[1,2]*$c2 + $M[1,3]*$c3,
-                           $M[2,1]*$c1 + $M[2,2]*$c2 + $M[2,3]*$c3,
-                           $M[3,1]*$c1 + $M[3,2]*$c2 + $M[3,3]*$c3)
-        ret
-        end)
-end
-
 # Everything to RGB
 # -----------------
 
@@ -77,13 +68,6 @@ correct_gamut(c::CV) where {T<:Union{N0f8,N0f16,N0f32,N0f64},
                             CV<:Union{AbstractRGB{T},TransparentRGB{T}}} = c
 correct_gamut(c::CV) where {CV<:TransparentRGB} =
     CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)), clamp01(alpha(c))) # for `hex`
-
-function srgb_compand(v::Fractional)
-    # `pow5_12` is an optimized function to get `v^(1/2.4)`
-    v <= 0.0031308 ? 12.92v : 1.055 * pow5_12(v) - 0.055
-end
-
-cnvt(::Type{CV}, c::AbstractRGB) where {CV<:AbstractRGB} = CV(red(c), green(c), blue(c))
 
 
 function _hsx_to_rgb(im::UInt8, v, n, m)
@@ -160,20 +144,35 @@ function cnvt(::Type{CV}, c::HSI) where {T, CV<:AbstractRGB{T}}
     T <: FixedPoint && typemax(T) >= 1 ? CV(r % T, g % T, b % T) : CV(r, g, b)
 end
 
+const M_sRGB_XYZ2RGB = mat_xyz_to_rgb(Gamut_sRGB)
+
 function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
-    r =  3.2404542*c.x - 1.5371385*c.y - 0.4985314*c.z
-    g = -0.9692660*c.x + 1.8760108*c.y + 0.0415560*c.z
-    b =  0.0556434*c.x - 0.2040259*c.y + 1.0572252*c.z
-    CV(clamp01(srgb_compand(r)),
-       clamp01(srgb_compand(g)),
-       clamp01(srgb_compand(b)))
+    r, g, b = @mul3x3xyz(M_sRGB_XYZ2RGB, c)
+    CV(clamp01(gamma_compand(Gamut_sRGB, r)),
+       clamp01(gamma_compand(Gamut_sRGB, g)),
+       clamp01(gamma_compand(Gamut_sRGB, b)))
 end
 
-function cnvt(::Type{CV}, c::YIQ) where CV<:AbstractRGB
+# TODO: use @generated?
+const _cache_xyz2rgb = Dict{Type{<:AbstractRGBGamut}, Array{Float64,2}}()
+
+function xyz_to_rgb(::Type{CV}, c::XYZ, gamut::Type{<:AbstractRGBGamut}) where CV<:AbstractRGB
+    if haskey(_cache_xyz2rgb, gamut)
+        m = _cache_xyz2rgb[gamut]
+    else
+        m = get!(_cache_xyz2rgb, gamut, mat_xyz_to_rgb(gamut))
+    end
+    r, g, b = @mul3x3xyz(m, c)
+    CV(gamma_compand.(gamut, max.(zero(r), (r, g, b)))...)
+end
+
+const M_SMPTEC_YIQ2RGB = [1.0  0.9563  0.6210
+                          1.0 -0.2721 -0.6474
+                          1.0 -1.1070  1.7046 ]
+function yiq_to_rgb_smptec(::Type{CV}, c::YIQ) where CV<:AbstractRGB
     cc = correct_gamut(c)
-    CV(clamp01(cc.y+0.9563*cc.i+0.6210*cc.q),
-       clamp01(cc.y-0.2721*cc.i-0.6474*cc.q),
-       clamp01(cc.y-1.1070*cc.i+1.7046*cc.q))
+    rgb = @mul3x3 M_SMPTEC_YIQ2RGB cc.y cc.i cc.q
+    CV(clamp01.(rgb)...)
 end
 
 function cnvt(::Type{CV}, c::YCbCr) where CV<:AbstractRGB
@@ -267,45 +266,25 @@ cnvt(::Type{HSI{T}}, c::Color3) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
 # Everything to XYZ
 # -----------------
 
-function invert_srgb_compand(v::Fractional)
-    # `pow12_5` is an optimized function to get `x^2.4`
-    v <= 0.04045 ? 1/12.92 * v : pow12_5(1/1.055 * (v + 0.055))
-end
-
-# lookup table for `N0f8` (the extra two elements are for `Float32` splines)
-const invert_srgb_compand_n0f8 = [invert_srgb_compand(v/255.0) for v = 0:257]
-
-function invert_srgb_compand(v::N0f8)
-    @inbounds invert_srgb_compand_n0f8[reinterpret(UInt8, v) + 1]
-end
-
-function invert_srgb_compand(v::Float32)
-    i = unsafe_trunc(Int32, v * 255)
-    (i < 13 || i > 255) && return invert_srgb_compand(Float64(v))
-    @inbounds y = view(invert_srgb_compand_n0f8, i:i+3)
-    dv = v * 255.0 - i
-    dv == 0.0 && @inbounds return y[2]
-    if v < 0.38857287f0
-        return @fastmath(y[2]+0.5*dv*((-2/3*y[1]- y[2])+(2y[3]-1/3*y[4])+
-                                  dv*((     y[1]-2y[2])+  y[3]-
-                                  dv*(( 1/3*y[1]- y[2])+( y[3]-1/3*y[4]) ))))
-    else
-        return @fastmath(y[2]+0.5*dv*((4y[3]-3y[2])-y[4]+dv*((y[4]-y[3])+(y[2]-y[3]))))
-    end
-end
+const M_sRGB_RGB2XYZ = mat_rgb_to_xyz(Gamut_sRGB)
 
 function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T
-    r, g, b = invert_srgb_compand(red(c)), invert_srgb_compand(green(c)), invert_srgb_compand(blue(c))
-    XYZ{T}(0.4124564*r + 0.3575761*g + 0.1804375*b,
-           0.2126729*r + 0.7151522*g + 0.0721750*b,
-           0.0193339*r + 0.1191920*g + 0.9503041*b)
+    r, g, b = gamma_expand.(Gamut_sRGB, (red(c), green(c), blue(c)))
+    XYZ{T}(@mul3x3(M_sRGB_RGB2XYZ, r, g, b)...)
 end
 
+# TODO: use @generated?
+const _cache_rgb2xyz = Dict{Type{<:AbstractRGBGamut}, Array{Float64,2}}()
 
-cnvt(::Type{XYZ{T}}, c::HSV) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
-cnvt(::Type{XYZ{T}}, c::HSL) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
-cnvt(::Type{XYZ{T}}, c::HSI) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
-
+function rgb_to_xyz(::Type{XYZ{T}}, c::AbstractRGB, gamut::Type{<:AbstractRGBGamut}) where T
+    if haskey(_cache_rgb2xyz, gamut)
+        m = _cache_rgb2xyz[gamut]
+    else
+        m = get!(_cache_rgb2xyz, gamut, mat_rgb_to_xyz(gamut))
+    end
+    r, g, b = gamma_expand.(gamut, (red(c), green(c), blue(c)))
+    XYZ{T}(@mul3x3(m, r, g, b)...)
+end
 
 function cnvt(::Type{XYZ{T}}, c::xyY) where T
     X = c.Y*c.x/c.y
@@ -394,12 +373,15 @@ end
 
 
 function cnvt(::Type{XYZ{T}}, c::LMS) where T
-    @mul3x3 XYZ{T} CAT02_INV c.l c.m c.s
+    XYZ{T}(@mul3x3lms(CAT02_INV, c)...)
 end
 
 
-cnvt(::Type{XYZ{T}}, c::YIQ) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
-cnvt(::Type{XYZ{T}}, c::YCbCr) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
+function cnvt(::Type{XYZ{T}}, c::YIQ) where T
+    rgb_to_xyz(XYZ{T}, yiq_to_rgb_smptec(RGB{T}, c), Gamut_SMPTE_C)
+end
+
+cnvt(::Type{XYZ{T}}, c::Color3) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c))
 
 # Everything to xyY
 # -----------------
@@ -695,7 +677,7 @@ const CAT02_INV = inv(CAT02)
 
 
 function cnvt(::Type{LMS{T}}, c::XYZ) where T
-    @mul3x3 LMS{T} CAT02 c.x c.y c.z
+    LMS{T}(@mul3x3xyz(CAT02, c)...)
 end
 
 
@@ -708,14 +690,16 @@ correct_gamut(c::YIQ{T}) where {T} = YIQ{T}(clamp(c.y, zero(T), one(T)),
                                      clamp(c.i, convert(T,-0.5957), convert(T,0.5957)),
                                      clamp(c.q, convert(T,-0.5226), convert(T,0.5226)))
 
-function cnvt(::Type{YIQ{T}}, c::AbstractRGB) where T
-    rgb = correct_gamut(c)
-    YIQ{T}(0.299*red(rgb)+0.587*green(rgb)+0.114*blue(rgb),
-           0.595716*red(rgb)-0.274453*green(rgb)-0.321263*blue(rgb),
-           0.211456*red(rgb)-0.522591*green(rgb)+0.311135*blue(rgb))
+const M_SMPTEC_RGB2YIQ = inv(M_SMPTEC_YIQ2RGB)
+function rgb_to_yiq_smptec(::Type{YIQ{T}}, c::AbstractRGB) where T
+    r, g, b = red(c), green(c), blue(c)
+    YIQ{T}(@mul3x3(M_SMPTEC_RGB2YIQ, r, g, b)...)
+end
+function cnvt(::Type{YIQ{T}}, c::XYZ) where T
+    rgb_to_yiq_smptec(YIQ{T}, cnvt(RGB{T}, c))
 end
 
-cnvt(::Type{YIQ{T}}, c::Color3) where {T} = cnvt(YIQ{T}, convert(RGB{T}, c))
+cnvt(::Type{YIQ{T}}, c::Color3) where {T} = cnvt(YIQ{T}, convert(XYZ{T}, c))
 
 
 # Everything to YCbCr
