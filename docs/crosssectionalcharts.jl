@@ -172,7 +172,7 @@ function write_png(io::IO, cs::AbstractArray{T}) where T <: Color
     u16(x) = (u8((x & 0xFFFF)>>8); u8(x))
     u32(x) = (u16((x & 0xFFFFFFFF)>>16); u16(x))
     b(bstr) = write(buf, bstr)
-    function pallet(c::Color)
+    function palette(c::Color)
         rgb24 = convert(RGB24,c)
         u8(rgb24.color>>16); u8(rgb24.color>>8); u8(rgb24.color)
     end
@@ -197,7 +197,7 @@ function write_png(io::IO, cs::AbstractArray{T}) where T <: Color
     u32(n * n * 3); flush();
     b(b"PLTE")
     for y = 1:n, x = 1:n
-        pallet(cs[y,x])
+        palette(cs[y,x])
     end
     crc32()
     # Image data
