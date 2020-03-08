@@ -1,35 +1,84 @@
 # Color Differences
 
-The `colordiff` function gives an approximate value for the difference between two colors.
+The [`colordiff`](@ref) function gives an approximate value for the difference between two colors.
 
 ```jldoctest example; setup = :(using Colors)
-julia> colordiff(colorant"red", parse(Colorant, HSV(360, 0.75, 1)))
-8.178248292426845
+julia> colordiff(colorant"red", colorant"darkred")
+23.754149863643036
+
+julia> colordiff(colorant"red", colorant"blue")
+52.88136782250768
+
+julia> colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
+19.48591066257135
 ```
 
-`colordiff(a::Color, b::Color; metric::DifferenceMetric=DE_2000())`
+```julia
+    colordiff(a::Color, b::Color; metric=DE_2000())
+```
 
 Evaluate the [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) color difference formula by default. This gives an approximate measure of the perceptual difference between two colors to a typical viewer. A larger number is returned for increasingly distinguishable colors.
 
-Options for `DifferenceMetric` are as follows:
+Options for `metric` are as follows:
 
-| Option                                                 | Action                                        |
-| ----------                                             | -------                                       |
-|`DE_2000(kl::Float64, kc::Float64, kh::Float64)`        | Specify the color difference using the recommended CIEDE2000 equation, with weighting parameters `kl`, `kc`, and `kh` as provided for in the recommendation.|
-|`DE_2000()`                                             | - when not provided, these parameters default to 1.                                                                                                         |
-|`DE_94(kl::Float64, kc::Float64, kh::Float64)`          | Specify the color difference using the recommended CIEDE94 equation, with weighting parameters `kl`, `kc`, and `kh` as provided for in the recommendation.  |
-|`DE_94()`                                               | - hen not provided, these parameters default to 1.                                                                                                          |
-|`DE_JPC79()`                                            | Specify McDonald's "JP Coates Thread Company" color difference formula.                                                                                     |
-|`DE_CMC(kl::Float64, kc::Float64)`                      | Specify the color difference using the CMC equation, with weighting parameters `kl` and `kc`.                                                               |
-|`DE_CMC()`                                              | - when not provided, these parameters default to 1.                                                                                                         |
-|`DE_BFD(wp::XYZ, kl::Float64, kc::Float64)`             | Specify the color difference using the BFD equation, with weighting parameters `kl` and `kc`. Additionally, a white point can be specified, because the BFD equation must convert between `XYZ` and `LAB` during the computation.|
-|`DE_BFD(kl::Float64, kc::Float64)`                      |                                                                   |
-|`DE_BFD()`                                              | - when not specified, the constants default to 1, and the white point defaults to CIED65.                                                                   |
-|`DE_AB()`                                               | Specify the original, Euclidean color difference equation.                                                                                                  |
-|`DE_DIN99()`                                            | Specify the Euclidean color difference equation applied in the `DIN99` uniform colorspace.                                                                 |
-|`DE_DIN99d()`                                           | Specify the Euclidean color difference equation applied in the `DIN99d` uniform colorspace.                                                                 |
-|`DE_DIN99o()`                                           | Specify the Euclidean color difference equation applied in the `DIN99o` uniform colorspace.                                                                 |
+| Metric             | Summary                                                                       |
+|:-------------------|:------------------------------------------------------------------------------|
+|[`DE_2000`](@ref)   | The color difference using the recommended CIE Delta E 2000 equation.         |
+|[`DE_94`](@ref)     | The color difference using the recommended CIE Delta E 94 equation.           |
+|[`DE_JPC79`](@ref)  | McDonald's "JP Coates Thread Company" color difference formula.               |
+|[`DE_CMC`](@ref)    | The color difference using the CMC l:c equation.                              |
+|[`DE_BFD`](@ref)    | The color difference using the BFD equation.                                  |
+|[`DE_AB`](@ref)     | The original ΔE*, Euclidean color difference equation in the `Lab` colorspace.|
+|[`DE_DIN99`](@ref)  | The Euclidean color difference equation applied in the `DIN99` colorspace.    |
+|[`DE_DIN99d`](@ref) | The Euclidean color difference equation applied in the `DIN99d` colorspace.   |
+|[`DE_DIN99o`](@ref) | The Euclidean color difference equation applied in the `DIN99o` colorspace.   |
+
+
+The following charts show the differences between the three colors for each
+metric with the default parameters:
+```@example diff
+using Colors # hide
+using Main: ColorDiffCharts # hide
+ColorDiffCharts.ColorDiffChartSVG(DE_2000()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_94()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_JPC79()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_CMC()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_BFD()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_AB()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_DIN99()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_DIN99d()) # hide
+```
+```@example diff
+ColorDiffCharts.ColorDiffChartSVG(DE_DIN99o()) # hide
+```
+The difference in the size of circles in the charts above represents the
+difference in the scale. The radii of the circles are all 20 in their scale
+units, so larger circles mean that the metric returns smaller values. Therefore,
+we should not compare the color differences between different metrics.
 
 ```@docs
 colordiff
+DE_2000()
+DE_94()
+DE_JPC79()
+DE_CMC()
+DE_BFD()
+DE_AB()
+DE_DIN99()
+DE_DIN99d()
+DE_DIN99o()
 ```
