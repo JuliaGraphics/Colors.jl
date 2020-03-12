@@ -77,9 +77,8 @@ correct_gamut(c::CV) where {CV<:TransparentRGB} =
     CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)), clamp01(alpha(c))) # for `hex`
 
 function srgb_compand(v::Fractional)
-    # the following is an optimization technique for `1.055v^(1/2.4) - 0.055`.
-    # x^y ≈ exp(y*log(x)) ≈ exp2(y*log2(y)); the middle form is faster
-    v <= 0.0031308 ? 12.92v : 1.055 * exp(1/2.4 * log(v)) - 0.055
+    # `pow5_12` is an optimized function to get `v^(1/2.4)`
+    v <= 0.0031308 ? 12.92v : 1.055 * pow5_12(v) - 0.055
 end
 
 cnvt(::Type{CV}, c::AbstractRGB) where {CV<:AbstractRGB} = CV(red(c), green(c), blue(c))
@@ -270,17 +269,30 @@ cnvt(::Type{HSI{T}}, c::Color3) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
 # -----------------
 
 function invert_srgb_compand(v::Fractional)
-    v <= 0.04045 && return v/12.92
-    # the following is an optimization technique for `((v+0.055) /1.055)^2.4`.
-    # see also: srgb_compand(v::Fractional)
-    x = (v + 0.055) / 1.055
-    return x^2 * exp(0.4 * log(x)) # 2.4 == 2 + 0.4
+    # `pow12_5` is an optimized function to get `x^2.4`
+    v <= 0.04045 ? 1/12.92 * v : pow12_5(1/1.055 * (v + 0.055))
 end
 
-const invert_srgb_compand_n0f8 = [invert_srgb_compand(v/255) for v = 0:255] # LUT
+# lookup table for `N0f8` (the extra two elements are for `Float32` splines)
+const invert_srgb_compand_n0f8 = [invert_srgb_compand(v/255.0) for v = 0:257]
 
 function invert_srgb_compand(v::N0f8)
-    invert_srgb_compand_n0f8[reinterpret(UInt8, v) + 1]
+    @inbounds invert_srgb_compand_n0f8[reinterpret(UInt8, v) + 1]
+end
+
+function invert_srgb_compand(v::Float32)
+    i = unsafe_trunc(Int32, v * 255)
+    (i < 13 || i > 255) && return invert_srgb_compand(Float64(v))
+    @inbounds y = view(invert_srgb_compand_n0f8, i:i+3)
+    dv = v * 255.0 - i
+    dv == 0.0 && @inbounds return y[2]
+    if v < 0.38857287f0
+        return @fastmath(y[2]+0.5*dv*((-2/3*y[1]- y[2])+(2y[3]-1/3*y[4])+
+                                  dv*((     y[1]-2y[2])+  y[3]-
+                                  dv*(( 1/3*y[1]- y[2])+( y[3]-1/3*y[4]) ))))
+    else
+        return @fastmath(y[2]+0.5*dv*((4y[3]-3y[2])-y[4]+dv*((y[4]-y[3])+(y[2]-y[3]))))
+    end
 end
 
 function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T

@@ -1,6 +1,22 @@
 using Colors, FixedPointNumbers, Test, InteractiveUtils
 
 @testset "Utilities" begin
+    # issue #351
+    xs = max.(rand(1000), 1e-4)
+    @noinline l_pow_x_y() = for x in xs; x^2.4 end
+    @noinline l_pow12_5() = for x in xs; Colors.pow12_5(x) end
+    l_pow_x_y(); t_pow_x_y = @elapsed l_pow_x_y()
+    l_pow12_5(); t_pow12_5 = @elapsed l_pow12_5()
+    if t_pow12_5 > t_pow_x_y
+        @warn "Optimization technique in `pow12_5` may have the opposite effect."
+    end
+    @noinline l_exp_y_log_x() = for x in xs; exp(1/2.4 * log(x)) end
+    @noinline l_pow5_12() = for x in xs; Colors.pow5_12(x) end
+    l_exp_y_log_x(); t_exp_y_log_x = @elapsed l_exp_y_log_x()
+    l_pow5_12(); t_pow5_12 = @elapsed l_pow5_12()
+    if t_pow5_12 > t_exp_y_log_x
+        @warn "Optimization technique in `pow5_12` may have the opposite effect."
+    end
 
     @testset "hex" begin
         base_hex = @test_logs (:warn, r"Base\.hex\(c\) has been moved") Base.hex(RGB(1,0.5,0))
