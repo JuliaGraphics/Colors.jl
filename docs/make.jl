@@ -10,6 +10,7 @@ include("crosssectionalcharts.jl")
 include("colordiffcharts.jl")
 include("colormaps.jl")
 include("namedcolorcharts.jl")
+include("sampleimages.jl")
 
 
 makedocs(

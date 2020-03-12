@@ -48,7 +48,22 @@ deuteranopic(c::Color, p::Float64)
 tritanopic(c::Color, p::Float64)
 ```
 
-Also provided are versions of these functions with an extra parameter `p` in `[0, 1]`, giving the degree of photopigment loss, where 1.0 is a complete loss, and 0.0 is no loss at all.
+Also provided are versions of these functions with an extra parameter `p` in `[0, 1]`, giving the degree of photopigment loss, where `1.0` is a complete loss, and `0.0` is no loss at all. The partial loss simulates the anomalous trichromacy, i.e. *protanomaly*, *deuteranomaly* and *tritanomaly*.
+
+```@example deficiency
+using Colors #hide
+using Main: SampleImages # hide
+SampleImages.BeadsImageSVG("Normal") # hide
+```
+```@example deficiency
+SampleImages.BeadsImageSVG("Protanomaly (p=0.7)", filter=(c->protanopic(c, 0.7))) # hide
+```
+```@example deficiency
+SampleImages.BeadsImageSVG("Deuteranomaly (p=0.7)", filter=(c->deuteranopic(c, 0.7))) # hide
+```
+```@example deficiency
+SampleImages.BeadsImageSVG("Tritanomaly (p=0.7)", filter=(c->tritanopic(c, 0.7))) # hide
+```
 
 ```@docs
 protanopic
