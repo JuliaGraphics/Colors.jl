@@ -234,7 +234,7 @@ using ColorTypes: eltype_default, parametric3
     # since the tolerance varies from component to component, a homogeneous
     # error evaluation function (e.g. a simple sum of differences) is also not
     # appropriate. Therefore, a series of `diffnorm`, which returns the
-    # normalized Euclidian distance, is defined as follows. They are just for
+    # normalized Euclidean distance, is defined as follows. They are just for
     # testing purposes as the cyclicity of hue is ignored.
     sqd(a, b, s=1.0) = ((float(a) - float(b))/s)^2
     function diffnorm(a::T, b::T) where {T<:Color3} # RGB,XYZ,xyY,LMS
