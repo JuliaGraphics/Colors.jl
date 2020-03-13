@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Color Differences · Colors</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><script src="../assets/resize_svg.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Colors logo"/></a><div class="docs-package-name"><span class="docs-autofit">Colors</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../constructionandconversion/">Construction and Conversion</a></li><li class="is-active"><a class="tocitem" href>Color Differences</a></li><li><a class="tocitem" href="../colormapsandcolorscales/">Colormaps and Colorscales</a></li><li><a class="tocitem" href="../namedcolors/">Named Colors</a></li><li><a class="tocitem" href="../advancedfunctions/">Advanced Functions</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Color Differences</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Color Differences</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/colordifferences.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Color-Differences-1"><a class="docs-heading-anchor" href="#Color-Differences-1">Color Differences</a><a class="docs-heading-anchor-permalink" href="#Color-Differences-1" title="Permalink"></a></h1><p>The <a href="#Colors.colordiff"><code>colordiff</code></a> function gives an approximate value for the difference between two colors.</p><pre><code class="language-julia-repl">julia&gt; colordiff(colorant&quot;red&quot;, colorant&quot;darkred&quot;)
+23.754149863643036
+
+julia&gt; colordiff(colorant&quot;red&quot;, colorant&quot;blue&quot;)
+52.88136782250768
+
+julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
+19.48591066257135</code></pre><pre><code class="language-julia">    colordiff(a::Color, b::Color; metric=DE_2000())</code></pre><p>Evaluate the <a href="http://en.wikipedia.org/wiki/Color_difference#CIEDE2000">CIEDE2000</a> color difference formula by default. This gives an approximate measure of the perceptual difference between two colors to a typical viewer. A larger number is returned for increasingly distinguishable colors.</p><p>Options for <code>metric</code> are as follows:</p><table><tr><th style="text-align: left">Metric</th><th style="text-align: left">Summary</th></tr><tr><td style="text-align: left"><a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a></td><td style="text-align: left">The color difference using the recommended CIE Delta E 2000 equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_94-Tuple{}"><code>DE_94</code></a></td><td style="text-align: left">The color difference using the recommended CIE Delta E 94 equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_JPC79-Tuple{}"><code>DE_JPC79</code></a></td><td style="text-align: left">McDonald&#39;s &quot;JP Coates Thread Company&quot; color difference formula.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_CMC-Tuple{}"><code>DE_CMC</code></a></td><td style="text-align: left">The color difference using the CMC l:c equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_BFD-Tuple{}"><code>DE_BFD</code></a></td><td style="text-align: left">The color difference using the BFD equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a></td><td style="text-align: left">The original ΔE*, Euclidean color difference equation in the <code>Lab</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99-Tuple{}"><code>DE_DIN99</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99d-Tuple{}"><code>DE_DIN99d</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99d</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99o-Tuple{}"><code>DE_DIN99o</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99o</code> colorspace.</td></tr></table><p>The following charts show the differences between the three colors for each metric with the default parameters:</p><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_2000" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_2000" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="2.584547137887243" cy="4.632352393419274" fill="#9558B2" r="3.2292084535570753" />
+  <circle cx="-2.584547137887243" cy="2.867647606580727" fill="#CB3C33" r="3.2292084535570753" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="3.2292084535570753" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_2000);marker-end:url(#marker_e_DE_2000)">
+  <path d="M2.584547137887243,4.632352393419274 L-2.584547137887243,2.867647606580727"/>
+  <path d="M-2.584547137887243,2.867647606580727 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L2.584547137887243,4.632352393419274"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.292273568943622" y="-2.3161761967096366" text-anchor="end">66.2</text>
+  <text x="-2.584689366312999" y="12.320956404554746" text-anchor="middle">33.8</text>
+  <text x="4.292273568943622" y="-1.433823803290363" text-anchor="start">76.8</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_2000</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_94" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_94" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="3.831978251030773" cy="5.0534241694805635" fill="#9558B2" r="4.04311027711589" />
+  <circle cx="-3.831978251030773" cy="2.4465758305194374" fill="#CB3C33" r="4.04311027711589" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="4.04311027711589" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_94);marker-end:url(#marker_e_DE_94)">
+  <path d="M3.831978251030773,5.0534241694805635 L-3.831978251030773,2.4465758305194374"/>
+  <path d="M-3.831978251030773,2.4465758305194374 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.831978251030773,5.0534241694805635"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.915989125515386" y="-2.5267120847402813" text-anchor="end">52.7</text>
+  <text x="-2.576199039290741" y="12.323849649283874" text-anchor="middle">40</text>
+  <text x="4.915989125515386" y="-1.2232879152597183" text-anchor="start">64.9</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_94</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_JPC79" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_JPC79" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="0.18435719831331052" cy="6.376218761818106" fill="#9558B2" r="2.780163032156446" />
+  <circle cx="-0.18435719831331052" cy="1.1237812381818921" fill="#CB3C33" r="2.780163032156446" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="2.780163032156446" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_JPC79);marker-end:url(#marker_e_DE_JPC79)">
+  <path d="M0.18435719831331052,6.376218761818106 L-0.18435719831331052,1.1237812381818921"/>
+  <path d="M-0.18435719831331052,1.1237812381818921 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L0.18435719831331052,6.376218761818106"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-3.092178599156655" y="-3.188109380909054" text-anchor="end">62.1</text>
+  <text x="-7.980361111785794" y="5.3102111436744135" text-anchor="middle">37.9</text>
+  <text x="3.092178599156655" y="-0.561890619090947" text-anchor="start">99.8</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_JPC79</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_CMC" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_CMC" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="0.0" cy="6.4080453811519025" fill="#9558B2" r="2.6533376973680283" />
+  <circle cx="-0.0" cy="1.0919546188480969" fill="#CB3C33" r="2.6533376973680283" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="2.6533376973680283" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_CMC);marker-end:url(#marker_e_DE_CMC)">
+  <path d="M0.0,6.4080453811519025 L-0.0,1.0919546188480969"/>
+  <path d="M-0.0,1.0919546188480969 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L0.0,6.4080453811519025"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-3.0" y="-3.2040226905759517" text-anchor="end">64.6</text>
+  <text x="-8.0" y="4.749999999999999" text-anchor="middle">38.9</text>
+  <text x="3.0" y="-0.5459773094240488" text-anchor="start">105</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_CMC</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_BFD" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_BFD" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="2.893761517908056" cy="4.809192385898024" fill="#9558B2" r="2.47012721045965" />
+  <circle cx="-2.893761517908056" cy="2.6908076141019746" fill="#CB3C33" r="2.47012721045965" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="2.47012721045965" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_BFD);marker-end:url(#marker_e_DE_BFD)">
+  <path d="M2.893761517908056,4.809192385898024 L-2.893761517908056,2.6908076141019746"/>
+  <path d="M-2.893761517908056,2.6908076141019746 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L2.893761517908056,4.809192385898024"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.446880758954028" y="-2.404596192949013" text-anchor="end">85.8</text>
+  <text x="-2.7497950948538414" y="12.262564604468817" text-anchor="middle">49.9</text>
+  <text x="4.446880758954028" y="-1.345403807050988" text-anchor="start">102</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_BFD</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_AB" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_AB" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="3.8454026421077323" cy="4.816399136694172" fill="#9558B2" r="2.0579663451408274" />
+  <circle cx="-3.8454026421077323" cy="2.6836014520947225" fill="#CB3C33" r="2.0579663451408274" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="2.0579663451408274" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_AB);marker-end:url(#marker_e_DE_AB)">
+  <path d="M3.8454026421077323,4.816399136694172 L-3.8454026421077323,2.6836014520947225"/>
+  <path d="M-3.8454026421077323,2.6836014520947225 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.8454026421077323,4.816399136694172"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.922701321053866" y="-2.408199273952639" text-anchor="end">106</text>
+  <text x="-2.137859180730338" y="12.459057183753028" text-anchor="middle">77.6</text>
+  <text x="4.922701321053866" y="-1.341800431652914" text-anchor="start">125</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_AB</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_DIN99" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_DIN99" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="3.3103786474398094" cy="4.054913561115523" fill="#9558B2" r="4.598130723092119" />
+  <circle cx="-3.3103786474398094" cy="3.445085781116601" fill="#CB3C33" r="4.598130723092119" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="4.598130723092119" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_DIN99);marker-end:url(#marker_e_DE_DIN99)">
+  <path d="M3.3103786474398094,4.054913561115523 L-3.3103786474398094,3.445085781116601"/>
+  <path d="M-3.3103786474398094,3.445085781116601 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.3103786474398094,4.054913561115523"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.655189323719904" y="-2.0274571094416993" text-anchor="end">49.7</text>
+  <text x="-0.7337616743248484" y="12.7162782129003" text-anchor="middle">28.9</text>
+  <text x="4.655189323719904" y="-1.7225432194422385" text-anchor="start">52.3</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_DIN99</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_DIN99d" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_DIN99d" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="3.9590296198437307" cy="4.647490581746867" fill="#9558B2" r="3.581112821046178" />
+  <circle cx="-3.9590296198437307" cy="2.8525092474923666" fill="#CB3C33" r="3.581112821046178" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="3.581112821046178" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_DIN99d);marker-end:url(#marker_e_DE_DIN99d)">
+  <path d="M3.9590296198437307,4.647490581746867 L-3.9590296198437307,2.8525092474923666"/>
+  <path d="M-3.9590296198437307,2.8525092474923666 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.9590296198437307,4.647490581746867"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.979514809921866" y="-2.3237453762538167" text-anchor="end">61.9</text>
+  <text x="-1.7686795896948124" y="12.552036348077037" text-anchor="middle">45.3</text>
+  <text x="4.979514809921866" y="-1.4262547091265665" text-anchor="start">71.4</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_DIN99d</text>
+</g>
+</svg><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="-15 -12 30 30" width="30mm" height="30mm"
+     stroke="none" stroke-linejoin="round"
+     style="display:inline; margin-left:2em; margin-bottom:2em">
+<defs>
+  <marker id="marker_s_DE_DIN99o" orient="auto" style="overflow:visible">
+    <path d="M 7,-30 l -7,4 7,4 M 0,-26 h 9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+  <marker id="marker_e_DE_DIN99o" orient="auto" style="overflow:visible">
+    <path d="M -7,-30 l 7,4 -7,4 M 0,-26 h -9 M 0,-3 v -27"
+          style="fill:none;stroke:currentColor;stroke-opacity:0.7;" />
+  </marker>
+</defs>
+<g>
+  <circle cx="3.7645081615540406" cy="4.620120639987898" fill="#9558B2" r="3.4185546413989076" />
+  <circle cx="-3.7645081615540406" cy="2.879879686030878" fill="#CB3C33" r="3.4185546413989076" />
+  <circle cx="0.0" cy="-7.5" fill="#389826" r="3.4185546413989076" />
+</g>
+<g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
+   marker-start:url(#marker_s_DE_DIN99o);marker-end:url(#marker_e_DE_DIN99o)">
+  <path d="M3.7645081615540406,4.620120639987898 L-3.7645081615540406,2.879879686030878"/>
+  <path d="M-3.7645081615540406,2.879879686030878 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.7645081615540406,4.620120639987898"/>
+</g>
+<g fill="currentColor" style="font-size:2.8px;">
+  <text x="-4.88225408077702" y="-2.310060156984561" text-anchor="end">64.6</text>
+  <text x="-1.801604174693638" y="12.544499659303327" text-anchor="middle">45.2</text>
+  <text x="4.88225408077702" y="-1.4399396800060509" text-anchor="start">74.2</text>
+  <text x="-14" y="17" style="font-size:2.5px;">DE_DIN99o</text>
+</g>
+</svg><p>The difference in the size of circles in the charts above represents the difference in the scale. The radii of the circles are all 20 in their scale units, so larger circles mean that the metric returns smaller values. Therefore, we should not compare the color differences between different metrics.</p><article class="docstring"><header><a class="docstring-binding" id="Colors.colordiff" href="#Colors.colordiff"><code>Colors.colordiff</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">colordiff(a, b; metric=DE_2000())</code></pre><p>Compute an approximate measure of the perceptual difference between colors <code>a</code> and <code>b</code>. Optionally, a <code>metric</code> may be supplied, chosen among <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a> (the default), <a href="#Colors.DE_94-Tuple{}"><code>DE_94</code></a>, <a href="#Colors.DE_JPC79-Tuple{}"><code>DE_JPC79</code></a>, <a href="#Colors.DE_CMC-Tuple{}"><code>DE_CMC</code></a>, <a href="#Colors.DE_BFD-Tuple{}"><code>DE_BFD</code></a>, <a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a>, <a href="#Colors.DE_DIN99-Tuple{}"><code>DE_DIN99</code></a>, <a href="#Colors.DE_DIN99d-Tuple{}"><code>DE_DIN99d</code></a> and <a href="#Colors.DE_DIN99o-Tuple{}"><code>DE_DIN99o</code></a>.</p><p>The return value is a non-negative number in a type depending on the colors and metric.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The supported metrics measure the difference within <code>Lab</code> or its variant colorspaces. When the input colors are not in the colorspace internally used by the metric, the colors (e.g. in <code>RGB</code>) are converted with the default whitepoint CIE D65 (<code>Colors.WP_D65</code>). If you want to use another whitepoint, convert the colors into the colorspace used by metric (e.g. <code>Lab</code> for <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a>) in advance.</p></div></div></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_2000-Tuple{}" href="#Colors.DE_2000-Tuple{}"><code>Colors.DE_2000</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_2000()
+DE_2000(kl, kc, kh)</code></pre><p>Construct a metric of the CIE Delta E 2000 recommendation, with weighting parameters <code>kl</code>, <code>kc</code> and <code>kh</code> as provided for in the recommendation. When not provided, these parameters default to <code>1</code>.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_94-Tuple{}" href="#Colors.DE_94-Tuple{}"><code>Colors.DE_94</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_94()
+DE_94(kl, kc, kh)</code></pre><p>Construct a metric of CIE Delta E 94 recommendation (1994), with weighting parameters <code>kl</code>, <code>kc</code> and <code>kh</code> as provided for in the recommendation. When not provided, these parameters default to <code>1</code>. The <code>DE_94</code> is more perceptually uniform than the <a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a>, but has some non-uniformities resolved by the <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a>.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_JPC79-Tuple{}" href="#Colors.DE_JPC79-Tuple{}"><code>Colors.DE_JPC79</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_JPC79()</code></pre><p>Construct a metric using McDonald&#39;s &quot;JP Coates Thread Company&quot; color difference formula.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_CMC-Tuple{}" href="#Colors.DE_CMC-Tuple{}"><code>Colors.DE_CMC</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_CMC()
+DE_CMC(kl, kc)</code></pre><p>Construct a metric using the CMC equation (CMC l:c), with weighting parameters <code>kl</code> and <code>kc</code>. When not provided, these parameters default to <code>1</code>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>DE_CMC</code> is a quasimetric, i.e. violates symmetry. Therefore, <code>colordiff(a, b, metric=DE_CMC())</code> may not equal to <code>colordiff(b, a, metric=DE_CMC())</code>.</p></div></div></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_BFD-Tuple{}" href="#Colors.DE_BFD-Tuple{}"><code>Colors.DE_BFD</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_BFD()
+DE_BFD([wp,] kl, kc)</code></pre><p>Construct a metric using the BFD equation, with weighting parameters <code>kl</code> and <code>kc</code>. Additionally, a whitepoint <code>wp</code> can be specified, because the BFD equation must convert between <code>XYZ</code> and <code>Lab</code> during the computation. When not provided, <code>kl</code> and <code>kc</code> default to <code>1</code>, and <code>wp</code> defaults to CIE D65 (<code>Colors.WP_D65</code>).</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_AB-Tuple{}" href="#Colors.DE_AB-Tuple{}"><code>Colors.DE_AB</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_AB()</code></pre><p>Construct a metric of the original CIE Delta E equation (ΔE*ab), or Euclidean color difference equation in the <code>Lab</code> (CIELAB) colorspace.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99-Tuple{}" href="#Colors.DE_DIN99-Tuple{}"><code>Colors.DE_DIN99</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99</code> colorspace.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99d-Tuple{}" href="#Colors.DE_DIN99d-Tuple{}"><code>Colors.DE_DIN99d</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99d()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99d</code> colorspace.</p></div></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99o-Tuple{}" href="#Colors.DE_DIN99o-Tuple{}"><code>Colors.DE_DIN99o</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99o()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99o</code> colorspace.</p></div></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../constructionandconversion/">« Construction and Conversion</a><a class="docs-footer-nextpage" href="../colormapsandcolorscales/">Colormaps and Colorscales »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 13 March 2020 15:20">Friday 13 March 2020</span>. Using Julia version 1.0.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
