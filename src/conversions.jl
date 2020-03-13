@@ -1,49 +1,51 @@
 # Conversions
 # -----------
 
-# convert(C, c) might be called as convert(RGB, c) or convert(RGB{Float32}, c)
-# This is handled in ColorTypes, which calls functions
-#     _convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c)
-#     _convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c, alpha)
-# Here are the argument types:
-# - Cdest may be any concrete Color{T,N} type. For parametric Color types
-#   it _always_ has the desired element type (e.g., Float32), so it's
-#   safe to dispatch on Cdest{T}.
-# - Odest and Osrc are Color subtypes, i.e., things like RGB
-#   or HSV. They have no element type.
-# - c is the Colorant object you wish to convert.
-# - alpha, if present, is a user-supplied alpha value (to be used in
-#   place of any default alpha or alpha present in c).
-#
-# The motivation for this arrangement is that Julia doesn't (yet) support
-# "triangular dispatch", e.g.,
-#     convert{T,C}(::Type{C{T}}, c)
-# The various arguments of _convert therefore "peel off" element types
-# (or guarantee them) so that comparisons may be made via
-# dispatch. The alternative design is
-#    for C in parametric_colors
-#       @eval convert{T}(::Type{$C{T}}, c) = ...
-#       @eval convert(   ::Type{$C},    c) = convert($C{eltype(c)}, c)
-#       ...
-#    end
-# but this requires a fair amount of codegen (especially for all
-# the various alpha variants) and can break if not all C support
-# the same eltypes.
-#
-# Note that ColorTypes handles the cases where Odest == Osrc, or they
-# are both subtypes of AbstractRGB.  Therefore, here we only have to
-# deal with conversions between different spaces.
+#=
+`convert(C, c)` might be called as `convert(RGB, c)` or
+`convert(RGB{Float32}, c)`.
+This is handled in ColorTypes, which calls functions
+```
+    _convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c)
+    _convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c, alpha)
+```
+Here are the argument types:
+- `Cdest` may be any concrete `Colorant{T,N}` type. For parametric Color types
+  it _always_ has the desired element type (e.g., `Float32`), so it's safe to
+  dispatch on `Cdest <: Colorant{T}`.
+- `Odest` and `Osrc` are opaque `Color` subtypes, i.e., things like `RGB` or
+  `HSV`. They have no element type.
+- `c` is the `Colorant` object you wish to convert.
+- `alpha`, if present, is a user-supplied alpha value (to be used in place of
+  any default alpha or alpha present in `c`).
 
+The original motivation for this arrangement was that Julia "did not" support
+"triangular dispatch", e.g.,
+```
+    convert(::Type{C{T}}, c) where {C, T}
+```
+On Julia v0.6 or later, parameter constraints can refer to previous parameters.
+Threfore, we can use:
+```
+    convert(::Type{C}, c) where {T, C <: Colorant{T}}
+```
+However, the example above does not match `convert(RGB, c)`. Also, we should
+catch all the various alpha variants (e.g. `ARGB`/`RGBA` with/without element
+type).
+The various arguments of `_convert` "peel off" element types (or guarantee them)
+so that comparisons may be made via dispatch. Therefore, this arrangement is
+still helpful.
 
-function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p, alpha) where {Cdest<:TransparentColor,Odest,Osrc}
+Note that ColorTypes handles the cases where `Odest == Osrc`, or they are both
+subtypes of `AbstractRGB` or `AbstractGray`. Therefore, here we only have to
+deal with conversions between different spaces.
+=#
+
+function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p, alpha=alpha(p)) where {Cdest<:TransparentColor,Odest,Osrc}
     # Convert the base color
     c = cnvt(color_type(Cdest), color(p))
     # Append the alpha
     ColorTypes._convert(Cdest, Odest, Odest, c, alpha)
-end
-function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, p) where {Cdest<:TransparentColor,Odest,Osrc}
-    c = cnvt(color_type(Cdest), color(p))
-    ColorTypes._convert(Cdest, Odest, Odest, c, alpha(p))
 end
 
 ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) where {Cdest<:Color,Odest,Osrc} = cnvt(Cdest, c)
@@ -188,10 +190,7 @@ cnvt(::Type{CV}, c::LCHab) where {CV<:AbstractRGB}  = cnvt(CV, convert(Lab{eltyp
 cnvt(::Type{CV}, c::LCHuv) where {CV<:AbstractRGB}  = cnvt(CV, convert(Luv{eltype(c)}, c))
 cnvt(::Type{CV}, c::Color3) where {CV<:AbstractRGB}    = cnvt(CV, convert(XYZ{eltype(c)}, c))
 
-function cnvt(::Type{CV}, c::AbstractGray) where CV<:AbstractRGB
-    g = convert(eltype(CV), gray(c))
-    CV(g, g, g)
-end
+# AbstractGray --> AbstractRGB conversions are implemented in ColorTypes.jl
 
 
 # Everything to HSV
@@ -735,51 +734,15 @@ end
 
 cnvt(::Type{YCbCr{T}}, c::Color3) where {T} = cnvt(YCbCr{T}, convert(RGB{T}, c))
 
-# Everything to RGB24
-# -------------------
-
-convert(::Type{RGB24}, c::RGB24) = c
-convert(::Type{RGB24}, c::AbstractRGB{N0f8}) = RGB24(red(c), green(c), blue(c))
-function convert(::Type{RGB24}, c::AbstractRGB)
-    u = (reinterpret(N0f8(red(c))) % UInt32)<<16 +
-        (reinterpret(N0f8(green(c))) % UInt32)<<8 +
-        reinterpret(N0f8(blue(c))) % UInt32
-    reinterpret(RGB24, u)
-end
-
-convert(::Type{RGB24}, c::Color) = convert(RGB24, convert(RGB{N0f8}, c))
-
-# To ARGB32
-# ----------------
-
-convert(::Type{ARGB32}, c::ARGB32) = c
-convert(::Type{ARGB32}, c::TransparentColor{CV}) where {CV<:AbstractRGB{N0f8}} =
-    ARGB32(red(c), green(c), blue(c), alpha(c))
-function convert(::Type{ARGB32}, c::TransparentColor)
-    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(N0f8(alpha(c)))%UInt32)<<24
-    reinterpret(ARGB32, u)
-end
-function convert(::Type{ARGB32}, c::Color)
-    u = reinterpret(UInt32, convert(RGB24, c)) | 0xff000000
-    reinterpret(ARGB32, u)
-end
-function convert(::Type{ARGB32}, c::Color, alpha)
-    u = reinterpret(UInt32, convert(RGB24, c)) | (reinterpret(N0f8(alpha))%UInt32)<<24
-    reinterpret(ARGB32, u)
-end
 
 # To Gray
 # -------
+# AbstractGray --> AbstractRGB conversions are implemented in ColorTypes.jl, but
+# AbstractRGB --> AbstractGray conversions should be implemented here.
 
 # Rec 601 luma conversion
-const unsafe_trunc = Base.unsafe_trunc
 
-convert(::Type{Gray{T}}, x::Gray{T}) where {T} = x
-convert(::Type{Gray24}, x::Gray24) = x
-
-convert(::Type{G}, x::AbstractGray) where {G<:AbstractGray} = G(gray(x))
-
-function convert(::Type{G}, x::AbstractRGB{T}) where {G<:AbstractGray,T<:Normed}
+function cnvt(::Type{G}, x::AbstractRGB{T}) where {G<:AbstractGray,T<:Normed}
     TU, Tf = FixedPointNumbers.rawtype(T), floattype(T)
     if sizeof(TU) < sizeof(UInt)
         val = Tf(0.001)*(299*reinterpret(red(x)) + 587*reinterpret(green(x)) + 114*reinterpret(blue(x)))
@@ -788,8 +751,7 @@ function convert(::Type{G}, x::AbstractRGB{T}) where {G<:AbstractGray,T<:Normed}
     end
     return G(reinterpret(T, round(TU, val)))
 end
-convert(::Type{G}, x::AbstractRGB) where {G<:AbstractGray} =
+cnvt(::Type{G}, x::AbstractRGB) where {G<:AbstractGray} =
     G(0.299f0*red(x) + 0.587f0*green(x) + 0.114f0*blue(x))
 
-convert(::Type{G}, x::Color) where {G<:AbstractGray} =
-    convert(G, convert(RGB, x))
+cnvt(::Type{G}, x::Color) where {G<:AbstractGray} = convert(G, convert(RGB, x))

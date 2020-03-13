@@ -5,18 +5,6 @@ using ColorTypes: eltype_default, parametric3
 @testset "Conversion" begin
     r8(x) = reinterpret(N0f8, x)
 
-    # Promotions
-    a, b = promote(RGB(1,0,0), Gray(0.8))
-    @test isa(a, RGB{Float64}) && isa(b, RGB{Float64})
-    a, b = promote(RGBA(1,0,0), Gray(0.8))
-    @test isa(a, RGBA{Float64}) && isa(b, RGBA{Float64})
-    a, b = promote(RGBA(1,0,0), GrayA(0.8))
-    @test isa(a, RGBA{Float64}) && isa(b, RGBA{Float64})
-    a, b = promote(RGB(1,0,0), GrayA(0.8))
-    @test isa(a, RGBA{Float64}) && isa(b, RGBA{Float64})
-    a, b = promote(RGB(1,0,0), AGray(0.8))
-    @test isa(a, ARGB{Float64}) && isa(b, ARGB{Float64})
-
     # srgb_compand / invert_srgb_compand
     @test Colors.srgb_compand(0.5) ≈ 0.7353569830524494 atol=eps()
     @test Colors.invert_srgb_compand(0.7353569830524494) ≈ 0.5 atol=eps()
