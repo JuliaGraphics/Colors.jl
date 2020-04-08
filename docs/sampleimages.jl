@@ -20,7 +20,7 @@ function BeadsImageSVG(caption::String; filter=nothing, width="64mm", height="36
             occursin("<?xml", line) && continue
             if occursin("<svg", line)
                 line = replace(line, ">"=>
-                    """width="$width" height="$height" style="display:inline; margin-left:1em; margin-bottom:1em">""")
+                    """ width="$width" height="$height" style="display:inline; margin-left:1em; margin-bottom:1em">""")
             elseif occursin("filter_beads_g", line)
                 line = replace(line, "filter_beads_g"=>"filter_"*id)
             elseif occursin("</svg>", line)
