@@ -62,3 +62,9 @@ NamedColorCharts.ColorChartSVG("grays") # hide
     named colors. There are some unnatural definitions due to the different
     origins. For example, "LightGray" is lighter than "Gray", but "DarkGray" is
     also lighter than "Gray".
+
+## Julia logo colors
+
+```docs
+Colors.JULIA_LOGO_COLORS
+```
