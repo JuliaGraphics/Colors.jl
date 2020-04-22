@@ -226,3 +226,15 @@ end
     Base.depwarn("color(\"$str\") is deprecated, use colorant\"$str\" or parse(Colorant, \"$str\")", :color)
     parse(Colorant, str)
 end
+
+"""
+Colors used in the Julia logo as a `NamedTuple`.
+
+The keys are approximate descriptions of the hue and do not include black.
+
+Not exported, use as `JULIA_LOGO_COLORS.red` etc.
+"""
+const JULIA_LOGO_COLORS = (red = colorant"#ca3c32",
+                           green = colorant"#399746",
+                           blue = colorant"#4d64ae",
+                           purple = colorant"#9259a3")
