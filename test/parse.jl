@@ -14,7 +14,7 @@ using FixedPointNumbers
     @test_throws ErrorException parse(Colorant, "p ink")
     @test parse(Colorant, "transparent") === RGBA{N0f8}(0,0,0,0)
     @test parse(Colorant, "\nSeaGreen ") === RGB{N0f8}(r8(0x2E),r8(0x8B),r8(0x57))
-    seagreen = @test_logs (:warn, r"Use \"SeaGreen\" or \"seagreen\"") parse(Colorant, "sea GREEN")
+    seagreen = @test_deprecated r"Use \"SeaGreen\" or \"seagreen\"" parse(Colorant, "sea GREEN")
     @test seagreen == colorant"seagreen"
 
     # hex-color
