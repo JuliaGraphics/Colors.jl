@@ -65,6 +65,6 @@ NamedColorCharts.ColorChartSVG("grays") # hide
 
 ## Julia logo colors
 
-```docs
+```@docs
 Colors.JULIA_LOGO_COLORS
 ```
