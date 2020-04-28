@@ -203,14 +203,16 @@ function weighted_color_mean(w1::Real, c1::C, c2::C) where {Cb <: Union{HSV, HSL
                                                             C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     normalize_hue(_weighted_color_mean(w1, c1, c2))
 end
-function weighted_color_mean(w1::Real, c1::Gray{Bool}, c2::Gray{Bool})
-    # weighting of two Gray{Bool} would return different color type and therefore omitted
-    throw(DomainError())
-end
 function _weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant)
-    weight1 = convert(promote_type(eltype(c1), eltype(c2)),w1)
-    weight2 = weight1 >= 0 && weight1 <= 1 ? oftype(weight1,1-weight1) : throw(DomainError())
-    mapc((x,y)->weight1*x+weight2*y, c1, c2)
+    @fastmath min(w1, oneunit(w1) - w1) >= zero(w1) || throw(DomainError(w1, "`w1` must be in [0, 1]"))
+    T = promote_type(eltype(c1), eltype(c2))
+    weight1 = convert(T, w1) # TODO: Consider the need for this
+    weight2 = oneunit(weight1) - weight1
+    mapc((x, y)->convert(T, muladd(weight1, x, weight2 * y)), c1, c2)
+end
+function _weighted_color_mean(w1::Integer, c1::C, c2::C) where C <: Colorant
+    (w1 & 0b1) === w1 || throw(DomainError(w1, "`w1` must be in [0, 1]"))
+    w1 == zero(w1) ? c2 : c1
 end
 
 """
