@@ -51,6 +51,15 @@ end
 ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) where {Cdest<:Color,Odest,Osrc} = cnvt(Cdest, c)
 
 
+# with the whitepoint `wp` as the third argument
+convert(::Type{XYZ}, c, wp::XYZ) = cnvt(XYZ{eltype(wp)}, c, wp)
+convert(::Type{Lab}, c, wp::XYZ) = cnvt(Lab{eltype(wp)}, c, wp)
+convert(::Type{Luv}, c, wp::XYZ) = cnvt(Luv{eltype(wp)}, c, wp)
+
+convert(::Type{XYZ{T}}, c, wp::XYZ) where {T} = cnvt(XYZ{T}, c, wp)
+convert(::Type{Lab{T}}, c, wp::XYZ) where {T} = cnvt(Lab{T}, c, wp)
+convert(::Type{Luv{T}}, c, wp::XYZ) where {T} = cnvt(Luv{T}, c, wp)
+
 # Fallback to catch undefined operations
 cnvt(::Type{C}, c::TransparentColor) where {C<:Color} = cnvt(C, color(c))
 cnvt(::Type{C}, c) where {C} = convert(C, c)
@@ -317,8 +326,6 @@ end
 const xyz_epsilon = 216 / 24389
 const xyz_kappa   = 24389 / 27
 
-convert(::Type{XYZ}, c, wp::XYZ) = convert(XYZ{eltype(wp)}, c, wp)
-convert(::Type{XYZ{T}}, c, wp::XYZ) where {T} = cnvt(XYZ{T}, c, wp)
 function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ) where T
     fy = (c.l + 16) / 116
     fx = c.a / 500 + fy
@@ -424,8 +431,6 @@ cnvt(::Type{Lab{T}}, c::AbstractRGB) where {T} = convert(Lab{T}, convert(XYZ{T},
 cnvt(::Type{Lab{T}}, c::HSV) where {T} = cnvt(Lab{T}, convert(RGB{T}, c))
 cnvt(::Type{Lab{T}}, c::HSL) where {T} = cnvt(Lab{T}, convert(RGB{T}, c))
 
-convert(::Type{Lab{T}}, c, wp::XYZ) where {T} = cnvt(Lab{T}, c, wp)
-convert(::Type{Lab}, c, wp::XYZ) = cnvt(Lab{eltype(wp)}, c, wp)
 
 function fxyz2lab(v)
     v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
@@ -519,8 +524,6 @@ cnvt(::Type{Luv{T}}, c::AbstractRGB) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c)
 cnvt(::Type{Luv{T}}, c::HSV) where {T} = cnvt(Luv{T}, convert(RGB{T}, c))
 cnvt(::Type{Luv{T}}, c::HSL) where {T} = cnvt(Luv{T}, convert(RGB{T}, c))
 
-convert(::Type{Luv{T}}, c, wp::XYZ) where {T} = cnvt(Luv{T}, c, wp)
-convert(::Type{Luv}, c, wp::XYZ) = cnvt(Luv{eltype(wp)}, c, wp)
 
 function cnvt(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
     (u_wp, v_wp) = xyz_to_uv(wp)
