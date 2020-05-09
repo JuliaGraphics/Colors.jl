@@ -347,11 +347,6 @@ cnvt(::Type{XYZ{T}}, c::LCHab) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt(::Type{XYZ{T}}, c::DIN99) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt(::Type{XYZ{T}}, c::DIN99o) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
 
-cnvt(::Type{XYZ{T}}, c::LCHab) where {T<:Normed} = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt(::Type{XYZ{T}}, c::DIN99) where {T<:Normed} = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-cnvt(::Type{XYZ{T}}, c::DIN99o) where {T<:Normed} = cnvt(XYZ{T}, convert(Lab{eltype(c)}, c))
-
-
 function xyz_to_uv(c::XYZ)
     d = c.x + 15c.y + 3c.z
     d==0 && return (d, d)
