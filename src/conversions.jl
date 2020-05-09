@@ -326,7 +326,7 @@ end
 const xyz_epsilon = 216 / 24389
 const xyz_kappa   = 24389 / 27
 
-function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ) where T
+function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ = WP_DEFAULT) where T
     fy = (c.l + 16) / 116
     fx = c.a / 500 + fy
     fz = fy - c.b / 200
@@ -342,7 +342,6 @@ function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ) where T
 end
 
 
-cnvt(::Type{XYZ{T}}, c::Lab) where {T}   = convert(XYZ{T}, c, WP_DEFAULT)
 cnvt(::Type{XYZ{T}}, c::LCHab) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt(::Type{XYZ{T}}, c::DIN99) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
 cnvt(::Type{XYZ{T}}, c::DIN99o) where {T} = cnvt(XYZ{T}, convert(Lab{T}, c))
@@ -430,13 +429,10 @@ cnvt(::Type{Lab{T}}, c::HSL) where {T} = cnvt(Lab{T}, convert(RGB{T}, c))
 function fxyz2lab(v)
     v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
 end
-function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ) where T
+function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
     fx, fy, fz = fxyz2lab(c.x / wp.x), fxyz2lab(c.y / wp.y), fxyz2lab(c.z / wp.z)
     Lab{T}(116fy - 16, 500(fx - fy), 200(fy - fz))
 end
-
-
-cnvt(::Type{Lab{T}}, c::XYZ{T}) where {T} = cnvt(Lab{T}, c, WP_DEFAULT)
 
 
 function cnvt(::Type{Lab{T}}, c::LCHab) where T
