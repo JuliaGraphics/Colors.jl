@@ -176,7 +176,7 @@ may also be specified.
 function MSC(h)
 
     #Wrap h to [0, 360] range
-    h = normalize_hue(h)
+    h = normalize_hue(Float64(h))
 
     #Selecting edge of RGB cube; R=1 G=2 B=3
     # p #variable
@@ -242,43 +242,49 @@ end
 function MSC(h, l; linear::Bool=false)
     if linear
         pmid = MSC(h)
-        pend_l = l > pmid.l ? 100 : 0
-        return (pend_l-l)/(pend_l-pmid.l) * pmid.c
+        pend_l = l > pmid.l ? 100.0 : 0.0
+        return (pend_l - l) / (pend_l - pmid.l) * pmid.c
     end
-    return find_maximum_chroma(LCHuv(l, 0, h))
+    return find_maximum_chroma(LCHuv{Float64}(l, 0, h))
 end
 
 # This function finds the maximum chroma for the lightness `c.l` and hue `c.h`
 # by means of the binary search. Even though this requires more than 20
 # iterations, somehow, this is fast.
-function find_maximum_chroma(c::T,
+function find_maximum_chroma(c::C,
                              low::Real=0,
-                             high::Real=180) where {T<:Union{LCHab, LCHuv}}
-    err = 1e-6
-    high-low < err && return low
+                             high::Real=180) where {T, C<:Union{LCHab{T}, LCHuv{T}}}
+    err = convert(T, 1e-6)
+    l, h = convert(T, low), convert(T, high)
+    h - l < err && return l
 
-    mid = (low + high) / 2
-    lchm = T(c.l, mid, c.h)
-    rgbm = convert(RGB, lchm)
+    mid = convert(T, (l + h) / 2)
+    min(mid - l, h - mid) == zero(T) && return l
+    lchm = C(c.l, mid, c.h)
+    rgbm = convert(RGB{T}, lchm)
     clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
               min(red(rgbm), green(rgbm), blue(rgbm)) < err
     if clamped
-        return find_maximum_chroma(c, low, mid)
+        return find_maximum_chroma(c, l, mid)::T
     else
-        return find_maximum_chroma(c, mid, high)
+        return find_maximum_chroma(c, mid, h)::T
     end
 end
 
-function find_maximum_chroma(c::LCHab)
+function find_maximum_chroma(c::LCHab{T}) where T
     maxc = find_maximum_chroma(c, 0, 135)
 
     # The sRGB gamut in LCHab space has a *hollow* around the yellow corner.
     # Since the following boundary is based on the D65 white point, the values
     # should be modified on other conditions.
     if 97 < c.h < 108 && c.l > 92
-        err = 1e-6
+        err = convert(T, 1e-6)
+        len = 10000
+        dh = convert(T, (100 - maxc) / len)
         h_yellow = 102.85124420310268 # convert(LCHab,RGB{Float64}(1,1,0)).h
-        for chroma in range(maxc, stop=100, length=10000)
+        chroma = maxc
+        for i = 1:len
+            chroma += dh
             rgb = convert(RGB, LCHab(c.l, chroma, c.h))
             blue(rgb) < err && continue
             y = c.h < h_yellow ? red(rgb) : green(rgb)
