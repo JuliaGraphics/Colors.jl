@@ -25,7 +25,7 @@ This package provides a wide array of functions for dealing with color.
 ## Installation
 
 The package can be installed with the Julia package manager. From the Julia
-REPL, type <kbd>]</kbd> to enter the Pkg REPL mode and run:
+REPL, type `]` to enter the Pkg REPL mode and run:
 ```julia
 pkg> add Colors
 ```
