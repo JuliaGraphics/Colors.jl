@@ -7,8 +7,9 @@ struct ColorDiffChartSVG <: Main.SVG
     buf::IOBuffer
 end
 
-#               julia_green,       julia_red,         julia_purple
-const c = Lab.([colorant"#389826", colorant"#CB3C33", colorant"#9558B2"])
+const c = Lab.((Colors.JULIA_LOGO_COLORS.green,
+                Colors.JULIA_LOGO_COLORS.red,
+                Colors.JULIA_LOGO_COLORS.purple))
 
 function ColorDiffChartSVG(metric::Colors.DifferenceMetric)
     io = IOBuffer()
