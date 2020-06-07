@@ -34,7 +34,7 @@ function lerp(x, a, b)
 end
 
 clamp01(v::T) where {T<:Fractional} = ifelse(v < zero(T), zero(T), ifelse(v > oneunit(T), oneunit(T), v))
-clamp01(v::T) where {T<:Union{N0f8,N0f16,N0f32,N0f64}} = v
+clamp01(v::T) where {T<:Union{Bool,N0f8,N0f16,N0f32,N0f64}} = v
 
 """
     HexNotation{C, A, N}

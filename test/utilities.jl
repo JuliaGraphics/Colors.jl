@@ -115,6 +115,7 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
 
         @test hex(Gray(0.5)) == "808080"
         @test hex(AGray(1.0, 0.5), :aarrggbb) == "80ffffff"
+        @test hex(Gray{Bool}(1)) == "FFFFFF"
 
         # clamping
         @test hex(RGB(2.0,-1.0,0.5)) == "FF0080"
