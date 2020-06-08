@@ -167,43 +167,59 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
     colortypes = vcat(parametric3,parametric4A,parametricA4)
     colorElementTypes = [Float16,Float32,Float64,BigFloat,N0f8,N6f10,N4f12,N2f14,N0f16]
 
-    for T in colorElementTypes
-        c1 = Gray{T}(1)
-        c2 = Gray{T}(0)
-        @test weighted_color_mean(0.5,c1,c2) == Gray{T}(0.5)
-    end
-
-    for C in parametric2
+    @testset "weighted_color_mean" begin
         for T in colorElementTypes
-            C == AGray32 && (T=N0f8)
-        c1 = C(T(0),T(1))
-            c2 = C(T(1),T(0))
-        @test weighted_color_mean(0.5,c1,c2) == C(T(1)-T(0.5),T(0.5))
+            c1 = Gray{T}(1)
+            c2 = Gray{T}(0)
+            @test weighted_color_mean(0.5,c1,c2) == Gray{T}(0.5)
         end
-    end
+        gray_b1 = Gray{Bool}(1)
+        gray_b0 = Gray{Bool}(0)
+        @test weighted_color_mean(0, gray_b1, gray_b0) === gray_b0
+        @test weighted_color_mean(1, gray_b1, gray_b0) === gray_b1
+        @test_broken weighted_color_mean(0.5, gray_b1, gray_b1) === gray_b1
+        @test_throws InexactError weighted_color_mean(0.5, gray_b1, gray_b0)
+        @test_throws DomainError weighted_color_mean(-1, gray_b1, gray_b0)
 
-    for C in colortypes
-        for T in (Float16,Float32,Float64,BigFloat)
-        if C<:Color
-                c1 = C(T(1),T(1),T(0))
-                c2 = C(T(0),T(1),T(1))
-            @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5))
-        else
-                C == ARGB32 && (T=N0f8)
-                c1 = C(T(1),T(1),T(0),T(1))
-                c2 = C(T(0),T(1),T(1),T(0))
-            @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5),T(0.5))
+        for C in parametric2
+            for T in colorElementTypes
+                C == AGray32 && (T=N0f8)
+                c1 = C(T(0),T(1))
+                c2 = C(T(1),T(0))
+                @test weighted_color_mean(0.5,c1,c2) == C(T(1)-T(0.5),T(0.5))
+            end
         end
-        end
-    end
 
-    @test weighted_color_mean(0.5, HSV(-360.0,1,0), HSV(180.0,0,1)) === HSV{Float64}(270,0.5,0.5)
-    alchab1 = ALCHab{Float32}(0,100,-360,1)
-    alchab2 = ALCHab{Float32}(100,0,-180,0)
-    @test weighted_color_mean(0.5, alchab1, alchab2) === ALCHab{Float32}(50,50,90,0.5)
-    lchuva1 = LCHuvA{Float16}(0,100, 90,1)
-    lchuva2 = LCHuvA{Float16}(100,0,810,0)
-    @test weighted_color_mean(0.5, lchuva1, lchuva2) === LCHuvA{Float16}(50,50,90,0.5)
+        for C in colortypes
+            for T in (Float16,Float32,Float64,BigFloat)
+                if C<:Color
+                        c1 = C(T(1),T(1),T(0))
+                        c2 = C(T(0),T(1),T(1))
+                    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5))
+                else
+                        C == ARGB32 && (T=N0f8)
+                        c1 = C(T(1),T(1),T(0),T(1))
+                        c2 = C(T(0),T(1),T(1),T(0))
+                    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5),T(0.5))
+                end
+            end
+        end
+
+        @test_throws DomainError weighted_color_mean(-0.01, RGB(1,1,0), RGB(0,1,1))
+        @test_throws DomainError weighted_color_mean( 1.01, RGB(1,1,0), RGB(0,1,1))
+
+        # promotion
+        @test weighted_color_mean(0.5, RGB{N0f8}(1,1,0), RGB{Float32}(0,1,1)) === RGB{Float32}(0.5,1,0.5)
+        @test_throws ArgumentError weighted_color_mean(0.5, RGB24(1,1,0), RGB{Float32}(0,1,1))
+
+        @test weighted_color_mean(0.5, HSV(-360.0,1,0), HSV(180.0,0,1)) === HSV{Float64}(270,0.5,0.5)
+        alchab1 = ALCHab{Float32}(0,100,-360,1)
+        alchab2 = ALCHab{Float32}(100,0,-180,0)
+        @test weighted_color_mean(0.5, alchab1, alchab2) === ALCHab{Float32}(50,50,90,0.5)
+        lchuva1 = LCHuvA{Float16}(0,100, 90,1)
+        lchuva2 = LCHuvA{Float16}(100,0,810,0)
+        @test weighted_color_mean(0.5, lchuva1, lchuva2) === LCHuvA{Float16}(50,50,90,0.5)
+    end
 
     # test utility function range
     # range uses weighted_color_mean which is extensively tested.
