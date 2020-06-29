@@ -100,8 +100,6 @@ using ColorTypes: eltype_default, parametric3
     @test convert(RGBA{N0f8}, red32) == RGBA{N0f8}(1,0,0,1)
     @test convert(HSVA{Float64}, red32) == HSVA{Float64}(0, 1, 1, 1)
 
-    @test_throws MethodError AlphaColor(RGB(1,0,0), r8(0xff))
-
     # whitepoint conversions
     @test isa(convert(XYZ, convert(Lab, redF64), Colors.WP_DEFAULT), XYZ{Float64})
     @test isa(convert(XYZ{Float32}, convert(Lab, redF64), Colors.WP_DEFAULT), XYZ{Float32})
