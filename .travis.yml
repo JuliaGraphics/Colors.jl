@@ -1,21 +1,20 @@
+# Until https://github.com/julia-actions/julia-uploadcodecov/issues/1 get fixed
+# submit coverage report via travis
 language: julia
-os:
-    - osx
-    - linux
-julia:
-    - 1.0
-    - 1
-    - nightly
+julia: 1.0
+os: linux
 notifications:
     email: false
+cache:
+  directories:
+    - $HOME/.julia/artifacts
 jobs:
   include:
-    - stage: "Documentation"
-      julia: 1.0
-      os: linux
+    - stage: Coverage
+      codecov: true
+
+    - stage: Documentation
       script:
-        - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()))'
-        - julia --project=docs docs/make.jl
-      after_success: skip
-after_success:
-    - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+                                               Pkg.instantiate()'
+        - julia --project=docs/ docs/make.jl
