@@ -55,7 +55,7 @@ function parse_alpha_num(num::AbstractString)
     end
 end
 
-function _parse_colorant(desc::AbstractString)
+function _parse_colorant(desc::String)
     n0f8(x) = reinterpret(N0f8, unsafe_trunc(UInt8, x))
     mat = match(col_pat_hex, desc)
     if mat !== nothing
@@ -151,10 +151,6 @@ function _parse_colorant(desc::AbstractString)
     error("Unknown color: ", desc)
 end
 
-# note: these exist to enable proper dispatch, since super(Colorant) == Any
-_parse_colorant(::Type{C}, ::Type{SUP}, desc::AbstractString) where {C<:Colorant,SUP<:Any} = _parse_colorant(desc)
-_parse_colorant(::Type{C}, ::Type{SUP}, desc::AbstractString) where {C<:Colorant,SUP<:Colorant} = convert(C, _parse_colorant(desc))::C
-
 """
     parse(Colorant, desc)
 
@@ -207,7 +203,10 @@ an `RGB`); any more specific choice will return a color of the specified type.
     ARGB{N0f8}(0.533,0.0,0.667,1.0)
     ```
 """
-Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant} = _parse_colorant(C, supertype(C), desc)
+function Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant}
+    return convert(C, _parse_colorant(String(desc))::Colorant)::C
+end
+
 Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
 Base.parse(::Type{C}, c::Colorant) where {C<:Colorant} = c
 
