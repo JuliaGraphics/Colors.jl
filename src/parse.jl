@@ -204,7 +204,10 @@ an `RGB`); any more specific choice will return a color of the specified type.
     ```
 """
 function Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant}
-    return convert(C, _parse_colorant(String(desc))::Colorant)::C
+    c = _parse_colorant(String(desc))
+    C === Colorant && return c
+    c = convert(C, c)
+    return isconcretetype(C) ? c::C : c
 end
 
 Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
