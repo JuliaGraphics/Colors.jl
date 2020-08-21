@@ -280,7 +280,7 @@ Extra control is provided by keyword arguments.
 You can also use keyword argument names that match the argument names in
 [`sequential_palette`](@ref) or [`diverging_palette`](@ref).
 """
-function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kvs...)
+function colormap(cname::String, N::Int=100; mid=0.5, logscale::Bool=false, kvs...)
 
     cname = lowercase(cname)
     if haskey(colormaps_sequential, cname)
@@ -295,8 +295,10 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
             end
         end
 
-        return sequential_palette(p[1], N, w=p[2], d=p[3], c=p[4], s=p[5], b=p[6], wcolor=p[7],
-                                  dcolor=p[8], logscale=logscale)
+        # To avoid invalidation risk, it's best to make the call in a manner that inference knows the types
+        return sequential_palette(f64(p[1]), N, w=f64(p[2]), d=f64(p[3]), c=f64(p[4]),
+                                  s=f64(p[5]), b=f64(p[6]), wcolor=rgb8(p[7]),
+                                  dcolor=rgb8(p[8]), logscale=logscale)
 
     elseif haskey(colormaps_diverging, cname)
         allowedkeys = [:h1, :h2, :w, :d1, :d2, :c, :s, :b, :wcolor, :dcolor1, :dcolor2]
@@ -310,11 +312,17 @@ function colormap(cname::AbstractString, N::Int=100; mid=0.5, logscale=false, kv
             end
         end
 
-        return diverging_palette(p[1], p[2], N, w=p[3], d1=p[4], d2=p[5], c=p[6], s=p[7],
-                                 b=p[8], wcolor=p[9], dcolor1=p[10], dcolor2=p[11], mid=mid,
+        return diverging_palette(f64(p[1]), f64(p[2]), N, w=f64(p[3]), d1=f64(p[4]), d2=f64(p[5]),
+                                 c=f64(p[6]), s=f64(p[7]), b=f64(p[8]), wcolor=rgb8(p[9]),
+                                 dcolor1=rgb8(p[10]), dcolor2=rgb8(p[11]), mid=mid,
                                  logscale=logscale)
 
     else
         throw(ArgumentError(string("Unknown colormap: ", cname)))
     end
 end
+
+colormap(cname::AbstractString, args...; kwargs...) = colormap(String(cname), args...; kwargs...)
+
+f64(x) = Float64(x)::Float64
+rgb8(c) = RGB{N0f8}(c)::RGB{N0f8}
