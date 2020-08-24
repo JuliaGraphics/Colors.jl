@@ -326,7 +326,7 @@ function _colordiff(ai::Color, bi::Color, m::DE_CMC)
     dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
 
     # Find the mean value of the inputs to use as the "standard"
-    ml, mc = (a.l + b.l)/2, (a.c + b.c)/2
+    ml, mc = (a.l + b.l)/2, (a.c + b.c)/2 # TODO: use `a.l` and `a.c` instead
 
     # Calculate mean hue value
     if a.c * b.c == 0
@@ -363,10 +363,18 @@ end
 
 # The BFD color difference equation
 function _colordiff(ai::Color, bi::Color, m::DE_BFD)
+    # Currently, support for the `wp` argument of `convert` is limited.
+    function to_xyz(c::Color, wp)
+        c isa XYZ && return ai
+        (c isa xyY || c isa LMS) && return convert(XYZ, c)
+        (c isa Lab || c isa Luv) && return convert(XYZ, c, wp)
+        c isa LCHuv && return convert(XYZ, convert(Luv, c), wp)
+        convert(XYZ, convert(Lab, c), wp)
+    end
 
     # We have to start back in XYZ because BFD uses a different L equation
-    a_XYZ = convert(XYZ, ai, m.wp)
-    b_XYZ = convert(XYZ, bi, m.wp)
+    a_XYZ = to_xyz(ai, m.wp)
+    b_XYZ = to_xyz(bi, m.wp)
 
     la = 54.6*log10(a_XYZ.y+1.5)-9.6
     lb = 54.6*log10(b_XYZ.y+1.5)-9.6
@@ -453,6 +461,13 @@ colordiff(ai::Union{Number, Color},
           bi::Union{Number, Color};
           metric::DifferenceMetric=DE_2000()) = _colordiff(ai, bi, metric)
 @deprecate colordiff(ai::Color, bi::Color, metric::DifferenceMetric) colordiff(ai, bi; metric=metric)
+
+function colordiff(ai::Colorant, bi::Colorant; metric::DifferenceMetric=DE_2000())
+    alpha(ai) == 1 && alpha(bi) == 1 && return _colordiff(color(ai), color(bi), metric)
+    throw(ArgumentError("""
+        cannot evaluate the difference in transparent colors.
+          Their appearance depends on the backdrop."""))
+end
 
 _colordiff(ai::AbstractGray, bi::Number, metric::DifferenceMetric) = _colordiff(ai, Gray(bi), metric)
 _colordiff(ai::Number, bi::AbstractGray, metric::DifferenceMetric) = _colordiff(Gray(ai), bi, metric)

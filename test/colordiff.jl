@@ -1,4 +1,4 @@
-using Colors
+using Colors, Test
 
 # Test the colordiff function against example input and output from:
 #
@@ -47,16 +47,56 @@ using Colors
 
     eps_cdiff = 0.01
 
-    metric = DE_2000()
-
-    let a, b
-        for (i, (a, b, dexpect)) in enumerate(abds)
+    @testset "CIEDE2000" begin
+        metric = DE_2000()
+        for (a, b, dexpect) in abds
             @test abs(dexpect - colordiff(Lab(a...), Lab(b...); metric=metric)) < eps_cdiff
             @test abs(dexpect - colordiff(Lab(b...), Lab(a...); metric=metric)) < eps_cdiff
         end
     end
 
-    a, b = rand(100), rand(100)
-    @test all(@. colordiff(a, b) == colordiff(Gray(a), b) == colordiff(a, Gray(b)) == colordiff(Gray(a), Gray(b)))
+    jl_red    =    RGB{N0f8}(Colors.JULIA_LOGO_COLORS.red)
+    jl_green  = RGB{Float32}(Colors.JULIA_LOGO_COLORS.green)
+    jl_blue   = HSV{Float64}(Colors.JULIA_LOGO_COLORS.blue)
+    jl_purple = Lab{Float32}(Colors.JULIA_LOGO_COLORS.purple)
+    colors = (jl_red, jl_green, jl_blue, jl_purple)
+    pairs = ((a, b) for a in colors for b in Iterators.filter(c -> c != a,colors))
 
-end # @testset
+    @testset "properties of metrics" begin
+        metrics = (DE_2000(), DE_94(), DE_JPC79(), DE_CMC(), DE_BFD(),
+                   DE_AB(), DE_DIN99(), DE_DIN99d(), DE_DIN99o())
+
+        @testset "$metric" for metric in metrics
+            # identity of indiscernibles
+            @test all(c -> colordiff(c, c; metric=metric) == 0, colors)
+            # positivity
+            @test all(p -> colordiff(p[1], p[2]; metric=metric) > 0, pairs)
+            # symmetry
+            if metric isa DE_CMC # quasimetric
+                # TODO: add test
+            else
+                @test all(p -> abs(colordiff(p[1], p[2]; metric=metric) -
+                                   colordiff(p[2], p[1]; metric=metric)) < eps_cdiff, pairs)
+            end
+            # triangle inequality
+            metric isa DE_CMC && continue # FIXME
+            @test all(p -> colordiff(p[1],   p[2]; metric=metric) <=
+                           colordiff(p[1], jl_red; metric=metric) +
+                           colordiff(jl_red, p[2]; metric=metric), pairs)
+        end
+    end
+
+    @testset "colordiff with grays" begin
+        a, b = rand(100), rand(100)
+        @test all(@. colordiff(a, b) == colordiff(Gray(a), b) == colordiff(a, Gray(b)) == colordiff(Gray(a), Gray(b)))
+    end
+
+
+    @testset "colordiff with transparent colors" begin
+        @test colordiff(RGBA(1,0,0,1), RGB(1,0,0)) == 0
+        @test colordiff(RGB(1,0,0), RGBA(1,0,0,1), metric=DE_AB()) == 0
+        @test colordiff(RGBA(1,0,0,1), RGBA(1,0,0,1)) == 0
+        @test_throws ArgumentError colordiff(RGBA(1,0,0,0.5), RGB(1,0,0))
+        @test_throws ArgumentError colordiff(RGBA(1,0,0,0.5), RGBA(1,0,0,0.5))
+    end
+end
