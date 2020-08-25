@@ -1,11 +1,12 @@
 # Arithmetic
 #XYZ and LMS are linear vector spaces
 const Linear3 = Union{XYZ, LMS}
-+(a::C, b::C) where {C<:Linear3} = C(comp1(a)+comp1(b), comp2(a)+comp2(b), comp3(a)+comp3(b))
--(a::C, b::C) where {C<:Linear3} = C(comp1(a)-comp1(b), comp2(a)-comp2(b), comp3(a)-comp3(b))
--(a::Linear3) = typeof(a)(-comp1(a), -comp2(a), -comp3(a))
-*(c::Number, a::Linear3) = base_color_type(a)(c*comp1(a), c*comp2(a), c*comp3(a))
-/(a::Linear3, c::Number) = base_color_type(a)(comp1(a)/c, comp2(a)/c, comp3(a)/c)
++(a::Linear3, b::Linear3) = mapc(+, a, b)
+-(a::Linear3, b::Linear3) = mapc(-, a, b)
+-(a::Linear3) = mapc(-, a)
+*(k::Number, a::Linear3) = mapc(v -> k * v, a)
+*(a::Linear3, k::Number) = k * a
+/(a::Linear3, k::Number) = mapc(v -> v / k, a)
 
 # Algorithms relating to color processing and generation
 
