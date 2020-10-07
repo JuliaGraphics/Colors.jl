@@ -33,6 +33,18 @@ include("colormaps.jl")
 include("display.jl")
 include("colormatch.jl")
 
+"""
+Colors used in the Julia logo as a `NamedTuple`.
+
+The keys are approximate descriptions of the hue and do not include black.
+
+Not exported, use as `JULIA_LOGO_COLORS.red` etc.
+"""
+const JULIA_LOGO_COLORS = (red = RGB{N0f8}(0.796, 0.235, 0.2),  # colorant"#cb3c33" blocks precompilation
+                           green = RGB{N0f8}(0.22, 0.596, 0.149),
+                           blue = RGB{N0f8}(0.251, 0.388, 0.847),
+                           purple = RGB{N0f8}(0.584, 0.345, 0.698))
+
 if VERSION >= v"1.1"   # work around https://github.com/JuliaLang/julia/issues/34121
     include("precompile.jl")
     _precompile_()
