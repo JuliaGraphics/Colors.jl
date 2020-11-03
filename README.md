@@ -9,6 +9,9 @@ This library provides a wide array of functions for dealing with color. This
 includes conversion between colorspaces, measuring distance between colors,
 simulating color blindness, parsing colors, and generating color scales for graphics.
 
+The core color types are defined and documented in [ColorTypes](https://github.com/JuliaGraphics/ColorTypes.jl).
+You can use ColorTypes as a standalone package if you do not need the utilities defined here.
+
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
 [docs-dev-url]: http://juliagraphics.github.io/Colors.jl/dev/
 
