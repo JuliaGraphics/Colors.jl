@@ -186,6 +186,7 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
                 C == AGray32 && (T=N0f8)
                 c1 = C(T(0),T(1))
                 c2 = C(T(1),T(0))
+                @inferred weighted_color_mean(0.5,c1,c2)
                 @test weighted_color_mean(0.5,c1,c2) == C(T(1)-T(0.5),T(0.5))
             end
         end
@@ -195,11 +196,13 @@ using Colors, FixedPointNumbers, Test, InteractiveUtils
                 if C<:Color
                         c1 = C(T(1),T(1),T(0))
                         c2 = C(T(0),T(1),T(1))
+                    @inferred weighted_color_mean(0.5,c1,c2)
                     @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5))
                 else
                         C == ARGB32 && (T=N0f8)
                         c1 = C(T(1),T(1),T(0),T(1))
                         c2 = C(T(0),T(1),T(1),T(0))
+                    @inferred weighted_color_mean(0.5,c1,c2)
                     @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5),T(0.5))
                 end
             end
