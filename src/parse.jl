@@ -195,7 +195,7 @@ an `RGB`); any more specific choice will return a color of the specified type.
 
     You can also parse the 8-digit or 4-digit hex notation into an RGB color
     with alpha. However, the result depends on the prefix (i.e. `#` or `0x`).
-    ```@example
+    ```julia-repl
     julia> parse(Colorant, "#FF8800AA") # transparent orange
     RGBA{N0f8}(1.0,0.533,0.0,0.667)
 
@@ -217,6 +217,7 @@ Base.parse(::Type{C}, c::Colorant) where {C<:Colorant} = c
     @colorant_str(ex)
 
 Parse a literal color name as a Colorant.
+See [`Base.parse(Colorant, desc)`](@ref).
 """
 macro colorant_str(ex)
     isa(ex, AbstractString) || error("colorant requires literal strings")

@@ -1,5 +1,7 @@
 # This is the union of every color defined in X11 and in SVG, prefering the SVG
 # definition when they clash.
+# You can find the color swatches in:
+# http://juliagraphics.github.io/Colors.jl/dev/namedcolors/
 const color_names = Dict(
     "aliceblue"            => (240, 248, 255),
     "antiquewhite"         => (250, 235, 215),

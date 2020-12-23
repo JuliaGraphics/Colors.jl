@@ -1,6 +1,7 @@
 # Named Colors
 
-The names of available colors are stored in alphabetical order in the dictionary `Colors.color_names`:
+The names of available colors are stored in alphabetical order in the dictionary
+[`Colors.color_names`](https://github.com/JuliaGraphics/Colors.jl/blob/master/src/names_data.jl):
 
 ```julia
 color_names = Dict(
