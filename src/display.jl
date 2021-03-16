@@ -71,9 +71,10 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",cs::AbstractVector{T};
         </defs>
         <rect width="$n" height="1" fill="url(#$id)" />
         """)
-    for i in 1:min(n, actual_max_swatches)
-        hexc = hex(color(cs[i]))
-        opacity = string(round(alpha(cs[i]), digits=4))
+    for (i, c) in enumerate(cs)
+        i > actual_max_swatches && break
+        hexc = hex(color(c))
+        opacity = string(round(float(alpha(c)), digits=4))
         op = replace(opacity, r"(^0(?!\.0$))|(\.0$)"=>"")
         write(io,
             """
@@ -118,11 +119,12 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
              shape-rendering="crispEdges" stroke="none">
         """)
 
-    for i in 1:m, j in 1:n
-        c = hex(cs[i, j])
+    i1, j1 = firstindex(cs, 1), firstindex(cs, 2)
+    for i in 0:m-1, j in 0:n-1
+        c = hex(cs[i1 + i, j1 + j])
         write(io,
             """
-            <rect width="$sw" height="$sh" x="$(j-1)" y="$(i-1)" fill="#$c" />
+            <rect width="$sw" height="$sh" x="$j" y="$i" fill="#$c" />
             """)
     end
 
@@ -171,23 +173,21 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
              stroke-linecap="butt" shape-rendering="crispEdges">
         """)
 
-    for i in 1:d:m, j in 1:d:n
+    i1, j1 = firstindex(cs, 1), firstindex(cs, 2)
+    for i in 0:d:m-1, j in 0:d:n-1
         # since there is no universal way,
         # calculate the mean color in "RGB space"
-        csum = Float32[0, 0, 0]
-        u = min(n-j+1, d) # cell width
-        v = min(m-i+1, d) # cell height
-        for y in i:i+v-1, x in j:j+u-1
-            rgb = convert(RGB{Float32}, cs[y, x])
-            csum[1] += red(rgb) # avoid array allocation
-            csum[2] += green(rgb)
-            csum[3] += blue(rgb)
+        csum = RGB{Float32}(0, 0, 0)
+        u = min(n - j, d) # cell width
+        v = min(m - i, d) # cell height
+        for x in j:j+u-1, y in i:i+v-1
+            rgb = convert(RGB, cs[i1 + y, j1 + x])
+            csum = mapc((s, a) -> s + Float32(a), csum, rgb)
         end
-        csum /= (u * v)
-        c = hex(RGB{Float32}(csum[1], csum[2], csum[3]))
+        c = hex(mapc(s -> s / (u * v), csum))
         write(io,
             """
-            <path d="M$(j-1),$(i-1)h$d" stroke="#$c" />
+            <path d="M$j,$(i)h$d" stroke="#$c" />
             """)
     end
 
