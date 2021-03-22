@@ -29,5 +29,6 @@ function _precompile_()
         precompile(Tuple{typeof(colordiff),RGB{T},RGB{T}})
     end
     precompile(Tuple{typeof(colormap),String})
+    precompile(Tuple{typeof(colormap),String,Int})
     precompile(Tuple{typeof(distinguishable_colors),Int})
 end

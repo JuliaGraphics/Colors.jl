@@ -233,36 +233,35 @@ function MSC(h, l; linear::Bool=false)
         pend_l = l > pmid.l ? 100.0 : 0.0
         return (pend_l - l) / (pend_l - pmid.l) * pmid.c
     end
-    return find_maximum_chroma(LCHuv{Float64}(l, 0, h))
+    return find_maximum_chroma(LCHuv{Float64}(l, 0.0, h))
 end
 
 # This function finds the maximum chroma for the lightness `c.l` and hue `c.h`
 # by means of the binary search. Even though this requires more than 20
 # iterations, somehow, this is fast.
 function find_maximum_chroma(c::C,
-                             low::Real=0,
-                             high::Real=180) where {T, C<:Union{LCHab{T}, LCHuv{T}}}
+                             low::Real=0.0,
+                             high::Real=180.0) where {T, C<:Union{LCHab{T}, LCHuv{T}}}
     err = convert(T, 1e-6)
     l, h = convert(T, low), convert(T, high)
-    h - l < err && return l
+    while true
+        h - l < err && return l
 
-    mid = convert(T, (l + h) / 2)
-    min(mid - l, h - mid) == zero(T) && return l
-    lchm = C(c.l, mid, c.h)
-    rgbm = xyz_to_linear_rgb(convert(XYZ{T}, lchm))
-    clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
-              min(red(rgbm), green(rgbm), blue(rgbm)) <= 0
-    if clamped
-        return find_maximum_chroma(c, l, mid)::T
-    else
-        return find_maximum_chroma(c, mid, h)::T
+        mid = convert(T, (l + h) * oftype(l, 0.5))
+        min(mid - l, h - mid) == zero(T) && return l
+        lchm = C(c.l, mid, c.h)
+        rgbm = xyz_to_linear_rgb(convert(XYZ{T}, lchm))
+        clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
+                  min(red(rgbm), green(rgbm), blue(rgbm)) <= 0
+        l = clamped ? l : mid
+        h = clamped ? mid : h
     end
 end
 
 const LAB_HUE_Y = 102.85123437653252 # hue(convert(Lab, RGB(1.0, 1.0, 0.0)))
 
 function find_maximum_chroma(c::LCHab{T}) where T
-    maxc = find_maximum_chroma(c, 0, 135)
+    maxc = find_maximum_chroma(c, 0.0, 135.0)
 
     # The sRGB gamut in LCHab space has a *hollow* around the yellow corner.
     # Since the following boundary is based on the D65 white point, the values
