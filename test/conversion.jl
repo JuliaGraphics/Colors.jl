@@ -2,6 +2,21 @@ using Colors, FixedPointNumbers
 using Test
 using ColorTypes: eltype_default, parametric3
 
+struct C3{T} <: Color{T,3}
+    c1::T; c2::T; c3::T;
+end
+struct C4{T} <: Color{T,4}
+    c1::T; c2::T; c3::T; c4::T;
+end
+function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) where {Cdest<:AbstractRGB,Odest,Osrc<:C4}
+    Cdest(c.c1 + c.c4, c.c2 + c.c4, c.c3 + c.c4)
+end
+function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, c) where {Cdest<:C4,Odest,Osrc<:AbstractRGB}
+    r, g, b = red(c), green(c), blue(c)
+    c4 = min(r, g, b)
+    Cdest(r - c4, g - c4, b - c4, c4)
+end
+
 @testset "Conversion" begin
     r8(x) = reinterpret(N0f8, x)
 
@@ -203,6 +218,21 @@ using ColorTypes: eltype_default, parametric3
         @test convert(RGB, HSI{Float32}(30,  2, .25)) ≈ RGB{Float32}(.5,.25,0)
         @test convert(RGB, HSI{Float32}(30, .5,  -1)) ≈ RGB{Float32}(0,0,0)
         @test convert(RGB{Float64}, HSI{BigFloat}(-360120, .5, .5)) ≈ RGB{Float64}(.25,.25,1)
+    end
+
+    @testset "custom types" begin
+        # issue #465
+        @test_throws ErrorException convert(RGB,   C3{Float32}(1, 2, 3))
+        @test_throws ErrorException convert(RGB24, C3{Float64}(1, 2, 3))
+        @test_throws ErrorException convert(Lab,   C3{Float16}(1, 2, 3))
+
+        @test @inferred(convert(RGB,   C4{Float32}(0.1, 0.2, 0.3, 0.4))) ≈ RGB{Float32}(0.5, 0.6, 0.7)
+        @test @inferred(convert(RGB24, C4{Float64}(0.1, 0.2, 0.3, 0.4))) ≈ RGB24(0.5, 0.6, 0.7)
+        @test @inferred(convert(ALab,  C4{Float16}(0.1, 0.2, 0.3, 0.4))) ≈ ALab{Float16}(62.12, -2.86, -16.25, 1.0)
+
+        @test @inferred(convert(C4, RGB{Float32}(0.5, 0.6, 0.7))) ≈ C4{Float32}(0.0, 0.1, 0.2, 0.5)
+        @test @inferred(convert(C4{N0f8}, ARGB32(0.5, 0.6, 0.7))) ≈ C4{N0f16}(0.0, 0.1, 0.2, 0.5)
+        @test @inferred(convert(C4, Lab{Float16}(62.12, -2.86, -16.25))) ≈ C4{Float16}(0.0, 0.1, 0.2, 0.5)
     end
 
     # Test accuracy of conversion
