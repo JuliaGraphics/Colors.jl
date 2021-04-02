@@ -1,4 +1,5 @@
-using Colors, FixedPointNumbers, Test, InteractiveUtils
+using Colors, FixedPointNumbers, Test
+using InteractiveUtils # for `subtypes`
 
 @testset "Utilities" begin
     # issue #351
