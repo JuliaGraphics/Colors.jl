@@ -91,6 +91,9 @@ julia> hex(ARGB(1,0.533,0,0.267), :S)
 "4F80"
 ```
 
+!!! compat "Colors v0.12"
+    `style` requires at least Colors v0.12.
+
 !!! compat
     For backward compatibility, `hex(c::ColorAlpha)` currently returns an
     "AARRGGBB" style string. This is inconsistent with `hex(c, :AUTO)` returning
