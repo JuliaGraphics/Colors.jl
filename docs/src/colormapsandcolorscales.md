@@ -23,7 +23,7 @@ julia> c2 = colorant"green"
 RGB{N0f8}(0.0,0.502,0.0)
 
 julia> range(c1, stop=c2, length=15)
-15-element Array{RGB{N0f8},1} with eltype RGB{FixedPointNumbers.Normed{UInt8,8}}:
+15-element Array{RGB{N0f8},1} with eltype RGB{FixedPointNumbers.N0f8}:
  RGB{N0f8}(1.0,0.0,0.0)
  RGB{N0f8}(0.929,0.035,0.0)
  RGB{N0f8}(0.859,0.071,0.0)
