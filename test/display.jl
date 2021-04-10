@@ -1,4 +1,22 @@
+using Test, Colors
+using FixedPointNumbers
+
 @testset "Display" begin
+    @testset "showable" begin
+        @test showable("image/svg+xml", RGB24(1, 0.5, 0))
+        @test showable("image/svg+xml", Lab(50.0, 0.0, NaN)) === false
+        @test showable("image/svg+xml", colormap("Reds", 4))
+        @test showable("image/svg+xml", [HSVA(30, 1, 1, a) for a = 0.0:0.1:1.0])
+        @test showable("image/svg+xml", [rand(Gray, 4); Gray(Inf)]) === false
+        @test showable("image/svg+xml", rand(RGB, 2, 2))
+        @test showable("image/svg+xml", rand(ARGB, 2, 2)) === false
+        @test showable("image/svg+xml", rand(HSV, 2, 2, 2)) === false
+        @test showable("image/svg+xml", Color[RGB(0, 0, 0) HSV(0, 0, 0);
+                                              XYZ(0, 0, 0) Luv(0, 0, 0)])
+        @test showable("image/svg+xml", Color[RGB(0, 0, 0) HSV(0, 0, 0);
+                                              XYZ(0, 0, 0) Luv(0, 0, NaN)]) === false
+    end
+
     function count_element(pattern::Regex, svg::AbstractString)
         n = 0
         i = firstindex(svg)

@@ -9,7 +9,7 @@ Base.@deprecate_binding RGB4 RGBX
 
 
 import Base: ==, +, -, *, /
-import Base: convert, eltype, isless, range, show, typemin, typemax
+import Base: convert, eltype, isless, range, show, showable, typemin, typemax
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,

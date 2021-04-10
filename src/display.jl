@@ -6,6 +6,15 @@ const max_height = 150
 const max_swatch_size = 25
 const default_max_swatches = 128 * 128
 
+_isfinite(c::Colorant) = mapreducec(isfinite, &, true, c)
+
+Base.showable(::MIME"image/svg+xml", c::Colorant) = _isfinite(c)
+# Note that ImageShow.jl overloads `showable` for `AbstractMatrix{<:Color}`
+function Base.showable(::MIME"image/svg+xml", cs::Union{AbstractVector{<:Colorant},
+                                                        AbstractMatrix{<:Color}})
+    all(_isfinite, cs)
+end
+
 function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
     write_declaration(io, mime)
     write(io,
