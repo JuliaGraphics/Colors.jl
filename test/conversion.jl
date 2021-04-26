@@ -193,6 +193,7 @@ end
 
     # Issue #257
     c = RGB{Float16}(0.9473,0.962,0.9766)
+    convert(HSI, c)
     hsi = convert(HSI, c)
     @test hsi.i > 0.96 && hsi.h ≈ 210
 
