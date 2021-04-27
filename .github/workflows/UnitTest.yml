@@ -17,9 +17,10 @@ jobs:
       matrix:
         julia-version: ['1.0', '1', 'nightly']
         os: [ubuntu-latest, windows-latest, macOS-latest]
+      fail-fast: false
 
     steps:
-      - uses: actions/checkout@v1.0.0
+      - uses: actions/checkout@v2
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v1
         with:
@@ -30,7 +31,7 @@ jobs:
         env:
           cache-name: cache-artifacts
         with:
-          path: ~/.julia/artifacts 
+          path: ~/.julia/artifacts
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
           restore-keys: |
             ${{ runner.os }}-test-${{ env.cache-name }}-
