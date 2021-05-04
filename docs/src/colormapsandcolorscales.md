@@ -72,8 +72,18 @@ The [`weighted_color_mean()`](@ref) function returns a color that is the weighte
 For example:
 
 ```jldoctest example
-julia> weighted_color_mean(0.5, colorant"red", colorant"green")
-RGB{N0f8}(0.502,0.251,0.0)
+julia> weighted_color_mean(0.8, colorant"red", colorant"green")
+RGB{N0f8}(0.8,0.102,0.0)
+```
+You can also get the weighted mean of three or more colors by passing the
+collections of weights and colors. The following is an example of bilinear
+interpolation.
+
+```@example mean
+using Colors # hide
+[weighted_color_mean([(1-s)*(1-t), s*(1-t), (1-s)*t, s*t], # collection of weights
+                     Colors.JULIA_LOGO_COLORS)             # collection of colors
+                            for s = 0:0.2:1, t = 0:0.05:1]
 ```
 
 ```@docs

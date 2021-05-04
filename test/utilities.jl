@@ -221,22 +221,38 @@ using InteractiveUtils # for `subtypes`
         lchuva1 = LCHuvA{Float16}(0,100, 90,1)
         lchuva2 = LCHuvA{Float16}(100,0,810,0)
         @test weighted_color_mean(0.5, lchuva1, lchuva2) === LCHuvA{Float16}(50,50,90,0.5)
+
+        @testset "with collections" begin
+            colors = [RGBA(1, 0, 0, 1) RGBA(0, 0, 1, 1)
+                      RGBA(0, 1, 0, 1) RGBA(0, 0, 0, 0)]
+            c = RGBA{N0f8}(0.1, 0.2, 0.3, 0.6)
+            @test weighted_color_mean([0.1 0.3; 0.2 0.4],   colors) === c # matrix
+            @test weighted_color_mean((0.1, 0.2, 0.3, 0.4), colors) === c # tuple
+            @test weighted_color_mean(0.1:0.1:0.4,          colors) === c # range
+
+            @test weighted_color_mean((0, 1), (Gray(1), Gray(0.0))) === Gray{N0f8}(0)
+            @test weighted_color_mean((1, 0), (Gray(1.0), Gray(0))) === Gray{Float64}(1)
+
+            @test_throws DimensionMismatch weighted_color_mean((0.1, 0.2, 0.3), colors)
+            @test_throws Exception weighted_color_mean((0.1, 0.2), (RGB(1, 1, 1), HSV(0, 1, 1)))
+        end
     end
 
-    # test utility function range
-    # range uses weighted_color_mean which is extensively tested.
-    # Therefore it suffices to test the function using gray colors.
-    for T in colorElementTypes
-        c1 = Gray(T(1))
-        c2 = Gray(T(0))
-        linc1c2 = range(c1,stop=c2,length=43)
-        @test length(linc1c2) == 43
-        @test linc1c2[1] == c1
-        @test linc1c2[end] == c2
-        @test linc1c2[22] == Gray(T(0.5))
-        @test typeof(linc1c2) == Array{Gray{T},1}
-        if VERSION >= v"1.1"
-            @test range(c1,c2,length=43) == range(c1,stop=c2,length=43)
+    @testset "range" begin
+        # `range` uses `weighted_color_mean` which is extensively tested.
+        # Therefore it suffices to test the function using gray colors.
+        for T in colorElementTypes
+            c1 = Gray(T(1))
+            c2 = Gray(T(0))
+            linc1c2 = range(c1,stop=c2,length=43)
+            @test length(linc1c2) == 43
+            @test linc1c2[1] == c1
+            @test linc1c2[end] == c2
+            @test linc1c2[22] == Gray(T(0.5))
+            @test typeof(linc1c2) == Array{Gray{T},1}
+            if VERSION >= v"1.1"
+                @test range(c1,c2,length=43) == range(c1,stop=c2,length=43)
+            end
         end
     end
 end

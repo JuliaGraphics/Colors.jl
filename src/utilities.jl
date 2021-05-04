@@ -217,6 +217,43 @@ function _weighted_color_mean(w1::Integer, c1::C, c2::C) where C <: Colorant
 end
 
 """
+    weighted_color_mean(weights, colors)
+
+Returns the weighted mean of the given collection `colors` with `weights`.
+This is semantically equivalent to the calculation of `sum(weights .* colors)`.
+
+# Examples
+```jldoctest; setup = :(using Colors, FixedPointNumbers)
+julia> rgbs = (RGB(1, 0, 0), RGB(0, 1, 0), RGB(0, 0, 1));
+
+julia> weighted_color_mean([0.2, 0.2, 0.6], rgbs)
+RGB{N0f8}(0.2,0.2,0.6)
+
+julia> weighted_color_mean(0.5:-0.25:0.0, RGB{Float64}.(rgbs))
+RGB{Float64}(0.5,0.25,0.0)
+```
+
+!!! compat "Colors v0.13"
+    `wighted_color_mean` with collection or iterator inputs requires Colors
+    v0.13 or later.
+
+!!! note
+    In a cylindrical color space such as HSV, a weighted mean of more than three
+    colors is generally not meaningful.
+"""
+function weighted_color_mean(weights, colors)
+    if length(weights) != length(colors)
+        throw(DimensionMismatch("`weights` and `colors` must be the same length."))
+    end
+    w1, c1 = first(weights), first(colors)
+    acc = mapc(_ -> zero(promote_type(typeof(w1), Float32)), c1)
+    for (w, c) in zip(weights, colors)
+        acc = mapc((a, v) -> a + w * v, acc, c)
+    end
+    convert(typeof(c1), acc)
+end
+
+"""
     range(start::T; stop::T, length=100) where T<:Colorant
     range(start::T, stop::T; length=100) where T<:Colorant
 
