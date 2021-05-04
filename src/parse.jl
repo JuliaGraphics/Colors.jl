@@ -136,15 +136,9 @@ function _parse_colorant(desc::String)
 
     ldesc == "transparent" && return RGBA{N0f8}(0,0,0,0)
 
-    wo_spaces = replace(ldesc, r"(?<=[^ ]{3}) (?=[^ ]{3})" => "")
+    wo_spaces = replace(ldesc, r"(?<=[^bfptuv ][^p ][adeghk-rtwy]) (?=[^efinq ][aeh-mo-rtuy][^kw \d][a-y]{0,7}\b)" => "")
     c = get(color_names, wo_spaces, nothing)
-    if c !== nothing
-        camel = replace(titlecase(ldesc), " " => "")
-        Base.depwarn(
-            """
-            The X11 color names with spaces are not recommended because they are not allowed in the SVG/CSS.
-            Use "$camel" or "$wo_spaces" instead.
-            """, :parse)
+    if c !== nothing && sizeof(wo_spaces) > 6
         return RGB{N0f8}(n0f8(c[1]), n0f8(c[2]), n0f8(c[3]))
     end
 
@@ -211,7 +205,13 @@ function Base.parse(::Type{C}, desc::AbstractString) where {C<:Colorant}
 end
 
 Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
-Base.parse(::Type{C}, c::Colorant) where {C<:Colorant} = c
+
+@noinline function Base.parse(::Type{C}, c::Colorant) where {C<:Colorant}
+    Base.depwarn("""
+        `parse(::Type, ::Coloarant)` is deprecated.
+          Do not call `parse` if the object does not need to be parsed.""", :parse)
+    c
+end
 
 """
     @colorant_str(ex)

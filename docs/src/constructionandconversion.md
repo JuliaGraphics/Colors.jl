@@ -111,15 +111,6 @@ julia> parse(RGB{N0f16}, "indianred")
 RGB{N0f16}(0.80392,0.36078,0.36078)
 ```
 
-You can also pass a color (`Colorant` value) to the second argument of the
-[`parse`](@ref) function, but in this case, `parse` does not apply any
-conversion on the color.
-
-```jldoctest example
-julia> parse(RGB{N0f8}, HSL{Float64}(120, 1, 0.5)) # use `convert` instead
-HSL{Float64}(120.0,1.0,0.5)
-```
-
 
 You can convert colors to hexadecimal strings using the [`hex`](@ref) function.
 Note that the conversion result does not have the prefix `"#"`.

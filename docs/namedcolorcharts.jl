@@ -78,7 +78,7 @@ function ColorChartSVG(colorcategory)
             write(io, """<tspan x="$cx" y="4.2">$name</tspan>""")
         else
             m = match(r"^(dark|pale|light|lemon|medium|blanched|(?:.+(?=white|blue|purple|blush)))(.+)$", name)
-            if m != nothing
+            if m !== nothing
                 write(io, """<tspan x="$cx" y="2.3">$(m.captures[1])</tspan>""")
                 write(io, """<tspan x="$cx" y="4.5">$(m.captures[2])</tspan>""")
             else
