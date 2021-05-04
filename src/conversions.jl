@@ -320,20 +320,25 @@ function cnvt(::Type{XYZ{T}}, c::xyY) where T
 end
 
 
-const xyz_epsilon = 216 / 24389
-const xyz_kappa   = 24389 / 27
+const xyz_epsilon   = 216 / 24389 # (6/29)^3
+const xyz_kappa     = 24389 / 27  # (29/6)^3*8
+const xyz_kappa_inv = 27 / 24389
 
 function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ = WP_DEFAULT) where T
     fy = (c.l + 16) / 116
-    fx = c.a / 500 + fy
+    fx = fy + c.a / 500
     fz = fy - c.b / 200
 
     fx3 = fx^3
+    fy3 = fy^3
     fz3 = fz^3
 
-    x = fx3 > xyz_epsilon ? fx3 : (116fx - 16) / xyz_kappa
-    y = c.l > xyz_kappa * xyz_epsilon ? ((c. l+ 16) / 116)^3 : c.l / xyz_kappa
-    z = fz3 > xyz_epsilon ? fz3 : (116fz - 16) / xyz_kappa
+    epsilon = oftype(fx3, xyz_epsilon)
+    kappa_inv = oftype(fx3, xyz_kappa_inv)
+
+    x = fx3 > epsilon ? fx3 : muladd(116, fx, -16) * kappa_inv
+    y = fy3 > epsilon ? fy3 : c.l * kappa_inv
+    z = fz3 > epsilon ? fz3 : muladd(116, fz, -16) * kappa_inv
 
     XYZ{T}(x*wp.x, y*wp.y, z*wp.z)
 end
@@ -349,15 +354,18 @@ end
 
 
 function cnvt(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT) where T
-    (u_wp, v_wp) = xyz_to_uv(wp)
+    c.l == zero(c.l) && return XYZ{T}(zero(T), zero(T), zero(T))
 
-    a = (52 * (c.l==0 ? zero(T) : c.l / (c.u + 13 * c.l * u_wp)) - 1) / 3
-    y = c.l > xyz_kappa * xyz_epsilon ? wp.y * ((c.l + 16) / 116)^3 : wp.y * c.l / xyz_kappa
-    b = -5y
-    d = y * (39 * (c.l==0 ? zero(T) : c.l / (c.v + 13 * c.l * v_wp)) - 5)
-    x = d==b ? zero(T) : (d - b) / (a + 1/3)
-    z = a * x + b + zero(T)
+    u_wp, v_wp = xyz_to_uv(wp)
 
+    ls = c.l * oftype(u_wp, xyz_kappa_inv)
+    y = c.l > 8 ? wp.y * ((c.l + 16) / 116)^3 : wp.y * ls
+
+    u = c.u / (13c.l) + u_wp
+    v = c.v / (13c.l) + v_wp
+    v4 = 4v
+    x = y * 9u / v4
+    z = y * (12 - 3u - 20v) / v4
     XYZ{T}(x, y, z)
 end
 
@@ -412,11 +420,14 @@ cnvt(::Type{xyY{T}}, c::Color) where {T} = cnvt(xyY{T}, convert(XYZ{T}, c))
 # -----------------
 
 function fxyz2lab(v)
-    v > xyz_epsilon ? cbrt(v) : (xyz_kappa * v + 16) / 116
+    ka = oftype(v, 841 / 108) # (29/6)^2 / 3 = xyz_kappa / 116
+    kb = oftype(v, 16 / 116) # 4/29
+    v > oftype(v, xyz_epsilon) ? cbrt(v) : muladd(ka, v, kb)
 end
+
 function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
-    fx, fy, fz = fxyz2lab(c.x / wp.x), fxyz2lab(c.y / wp.y), fxyz2lab(c.z / wp.z)
-    Lab{T}(116fy - 16, 500(fx - fy), 200(fy - fz))
+    f = mapc(fxyz2lab, mapc((x, y) -> x / y, c, wp))
+    Lab{T}(muladd(116, f.y, -16), 500(f.x - f.y), 200(f.y - f.z))
 end
 
 
@@ -501,10 +512,12 @@ function cnvt(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
     (u_, v_) = xyz_to_uv(c)
 
     y = c.y / wp.y
+    epsilon = oftype(y, xyz_epsilon)
+    kappa = oftype(y, xyz_kappa)
 
-    l = y > xyz_epsilon ? 116 * cbrt(y) - 16 : xyz_kappa * y
-    u = 13 * l * (u_ - u_wp) + zero(T)
-    v = 13 * l * (v_ - v_wp) + zero(T)
+    l = y > epsilon ? 116 * cbrt(y) - 16 : kappa * y
+    u = 13 * l * (u_ - u_wp)
+    v = 13 * l * (v_ - v_wp)
 
     Luv{T}(l, u, v)
 end
@@ -566,8 +579,8 @@ function cnvt(::Type{DIN99{T}}, c::Lab) where T
     cc = log(1+0.045*g)/(0.045*kch*ke)
 
     # DIN99 chromaticities
-    a99 = g > 0 ? cc * ee / g : zero(T)
-    b99 = g > 0 ? cc * f / g : zero(T)
+    a99 = g > 0 ? convert(T, cc / g * ee) : zero(T)
+    b99 = g > 0 ? convert(T, cc / g * f ) : zero(T)
 
     DIN99{T}(l99, a99, b99)
 
