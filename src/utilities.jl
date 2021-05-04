@@ -208,9 +208,8 @@ function weighted_color_mean(w1::Real, c1::C, c2::C) where {Cb <: Union{HSV, HSL
 end
 function _weighted_color_mean(w1::Real, c1::Colorant{T1}, c2::Colorant{T2}) where {T1,T2}
     @fastmath min(w1, oneunit(w1) - w1) >= zero(w1) || throw(DomainError(w1, "`w1` must be in [0, 1]"))
-    weight1 = convert(promote_type(T1, T2), w1) # TODO: Consider the need for this
-    weight2 = oneunit(weight1) - weight1
-    mapc((x, y) -> convert(promote_type(T1, T2), muladd(weight1, x, weight2 * y)), c1, c2)
+    w2 = oneunit(w1) - w1
+    mapc((x, y) -> convert(promote_type(T1, T2), muladd(w1, x, w2 * y)), c1, c2)
 end
 function _weighted_color_mean(w1::Integer, c1::C, c2::C) where C <: Colorant
     (w1 & 0b1) === w1 || throw(DomainError(w1, "`w1` must be in [0, 1]"))

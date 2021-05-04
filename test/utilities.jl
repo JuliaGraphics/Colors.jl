@@ -176,35 +176,33 @@ using InteractiveUtils # for `subtypes`
         end
         gray_b1 = Gray{Bool}(1)
         gray_b0 = Gray{Bool}(0)
-        @test weighted_color_mean(0, gray_b1, gray_b0) === gray_b0
-        @test weighted_color_mean(1, gray_b1, gray_b0) === gray_b1
-        @test_broken weighted_color_mean(0.5, gray_b1, gray_b1) === gray_b1
+        @test @inferred(weighted_color_mean(0, gray_b1, gray_b0)) === gray_b0
+        @test @inferred(weighted_color_mean(1, gray_b1, gray_b0)) === gray_b1
+        @test @inferred(weighted_color_mean(0.5, gray_b1, gray_b1)) === gray_b1
         @test_throws InexactError weighted_color_mean(0.5, gray_b1, gray_b0)
         @test_throws DomainError weighted_color_mean(-1, gray_b1, gray_b0)
 
         for C in parametric2
             for T in colorElementTypes
-                C == AGray32 && (T=N0f8)
-                c1 = C(T(0),T(1))
-                c2 = C(T(1),T(0))
-                @inferred weighted_color_mean(0.5,c1,c2)
-                @test weighted_color_mean(0.5,c1,c2) == C(T(1)-T(0.5),T(0.5))
+                c1 = C(T(0), T(1))
+                c2 = C(T(1), T(0))
+                cx = C(T(0.5), T(0.5))
+                @test @inferred(weighted_color_mean(0.5, c1, c2)) == cx
             end
         end
 
         for C in colortypes
             for T in (Float16,Float32,Float64,BigFloat)
                 if C<:Color
-                        c1 = C(T(1),T(1),T(0))
-                        c2 = C(T(0),T(1),T(1))
-                    @inferred weighted_color_mean(0.5,c1,c2)
-                    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5))
+                    c1 = C(T(1), T(1), T(0))
+                    c2 = C(T(0), T(1), T(1))
+                    cx = C(T(0.5), T(1.0), T(0.5))
+                    @test @inferred(weighted_color_mean(0.5, c1, c2)) == cx
                 else
-                        C == ARGB32 && (T=N0f8)
-                        c1 = C(T(1),T(1),T(0),T(1))
-                        c2 = C(T(0),T(1),T(1),T(0))
-                    @inferred weighted_color_mean(0.5,c1,c2)
-                    @test weighted_color_mean(0.5,c1,c2) == C(T(0.5),T(0.5)+T(1)-T(0.5),T(1)-T(0.5),T(0.5))
+                    c1 = C(T(1), T(1), T(0), T(0))
+                    c2 = C(T(0), T(1), T(0), T(1))
+                    cx = C(T(0.5), T(1.0), T(0.0), T(0.5))
+                    @test @inferred(weighted_color_mean(0.5, c1, c2)) == cx
                 end
             end
         end
