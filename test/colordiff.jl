@@ -1,4 +1,4 @@
-using Colors, Test
+using Colors, Test, FixedPointNumbers
 
 # Test the colordiff function against example input and output from:
 #
@@ -61,6 +61,7 @@ using Colors, Test
     jl_purple = Lab{Float32}(Colors.JULIA_LOGO_COLORS.purple)
     colors = (jl_red, jl_green, jl_blue, jl_purple)
     pairs = ((a, b) for a in colors for b in Iterators.filter(c -> c != a,colors))
+    tri = (colorant"navy", colorant"peru", colorant"gold")
 
     @testset "properties of metrics" begin
         metrics = (DE_2000(), DE_94(), DE_JPC79(), DE_CMC(), DE_BFD(),
@@ -72,17 +73,22 @@ using Colors, Test
             # positivity
             @test all(p -> colordiff(p[1], p[2]; metric=metric) > 0, pairs)
             # symmetry
-            if metric isa DE_CMC # quasimetric
-                # TODO: add test
+            if metric isa DE_94 || metric isa DE_CMC # quasimetric
+                @test all(p -> abs(colordiff(p[1], p[2]; metric=metric) -
+                                   colordiff(p[2], p[1]; metric=metric)) > eps_cdiff, pairs)
             else
                 @test all(p -> abs(colordiff(p[1], p[2]; metric=metric) -
                                    colordiff(p[2], p[1]; metric=metric)) < eps_cdiff, pairs)
             end
             # triangle inequality
-            metric isa DE_CMC && continue # FIXME
             @test all(p -> colordiff(p[1],   p[2]; metric=metric) <=
                            colordiff(p[1], jl_red; metric=metric) +
                            colordiff(jl_red, p[2]; metric=metric), pairs)
+            if any(m -> metric isa m, (DE_2000, DE_94, DE_CMC)) # semimetric
+                @test colordiff(tri[1], tri[3]; metric=metric) >
+                      colordiff(tri[1], tri[2]; metric=metric) +
+                      colordiff(tri[2], tri[3]; metric=metric)
+            end
         end
     end
 

@@ -10,34 +10,52 @@ struct DE_2000 <: DifferenceMetric
     kl::Float64
     kc::Float64
     kh::Float64
+    DE_2000(kl=1, kc=1, kh=1) = new(kl, kc, kh)
 end
 """
-    DE_2000()
-    DE_2000(kl, kc, kh)
+    DE_2000(kl=1, kc=1, kh=1)
 
 Construct a metric of the CIE Delta E 2000 recommendation, with weighting
 parameters `kl`, `kc` and `kh` as provided for in the recommendation. When not
 provided, these parameters default to `1`.
 """
-DE_2000() = DE_2000(1,1,1)
+DE_2000()
 
 
 struct DE_94 <: DifferenceMetric
     kl::Float64
     kc::Float64
     kh::Float64
+    k1::Float64
+    k2::Float64
+    DE_94(kl=1, kc=1, kh=1, k1=0.045, k2=0.015) = new(kl, kc, kh, k1, k2)
 end
 """
-    DE_94()
-    DE_94(kl, kc, kh)
+    DE_94(kl=1, kc=1, kh=1, k1=0.045, k2=0.015)
 
 Construct a metric of CIE Delta E 94 recommendation (1994), with weighting
-parameters `kl`, `kc` and `kh` as provided for in the recommendation. When not
-provided, these parameters default to `1`.
+parameters `kl`, `kc`, `kh`, `k1`, and `k2` as provided for in the
+recommendation. The `kl`, `k1`, and `k2` depend on the application:
+
+|    |Graphic Arts|Textiles|
+|:--:|:-----------|:-------|
+|`kl`|`1`         |`2`     |
+|`k1`|`0.045`     |`0.048` |
+|`k2`|`0.015`     |`0.014` |
+
+and the default values are for graphic arts. The `kc` and `kh` default to `1`.
+
 The `DE_94` is more perceptually uniform than the [`DE_AB`](@ref), but has some
 non-uniformities resolved by the [`DE_2000`](@ref).
+
+!!! note
+    The `DE_94` is a quasimetric, i.e. violates symmetry. Therefore,
+    `colordiff(a, b, metric=DE_94())` may not equal to
+    `colordiff(b, a, metric=DE_94())`.
+    The first argument of `colordiff` is taken as the reference (standard)
+    color.
 """
-DE_94() = DE_94(1,1,1)
+DE_94()
 
 
 struct DE_JPC79 <: DifferenceMetric
@@ -55,38 +73,39 @@ DE_JPC79()
 struct DE_CMC <: DifferenceMetric
     kl::Float64
     kc::Float64
+    DE_CMC(kl=1, kc=1) = new(kl, kc)
 end
 """
-    DE_CMC()
-    DE_CMC(kl, kc)
+    DE_CMC(kl=1, kc=1)
 
 Construct a metric using the CMC equation (CMC l:c), with weighting parameters
 `kl` and `kc`. When not provided, these parameters default to `1`.
+
 !!! note
     The `DE_CMC` is a quasimetric, i.e. violates symmetry. Therefore,
     `colordiff(a, b, metric=DE_CMC())` may not equal to
     `colordiff(b, a, metric=DE_CMC())`.
+    The first argument of `colordiff` is taken as the reference (standard)
+    color.
 """
-DE_CMC() = DE_CMC(1,1)
+DE_CMC()
 
 
 struct DE_BFD <: DifferenceMetric
     wp::XYZ{Float64}
     kl::Float64
     kc::Float64
+    DE_BFD(wp::XYZ, kl=1, kc=1) = new(wp, kl, kc)
 end
 """
-    DE_BFD()
-    DE_BFD([wp,] kl, kc)
+    DE_BFD([wp,] kl=1, kc=1)
 
 Construct a metric using the BFD equation, with weighting parameters `kl` and
 `kc`. Additionally, a whitepoint `wp` can be specified, because the BFD equation
 must convert between `XYZ` and `Lab` during the computation. When not provided,
 `kl` and `kc` default to `1`, and `wp` defaults to CIE D65 (`Colors.WP_D65`).
 """
-DE_BFD() = DE_BFD(WP_DEFAULT,1,1)
-DE_BFD(kl, kc) = DE_BFD(WP_DEFAULT,kl, kc)
-
+DE_BFD(kl=1, kc=1) = DE_BFD(WP_DEFAULT, kl, kc)
 
 struct DE_AB <: EuclideanDifferenceMetric{Lab}
 
@@ -244,13 +263,10 @@ function _colordiff(ai::Color, bi::Color, m::DE_94)
     # Calculate H*
     dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
 
-    # Calculate geometric mean of chroma
-    mc = sqrt(a.c*b.c)
-
     # Lightness, hue, chroma correction terms
     sl = 1
-    sc = 1+0.045*mc
-    sh = 1+0.015*mc
+    sc = 1 + m.k1 * a.c
+    sh = 1 + m.k2 * a.c
 
     sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2)
 
@@ -325,32 +341,22 @@ function _colordiff(ai::Color, bi::Color, m::DE_CMC)
     # Calculate H* from C*'s and h
     dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
 
-    # Find the mean value of the inputs to use as the "standard"
-    ml, mc = (a.l + b.l)/2, (a.c + b.c)/2 # TODO: use `a.l` and `a.c` instead
-
-    # Calculate mean hue value
-    if a.c * b.c == 0
-        mh = a.h + b.h
-    else
-        mh = mean_hue(a.h, b.h)
-    end
-
     # L* adjustment term
     if (a.l <= 16)
         sl = 0.511
     else
-        sl = 0.040975*ml/(1+0.01765*ml)
+        sl = 0.040975 * a.l / (1 + 0.01765 * a.l)
     end
 
     # C* adjustment term
-    sc = 0.0638*mc/(1+0.0131*mc)+0.638
+    sc = 0.0638 * a.c / (1 + 0.0131 * a.c) + 0.638
 
-    f = sqrt((mc^4)/(mc^4 + 1900))
+    f = sqrt(a.c^4 / (a.c^4 + 1900))
 
-    if (mh >= 164 && mh < 345)
-        t = 0.56 + abs(0.2*cosd(mh+168))
+    if 164 <= a.h <= 345
+        t = 0.56 + abs(0.2 * cosd(a.h + 168))
     else
-        t = 0.36 + abs(0.4*cosd(mh+35))
+        t = 0.36 + abs(0.4 * cosd(a.h + 35))
     end
 
     # H* adjustment term
@@ -365,7 +371,7 @@ end
 function _colordiff(ai::Color, bi::Color, m::DE_BFD)
     # Currently, support for the `wp` argument of `convert` is limited.
     function to_xyz(c::Color, wp)
-        c isa XYZ && return ai
+        c isa XYZ && return c
         (c isa xyY || c isa LMS) && return convert(XYZ, c)
         (c isa Lab || c isa Luv) && return convert(XYZ, c, wp)
         c isa LCHuv && return convert(XYZ, convert(Luv, c), wp)
