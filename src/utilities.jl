@@ -26,6 +26,8 @@ pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
 # x^y ≈ exp(y*log(x)) ≈ exp2(y*log2(y)); the middle form is faster
 @noinline pow12_5(x) = x^2 * exp(0.4 * log(x)) # 12/5 == 2.4 == 2 + 0.4
 
+pow7(x) = (y = x*x*x; y*y*x)
+pow7(x::Integer) = pow7(Float64(x)) # avoid overflow
 
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
@@ -194,6 +196,51 @@ normalize_hue(c::C) where {Cb <: Union{HSV, HSL, HSI}, C <: Union{AlphaColor{Cb}
 normalize_hue(c::C) where C <: Union{LCHab, LCHuv} = C(c.l, c.c, normalize_hue(c.h))
 normalize_hue(c::C) where {Cb <: Union{LCHab, LCHuv}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
     C(c.l, c.c, normalize_hue(c.h), c.alpha)
+
+"""
+    mean_hue(h1::Real, h2::Real)
+    mean_hue(a::C, b::C) where {C <: Colorant}
+
+Compute the mean of two hue angles in degrees.
+
+If the inputs are HSV-like or Lab-like color objects, this will also return a
+hue, not a color. If one of the colors is achromatic, i.e. has zero saturation
+or chroma, the hue of the other color is returned instead of the mean.
+"""
+function mean_hue(h1::T, h2::T) where {T <: Real}
+    @fastmath hmin, hmax = minmax(h1, h2)
+    d = 180 - normalize_hue(hmin - hmax - 180)
+    F = typeof(zero(T) / 2)
+    mh = muladd(F(0.5), d, hmin)
+    return mh < 0 ? mh + 360 : mh
+end
+
+function mean_hue(a::C, b::C) where {Cb <: Union{Lab, LCHab, Luv, LCHuv},
+                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    h1 = chroma(a) == 0 ? hue(b) : hue(a)
+    h2 = chroma(b) == 0 ? hue(a) : hue(b)
+    mean_hue(h1, h2)
+end
+function mean_hue(a::C, b::C) where {Cb <: Union{HSV, HSL, HSI},
+                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    mean_hue(a.s == 0 ? b.h : a.h, b.s == 0 ? a.h : b.h)
+end
+mean_hue(a, b) = mean_hue(promote(a, b)...)
+
+function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
+                                    C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    da, db, dc = comp2(a) - comp2(b), comp3(a) - comp3(b), chroma(a) - chroma(b)
+    d = comp3(a) * comp2(b) - comp2(a) * comp3(b)
+    dh = @fastmath sqrt(max(muladd(dc, -dc, muladd(da, da, db^2)), 0))
+    return copysign(dh, d)
+end
+function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
+                                    C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    sh = @fastmath (hue(a) - hue(b) + 180) / 360
+    d =  @fastmath sh - floor(sh) - oftype(sh, 0.5)
+    2 * sqrt(chroma(a) * chroma(b)) * sinpi(d)
+end
+delta_h(a, b) = delta_h(promote(a, b)...)
 
 """
     weighted_color_mean(w1, c1, c2)

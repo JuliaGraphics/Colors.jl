@@ -151,22 +151,6 @@ Construct a metric using Euclidean color difference equation applied in the
 """
 DE_DIN99o()
 
-
-# Compute the mean of two hue angles
-function mean_hue(h1, h2)
-    if abs(h2 - h1) > 180
-        if h1 + h2 < 360
-            mh = (h1 + h2 + 360) / 2
-        else
-            mh = (h1 + h2 - 360) / 2
-        end
-    else
-        mh = (h1 + h2) / 2
-    end
-
-    mh
-end
-
 # Color difference metrics
 # ------------------------
 
@@ -181,12 +165,11 @@ end
 #   The CIEDE2000 color difference metric evaluated between a and b.
 #
 
-pow7(x) = (y = x*x*x; y*y*x)
-pow7(x::Integer) = pow7(Float64(x))
-const twentyfive7 = pow7(25)
 
 # Delta E 2000
 function _colordiff(ai::Color, bi::Color, m::DE_2000)
+    twentyfive7 = pow7(25)
+
     # Ensure that the input values are in L*a*b* space
     a_Lab = convert(Lab, ai)
     b_Lab = convert(Lab, bi)
@@ -195,31 +178,18 @@ function _colordiff(ai::Color, bi::Color, m::DE_2000)
     mc = (chroma(a_Lab) + chroma(b_Lab))/2
     g = (1 - sqrt(pow7(mc) / (pow7(mc) + twentyfive7))) / 2
 
+    a_Lab_r = Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b)
+    b_Lab_r = Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b)
+
     # Convert to L*C*h, where the remainder of the calculations are performed
-    a = convert(LCHab, Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b))
-    b = convert(LCHab, Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b))
+    a = convert(LCHab, a_Lab_r)
+    b = convert(LCHab, b_Lab_r)
 
     # Calculate the delta values for each channel
-    dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
-    if a.c * b.c == 0
-        dh = zero(dh)
-    elseif dh > 180
-        dh -= 360
-    elseif dh < -180
-        dh += 360
-    end
-    # Calculate H*
-    dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
+    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b_Lab_r, a_Lab_r)
 
-    # Calculate mean L* and C* values
-    ml, mc = (a.l + b.l) / 2, (a.c + b.c) / 2
-
-    # Calculate mean hue value
-    if a.c * b.c == 0
-        mh = a.h + b.h
-    else
-        mh = mean_hue(a.h, b.h)
-    end
+    # Calculate mean L*, C* and hue values
+    ml, mc, mh = (a.l + b.l) / 2, (a.c + b.c) / 2, mean_hue(a, b)
 
     # lightness weight
     mls = (ml - 50)^2
@@ -236,9 +206,9 @@ function _colordiff(ai::Color, bi::Color, m::DE_2000)
     sh = 1 + 0.015 * mc * t
 
     # rotation term
-    dtheta = 30 * exp(-((mh - 275)/25)^2)
+    dtheta = 60 * exp(-((mh - 275)/25)^2)
     cr = 2 * sqrt(pow7(mc) / (pow7(mc) + twentyfive7))
-    tr = -sind(2*dtheta) * cr
+    tr = -sind(dtheta) * cr
 
     # Final calculation
     sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2 +
@@ -247,21 +217,11 @@ end
 
 # Delta E94
 function _colordiff(ai::Color, bi::Color, m::DE_94)
-
     a = convert(LCHab, ai)
     b = convert(LCHab, bi)
 
     # Calculate the delta values for each channel
-    dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
-    if a.c * b.c == 0
-        dh = zero(dh)
-    elseif dh > 180
-        dh -= 360
-    elseif dh < -180
-        dh += 360
-    end
-    # Calculate H*
-    dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
+    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
 
     # Lightness, hue, chroma correction terms
     sl = 1
@@ -269,37 +229,19 @@ function _colordiff(ai::Color, bi::Color, m::DE_94)
     sh = 1 + m.k2 * a.c
 
     sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2)
-
 end
 
 # Metric form of jpc79 color difference equation (mostly obsolete)
 function _colordiff(ai::Color, bi::Color, m::DE_JPC79)
-
     # Convert directly into LCh
     a = convert(LCHab, ai)
     b = convert(LCHab, bi)
 
     # Calculate deltas in each direction
-    dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
-    if a.c * b.c == 0
-        dh = zero(dh)
-    elseif dh > 180
-        dh -= 360
-    elseif dh < -180
-        dh += 360
-    end
-    # Calculate H* from C*'s and h
-    dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
+    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
 
-    #Calculate mean lightness
-    ml = (a.l + b.l)/2
-    mc = (a.c + b.c)/2
-    # Calculate mean hue value
-    if a.c * b.c == 0
-        mh = a.h + b.h
-    else
-        mh = mean_hue(a.h, b.h)
-    end
+    # Calculate mean lightness, chroma and hue
+    ml, mc, mh = (a.l + b.l) / 2, (a.c + b.c) / 2, mean_hue(a, b)
 
     # L* adjustment term
     sl = 0.08195*ml/(1+0.01765*ml)
@@ -318,28 +260,17 @@ function _colordiff(ai::Color, bi::Color, m::DE_JPC79)
 
     # Calculate the final difference
     sqrt((dl/sl)^2 + (dc/sc)^2 + (dh/sh)^2)
-
 end
 
 
 # Metric form of the cmc color difference
 function _colordiff(ai::Color, bi::Color, m::DE_CMC)
-
     # Convert directly into LCh
     a = convert(LCHab, ai)
     b = convert(LCHab, bi)
 
     # Calculate deltas in each direction
-    dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
-    if a.c * b.c == 0
-        dh = zero(dh)
-    elseif dh > 180
-        dh -= 360
-    elseif dh < -180
-        dh += 360
-    end
-    # Calculate H* from C*'s and h
-    dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
+    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
 
     # L* adjustment term
     if (a.l <= 16)
@@ -364,7 +295,6 @@ function _colordiff(ai::Color, bi::Color, m::DE_CMC)
 
     # Calculate the final difference
     sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/sh)^2)
-
 end
 
 # The BFD color difference equation
@@ -394,36 +324,27 @@ function _colordiff(ai::Color, bi::Color, m::DE_BFD)
     b = LCHab(lb, chroma(b_Lab), hue(b_Lab))
 
     # Calculate deltas in each direction
-    dl, dc, dh = (b.l - a.l), (b.c - a.c), (b.h - a.h)
-    if a.c * b.c == 0
-        dh = zero(dh)
-    elseif dh > 180
-        dh -= 360
-    elseif dh < -180
-        dh += 360
-    end
-
-    # Calculate H* from C*'s and h
-    dh = 2 * sqrt(a.c * b.c) * sind(dh/2)
+    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
 
     # Find the mean value of the inputs to use as the "standard"
-    ml, mc = (a.l + b.l)/2, (a.c + b.c)/2
-
-    # Calculate mean hue value
-    if a.c * b.c == 0
-        mh = a.h + b.h
-    else
-        mh = mean_hue(a.h, b.h)
-    end
+    ml, mc, mh = (a.l + b.l) / 2, (a.c + b.c) / 2, mean_hue(a, b)
 
     # Correction terms for a variety of nonlinearities in CIELAB.
     g = sqrt(mc^4/(mc^4 + 14000))
 
-    t = 0.627 + 0.055*cosd(mh - 245) - 0.04*cosd(2*mh - 136) + 0.07*cosd(3*mh - 32) + 0.049*cosd(4*mh + 114) - 0.015*cosd(5*mh + 103)
+    t = 0.627 + 0.055 * cosd( mh - 245) -
+                0.040 * cosd(2mh - 136) +
+                0.070 * cosd(3mh -  32) +
+                0.049 * cosd(4mh + 114) -
+                0.015 * cosd(5mh + 103)
 
     rc = sqrt(mc^6/(mc^6 + 7e7))
 
-    rh = -0.26cosd(mh-308) - 0.379cosd(2*mh-160) - 0.636*cosd(3*mh - 254) + 0.226cosd(4*mh + 140) - 0.194*cosd(5*mh + 280)
+    rh = -0.260 * cosd( mh - 308) -
+          0.379 * cosd(2mh - 160) -
+          0.636 * cosd(3mh - 254) +
+          0.226 * cosd(4mh + 140) -
+          0.194 * cosd(5mh + 280)
 
     dcc = 0.035*mc/(1+0.00365*mc) + 0.521
     dhh = dcc*(g*t+1-g)

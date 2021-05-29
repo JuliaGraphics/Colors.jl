@@ -18,7 +18,7 @@ export weighted_color_mean,
        distinguishable_colors, whitebalance,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
        MSC, sequential_palette, diverging_palette, colormap,
-       normalize_hue,
+       normalize_hue, mean_hue,
        colormatch, CIE1931_CMF, CIE1964_CMF, CIE1931J_CMF, CIE1931JV_CMF, CIE2006_2_CMF, CIE2006_10_CMF
 
 # Early utilities

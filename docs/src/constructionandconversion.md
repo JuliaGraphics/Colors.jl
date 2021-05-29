@@ -146,4 +146,5 @@ Depending on the source and destination colorspace, this may not be perfectly lo
 parse
 hex
 normalize_hue
+mean_hue
 ```

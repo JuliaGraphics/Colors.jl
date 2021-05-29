@@ -160,6 +160,29 @@ using InteractiveUtils # for `subtypes`
         @test normalize_hue(LCHuvA{Float64}(30, 40, -0.5, 0.6)) === LCHuvA{Float64}(30, 40, 359.5, 0.6)
     end
 
+    @testset "mean_hue" begin
+        @test @inferred(mean_hue(0.0, 90.0)) === 45.0
+        @test @inferred(mean_hue(90.0f0, 270.0f0)) === 180.0f0
+        @test @inferred(mean_hue(90, 271)) === 0.5
+
+        @test @inferred(mean_hue(HSV(50, 1, 1), HSV(100, 1, 0.5))) === 75.0
+        @test @inferred(mean_hue(HSL(50, 1, 1), HSL(100, 0, 0.5))) === 50.0
+        @test @inferred(mean_hue(Lab(50, 0, 10), Lab(50, 10, -10))) === 22.5f0
+        @test @inferred(mean_hue(ALuv(50, 0, 0), ALuv(50, 0, 10))) === 90.0f0
+
+        @test_throws Exception mean_hue(RGB(0.1, 0.2, 0.3), RGB(0.4, 0.5, 0.6))
+        @test_throws Exception mean_hue(LChab(10, 20, 30), LCHuv(10, 20, 30))
+    end
+
+    @testset "delta_h" begin
+        @test @inferred(Colors.delta_h(LCHab(50, 60, 70), LCHab(90, 80, 70))) === 0.0f0
+        @test @inferred(Colors.delta_h(LCHuv(50, 60, 80), LCHuv(90,  0, 70))) === 0.0f0
+        @test @inferred(Colors.delta_h(LCHab(50, 60, 70), LCHab(90, 80, 190))) ≈ -120.0f0
+        @test @inferred(Colors.delta_h(LCHab(90, 80, 70), LCHab(50, 60, 310.0))) ≈ 120.0
+        @test @inferred(Colors.delta_h(Lab(50, -10, 10), Lab(50, 10, -10))) ≈ 28.284271f0
+        @test @inferred(Colors.delta_h(ALuv(50, 0, 0), ALuv(50, 0, 10))) === 0.0f0
+    end
+
     # test utility function weighted_color_mean
     parametric2 = [GrayA,AGray32,AGray]
     parametric3 = ColorTypes.parametric3
