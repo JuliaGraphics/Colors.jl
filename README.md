@@ -15,10 +15,10 @@ You can use ColorTypes as a standalone package if you do not need the more exten
 Basic color arithmetic is available with `using ColorVectorSpace`; see [its documentation](https://github.com/JuliaGraphics/ColorVectorSpace.jl) for why it's a separate package.
 
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
-[docs-dev-url]: http://juliagraphics.github.io/Colors.jl/dev/
+[docs-dev-url]: https://juliagraphics.github.io/Colors.jl/dev/
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]: http://juliagraphics.github.io/Colors.jl/stable/
+[docs-stable-url]: https://juliagraphics.github.io/Colors.jl/stable/
 
 [action-img]: https://github.com/JuliaGraphics/Colors.jl/workflows/Unit%20test/badge.svg
 [action-url]: https://github.com/JuliaGraphics/Colors.jl/actions
