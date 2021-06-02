@@ -20,12 +20,8 @@ using InteractiveUtils # for `subtypes`
     end
 
     @testset "hex" begin
-        base_hex = @test_logs (:warn, r"Base\.hex\(c\) has been moved") Base.hex(RGB(1,0.5,0))
-        @test base_hex == hex(RGB(1,0.5,0))
-
         @test hex(RGB(1,0.5,0)) == "FF8000"
-        rgba = @test_logs (:warn, r"will soon be changed") hex(RGBA(1,0.5,0,0.25))
-        @test rgba == "40FF8000" # TODO: change it to "FF800040"
+        @test hex(RGBA(1,0.5,0,0.25)) == "FF800040"
         @test hex(ARGB(1,0.5,0,0.25)) == "40FF8000"
         @test hex(HSV(30,1.0,1.0)) == "FF8000"
 

@@ -95,30 +95,9 @@ julia> hex(ARGB(1,0.533,0,0.267), :S)
 
 !!! compat "Colors v0.12"
     `style` requires at least Colors v0.12.
-
-!!! compat
-    For backward compatibility, `hex(c::ColorAlpha)` currently returns an
-    "AARRGGBB" style string. This is inconsistent with `hex(c, :AUTO)` returning
-    an "RRGGBBAA" style string. The alpha position for `ColorAlpha` will soon be
-    changed to the tail.
 """
 hex(c::Colorant) = _hex(HexAuto, c) # there is no need to search the dictionary
 hex(c::Colorant, style::Symbol) = _hex(get(_hex_styles, style, HexAuto), c)
-
-function Base.hex(c::Colorant)
-    Base.depwarn("Base.hex(c) has been moved to the package Colors.jl, i.e. Colors.hex(c).", :hex)
-    hex(c)
-end
-
-# TODO: abolish the transitional measure (i.e. remove the following method)
-function hex(c::ColorAlpha)
-    Base.depwarn("""
-        The alpha position for $(typeof(c)) (<:ColorAlpha) will soon be changed.
-        You can get the alpha-first style string by `hex(c, :AARRGGBB)` or `hex(c |> ARGB32)`.
-        """, :hex)
-    #_hex(HexNotation{RGBA,:upper,8}, c) # breaking change in v1.0
-    _hex( HexNotation{ARGB,:upper,8}, c) # backward compatible
-end
 
 const _hex_styles = Dict{Symbol, Type}(
     :AUTO => HexAuto,
