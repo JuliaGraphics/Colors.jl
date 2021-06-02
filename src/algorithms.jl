@@ -206,13 +206,8 @@ function MSC(h)
     # un & vn are calculated based on reference white (D65)
     un, vn = xyz_to_uv(WP_DEFAULT)
 
-    #sRGB matrix
-    M = [0.4124564  0.3575761  0.1804375;
-         0.2126729  0.7151522  0.0721750;
-         0.0193339  0.1191920  0.9503041]
-
-    m_tx, m_ty, m_tz = @view M[:, t]
-    m_px, m_py, m_pz = @view M[:, p]
+    m_tx, m_ty, m_tz = @view M_RGB2XYZ[:, t]
+    m_px, m_py, m_pz = @view M_RGB2XYZ[:, p]
 
     f1 = 4alpha*m_px+9beta*m_py
     a1 = 4alpha*m_tx+9beta*m_ty

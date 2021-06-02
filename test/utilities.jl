@@ -2,6 +2,13 @@ using Colors, FixedPointNumbers, Test
 using InteractiveUtils # for `subtypes`
 
 @testset "Utilities" begin
+    @testset "Mat3x3" begin
+        M3x3 = Colors.Mat3x3([1 2 3; 4 5 6; 7 8 9])
+        @test @inferred(M3x3[4]) === 2
+        @test @inferred(M3x3[2,3]) === 6
+        @test @inferred(M3x3[CartesianIndex(3, 2)]) === 8
+    end
+
     @test Colors.cbrt01(0.6) ≈ cbrt(big"0.6") atol=eps(1.0)
     @test Colors.cbrt01(0.6f0) === cbrt(0.6f0)
 
