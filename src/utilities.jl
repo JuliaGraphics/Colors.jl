@@ -14,8 +14,6 @@ end
 # mod6 supports the input `x` in [-2^28, 2^29]
 mod6(::Type{T}, x::Int32) where T = unsafe_trunc(T, x - 6 * ((widemul(x, 0x2aaaaaaa) + Int64(0x20000000)) >> 0x20))
 
-# TODO: move `pow7` from "src/differences.jl" to here
-
 pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 
 # `pow5_12` is called from `srgb_compand`.
@@ -23,8 +21,20 @@ pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
 
 # `pow12_5` is called from `invert_srgb_compand`.
-# x^y ≈ exp(y*log(x)) ≈ exp2(y*log2(y)); the middle form is faster
-@noinline pow12_5(x) = x^2 * exp(0.4 * log(x)) # 12/5 == 2.4 == 2 + 0.4
+pow12_5(x) = pow12_5(Float64(x))
+pow12_5(x::BigFloat) = x^big"2.4"
+@inline function pow12_5(x::Float64)
+    # x^0.4
+    t1 = @evalpoly(@fastmath(min(x, 1.75)), 0.24295462640373672,
+        1.7489099720303518, -1.9919942887850166, 1.3197188815160004, -0.3257258790067756)
+    t2 = muladd(2/5, muladd(x / t1^2, @fastmath(sqrt(t1)), -t1), t1) # Newton's method
+    t3 = muladd(2/5, muladd(x / t2^2, @fastmath(sqrt(t2)), -t2), t2)
+    t4 = muladd(2/5, muladd(x / t3^2, @fastmath(sqrt(t3)), -t3), t3)
+    # x^0.4 * x^2
+    rx = reinterpret(Float64, reinterpret(UInt64, x) & 0xffffffff_f8000000) # hi
+    e = x - rx # lo
+    muladd(t4, rx^2, t4 * (rx + rx + e) * e)
+end
 
 pow7(x) = (y = x*x*x; y*y*x)
 pow7(x::Integer) = pow7(Float64(x)) # avoid overflow
