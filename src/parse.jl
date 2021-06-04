@@ -268,8 +268,3 @@ macro colorant_str(ex)
     col = parse(Colorant, ex)
     :($col)
 end
-
-@noinline function ColorTypes.color(str::AbstractString)
-    Base.depwarn("color(\"$str\") is deprecated, use colorant\"$str\" or parse(Colorant, \"$str\")", :color)
-    parse(Colorant, str)
-end
