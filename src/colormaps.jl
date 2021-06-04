@@ -4,6 +4,12 @@ include("maps_data.jl")
 # color scale generation
 # ----------------------
 
+@noinline function _generate_lab(l::Float32, c::Float32, h::Float32)
+    lab = convert(Lab{Float32}, LCHab{Float32}(l, c, h))
+    rgb = xyz_to_linear_rgb(convert(XYZ{Float32}, lab))
+    convert(Lab{Float32}, linear_rgb_to_xyz(correct_gamut(rgb)))
+end
+
 """
     colors = distinguishable_colors(n, seed=RGB{N0f8}[];
                                     dropseed=false,
@@ -12,9 +18,9 @@ include("maps_data.jl")
                                     cchoices=range(0, stop=100, length=15),
                                     hchoices=range(0, stop=342, length=20))
 
-Generate n maximally distinguishable colors.
+Generate `n` maximally distinguishable colors.
 
-This uses a greedy brute-force approach to choose n colors that are maximally
+This uses a greedy brute-force approach to choose `n` colors that are maximally
 distinguishable. Given seed color(s), and a set of possible hue, chroma, and
 lightness values (in LCHab space), it repeatedly chooses the next color as the
 one that maximizes the minimum pairwise distance to any of the colors already
@@ -39,61 +45,69 @@ in the palette.
 Returns a `Vector` of colors of length `n`, of the type specified in `seed`.
 """
 function distinguishable_colors(n::Integer,
-        seed::AbstractVector{T};
-        dropseed = false,
+        @nospecialize(seed::AbstractVector{<:Color});
+        dropseed::Bool = false,
         transform::Function = identity,
-        lchoices::AbstractVector = range(0, stop=100, length=15),
-        cchoices::AbstractVector = range(0, stop=100, length=15),
-        hchoices::AbstractVector = range(0, stop=342, length=20)) where T<:Color
-
+        lchoices::AbstractVector{<:Real} = range(0.0f0, stop=100.0f0, length=15),
+        cchoices::AbstractVector{<:Real} = range(0.0f0, stop=100.0f0, length=15),
+        hchoices::AbstractVector{<:Real} = range(0.0f0, stop=342.0f0, length=20))
     if n <= length(seed) && !dropseed
         return seed[1:n]
     end
 
     # Candidate colors
-    N = length(lchoices)*length(cchoices)*length(hchoices)
-    candidate = Vector{Lab{Float64}}(undef, N)
+    N = length(lchoices) * length(cchoices) * length(hchoices)
+    candidate = Vector{Lab{Float32}}(undef, N)
     j = 0
     for h in hchoices, c in cchoices, l in lchoices
-        rgb = convert(RGB, LCHab(l, c, h))
-        candidate[j+=1] = convert(LCHab, rgb)
+        @inbounds candidate[j+=1] = _generate_lab(Float32(l), Float32(c), Float32(h))
     end
+
+    _distinguishable_colors(Int(n), seed, dropseed, transform, candidate)
+end
+
+function _distinguishable_colors(n::Int,
+        @nospecialize(seed::AbstractVector{<:Color}),
+        dropseed::Bool,
+        @nospecialize(transform::Function),
+        candidate::Vector{Lab{Float32}})
+
+    N = length(candidate)
+    colors = Vector{eltype(seed)}(undef, n)
 
     # Transformed colors
-    candidate_t = Vector{Lab{Float64}}(undef, N)
-    for i = 1:N
-        candidate_t[i] = transform(candidate[i])
+    if transform === identity
+        candidate_t = candidate
+    else
+        candidate_t = convert.(Lab{Float32}, transform.(candidate))::Vector{Lab{Float32}}
     end
 
-    # Start with the seed colors
-    n += dropseed ? length(seed) : 0
-    colors = Vector{T}(undef, n)
-    copyto!(colors, seed)
+    # Start with the seed colors, unless `dropseed`
+    dropseed || copyto!(colors, seed)
 
     # Minimum distances of the current color to each previously selected color.
-    ds = fill(Inf, N)
-    for i = 1:length(seed)
-        ts = convert(Lab{Float64}, transform(seed[i]))::Lab{Float64}
+    ds = fill(Inf32, N)
+    @inbounds for s in seed
+        ts = convert(Lab{Float32}, transform(s))::Lab{Float32}
         for k = 1:N
-            ds[k] = min(ds[k], colordiff(ts, candidate_t[k]))
+            ds[k] = @fastmath min(ds[k], colordiff(ts, candidate_t[k]))
         end
     end
 
-    for i in length(seed)+1:n
+    n1 = dropseed ? 1 : length(seed) + 1
+    @inbounds for i in n1:n
         j = argmax(ds)
         colors[i] = candidate[j]
         tc = candidate_t[j]
+        ds[j] = 0.0f0
         for k = 1:N
-            d = colordiff(tc, candidate_t[k])
-            ds[k] = min(ds[k], d)
+            ds[k] == 0.0f0 && continue # already selected
+            ds[k] = @fastmath min(ds[k], colordiff(tc, candidate_t[k]))
         end
     end
 
-    dropseed && deleteat!(colors, 1:length(seed))
-
     return colors
 end
-
 
 distinguishable_colors(n::Integer, seed::Color; kwargs...) = distinguishable_colors(n, [seed]; kwargs...)
 distinguishable_colors(n::Integer; kwargs...) = distinguishable_colors(n, Vector{RGB{N0f8}}(); kwargs...)

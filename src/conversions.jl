@@ -313,11 +313,15 @@ end
 const M_RGB2XYZ = Mat3x3([0.4124564390896921    0.357576077643909  0.18043748326639894
                           0.21267285140562248   0.715152155287818  0.07217499330655958
                           0.019333895582329317  0.119192025881303  0.9503040785363677 ])
+
+function linear_rgb_to_xyz(c::AbstractRGB)
+    @mul3x3 XYZ M_RGB2XYZ red(c) green(c) blue(c)
+end
 function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T
     r = invert_srgb_compand(red(c))
     g = invert_srgb_compand(green(c))
     b = invert_srgb_compand(blue(c))
-    return @mul3x3 XYZ{T} M_RGB2XYZ r g b
+    @mul3x3 XYZ{T} M_RGB2XYZ r g b
 end
 
 
