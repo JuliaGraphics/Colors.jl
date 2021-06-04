@@ -5,62 +5,107 @@ include("names_data.jl")
 # Color Parsing
 # -------------
 
-const col_pat_hex  = r"^\s*(#|0x)([[:xdigit:]]{3,8})\s*$"
-const col_pat_rgb  = r"^\s*rgb\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*\)\s*$"
-const col_pat_hsl  = r"^\s*hsl\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*\)\s*$"
-const col_pat_rgba = r"^\s*rgba?\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,/]\s*((?:\d+|(?=\.\d))(?:\.\d*)?%?)\s*\)\s*$"
-const col_pat_hsla = r"^\s*hsla?\(\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,\s]\s*(\d+%?)\s*[,/]\s*((?:\d+|(?=\.\d))(?:\.\d*)?%?)\s*\)\s*$"
+const col_pat_func3 = r"^\s*(?:rgba?|hsla?)
+                               \(\s*([^\s,/\)]+)\s*
+                            [,\s]\s*([^\s,/\)]+)\s*
+                            [,\s]\s*([^\s,/\)]+)\s*
+                            (?:[,/]\s*([^\s,/\)]+)\s*)?\)\s*$"ix
+const col_pat_hex = r"^\s*(?:#|0x)([[:xdigit:]]{3,8})\s*$"
+const col_pat_unitful = r"^([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(.*)$"i
 
 chop1(x) = SubString(x, 1, lastindex(x) - 1) # `chop` is slightly slow
 
+function parse_hex(hex::SubString{String}) # It is guaranteed to be a valid hex string.
+    digits = UInt32(0)
+    for d in codeunits(hex)
+        dl = d | 0x20
+        digits = (digits << 0x4) + dl - (dl < UInt8('a') ? UInt8('0') : UInt8('a') - 0xa)
+    end
+    return digits
+end
+
+function tryparse_dec(dec::SubString{String})
+    de = 0
+    for d in codeunits(dec)
+        dx = d - UInt8('0')
+        0x0 <= dx <= 0x9 || return nothing
+        de = de * 10 + dx
+    end
+    return de
+end
+
+function parse_f32(dec::SubString{String})
+    v = tryparse_dec(dec)
+    v === nothing && return parse(Float32, dec)
+    Float32(v)
+end
+
 # Parse a number used in the "rgb()" or "hsl()" color.
-function parse_rgb(num::AbstractString)
-    if @inbounds num[end] == '%'
-        return N0f8(clamp(parse(Int, chop1(num), base=10) / 100, 0, 1))
-    else
-        v = clamp(parse(Int, num, base=10), 0, 255)
-        return reinterpret(N0f8, unsafe_trunc(UInt8, v))
+
+function parse_rgb(num::SubString{String})
+    @inbounds num[end] == '%' && throw_rgb_unification_error()
+    v = tryparse_dec(num)
+    if v === nothing
+        v = round(Int, parse(Float32, num))
     end
+    return reinterpret(N0f8, unsafe_trunc(UInt8, clamp(v, 0, 255)))
 end
 
-function parse_hsl_hue(num::AbstractString)
-    if @inbounds num[end] == '%'
-        error("hue cannot end in %")
-    else
-        return parse(Int, num, base=10)
-    end
+function parse_rgb_pc(num::SubString{String})
+    @inbounds num[end] == '%' || throw_rgb_unification_error()
+    v = round(Int, parse_f32(chop1(num)) * 2.55f0)
+    return reinterpret(N0f8, unsafe_trunc(UInt8, clamp(v, 0, 255)))
 end
 
-function parse_hsl_sl(num::AbstractString)
+function throw_rgb_unification_error()
+    throw(ArgumentError("RGB values should be unified in numbers in [0,255] or percentages."))
+end
+
+function parse_hue(num::SubString{String})
+    vi = tryparse_dec(num)
+    vi !== nothing && return Float32(vi)
+    mat = match(col_pat_unitful, num)
+    if mat !== nothing
+        v0, unit0 = mat.captures
+        v = parse_f32(v0)
+        isempty(unit0) && return v
+        unit = lowercase(unit0)
+        if unit == "deg"
+            return v
+        elseif unit == "turn"
+            return v * 360f0
+        elseif unit == "rad"
+            return rad2deg(v)
+        elseif unit == "grad"
+            return v * 0.9f0
+        end
+    end
+    throw(ArgumentError("invalid hue notation: $num"))
+end
+
+function parse_hsl_pc(num::SubString{String})
     if @inbounds num[end] != '%'
-        error("saturation and lightness must end in %")
-    else
-        return parse(Int, chop1(num), base=10) / 100
+        throw(ArgumentError("saturation and lightness must end in %"))
     end
+    return clamp(parse_f32(chop1(num)) / 100f0, 0.0f0, 1.0f0)
 end
 
 # Parse a number used in the alpha field of "rgba()" and "hsla()".
-function parse_alpha_num(num::AbstractString)
+function parse_alpha(num::SubString{String})
     if @inbounds num[end] == '%'
-        return parse(Int, chop1(num), base=10) / 100f0
+        v = parse_f32(chop1(num)) / 100f0
     else
-        # `parse(Float32, num)` is somewhat slow on Windows(x86_64-w64-mingw32).
-        # However, the following has the opposite effect on Linux.
-        # m = match(r"0?\.(\d{1,9})", num)
-        # if m != nothing
-        #     d = m.captures[1]
-        #     return parse(Int, d, base=10) / Float32(exp10(length(d)))
-        # end
-        return parse(Float32, num)
+        v = parse(Float32, num)
     end
+    return clamp(v, 0.0f0, 1.0f0)
 end
 
 function _parse_colorant(desc::String)
     n0f8(x) = reinterpret(N0f8, unsafe_trunc(UInt8, x))
     mat = match(col_pat_hex, desc)
     if mat !== nothing
-        prefix, len = mat.captures[1], length(mat.captures[2])
-        digits = parse(UInt32, mat.captures[2], base=16)
+        len = ncodeunits(mat[1])
+        digits = parse_hex(mat[1])
         if len == 6
             return convert(RGB{N0f8}, reinterpret(RGB24, digits))
         elseif len == 3
@@ -68,61 +113,38 @@ function _parse_colorant(desc::String)
                        n0f8((digits>>4) & 0xF * 0x11),
                        n0f8((digits>>0) & 0xF * 0x11))
         elseif len == 8
-            if prefix[1] == '0'
-                return ARGB{N0f8}(n0f8(digits>>16),
-                                  n0f8(digits>> 8),
-                                  n0f8(digits>> 0),
-                                  n0f8(digits>>24))
-            else
+            if occursin('#', desc)
                 return RGBA{N0f8}(n0f8(digits>>24),
                                   n0f8(digits>>16),
                                   n0f8(digits>> 8),
                                   n0f8(digits>> 0))
+            else
+                return ARGB{N0f8}(n0f8(digits>>16),
+                                  n0f8(digits>> 8),
+                                  n0f8(digits>> 0),
+                                  n0f8(digits>>24))
             end
         elseif len == 4
-            if prefix[1] == '0'
-                return ARGB{N0f8}(n0f8((digits>> 8) & 0xF * 0x11),
-                                  n0f8((digits>> 4) & 0xF * 0x11),
-                                  n0f8((digits>> 0) & 0xF * 0x11),
-                                  n0f8((digits>>12) & 0xF * 0x11))
-            else
+            if occursin('#', desc)
                 return RGBA{N0f8}(n0f8((digits>>12) & 0xF * 0x11),
                                   n0f8((digits>> 8) & 0xF * 0x11),
                                   n0f8((digits>> 4) & 0xF * 0x11),
                                   n0f8((digits>> 0) & 0xF * 0x11))
+            else
+                return ARGB{N0f8}(n0f8((digits>> 8) & 0xF * 0x11),
+                                  n0f8((digits>> 4) & 0xF * 0x11),
+                                  n0f8((digits>> 0) & 0xF * 0x11),
+                                  n0f8((digits>>12) & 0xF * 0x11))
             end
         end
     end
-    mat = match(col_pat_rgb, desc)
-    if mat !== nothing
-        return RGB{N0f8}(parse_rgb(mat.captures[1]),
-                         parse_rgb(mat.captures[2]),
-                         parse_rgb(mat.captures[3]))
-    end
-
-    mat = match(col_pat_hsl, desc)
-    if mat !== nothing
-        T = ColorTypes.eltype_default(HSL)
-        return HSL{T}(parse_hsl_hue(mat.captures[1]),
-                      parse_hsl_sl(mat.captures[2]),
-                      parse_hsl_sl(mat.captures[3]))
-    end
-
-    mat = match(col_pat_rgba, desc)
-    if mat !== nothing
-        return RGBA{N0f8}(parse_rgb(mat.captures[1]),
-                          parse_rgb(mat.captures[2]),
-                          parse_rgb(mat.captures[3]),
-                          parse_alpha_num(mat.captures[4]))
-    end
-
-    mat = match(col_pat_hsla, desc)
-    if mat !== nothing
-        T = ColorTypes.eltype_default(HSLA)
-        return HSLA{T}(parse_hsl_hue(mat.captures[1]),
-                       parse_hsl_sl(mat.captures[2]),
-                       parse_hsl_sl(mat.captures[3]),
-                       parse_alpha_num(mat.captures[4]))
+    mat = match(col_pat_func3, desc)
+    if mat !== nothing #&& mat[1] !== nothing && mat[2] !== nothing && mat[3] !== nothing
+        if occursin(r"^\s*rgb"i, desc)
+            return _parse_colorant_rgb(mat[1], mat[2], mat[3], mat[4])
+        else # occursin(r"^\s*hsl"i, desc)
+            return _parse_colorant_hsl(mat[1], mat[2], mat[3], mat[4])
+        end
     end
 
     sdesc = strip(desc)
@@ -142,7 +164,29 @@ function _parse_colorant(desc::String)
         return RGB{N0f8}(n0f8(c[1]), n0f8(c[2]), n0f8(c[3]))
     end
 
-    error("Unknown color: ", desc)
+    throw(ArgumentError("Unknown color: $desc"))
+end
+
+function _parse_colorant_rgb(p1, p2, p3, alpha)
+    if @inbounds p1[end] == '%'
+        r, g, b = parse_rgb_pc(p1), parse_rgb_pc(p2), parse_rgb_pc(p3)
+    else
+        r, g, b = parse_rgb(p1), parse_rgb(p2), parse_rgb(p3)
+    end
+    if alpha === nothing
+        return RGB{N0f8}(r, g, b)
+    else
+        return RGBA{N0f8}(r, g, b, parse_alpha(alpha) % N0f8)
+    end
+end
+
+function _parse_colorant_hsl(p1, p2, p3, alpha)
+    h, s, l = parse_hue(p1), parse_hsl_pc(p2), parse_hsl_pc(p3)
+    if alpha === nothing
+        return typeof(HSL(0,0,0))(h, s, l)
+    else
+        return typeof(HSLA(0,0,0))(h, s, l, parse_alpha(alpha))
+    end
 end
 
 """

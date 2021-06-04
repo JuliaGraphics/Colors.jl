@@ -73,7 +73,7 @@ RGB{N0f8}(1.0,0.0,0.0)
 julia> colorant"rgba(255,0,0,0.6)" # with alpha in [0, 1]
 RGBA{N0f8}(1.0,0.0,0.0,0.6)
 
-julia> colorant"rgba(100%,80%,0%,0.6)" # with "integer" percentages
+julia> colorant"rgba(100%,80%,0.0%,0.6)" # with percentages
 RGBA{N0f8}(1.0,0.8,0.0,0.6)
 
 julia> parse(ARGB, "rgba(255,0,0,0.6)") # you can specify the return type
@@ -82,7 +82,7 @@ ARGB{N0f8}(1.0,0.0,0.0,0.6)
 julia> colorant"hsl(120, 100%, 25%)" # hsl() notation
 HSL{Float32}(120.0f0,1.0f0,0.25f0)
 
-julia> colorant"hsla(120, 100%, 25%, 0.6)" # hsla() notation
+julia> colorant"hsla(120, 100%, 25%, 60%)" # hsla() notation
 HSLA{Float32}(120.0f0,1.0f0,0.25f0,0.6f0)
 
 julia> colorant"transparent" # transparent "black"
