@@ -278,9 +278,11 @@ cnvt(::Type{HSI{T}}, c::Color) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
 # Everything to XYZ
 # -----------------
 
-function invert_srgb_compand(v::Fractional)
+@inline function invert_srgb_compand(v)
+    F = typeof(0.5 * v)
+    vf = F(v)
     # `pow12_5` is an optimized function to get `x^2.4`
-    v <= 0.04045 ? 1/12.92 * v : pow12_5(1/1.055 * (v + 0.055))
+    vf > F(0.04045) ? pow12_5(muladd(F(1000/1055), vf, F(55/1055))) : F(100/1292) * vf
 end
 
 # lookup table for `N0f8` (the extra two elements are for `Float32` splines)
@@ -306,7 +308,9 @@ function invert_srgb_compand(v::Float32)
 end
 
 function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T
-    r, g, b = invert_srgb_compand(red(c)), invert_srgb_compand(green(c)), invert_srgb_compand(blue(c))
+    r = invert_srgb_compand(red(c))
+    g = invert_srgb_compand(green(c))
+    b = invert_srgb_compand(blue(c))
     XYZ{T}(0.4124564*r + 0.3575761*g + 0.1804375*b,
            0.2126729*r + 0.7151522*g + 0.0721750*b,
            0.0193339*r + 0.1191920*g + 0.9503041*b)
