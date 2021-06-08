@@ -19,6 +19,9 @@ using InteractiveUtils # for `subtypes`
         @warn "Optimization technique in `pow5_12` may have the opposite effect."
     end
 
+    @test Colors.pow12_5(0.6) ≈ Colors.pow12_5(big"0.6") atol=1e-6
+    @test Colors.pow12_5(0.6N0f16) ≈ Colors.pow12_5(big"0.6") atol=1e-6
+
     @testset "hex" begin
         base_hex = @test_logs (:warn, r"Base\.hex\(c\) has been moved") Base.hex(RGB(1,0.5,0))
         @test base_hex == hex(RGB(1,0.5,0))
