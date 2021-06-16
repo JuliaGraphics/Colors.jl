@@ -87,9 +87,11 @@ correct_gamut(c::CV) where {T<:Union{N0f8,N0f16,N0f32,N0f64},
 correct_gamut(c::CV) where {CV<:TransparentRGB} =
     CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)), clamp01(alpha(c))) # for `hex`
 
-function srgb_compand(v::Fractional)
+@inline function srgb_compand(v)
+    F = typeof(0.5 * v)
+    vf = F(v)
     # `pow5_12` is an optimized function to get `v^(1/2.4)`
-    v <= 0.0031308 ? 12.92v : 1.055 * pow5_12(v) - 0.055
+    vf > F(0.0031308) ? muladd(F(1.055), F(pow5_12(vf)), F(-0.055)) : F(12.92) * vf
 end
 
 function _hsx_to_rgb(im::UInt8, v, n, m)

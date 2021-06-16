@@ -17,8 +17,32 @@ mod6(::Type{T}, x::Int32) where T = unsafe_trunc(T, x - 6 * ((widemul(x, 0x2aaaa
 pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 
 # `pow5_12` is called from `srgb_compand`.
-# `cbrt` generates a function call, so there is little benefit of `@fastmath`.
 pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
+pow5_12(x::Float32) = Float32(pow5_12(Float64(x)))
+@inline function pow5_12(x::Float64)
+    p3_4 = pow3_4(x)
+    # x^(-1/6)
+    if x < 0.02
+        t0 = @evalpoly(x, 3.1366722556806232,
+            -221.51395962221136, 19788.889459114234, -905934.6541469148, 1.5928561711645417e7)
+    elseif x < 0.12
+        t0 = @evalpoly(x, 2.3135905865468644,
+            -26.43664640894651, 385.0146581045545, -2890.0920682466267, 8366.343115590817)
+    elseif x < 1.2
+        t0 = @evalpoly(x, 1.7047813285940905, -3.1261253501167308,
+            7.498744828350077, -10.100319516746419, 6.820601476522508, -1.7978894213531524)
+    else
+        return p3_4 / cbrt(x)
+    end
+    # x^(-1/3)
+    t1 = t0 * t0
+    h1 = muladd(t1^2, -x * t1, 1.0)
+    t2 = muladd(h1, 1/3 * t1, t1)
+    h2 = muladd(t2^2, -x * t2, 1.0)
+    t2h = @evalpoly(h2, 1/3, 2/9, 14/81) * h2 * t2 # Taylor series of (1-h)^(-1/3)
+    # x^(3/4) * x^(-1/3)
+    muladd(p3_4, t2, p3_4 * t2h)
+end
 
 # `pow12_5` is called from `invert_srgb_compand`.
 pow12_5(x) = pow12_5(Float64(x))

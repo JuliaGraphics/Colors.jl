@@ -19,6 +19,9 @@ using InteractiveUtils # for `subtypes`
         @warn "Optimization technique in `pow5_12` may have the opposite effect."
     end
 
+    @test Colors.pow5_12(0.6) ≈ Colors.pow5_12(big"0.6") atol=1e-6
+    @test Colors.pow5_12(0.6f0) ≈ Colors.pow5_12(big"0.6") atol=1e-6
+    @test Colors.pow5_12(0.6N0f16) ≈ Colors.pow5_12(big"0.6") atol=1e-6
     @test Colors.pow12_5(0.6) ≈ Colors.pow12_5(big"0.6") atol=1e-6
     @test Colors.pow12_5(0.6N0f16) ≈ Colors.pow12_5(big"0.6") atol=1e-6
 
