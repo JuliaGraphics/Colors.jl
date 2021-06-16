@@ -177,10 +177,11 @@ using InteractiveUtils # for `subtypes`
     end
 
     @testset "delta_h" begin
-        @test @inferred(Colors.delta_h(LCHab(50, 60, 70), LCHab(90, 80, 70))) === 0.0f0
+        @test @inferred(Colors.delta_h(LCHab(50, 60, 135.123f0), LCHab(90, 80, 135.123f0))) === 0.0f0
         @test @inferred(Colors.delta_h(LCHuv(50, 60, 80), LCHuv(90,  0, 70))) === 0.0f0
         @test @inferred(Colors.delta_h(LCHab(50, 60, 70), LCHab(90, 80, 190))) ≈ -120.0f0
         @test @inferred(Colors.delta_h(LCHab(90, 80, 70), LCHab(50, 60, 310.0))) ≈ 120.0
+        @test_throws DomainError Colors.delta_h(LCHab(50, -1f-9, 70), LCHab(50, 60, 70))
         @test @inferred(Colors.delta_h(Lab(50, -10, 10), Lab(50, 10, -10))) ≈ 28.284271f0
         @test @inferred(Colors.delta_h(ALuv(50, 0, 0), ALuv(50, 0, 10))) === 0.0f0
     end
