@@ -249,7 +249,8 @@ function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
 end
 function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
-    sh = @fastmath (hue(a) - hue(b) + 180) / 360
+    dh0 = hue(a) - hue(b)
+    sh = muladd(dh0, oftype(dh0, 1 / 360), oftype(dh0, 0.5))
     d =  @fastmath sh - floor(sh) - oftype(sh, 0.5)
     2 * sqrt(chroma(a) * chroma(b)) * sinpi(d)
 end
