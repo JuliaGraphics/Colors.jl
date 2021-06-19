@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Color Differences · Colors</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><script src="../assets/resize_svg.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Colors logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Colors</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../constructionandconversion/">Construction and Conversion</a></li><li class="is-active"><a class="tocitem" href>Color Differences</a></li><li><a class="tocitem" href="../colormapsandcolorscales/">Colormaps and Colorscales</a></li><li><a class="tocitem" href="../namedcolors/">Named Colors</a></li><li><a class="tocitem" href="../advancedfunctions/">Advanced Functions</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Color Differences</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Color Differences</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/colordifferences.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Color-Differences"><a class="docs-heading-anchor" href="#Color-Differences">Color Differences</a><a id="Color-Differences-1"></a><a class="docs-heading-anchor-permalink" href="#Color-Differences" title="Permalink"></a></h1><p>The <a href="#Colors.colordiff"><code>colordiff</code></a> function gives an approximate value for the difference between two colors.</p><pre><code class="language-julia-repl">julia&gt; colordiff(colorant&quot;red&quot;, colorant&quot;darkred&quot;)
-23.75414986364304
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Color Differences · Colors</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><script src="../assets/resize_svg.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Colors logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Colors</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../constructionandconversion/">Construction and Conversion</a></li><li class="is-active"><a class="tocitem" href>Color Differences</a></li><li><a class="tocitem" href="../colormapsandcolorscales/">Colormaps and Colorscales</a></li><li><a class="tocitem" href="../namedcolors/">Named Colors</a></li><li><a class="tocitem" href="../advancedfunctions/">Advanced Functions</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Color Differences</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Color Differences</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/colordifferences.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Color-Differences"><a class="docs-heading-anchor" href="#Color-Differences">Color Differences</a><a id="Color-Differences-1"></a><a class="docs-heading-anchor-permalink" href="#Color-Differences" title="Permalink"></a></h1><p>The <a href="#Colors.colordiff"><code>colordiff</code></a> function gives an approximate value for the difference between two colors.</p><pre><code class="language-julia-repl">julia&gt; colordiff(colorant&quot;red&quot;, colorant&quot;darkred&quot;)
+23.754149450423807
 
 julia&gt; colordiff(colorant&quot;red&quot;, colorant&quot;blue&quot;)
-52.88136782250768
+52.88136496280975
 
 julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
-19.48591066257134</code></pre><pre><code class="language-julia">    colordiff(a::Color, b::Color; metric=DE_2000())</code></pre><p>Evaluate the <a href="http://en.wikipedia.org/wiki/Color_difference#CIEDE2000">CIEDE2000</a> color difference formula by default. This gives an approximate measure of the perceptual difference between two colors to a typical viewer. A larger number is returned for increasingly distinguishable colors.</p><p>Options for <code>metric</code> are as follows:</p><table><tr><th style="text-align: left">Metric</th><th style="text-align: left">Summary</th></tr><tr><td style="text-align: left"><a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a></td><td style="text-align: left">The color difference using the recommended CIE Delta E 2000 equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_94-Tuple{}"><code>DE_94</code></a></td><td style="text-align: left">The color difference using the recommended CIE Delta E 94 equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_JPC79-Tuple{}"><code>DE_JPC79</code></a></td><td style="text-align: left">McDonald&#39;s &quot;JP Coates Thread Company&quot; color difference formula.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_CMC-Tuple{}"><code>DE_CMC</code></a></td><td style="text-align: left">The color difference using the CMC l:c equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_BFD-Tuple{}"><code>DE_BFD</code></a></td><td style="text-align: left">The color difference using the BFD equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a></td><td style="text-align: left">The original ΔE*, Euclidean color difference equation in the <code>Lab</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99-Tuple{}"><code>DE_DIN99</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99d-Tuple{}"><code>DE_DIN99d</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99d</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99o-Tuple{}"><code>DE_DIN99o</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99o</code> colorspace.</td></tr></table><p>The following charts show the differences between the three colors for each metric with the default parameters:</p><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+19.485910662571342</code></pre><pre><code class="language-julia">    colordiff(a::Color, b::Color; metric=DE_2000())</code></pre><p>Evaluate the <a href="http://en.wikipedia.org/wiki/Color_difference#CIEDE2000">CIEDE2000</a> color difference formula by default. This gives an approximate measure of the perceptual difference between two colors to a typical viewer. A larger number is returned for increasingly distinguishable colors.</p><p>Options for <code>metric</code> are as follows:</p><table><tr><th style="text-align: left">Metric</th><th style="text-align: left">Summary</th></tr><tr><td style="text-align: left"><a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a></td><td style="text-align: left">The color difference using the recommended CIE Delta E 2000 equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_94-Tuple{}"><code>DE_94</code></a></td><td style="text-align: left">The color difference using the recommended CIE Delta E 94 equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_JPC79-Tuple{}"><code>DE_JPC79</code></a></td><td style="text-align: left">McDonald&#39;s &quot;JP Coates Thread Company&quot; color difference formula.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_CMC-Tuple{}"><code>DE_CMC</code></a></td><td style="text-align: left">The color difference using the CMC l:c equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_BFD-Tuple{}"><code>DE_BFD</code></a></td><td style="text-align: left">The color difference using the BFD equation.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a></td><td style="text-align: left">The original ΔE*, Euclidean color difference equation in the <code>Lab</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99-Tuple{}"><code>DE_DIN99</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99d-Tuple{}"><code>DE_DIN99d</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99d</code> colorspace.</td></tr><tr><td style="text-align: left"><a href="#Colors.DE_DIN99o-Tuple{}"><code>DE_DIN99o</code></a></td><td style="text-align: left">The Euclidean color difference equation applied in the <code>DIN99o</code> colorspace.</td></tr></table><p>The following charts show the differences between the three colors for each metric with the default parameters:</p><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      viewBox="-15 -12 30 30" width="30mm" height="30mm"
      stroke="none" stroke-linejoin="round"
      style="display:inline; margin-left:2em; margin-bottom:2em">
@@ -21,20 +21,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="2.5845471378872436" cy="4.632352393419274" fill="%239558B2" r="3.2292084535570753" />
-  <circle cx="-2.5845471378872436" cy="2.867647606580725" fill="%23CB3C33" r="3.2292084535570753" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.2292084535570753" />
+  <circle cx="2.584546745516299" cy="4.632351737404738" fill="%239558B2" r="3.2292080374910395" />
+  <circle cx="-2.584546745516299" cy="2.867648262595262" fill="%23CB3C33" r="3.2292080374910395" />
+  <circle cx="0.0" cy="-7.499999999999999" fill="%23389826" r="3.2292080374910395" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_2000);marker-end:url(%23marker_e_DE_2000)">
-  <path d="M2.5845471378872436,4.632352393419274 L-2.5845471378872436,2.867647606580725"/>
-  <path d="M-2.5845471378872436,2.867647606580725 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L2.5845471378872436,4.632352393419274"/>
+  <path d="M2.584546745516299,4.632351737404738 L-2.584546745516299,2.867648262595262"/>
+  <path d="M-2.584546745516299,2.867648262595262 L0.0,-7.499999999999999"/>
+  <path d="M0.0,-7.499999999999999 L2.584546745516299,4.632351737404738"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.292273568943622" y="-2.3161761967096375" text-anchor="end">66.2</text>
-  <text x="-2.5846893663130026" y="12.320956404554742" text-anchor="middle">33.8</text>
-  <text x="4.292273568943622" y="-1.433823803290363" text-anchor="start">76.8</text>
+  <text x="-4.2922733727581495" y="-2.3161758687023686" text-anchor="end">66.2</text>
+  <text x="-2.584687996664606" y="12.320956872146208" text-anchor="middle">33.8</text>
+  <text x="4.2922733727581495" y="-1.4338241312976305" text-anchor="start">76.8</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_2000</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -52,20 +52,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="3.3573609649692875" cy="5.362544770768036" fill="%239558B2" r="3.8964817811528842" />
-  <circle cx="-3.3573609649692875" cy="2.137455229231964" fill="%23CB3C33" r="3.8964817811528842" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.8964817811528842" />
+  <circle cx="3.3573605833286244" cy="5.362543747623554" fill="%239558B2" r="3.8964811710589804" />
+  <circle cx="-3.3573605833286244" cy="2.137456252376445" fill="%23CB3C33" r="3.8964811710589804" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.8964811710589804" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_94);marker-end:url(%23marker_e_DE_94)">
-  <path d="M3.3573609649692875,5.362544770768036 L-3.3573609649692875,2.137455229231964"/>
-  <path d="M-3.3573609649692875,2.137455229231964 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L3.3573609649692875,5.362544770768036"/>
+  <path d="M3.3573605833286244,5.362543747623554 L-3.3573605833286244,2.137456252376445"/>
+  <path d="M-3.3573605833286244,2.137456252376445 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.3573605833286244,5.362543747623554"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.678680482484644" y="-2.681272385384018" text-anchor="end">52.4</text>
-  <text x="-3.4636142330250945" y="11.961336661450911" text-anchor="middle">38.2</text>
-  <text x="4.678680482484644" y="-1.068727614615982" text-anchor="start">68.2</text>
+  <text x="-4.678680291664312" y="-2.6812718738117773" text-anchor="end">52.4</text>
+  <text x="-3.4636127672511576" y="11.961337365463827" text-anchor="middle">38.2</text>
+  <text x="4.678680291664312" y="-1.068728126188223" text-anchor="start">68.2</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_94</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -83,20 +83,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="0.18435243836829468" cy="6.376219159565814" fill="%239558B2" r="2.7801630991649384" />
-  <circle cx="-0.18435243836829468" cy="1.1237808404341867" fill="%23CB3C33" r="2.7801630991649384" />
-  <circle cx="0.0" cy="-7.500000000000001" fill="%23389826" r="2.7801630991649384" />
+  <circle cx="0.1843561508533185" cy="6.376218666343842" fill="%239558B2" r="2.7801628334531396" />
+  <circle cx="-0.1843561508533185" cy="1.1237813336561577" fill="%23CB3C33" r="2.7801628334531396" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="2.7801628334531396" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_JPC79);marker-end:url(%23marker_e_DE_JPC79)">
-  <path d="M0.18435243836829468,6.376219159565814 L-0.18435243836829468,1.1237808404341867"/>
-  <path d="M-0.18435243836829468,1.1237808404341867 L0.0,-7.500000000000001"/>
-  <path d="M0.0,-7.500000000000001 L0.18435243836829468,6.376219159565814"/>
+  <path d="M0.1843561508533185,6.376218666343842 L-0.1843561508533185,1.1237813336561577"/>
+  <path d="M-0.1843561508533185,1.1237813336561577 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L0.1843561508533185,6.376218666343842"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-3.0921762191841475" y="-3.188109579782907" text-anchor="end">62.1</text>
-  <text x="-7.9803621280868065" y="5.3101966660002695" text-anchor="middle">37.9</text>
-  <text x="3.0921762191841475" y="-0.5618904202170936" text-anchor="start">99.8</text>
+  <text x="-3.0921780754266592" y="-3.188109333171921" text-anchor="end">62.1</text>
+  <text x="-7.980361332705496" y="5.310207996603899" text-anchor="middle">37.9</text>
+  <text x="3.0921780754266592" y="-0.561890666828079" text-anchor="start">99.8</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_JPC79</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -114,20 +114,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="4.992321212126245" cy="6.1942354110531435" fill="%239558B2" r="4.229941190057372" />
-  <circle cx="-4.992321212126245" cy="1.3057645889468572" fill="%23CB3C33" r="4.229941190057372" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="4.229941190057372" />
+  <circle cx="4.992319624016104" cy="6.19423419733091" fill="%239558B2" r="4.229940384706808" />
+  <circle cx="-4.992319624016104" cy="1.3057658026690901" fill="%23CB3C33" r="4.229940384706808" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="4.229940384706808" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_CMC);marker-end:url(%23marker_e_DE_CMC)">
-  <path d="M4.992321212126245,6.1942354110531435 L-4.992321212126245,1.3057645889468572"/>
-  <path d="M-4.992321212126245,1.3057645889468572 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L4.992321212126245,6.1942354110531435"/>
+  <path d="M4.992319624016104,6.19423419733091 L-4.992319624016104,1.3057658026690901"/>
+  <path d="M-4.992319624016104,1.3057658026690901 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L4.992319624016104,6.19423419733091"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-5.496160606063123" y="-3.0971177055265713" text-anchor="end">47.9</text>
-  <text x="-3.517798357532598" y="11.935060522761166" text-anchor="middle">52.6</text>
-  <text x="5.496160606063123" y="-0.6528822944734283" text-anchor="start">68.9</text>
+  <text x="-5.496159812008052" y="-3.097117098665455" text-anchor="end">47.9</text>
+  <text x="-3.5177978511488024" y="11.935060770686137" text-anchor="middle">52.6</text>
+  <text x="5.496159812008052" y="-0.6528829013345452" text-anchor="start">68.9</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_CMC</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -145,20 +145,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="2.893761517908055" cy="4.809192385898024" fill="%239558B2" r="2.47012721045965" />
-  <circle cx="-2.893761517908055" cy="2.6908076141019746" fill="%23CB3C33" r="2.47012721045965" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="2.47012721045965" />
+  <circle cx="2.893761345738313" cy="4.80919250647919" fill="%239558B2" r="2.4701271622877647" />
+  <circle cx="-2.893761345738313" cy="2.690807493520811" fill="%23CB3C33" r="2.4701271622877647" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="2.4701271622877647" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_BFD);marker-end:url(%23marker_e_DE_BFD)">
-  <path d="M2.893761517908055,4.809192385898024 L-2.893761517908055,2.6908076141019746"/>
-  <path d="M-2.893761517908055,2.6908076141019746 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L2.893761517908055,4.809192385898024"/>
+  <path d="M2.893761345738313,4.80919250647919 L-2.893761345738313,2.690807493520811"/>
+  <path d="M-2.893761345738313,2.690807493520811 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L2.893761345738313,4.80919250647919"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.446880758954028" y="-2.404596192949013" text-anchor="end">85.8</text>
-  <text x="-2.7497950948538414" y="12.262564604468817" text-anchor="middle">49.9</text>
-  <text x="4.446880758954028" y="-1.345403807050988" text-anchor="start">102</text>
+  <text x="-4.446880672869156" y="-2.4045962532395944" text-anchor="end">85.8</text>
+  <text x="-2.74979551518748" y="12.262564450615702" text-anchor="middle">49.9</text>
+  <text x="4.446880672869156" y="-1.3454037467604052" text-anchor="start">102</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_BFD</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -176,20 +176,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="3.8454026421077323" cy="4.816399136694172" fill="%239558B2" r="2.0579663451408274" />
-  <circle cx="-3.8454026421077323" cy="2.6836014520947225" fill="%23CB3C33" r="2.0579663451408274" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="2.0579663451408274" />
+  <circle cx="3.8454018370837693" cy="4.8163969508173485" fill="%239558B2" r="2.0579659143115028" />
+  <circle cx="-3.8454018370837693" cy="2.683602656656804" fill="%23CB3C33" r="2.0579659143115028" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="2.0579659143115028" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_AB);marker-end:url(%23marker_e_DE_AB)">
-  <path d="M3.8454026421077323,4.816399136694172 L-3.8454026421077323,2.6836014520947225"/>
-  <path d="M-3.8454026421077323,2.6836014520947225 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L3.8454026421077323,4.816399136694172"/>
+  <path d="M3.8454018370837693,4.8163969508173485 L-3.8454018370837693,2.683602656656804"/>
+  <path d="M-3.8454018370837693,2.683602656656804 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.8454018370837693,4.8163969508173485"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.922701321053866" y="-2.408199273952639" text-anchor="end">106</text>
-  <text x="-2.137859180730338" y="12.459057183753028" text-anchor="middle">77.6</text>
-  <text x="4.922701321053866" y="-1.341800431652914" text-anchor="start">125</text>
+  <text x="-4.922700918541885" y="-2.408198671671598" text-anchor="end">106</text>
+  <text x="-2.13785644053426" y="12.459057453000453" text-anchor="middle">77.6</text>
+  <text x="4.922700918541885" y="-1.3418015245913257" text-anchor="start">125</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_AB</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -207,20 +207,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="3.3103786474398094" cy="4.054913561115523" fill="%239558B2" r="4.598130723092119" />
-  <circle cx="-3.3103786474398094" cy="3.445085781116601" fill="%23CB3C33" r="4.598130723092119" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="4.598130723092119" />
+  <circle cx="3.3103776539758227" cy="4.0549139283162985" fill="%239558B2" r="4.59812964771364" />
+  <circle cx="-3.3103776539758227" cy="3.4450865101955164" fill="%23CB3C33" r="4.59812964771364" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="4.59812964771364" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_DIN99);marker-end:url(%23marker_e_DE_DIN99)">
-  <path d="M3.3103786474398094,4.054913561115523 L-3.3103786474398094,3.445085781116601"/>
-  <path d="M-3.3103786474398094,3.445085781116601 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L3.3103786474398094,4.054913561115523"/>
+  <path d="M3.3103776539758227,4.0549139283162985 L-3.3103776539758227,3.4450865101955164"/>
+  <path d="M-3.3103776539758227,3.4450865101955164 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.3103776539758227,4.0549139283162985"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.655189323719904" y="-2.0274571094416993" text-anchor="end">49.7</text>
-  <text x="-0.7337616743248484" y="12.7162782129003" text-anchor="middle">28.9</text>
-  <text x="4.655189323719904" y="-1.7225432194422385" text-anchor="start">52.3</text>
+  <text x="-4.655188826987912" y="-2.027456744902242" text-anchor="end">49.7</text>
+  <text x="-0.7337614609196764" y="12.716278780696564" text-anchor="middle">28.9</text>
+  <text x="4.655188826987912" y="-1.7225430358418508" text-anchor="start">52.3</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_DIN99</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -238,20 +238,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="3.9590296198437307" cy="4.647490581746867" fill="%239558B2" r="3.581112821046178" />
-  <circle cx="-3.9590296198437307" cy="2.8525092474923666" fill="%23CB3C33" r="3.581112821046178" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.581112821046178" />
+  <circle cx="3.9590289177638995" cy="4.647490158488745" fill="%239558B2" r="3.581112494905638" />
+  <circle cx="-3.9590289177638995" cy="2.852509670750505" fill="%23CB3C33" r="3.581112494905638" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.581112494905638" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_DIN99d);marker-end:url(%23marker_e_DE_DIN99d)">
-  <path d="M3.9590296198437307,4.647490581746867 L-3.9590296198437307,2.8525092474923666"/>
-  <path d="M-3.9590296198437307,2.8525092474923666 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L3.9590296198437307,4.647490581746867"/>
+  <path d="M3.9590289177638995,4.647490158488745 L-3.9590289177638995,2.852509670750505"/>
+  <path d="M-3.9590289177638995,2.852509670750505 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.9590289177638995,4.647490158488745"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.979514809921866" y="-2.3237453762538167" text-anchor="end">61.9</text>
-  <text x="-1.7686795896948124" y="12.552036348077037" text-anchor="middle">45.3</text>
-  <text x="4.979514809921866" y="-1.4262547091265665" text-anchor="start">71.4</text>
+  <text x="-4.979514458881949" y="-2.3237451646247473" text-anchor="end">61.9</text>
+  <text x="-1.7686790946729565" y="12.552036460295815" text-anchor="middle">45.3</text>
+  <text x="4.979514458881949" y="-1.4262549207556274" text-anchor="start">71.4</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_DIN99d</text>
 </g>
 </svg>'/><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -269,20 +269,20 @@ julia&gt; colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
   </marker>
 </defs>
 <g>
-  <circle cx="3.7645081615540406" cy="4.620120639987898" fill="%239558B2" r="3.4185546413989076" />
-  <circle cx="-3.7645081615540406" cy="2.879879686030878" fill="%23CB3C33" r="3.4185546413989076" />
-  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.4185546413989076" />
+  <circle cx="3.764507506993971" cy="4.620119836656797" fill="%239558B2" r="3.418554046992077" />
+  <circle cx="-3.764507506993971" cy="2.8798801633432025" fill="%23CB3C33" r="3.418554046992077" />
+  <circle cx="0.0" cy="-7.5" fill="%23389826" r="3.418554046992077" />
 </g>
 <g style="stroke:currentColor;stroke-width:0.2;stroke-opacity:0.4;
    marker-start:url(%23marker_s_DE_DIN99o);marker-end:url(%23marker_e_DE_DIN99o)">
-  <path d="M3.7645081615540406,4.620120639987898 L-3.7645081615540406,2.879879686030878"/>
-  <path d="M-3.7645081615540406,2.879879686030878 L0.0,-7.5"/>
-  <path d="M0.0,-7.5 L3.7645081615540406,4.620120639987898"/>
+  <path d="M3.764507506993971,4.620119836656797 L-3.764507506993971,2.8798801633432025"/>
+  <path d="M-3.764507506993971,2.8798801633432025 L0.0,-7.5"/>
+  <path d="M0.0,-7.5 L3.764507506993971,4.620119836656797"/>
 </g>
 <g fill="currentColor" style="font-size:2.8px;">
-  <text x="-4.88225408077702" y="-2.310060156984561" text-anchor="end">64.6</text>
-  <text x="-1.801604174693638" y="12.544499659303327" text-anchor="middle">45.2</text>
-  <text x="4.88225408077702" y="-1.4399396800060509" text-anchor="start">74.2</text>
+  <text x="-4.882253753496985" y="-2.310059918328399" text-anchor="end">64.6</text>
+  <text x="-1.801603213501139" y="12.544499718461882" text-anchor="middle">45.2</text>
+  <text x="4.882253753496985" y="-1.4399400816716015" text-anchor="start">74.2</text>
   <text x="-14" y="17" style="font-size:2.5px;">DE_DIN99o</text>
 </g>
-</svg>'/><p>The difference in the size of circles in the charts above represents the difference in the scale. The radii of the circles are all 20 in their scale units, so larger circles mean that the metric returns smaller values. Therefore, we should not compare the color differences between different metrics.</p><article class="docstring"><header><a class="docstring-binding" id="Colors.colordiff" href="#Colors.colordiff"><code>Colors.colordiff</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">colordiff(a, b; metric=DE_2000())</code></pre><p>Compute an approximate measure of the perceptual difference between colors <code>a</code> and <code>b</code>. Optionally, a <code>metric</code> may be supplied, chosen among <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a> (the default), <a href="#Colors.DE_94-Tuple{}"><code>DE_94</code></a>, <a href="#Colors.DE_JPC79-Tuple{}"><code>DE_JPC79</code></a>, <a href="#Colors.DE_CMC-Tuple{}"><code>DE_CMC</code></a>, <a href="#Colors.DE_BFD-Tuple{}"><code>DE_BFD</code></a>, <a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a>, <a href="#Colors.DE_DIN99-Tuple{}"><code>DE_DIN99</code></a>, <a href="#Colors.DE_DIN99d-Tuple{}"><code>DE_DIN99d</code></a> and <a href="#Colors.DE_DIN99o-Tuple{}"><code>DE_DIN99o</code></a>.</p><p>The return value is a non-negative number in a type depending on the colors and metric.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The supported metrics measure the difference within <code>Lab</code> or its variant colorspaces. When the input colors are not in the colorspace internally used by the metric, the colors (e.g. in <code>RGB</code>) are converted with the default whitepoint CIE D65 (<code>Colors.WP_D65</code>). If you want to use another whitepoint, convert the colors into the colorspace used by metric (e.g. <code>Lab</code> for <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a>) in advance.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L367-L386">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_2000-Tuple{}" href="#Colors.DE_2000-Tuple{}"><code>Colors.DE_2000</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_2000(kl=1, kc=1, kh=1)</code></pre><p>Construct a metric of the CIE Delta E 2000 recommendation, with weighting parameters <code>kl</code>, <code>kc</code> and <code>kh</code> as provided for in the recommendation. When not provided, these parameters default to <code>1</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L15-L21">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_94-Tuple{}" href="#Colors.DE_94-Tuple{}"><code>Colors.DE_94</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_94(kl=1, kc=1, kh=1, k1=0.045, k2=0.015)</code></pre><p>Construct a metric of CIE Delta E 94 recommendation (1994), with weighting parameters <code>kl</code>, <code>kc</code>, <code>kh</code>, <code>k1</code>, and <code>k2</code> as provided for in the recommendation. The <code>kl</code>, <code>k1</code>, and <code>k2</code> depend on the application:</p><table><tr><th style="text-align: center"></th><th style="text-align: left">Graphic Arts</th><th style="text-align: left">Textiles</th></tr><tr><td style="text-align: center"><code>kl</code></td><td style="text-align: left"><code>1</code></td><td style="text-align: left"><code>2</code></td></tr><tr><td style="text-align: center"><code>k1</code></td><td style="text-align: left"><code>0.045</code></td><td style="text-align: left"><code>0.048</code></td></tr><tr><td style="text-align: center"><code>k2</code></td><td style="text-align: left"><code>0.015</code></td><td style="text-align: left"><code>0.014</code></td></tr></table><p>and the default values are for graphic arts. The <code>kc</code> and <code>kh</code> default to <code>1</code>.</p><p>The <code>DE_94</code> is more perceptually uniform than the <a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a>, but has some non-uniformities resolved by the <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>DE_94</code> is a quasimetric, i.e. violates symmetry. Therefore, <code>colordiff(a, b, metric=DE_94())</code> may not equal to <code>colordiff(b, a, metric=DE_94())</code>. The first argument of <code>colordiff</code> is taken as the reference (standard) color.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L33-L57">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_JPC79-Tuple{}" href="#Colors.DE_JPC79-Tuple{}"><code>Colors.DE_JPC79</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_JPC79()</code></pre><p>Construct a metric using McDonald&#39;s &quot;JP Coates Thread Company&quot; color difference formula.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L64-L69">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_CMC-Tuple{}" href="#Colors.DE_CMC-Tuple{}"><code>Colors.DE_CMC</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_CMC(kl=1, kc=1)</code></pre><p>Construct a metric using the CMC equation (CMC l:c), with weighting parameters <code>kl</code> and <code>kc</code>. When not provided, these parameters default to <code>1</code>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>DE_CMC</code> is a quasimetric, i.e. violates symmetry. Therefore, <code>colordiff(a, b, metric=DE_CMC())</code> may not equal to <code>colordiff(b, a, metric=DE_CMC())</code>. The first argument of <code>colordiff</code> is taken as the reference (standard) color.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L78-L90">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_BFD-Tuple{}" href="#Colors.DE_BFD-Tuple{}"><code>Colors.DE_BFD</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_BFD([wp,] kl=1, kc=1)</code></pre><p>Construct a metric using the BFD equation, with weighting parameters <code>kl</code> and <code>kc</code>. Additionally, a whitepoint <code>wp</code> can be specified, because the BFD equation must convert between <code>XYZ</code> and <code>Lab</code> during the computation. When not provided, <code>kl</code> and <code>kc</code> default to <code>1</code>, and <code>wp</code> defaults to CIE D65 (<code>Colors.WP_D65</code>).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L100-L107">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_AB-Tuple{}" href="#Colors.DE_AB-Tuple{}"><code>Colors.DE_AB</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_AB()</code></pre><p>Construct a metric of the original CIE Delta E equation (ΔE*ab), or Euclidean color difference equation in the <code>Lab</code> (CIELAB) colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L113-L118">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99-Tuple{}" href="#Colors.DE_DIN99-Tuple{}"><code>Colors.DE_DIN99</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99</code> colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L124-L129">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99d-Tuple{}" href="#Colors.DE_DIN99d-Tuple{}"><code>Colors.DE_DIN99d</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99d()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99d</code> colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L135-L140">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99o-Tuple{}" href="#Colors.DE_DIN99o-Tuple{}"><code>Colors.DE_DIN99o</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99o()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99o</code> colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/4645452e8ae88edcd34c0d4c080ef12d71d81b29/src/differences.jl#L146-L151">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../constructionandconversion/">« Construction and Conversion</a><a class="docs-footer-nextpage" href="../colormapsandcolorscales/">Colormaps and Colorscales »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 16 June 2021 09:21">Wednesday 16 June 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</svg>'/><p>The difference in the size of circles in the charts above represents the difference in the scale. The radii of the circles are all 20 in their scale units, so larger circles mean that the metric returns smaller values. Therefore, we should not compare the color differences between different metrics.</p><article class="docstring"><header><a class="docstring-binding" id="Colors.colordiff" href="#Colors.colordiff"><code>Colors.colordiff</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">colordiff(a, b; metric=DE_2000())</code></pre><p>Compute an approximate measure of the perceptual difference between colors <code>a</code> and <code>b</code>. Optionally, a <code>metric</code> may be supplied, chosen among <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a> (the default), <a href="#Colors.DE_94-Tuple{}"><code>DE_94</code></a>, <a href="#Colors.DE_JPC79-Tuple{}"><code>DE_JPC79</code></a>, <a href="#Colors.DE_CMC-Tuple{}"><code>DE_CMC</code></a>, <a href="#Colors.DE_BFD-Tuple{}"><code>DE_BFD</code></a>, <a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a>, <a href="#Colors.DE_DIN99-Tuple{}"><code>DE_DIN99</code></a>, <a href="#Colors.DE_DIN99d-Tuple{}"><code>DE_DIN99d</code></a> and <a href="#Colors.DE_DIN99o-Tuple{}"><code>DE_DIN99o</code></a>.</p><p>The return value is a non-negative number in a type depending on the colors and metric.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The supported metrics measure the difference within <code>Lab</code> or its variant colorspaces. When the input colors are not in the colorspace internally used by the metric, the colors (e.g. in <code>RGB</code>) are converted with the default whitepoint CIE D65 (<code>Colors.WP_D65</code>). If you want to use another whitepoint, convert the colors into the colorspace used by metric (e.g. <code>Lab</code> for <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a>) in advance.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L367-L386">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_2000-Tuple{}" href="#Colors.DE_2000-Tuple{}"><code>Colors.DE_2000</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_2000(kl=1, kc=1, kh=1)</code></pre><p>Construct a metric of the CIE Delta E 2000 recommendation, with weighting parameters <code>kl</code>, <code>kc</code> and <code>kh</code> as provided for in the recommendation. When not provided, these parameters default to <code>1</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L15-L21">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_94-Tuple{}" href="#Colors.DE_94-Tuple{}"><code>Colors.DE_94</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_94(kl=1, kc=1, kh=1, k1=0.045, k2=0.015)</code></pre><p>Construct a metric of CIE Delta E 94 recommendation (1994), with weighting parameters <code>kl</code>, <code>kc</code>, <code>kh</code>, <code>k1</code>, and <code>k2</code> as provided for in the recommendation. The <code>kl</code>, <code>k1</code>, and <code>k2</code> depend on the application:</p><table><tr><th style="text-align: center"></th><th style="text-align: left">Graphic Arts</th><th style="text-align: left">Textiles</th></tr><tr><td style="text-align: center"><code>kl</code></td><td style="text-align: left"><code>1</code></td><td style="text-align: left"><code>2</code></td></tr><tr><td style="text-align: center"><code>k1</code></td><td style="text-align: left"><code>0.045</code></td><td style="text-align: left"><code>0.048</code></td></tr><tr><td style="text-align: center"><code>k2</code></td><td style="text-align: left"><code>0.015</code></td><td style="text-align: left"><code>0.014</code></td></tr></table><p>and the default values are for graphic arts. The <code>kc</code> and <code>kh</code> default to <code>1</code>.</p><p>The <code>DE_94</code> is more perceptually uniform than the <a href="#Colors.DE_AB-Tuple{}"><code>DE_AB</code></a>, but has some non-uniformities resolved by the <a href="#Colors.DE_2000-Tuple{}"><code>DE_2000</code></a>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>DE_94</code> is a quasimetric, i.e. violates symmetry. Therefore, <code>colordiff(a, b, metric=DE_94())</code> may not equal to <code>colordiff(b, a, metric=DE_94())</code>. The first argument of <code>colordiff</code> is taken as the reference (standard) color.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L33-L57">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_JPC79-Tuple{}" href="#Colors.DE_JPC79-Tuple{}"><code>Colors.DE_JPC79</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_JPC79()</code></pre><p>Construct a metric using McDonald&#39;s &quot;JP Coates Thread Company&quot; color difference formula.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L64-L69">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_CMC-Tuple{}" href="#Colors.DE_CMC-Tuple{}"><code>Colors.DE_CMC</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_CMC(kl=1, kc=1)</code></pre><p>Construct a metric using the CMC equation (CMC l:c), with weighting parameters <code>kl</code> and <code>kc</code>. When not provided, these parameters default to <code>1</code>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>DE_CMC</code> is a quasimetric, i.e. violates symmetry. Therefore, <code>colordiff(a, b, metric=DE_CMC())</code> may not equal to <code>colordiff(b, a, metric=DE_CMC())</code>. The first argument of <code>colordiff</code> is taken as the reference (standard) color.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L78-L90">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_BFD-Tuple{}" href="#Colors.DE_BFD-Tuple{}"><code>Colors.DE_BFD</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_BFD([wp,] kl=1, kc=1)</code></pre><p>Construct a metric using the BFD equation, with weighting parameters <code>kl</code> and <code>kc</code>. Additionally, a whitepoint <code>wp</code> can be specified, because the BFD equation must convert between <code>XYZ</code> and <code>Lab</code> during the computation. When not provided, <code>kl</code> and <code>kc</code> default to <code>1</code>, and <code>wp</code> defaults to CIE D65 (<code>Colors.WP_D65</code>).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L100-L107">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_AB-Tuple{}" href="#Colors.DE_AB-Tuple{}"><code>Colors.DE_AB</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_AB()</code></pre><p>Construct a metric of the original CIE Delta E equation (ΔE*ab), or Euclidean color difference equation in the <code>Lab</code> (CIELAB) colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L113-L118">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99-Tuple{}" href="#Colors.DE_DIN99-Tuple{}"><code>Colors.DE_DIN99</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99</code> colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L124-L129">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99d-Tuple{}" href="#Colors.DE_DIN99d-Tuple{}"><code>Colors.DE_DIN99d</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99d()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99d</code> colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L135-L140">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Colors.DE_DIN99o-Tuple{}" href="#Colors.DE_DIN99o-Tuple{}"><code>Colors.DE_DIN99o</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia">DE_DIN99o()</code></pre><p>Construct a metric using Euclidean color difference equation applied in the <code>DIN99o</code> colorspace.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/12f95f56e0bad06b640e2b420a8ab303e2f8c810/src/differences.jl#L146-L151">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../constructionandconversion/">« Construction and Conversion</a><a class="docs-footer-nextpage" href="../colormapsandcolorscales/">Colormaps and Colorscales »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 19 June 2021 02:46">Saturday 19 June 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
