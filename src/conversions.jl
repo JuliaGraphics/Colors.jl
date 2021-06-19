@@ -330,10 +330,14 @@ const xyz_epsilon   = 216 / 24389 # (6/29)^3
 const xyz_kappa     = 24389 / 27  # (29/6)^3*8
 const xyz_kappa_inv = 27 / 24389
 
-function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ = WP_DEFAULT) where T
-    fy = (c.l + 16) / 116
-    fx = fy + c.a / 500
-    fz = fy - c.b / 200
+function lab2xyz(::Type{XYZ{T}}, c) where T
+    F = promote_type(T, eltype(c))
+
+    fy1 = c.l * F(0x1p-7)
+    fy2 = muladd(c.l, F(3 / 3712), F(16 / 116))
+    fy = fy1 + fy2 # (c.l + 16) / 116
+    fx = fy1 + muladd(c.a, F( 0x1p-9), muladd(c.a, F(3 / 64000), fy2)) # fy + c.a / 500
+    fz = fy1 + muladd(c.b, F(-0x1p-8), muladd(c.b, F(-7 / 6400), fy2)) # fy - c.b / 200
 
     fx3 = fx^3
     fy3 = fy^3
@@ -345,8 +349,16 @@ function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ = WP_DEFAULT) where T
     x = fx3 > epsilon ? fx3 : muladd(116, fx, -16) * kappa_inv
     y = fy3 > epsilon ? fy3 : c.l * kappa_inv
     z = fz3 > epsilon ? fz3 : muladd(116, fz, -16) * kappa_inv
+    return XYZ{T}(x, y, z)
+end
 
-    XYZ{T}(x*wp.x, y*wp.y, z*wp.z)
+function cnvt(::Type{XYZ{T}}, c::Lab) where T
+    xyz = lab2xyz(XYZ{T}, c)
+    XYZ{T}(xyz.x * T(WP_DEFAULT.x), xyz.y * T(WP_DEFAULT.y), xyz.z * T(WP_DEFAULT.z))
+end
+function cnvt(::Type{XYZ{T}}, c::Lab, wp::XYZ) where T
+    xyz = lab2xyz(XYZ{T}, c)
+    XYZ{T}(xyz.x * T(wp.x), xyz.y * T(wp.y), xyz.z * T(wp.z))
 end
 
 
@@ -430,10 +442,18 @@ function fxyz2lab(v)
     kb = oftype(v, 16 / 116) # 4/29
     v > oftype(v, xyz_epsilon) ? cbrt(v) : muladd(ka, v, kb)
 end
-
-function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
-    f = mapc(fxyz2lab, mapc((x, y) -> x / y, c, wp))
-    Lab{T}(muladd(116, f.y, -16), 500(f.x - f.y), 200(f.y - f.z))
+@inline function xyz2lab(::Type{Lab{T}}, c::XYZ) where T
+    f = XYZ(fxyz2lab(c.x), fxyz2lab(c.y), fxyz2lab(c.z)) # mapc(fxyz2lab, c)
+    Lab{T}(116f.y - 16, 500(f.x - f.y), 200(f.y - f.z))
+end
+function cnvt(::Type{Lab{T}}, c::XYZ) where T
+    wp = WP_DEFAULT
+    F = promote_type(T, eltype(c))
+    xyz2lab(Lab{T}, XYZ(c.x * F(1 / wp.x), c.y * F(1 / wp.y), c.z * F(1 / wp.z)))
+end
+function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ) where T
+    F = promote_type(T, eltype(c))
+    xyz2lab(Lab{T}, XYZ(c.x / F(wp.x), c.y / F(wp.y), c.z / F(wp.z)))
 end
 
 
