@@ -425,10 +425,11 @@ cnvt(::Type{xyY{T}}, c::Color) where {T} = cnvt(xyY{T}, convert(XYZ{T}, c))
 # Everything to Lab
 # -----------------
 
-function fxyz2lab(v)
+@inline function fxyz2lab(v)
     ka = oftype(v, 841 / 108) # (29/6)^2 / 3 = xyz_kappa / 116
     kb = oftype(v, 16 / 116) # 4/29
-    v > oftype(v, xyz_epsilon) ? cbrt(v) : muladd(ka, v, kb)
+    vc = @fastmath max(v, oftype(v, xyz_epsilon))
+    @fastmath min(cbrt01(vc), muladd(ka, v, kb))
 end
 
 function cnvt(::Type{Lab{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T

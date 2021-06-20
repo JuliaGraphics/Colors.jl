@@ -14,6 +14,50 @@ end
 # mod6 supports the input `x` in [-2^28, 2^29]
 mod6(::Type{T}, x::Int32) where T = unsafe_trunc(T, x - 6 * ((widemul(x, 0x2aaaaaaa) + Int64(0x20000000)) >> 0x20))
 
+# Approximation of the reciprocal of the cube root, x^(-1/3).
+# assuming that x > 0.003, the conditional branches are omitted.
+@inline function rcbrt(x::Float64)
+    ix = reinterpret(UInt64, x)
+    e0 = (ix >> 0x34) % UInt32
+    ed = e0 ÷ 0x3
+    er = e0 - ed * 0x3
+    a = 0x000b_f2d7 - 0x0005_5718 * er
+    e = (UInt32(1363) - ed) << 0x14 | a
+    t1 = reinterpret(Float64, UInt64(e) << 0x20)
+    h1 = muladd(t1^2, -x * t1, 1.0)
+    t2 = muladd(@evalpoly(h1, 1/3, 2/9, 14/81), h1 * t1, t1)
+    h2 = muladd(t2^2, -x * t2, 1.0)
+    t3 = muladd(muladd(2/9, h2, 1/3), h2 * t2, t2)
+    reinterpret(Float64, reinterpret(UInt64, t3) & 0xffff_ffff_8000_0000)
+end
+@inline function rcbrt(x::Float32)
+    ix = reinterpret(UInt32, x)
+    e0 = ix >> 0x17 + 0x2
+    ed = e0 ÷ 0x3
+    er = e0 - ed * 0x3
+    a = 0x005f_9cbe - 0x002a_bd7d * er
+    t1 = reinterpret(Float32, (UInt32(169) - ed) << 0x17 | a)
+    h1 = muladd(t1^2, -x * t1, 1.0f0)
+    t2 = muladd(muladd(2/9f0, h1, 1/3f0), h1 * t1, t1)
+    h2 = muladd(t2^2, -x * t2, 1.0f0)
+    t3 = muladd(1/3f0, h2 * t2, t2)
+    reinterpret(Float32, reinterpret(UInt32, t3) & 0xffff_f000)
+end
+
+cbrt01(x) = cbrt(x)
+@inline function cbrt01(x::Float64)
+    r = rcbrt(x) # x^(-1/3)
+    h = muladd(r^2, -x * r, 1.0)
+    e = muladd(2/9, h, 1/3) * h * r
+    muladd(r, x * r, x * e * (r + r + e)) # x * x^(-2/3)
+end
+@inline function cbrt01(x::Float32)
+    r = Float64(rcbrt(x)) # x^(-1/3)
+    h = muladd(r^2, -Float64(x) * r, 1.0)
+    e = muladd(muladd(14/81, h, 2/9), h, 1/3) * h
+    Float32(1 / muladd(r, e, r))
+end
+
 pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 
 # `pow5_12` is called from `srgb_compand`.
