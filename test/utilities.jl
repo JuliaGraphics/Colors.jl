@@ -2,6 +2,9 @@ using Colors, FixedPointNumbers, Test
 using InteractiveUtils # for `subtypes`
 
 @testset "Utilities" begin
+    @test Colors.cbrt01(0.6) ≈ cbrt(big"0.6") atol=eps(1.0)
+    @test Colors.cbrt01(0.6f0) === cbrt(0.6f0)
+
     # issue #351
     xs = max.(rand(1000), 1e-4)
     @noinline l_pow_x_y() = for x in xs; x^2.4 end
