@@ -151,6 +151,12 @@ tritanopic(c::Color)   = tritanopic(c, 1.0)
 # MSC - Most Saturated Colorant for given hue h
 # ---------------------
 
+const LUV_HUE_R = hue(convert(Luv, RGB(1.0, 0.0, 0.0)))
+const LUV_HUE_Y = hue(convert(Luv, RGB(1.0, 1.0, 0.0)))
+const LUV_HUE_G = hue(convert(Luv, RGB(0.0, 1.0, 0.0)))
+const LUV_HUE_C = hue(convert(Luv, RGB(0.0, 1.0, 1.0)))
+const LUV_HUE_B = hue(convert(Luv, RGB(0.0, 0.0, 1.0)))
+const LUV_HUE_M = hue(convert(Luv, RGB(1.0, 0.0, 1.0)))
 """
     MSC(h)
     MSC(h, l; linear=false)
@@ -183,41 +189,30 @@ function MSC(h)
     # p #variable
     # o #min
     # t #max
-    if     h < 12.173988685914473 #convert(LCHuv,RGB(1,0,0)).h
-        p=3; t=1
-    elseif h < 85.872748860776770 #convert(LCHuv,RGB(1,1,0)).h
-        p=2; t=1
-    elseif h < 127.72355046632740 #convert(LCHuv,RGB(0,1,0)).h
-        p=1; t=2
-    elseif h < 192.17397321802082 #convert(LCHuv,RGB(0,1,1)).h
-        p=3; t=2
-    elseif h < 265.87273498040290 #convert(LCHuv,RGB(0,0,1)).h
-        p=2; t=3
-    elseif h < 307.72354567594960 #convert(LCHuv,RGB(1,0,1)).h
-        p=1; t=3
-    else
-        p=3; t=1
+    function pt(h)
+        h < LUV_HUE_R && return (3, 1)
+        h < LUV_HUE_Y && return (2, 1)
+        h < LUV_HUE_G && return (1, 2)
+        h < LUV_HUE_C && return (3, 2)
+        h < LUV_HUE_B && return (2, 3)
+        h < LUV_HUE_M && return (1, 3)
+        return (3, 1)
     end
+    p, t = pt(h)
 
     alpha=-sind(h)
     beta=cosd(h)
 
-    #un &vn are calculated based on reference white (D65)
-    #X=0.95047; Y=1.0000; Z=1.08883
-    un = 0.19783982482140777 #4.0X/(X+15.0Y+3.0Z)
-    vn = 0.46833630293240970 #9.0Y/(X+15.0Y+3.0Z)
+    # un & vn are calculated based on reference white (D65)
+    un, vn = xyz_to_uv(WP_DEFAULT)
 
     #sRGB matrix
     M = [0.4124564  0.3575761  0.1804375;
          0.2126729  0.7151522  0.0721750;
-         0.0193339  0.1191920  0.9503041]'
+         0.0193339  0.1191920  0.9503041]
 
-    m_tx=M[t,1]
-    m_ty=M[t,2]
-    m_tz=M[t,3]
-    m_px=M[p,1]
-    m_py=M[p,2]
-    m_pz=M[p,3]
+    m_tx, m_ty, m_tz = @view M[:, t]
+    m_px, m_py, m_pz = @view M[:, p]
 
     f1 = 4alpha*m_px+9beta*m_py
     a1 = 4alpha*m_tx+9beta*m_ty
@@ -225,13 +220,11 @@ function MSC(h)
     a2 = m_tx+15m_ty+3m_tz
 
     cp=((alpha*un+beta*vn)*a2-a1)/(f1-(alpha*un+beta*vn)*f2)
+    cpc = clamp01(srgb_compand(cp))
 
-    col = zeros(3)
-    col[p] = clamp01(srgb_compand(cp))
-    # col[o] = 0.0
-    col[t] = 1.0
+    col = ntuple(i -> i == p ? cpc : Float64(i == t), Val(3))
 
-    return convert(LCHuv, RGB(col[1],col[2],col[3]))
+    return convert(LCHuv, RGB(col...))
 end
 
 
@@ -262,15 +255,17 @@ function find_maximum_chroma(c::C,
     mid = convert(T, (l + h) / 2)
     min(mid - l, h - mid) == zero(T) && return l
     lchm = C(c.l, mid, c.h)
-    rgbm = convert(RGB{T}, lchm)
+    rgbm = xyz_to_linear_rgb(convert(XYZ{T}, lchm))
     clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
-              min(red(rgbm), green(rgbm), blue(rgbm)) < err
+              min(red(rgbm), green(rgbm), blue(rgbm)) <= 0
     if clamped
         return find_maximum_chroma(c, l, mid)::T
     else
         return find_maximum_chroma(c, mid, h)::T
     end
 end
+
+const LAB_HUE_Y = hue(convert(Lab, RGB(1.0, 1.0, 0.0)))
 
 function find_maximum_chroma(c::LCHab{T}) where T
     maxc = find_maximum_chroma(c, 0, 135)
@@ -280,16 +275,15 @@ function find_maximum_chroma(c::LCHab{T}) where T
     # should be modified on other conditions.
     if 97 < c.h < 108 && c.l > 92
         err = convert(T, 1e-6)
-        len = 10000
+        len = 100000
         dh = convert(T, (100 - maxc) / len)
-        h_yellow = 102.85124420310268 # convert(LCHab,RGB{Float64}(1,1,0)).h
         chroma = maxc
         for i = 1:len
             chroma += dh
-            rgb = convert(RGB, LCHab(c.l, chroma, c.h))
-            blue(rgb) < err && continue
-            y = c.h < h_yellow ? red(rgb) : green(rgb)
-            if y < 1-err
+            rgb = xyz_to_linear_rgb(convert(XYZ, LCHab(c.l, chroma, c.h)))
+            blue(rgb) < -err && continue
+            y = c.h < LAB_HUE_Y ? red(rgb) : green(rgb)
+            if y < 1+err
                 maxc = chroma
             end
         end

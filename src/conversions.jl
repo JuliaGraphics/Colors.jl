@@ -168,13 +168,17 @@ function cnvt(::Type{CV}, c::HSI) where {T, CV<:AbstractRGB{T}}
     T <: FixedPoint && typemax(T) >= 1 ? CV(r % T, g % T, b % T) : CV(r, g, b)
 end
 
-function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
+function xyz_to_linear_rgb(c::XYZ)
     r =  3.2404542*c.x - 1.5371385*c.y - 0.4985314*c.z
     g = -0.9692660*c.x + 1.8760108*c.y + 0.0415560*c.z
     b =  0.0556434*c.x - 0.2040259*c.y + 1.0572252*c.z
-    CV(clamp01(srgb_compand(r)),
-       clamp01(srgb_compand(g)),
-       clamp01(srgb_compand(b)))
+    RGB(r, g, b)
+end
+function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
+    rgb = xyz_to_linear_rgb(c)
+    CV(clamp01(srgb_compand(rgb.r)),
+       clamp01(srgb_compand(rgb.g)),
+       clamp01(srgb_compand(rgb.b)))
 end
 
 function cnvt(::Type{CV}, c::YIQ) where CV<:AbstractRGB
