@@ -367,28 +367,31 @@ end
 
 
 function xyz_to_uv(c::XYZ)
+    F = typeof(4c.x / oneunit(c.x))
     d = c.x + 15c.y + 3c.z
-    d==0 && return (d, d)
-    u = 4c.x / d
-    v = 9c.y / d
-    return (u, v)
+    d == zero(d) && return (zero(F), zero(F))
+    return (4c.x, 9c.y) ./ d # (u, v)
 end
 
-
-function cnvt(::Type{XYZ{T}}, c::Luv, wp::XYZ = WP_DEFAULT) where T
+@inline function luv2xyz(::Type{XYZ{T}}, c, y_wp::F, uv_wp::Tuple{F, F}) where {T, F}
     c.l == zero(c.l) && return XYZ{T}(zero(T), zero(T), zero(T))
-
-    u_wp, v_wp = xyz_to_uv(wp)
-
-    ls = c.l * oftype(u_wp, xyz_kappa_inv)
-    y = c.l > 8 ? wp.y * ((c.l + 16) / 116)^3 : wp.y * ls
-
-    u = c.u / (13c.l) + u_wp
-    v = c.v / (13c.l) + v_wp
-    v4 = 4v
-    x = y * 9u / v4
-    z = y * (12 - 3u - 20v) / v4
+    ls = c.l * F(xyz_kappa_inv)
+    clc = @fastmath max(F(c.l), F(8))
+    lc = muladd(clc, F(0x1p-7), muladd(clc, F(3 / 3712), F(16 / 116)))^3 # (c.l + 16) / 116)^3
+    y = y_wp * ifelse(c.l > 8, lc, ls)
+    u, v = (c.u, c.v) ./ (13c.l) .+ uv_wp
+    ys = F(0.25) * y / v
+    x = ys * 9u
+    z = ys * (12 - 3u - 20v)
     XYZ{T}(x, y, z)
+end
+function cnvt(::Type{XYZ{T}}, c::Luv) where T
+    F = promote_type(T, eltype(c))
+    luv2xyz(XYZ{T}, c, F(WP_DEFAULT.y), F.(xyz_to_uv(WP_DEFAULT)))
+end
+function cnvt(::Type{XYZ{T}}, c::Luv, wp::XYZ) where T
+    F = promote_type(T, eltype(c))
+    luv2xyz(XYZ{T}, c, F(wp.y), F.(xyz_to_uv(wp)))
 end
 
 function cnvt(::Type{XYZ{T}}, c::DIN99d) where T
@@ -537,20 +540,22 @@ cnvt(::Type{Lab{T}}, c::Color) where {T} = cnvt(Lab{T}, convert(XYZ{T}, c))
 
 # Everything to Luv
 # -----------------
+@inline function xyz2luv(::Type{Luv{T}}, c::XYZ, y::F, uv_wp::Tuple{F, F}) where {T, F}
+    yc = @fastmath max(y, F(xyz_epsilon))
+    l = @fastmath min(muladd(116, cbrt01(yc), -16), F(xyz_kappa) * y)
+    uv = (13 * l) .* (xyz_to_uv(c) .- uv_wp)
+    Luv{T}(l, uv...)
+end
 
-function cnvt(::Type{Luv{T}}, c::XYZ, wp::XYZ = WP_DEFAULT) where T
-    (u_wp, v_wp) = xyz_to_uv(wp)
-    (u_, v_) = xyz_to_uv(c)
-
-    y = c.y / wp.y
-    epsilon = oftype(y, xyz_epsilon)
-    kappa = oftype(y, xyz_kappa)
-
-    l = y > epsilon ? 116 * cbrt(y) - 16 : kappa * y
-    u = 13 * l * (u_ - u_wp)
-    v = 13 * l * (v_ - v_wp)
-
-    Luv{T}(l, u, v)
+function cnvt(::Type{Luv{T}}, c::XYZ) where T
+    F = promote_type(T, eltype(c))
+    y = c.y * F(1 / WP_DEFAULT.y)
+    xyz2luv(Luv{T}, c, F(y), F.(xyz_to_uv(WP_DEFAULT)))
+end
+function cnvt(::Type{Luv{T}}, c::XYZ, wp::XYZ) where T
+    F = promote_type(T, eltype(c))
+    y = c.y / F(wp.y)
+    xyz2luv(Luv{T}, c, F(y), F.(xyz_to_uv(wp)))
 end
 
 
