@@ -92,8 +92,8 @@ pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 
 # `pow5_12` is called from `srgb_compand`.
 pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
-pow5_12(x::Float32) = Float32(pow5_12(Float64(x)))
 @inline function pow5_12(x::Float64)
+    @noinline _cbrt(x) = cbrt01(x)
     p3_4 = pow3_4(x)
     # x^(-1/6)
     if x < 0.02
@@ -106,7 +106,7 @@ pow5_12(x::Float32) = Float32(pow5_12(Float64(x)))
         t0 = @evalpoly(x, 1.7047813285940905, -3.1261253501167308,
             7.498744828350077, -10.100319516746419, 6.820601476522508, -1.7978894213531524)
     else
-        return p3_4 / cbrt(x)
+        return p3_4 / _cbrt(x)
     end
     # x^(-1/3)
     t1 = t0 * t0
@@ -116,6 +116,20 @@ pow5_12(x::Float32) = Float32(pow5_12(Float64(x)))
     t2h = @evalpoly(h2, 1/3, 2/9, 14/81) * h2 * t2 # Taylor series of (1-h)^(-1/3)
     # x^(3/4) * x^(-1/3)
     muladd(p3_4, t2, p3_4 * t2h)
+end
+@inline function pow5_12(x::Float32)
+    # x^(-1/3)
+    rc = rcbrt(x)
+    rcx = -rc * x
+    rch = muladd(muladd(rc, x, rcx), -rc^2, muladd(rc^2, rcx, 1.0f0)) # 1 - x * rc^3
+    rce = muladd(2/9f0, rch, 1/3f0) * rch * rc
+    # x^(3/4)
+    p3_4_f64 = pow3_4(Float64(x))
+    p3_4r = reinterpret(Float64, reinterpret(UInt64, p3_4_f64) & 0xffffffff_e0000000)
+    p3_4 = Float32(p3_4r)
+    p3_4e = Float32(p3_4_f64 - p3_4r)
+    # x^(3/4) * x^(-1/3)
+    muladd(p3_4, rc, muladd(p3_4, rce, p3_4e * rc))
 end
 
 # `pow12_5` is called from `invert_srgb_compand`.
