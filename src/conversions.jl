@@ -90,8 +90,9 @@ correct_gamut(c::CV) where {CV<:TransparentRGB} =
 @inline function srgb_compand(v)
     F = typeof(0.5 * v)
     vf = F(v)
+    vc = @fastmath max(vf, F(0.0031308))
     # `pow5_12` is an optimized function to get `v^(1/2.4)`
-    vf > F(0.0031308) ? muladd(F(1.055), F(pow5_12(vf)), F(-0.055)) : F(12.92) * vf
+    vf > F(0.0031308) ? muladd(F(1.055), F(pow5_12(vc)), F(-0.055)) : F(12.92) * vf
 end
 
 function _hsx_to_rgb(im::UInt8, v, n, m)
