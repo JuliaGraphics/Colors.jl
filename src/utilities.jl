@@ -1,6 +1,36 @@
 # Helper data for CIE observer functions
 include("cie_data.jl")
 
+# readonly static 3x3 matrix
+struct Mat3x3{T} <: AbstractMatrix{T}
+    e::NTuple{9, T}
+end
+Mat3x3(mat::Matrix{T}) where {T} = Mat3x3{T}(Tuple(mat))
+Base.size(::Mat3x3) = (3, 3)
+Base.getindex(M::Mat3x3{T}, i) where {T} = M.e[i]
+Base.getindex(M::Mat3x3{T}, i::Integer, j::Integer) where {T} = M.e[3j + i - 3]
+Base.getindex(M::Mat3x3, I::CartesianIndex{2}) = getindex(M, I.I...)
+
+macro mul3x3(C, M, c1, c2, c3)
+    esc(quote
+        F = typeof(0.5f0 * $c1) === Float32 ? Float32 : eltype($M)
+        if $c1 isa N0f8 && $c2 isa N0f8 && $c3 isa N0f8
+            s = 0xffffff
+            c1x = Int32(reinterpret($c1)) * 0x10101
+            c2x = Int32(reinterpret($c2)) * 0x10101
+            c3x = Int32(reinterpret($c3)) * 0x10101
+        else
+            s = true
+            c1x, c2x, c3x = $c1, $c2, $c3
+        end
+        @inbounds ret = $C(
+            muladd(F($M[1,1] / s), c1x, muladd(F($M[1,2] / s), c2x, F($M[1,3] / s) * c3x)),
+            muladd(F($M[2,1] / s), c1x, muladd(F($M[2,2] / s), c2x, F($M[2,3] / s) * c3x)),
+            muladd(F($M[3,1] / s), c1x, muladd(F($M[3,2] / s), c2x, F($M[3,3] / s) * c3x)))
+        ret
+    end)
+end
+
 # for optimization
 div60(x) = x / 60
 _div60(x::T) where T = muladd(x, T(1/960), x * T(0x1p-6))

@@ -136,13 +136,13 @@ end
     @test convert(HSL, RGB{N0f8}(0.678, 0.847, 0.902)) ≈ HSL{Float32}(194.73685f0,0.5327105f0,0.7901961f0) atol=100eps(Float32)
 
     # YIQ
-    @test convert(YIQ, RGB(1,0,0)) == YIQ{Float32}(0.299, 0.595716, 0.211456)
-    @test convert(YIQ, RGB(0,1,0)) == YIQ{Float32}(0.587, -0.274453, -0.522591)
-    @test convert(YIQ, RGB(0,0,1)) == YIQ{Float32}(0.114, -0.321263, 0.311135)
+    @test convert(YIQ, RGB(1, 0, 0)) ≈ YIQ{Float32}(0.299, 0.595716, 0.211456) atol=1e-7
+    @test convert(YIQ, RGB(0, 1, 0)) ≈ YIQ{Float32}(0.587, -0.274453, -0.522591) atol=1e-7
+    @test convert(YIQ, RGB(0, 0, 1)) ≈ YIQ{Float32}(0.114, -0.321263, 0.311135) atol=1e-7
     @test convert(RGB, YIQ(1.0,0.0,0.0)) == RGB(1,1,1)
-    v = 0.5957
+    v = 0.595716
     @test convert(RGB, YIQ(0.0,1.0,0.0)) == RGB(0.9563*v,0,0)
-    v = -0.5226
+    v = -0.522591
     @test convert(RGB, YIQ(0.0,0.0,-1.0)) == RGB(0,-0.6474*v,0)
 
     # Gray

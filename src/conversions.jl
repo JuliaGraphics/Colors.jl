@@ -69,15 +69,6 @@ function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, g) wher
     cnvt(Cdest, convert(RGB{eltype(Cdest)}, g))
 end
 
-macro mul3x3(T, M, c1, c2, c3)
-    esc(quote
-        @inbounds ret = $T($M[1,1]*$c1 + $M[1,2]*$c2 + $M[1,3]*$c3,
-                           $M[2,1]*$c1 + $M[2,2]*$c2 + $M[2,3]*$c3,
-                           $M[3,1]*$c1 + $M[3,2]*$c2 + $M[3,3]*$c3)
-        ret
-        end)
-end
-
 # Everything to RGB
 # -----------------
 
@@ -88,7 +79,7 @@ correct_gamut(c::CV) where {CV<:TransparentRGB} =
     CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)), clamp01(alpha(c))) # for `hex`
 
 @inline function srgb_compand(v)
-    F = typeof(0.5 * v)
+    F = typeof(0.5f0v) === Float32 ? Float32 : promote_type(Float64, typeof(v))
     vf = F(v)
     # `pow5_12` is an optimized function to get `v^(1/2.4)`
     vf > F(0.0031308) ? muladd(F(1.055), F(pow5_12(vf)), F(-0.055)) : F(12.92) * vf
@@ -168,11 +159,12 @@ function cnvt(::Type{CV}, c::HSI) where {T, CV<:AbstractRGB{T}}
     T <: FixedPoint && typemax(T) >= 1 ? CV(r % T, g % T, b % T) : CV(r, g, b)
 end
 
+# the following matrix is based on the sRGB color primaries in `xy` and D65 whitepoint in `XYZ`
+const M_XYZ2RGB = Mat3x3([ 3.2404541621141054   -1.5371385127977166   -0.4985314095560162
+                          -0.9692660305051868    1.8760108454466942    0.04155601753034984
+                           0.05564343095911469  -0.20402591351675387   1.0572251882231791 ])
 function xyz_to_linear_rgb(c::XYZ)
-    r =  3.2404542*c.x - 1.5371385*c.y - 0.4985314*c.z
-    g = -0.9692660*c.x + 1.8760108*c.y + 0.0415560*c.z
-    b =  0.0556434*c.x - 0.2040259*c.y + 1.0572252*c.z
-    RGB(r, g, b)
+    @mul3x3 RGB M_XYZ2RGB c.x c.y c.z
 end
 function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
     rgb = xyz_to_linear_rgb(c)
@@ -181,13 +173,16 @@ function cnvt(::Type{CV}, c::XYZ) where CV<:AbstractRGB
        clamp01(srgb_compand(rgb.b)))
 end
 
+const M_YIQ2RGB = Mat3x3([1.0   0.9563   0.621
+                          1.0  -0.2721  -0.6474
+                          1.0  -1.107    1.7046 ])
 function cnvt(::Type{CV}, c::YIQ) where CV<:AbstractRGB
     cc = correct_gamut(c)
-    CV(clamp01(cc.y+0.9563*cc.i+0.6210*cc.q),
-       clamp01(cc.y-0.2721*cc.i-0.6474*cc.q),
-       clamp01(cc.y-1.1070*cc.i+1.7046*cc.q))
+    rgb = @mul3x3 RGB M_YIQ2RGB cc.y cc.i cc.q
+    CV(clamp01(rgb.r), clamp01(rgb.g), clamp01(rgb.b))
 end
 
+# FIXME
 function cnvt(::Type{CV}, c::YCbCr) where CV<:AbstractRGB
     cc = correct_gamut(c)
     ny = cc.y - 16
@@ -285,41 +280,43 @@ cnvt(::Type{HSI{T}}, c::Color) where {T} = cnvt(HSI{T}, convert(RGB{T}, c))
 # -----------------
 
 @inline function invert_srgb_compand(v)
-    F = typeof(0.5 * v)
+    F = typeof(0.5f0v) === Float32 ? Float32 : promote_type(Float64, typeof(v))
     vf = F(v)
     # `pow12_5` is an optimized function to get `x^2.4`
     vf > F(0.04045) ? pow12_5(muladd(F(1000/1055), vf, F(55/1055))) : F(100/1292) * vf
 end
 
 # lookup table for `N0f8` (the extra two elements are for `Float32` splines)
-const invert_srgb_compand_n0f8 = [invert_srgb_compand(v/255.0) for v = 0:257]
+const invert_srgb_compand_n0f8 = Float32[invert_srgb_compand(v/255.0) for v = 0:257]
 
 function invert_srgb_compand(v::N0f8)
-    @inbounds invert_srgb_compand_n0f8[reinterpret(UInt8, v) + 1]
+    @inbounds invert_srgb_compand_n0f8[reinterpret(v) + 1]
 end
 
 function invert_srgb_compand(v::Float32)
     i = unsafe_trunc(Int32, v * 255)
-    (i < 13 || i > 255) && return invert_srgb_compand(Float64(v))
+    (i < 13 || i > 255) && return Float32(invert_srgb_compand(Float64(v)))
     @inbounds y = view(invert_srgb_compand_n0f8, i:i+3)
-    dv = v * 255.0 - i
-    dv == 0.0 && @inbounds return y[2]
+    dv = v * 255.0f0 - i
+    dv == 0.0f0 && @inbounds return y[2]
     if v < 0.38857287f0
-        return @fastmath(y[2]+0.5*dv*((-2/3*y[1]- y[2])+(2y[3]-1/3*y[4])+
-                                  dv*((     y[1]-2y[2])+  y[3]-
-                                  dv*(( 1/3*y[1]- y[2])+( y[3]-1/3*y[4]) ))))
+        return @fastmath(y[2]+0.5f0*dv*((-2/3f0*y[1]- y[2])+(2y[3]-1/3f0*y[4])+
+                                    dv*((       y[1]-2y[2])+  y[3]-
+                                    dv*(( 1/3f0*y[1]- y[2])+( y[3]-1/3f0*y[4]) ))))
     else
-        return @fastmath(y[2]+0.5*dv*((4y[3]-3y[2])-y[4]+dv*((y[4]-y[3])+(y[2]-y[3]))))
+        return @fastmath(y[2]+0.5f0*dv*((4y[3]-3y[2])-y[4]+dv*((y[4]-y[3])+(y[2]-y[3]))))
     end
 end
 
+# the following matrix is based on the sRGB color primaries in `xy` and D65 whitepoint in `XYZ`
+const M_RGB2XYZ = Mat3x3([0.4124564390896921    0.357576077643909  0.18043748326639894
+                          0.21267285140562248   0.715152155287818  0.07217499330655958
+                          0.019333895582329317  0.119192025881303  0.9503040785363677 ])
 function cnvt(::Type{XYZ{T}}, c::AbstractRGB) where T
     r = invert_srgb_compand(red(c))
     g = invert_srgb_compand(green(c))
     b = invert_srgb_compand(blue(c))
-    XYZ{T}(0.4124564*r + 0.3575761*g + 0.1804375*b,
-           0.2126729*r + 0.7151522*g + 0.0721750*b,
-           0.0193339*r + 0.1191920*g + 0.9503041*b)
+    return @mul3x3 XYZ{T} M_RGB2XYZ r g b
 end
 
 
@@ -702,18 +699,18 @@ cnvt(::Type{DIN99o{T}}, c::Color) where {T} = cnvt(DIN99o{T}, convert(Lab{T}, c)
 # -----------------
 
 # Chromatic adaptation from CIECAM97s
-const CAT97s = [ 0.8562  0.3372 -0.1934
-                -0.8360  1.8327  0.0033
-                 0.0357 -0.0469  1.0112 ]
+const CAT97s = Mat3x3([ 0.8562  0.3372 -0.1934
+                       -0.8360  1.8327  0.0033
+                        0.0357 -0.0469  1.0112 ])
 
-const CAT97s_INV = inv(CAT97s)
+const CAT97s_INV = Mat3x3(inv(Float64.(CAT97s)))
 
 # Chromatic adaptation from CIECAM02
-const CAT02 = [ 0.7328 0.4296 -0.1624
-               -0.7036 1.6975  0.0061
-                0.0030 0.0136  0.9834 ]
+const CAT02 = Mat3x3([ 0.7328 0.4296 -0.1624
+                      -0.7036 1.6975  0.0061
+                       0.0030 0.0136  0.9834 ])
 
-const CAT02_INV = inv(CAT02)
+const CAT02_INV = Mat3x3(inv(Float64.(CAT02)))
 
 
 function cnvt(::Type{LMS{T}}, c::XYZ) where T
@@ -727,14 +724,15 @@ cnvt(::Type{LMS{T}}, c::Color) where {T} = cnvt(LMS{T}, convert(XYZ{T}, c))
 # -----------------
 
 correct_gamut(c::YIQ{T}) where {T} = YIQ{T}(clamp(c.y, zero(T), one(T)),
-                                     clamp(c.i, convert(T,-0.5957), convert(T,0.5957)),
-                                     clamp(c.q, convert(T,-0.5226), convert(T,0.5226)))
+                                     clamp(c.i, convert(T,-0.595716), convert(T,0.595716)),
+                                     clamp(c.q, convert(T,-0.522591), convert(T,0.522591)))
 
+const M_RGB2YIQ = Mat3x3([0.299      0.587      0.114
+                          0.595716  -0.274453  -0.321263
+                          0.211456  -0.522591   0.311135 ])
 function cnvt(::Type{YIQ{T}}, c::AbstractRGB) where T
     rgb = correct_gamut(c)
-    YIQ{T}(0.299*red(rgb)+0.587*green(rgb)+0.114*blue(rgb),
-           0.595716*red(rgb)-0.274453*green(rgb)-0.321263*blue(rgb),
-           0.211456*red(rgb)-0.522591*green(rgb)+0.311135*blue(rgb))
+    @mul3x3 YIQ{T} M_RGB2YIQ red(rgb) green(rgb) blue(rgb)
 end
 
 cnvt(::Type{YIQ{T}}, c::Color) where {T} = cnvt(YIQ{T}, convert(RGB{T}, c))
@@ -742,11 +740,11 @@ cnvt(::Type{YIQ{T}}, c::Color) where {T} = cnvt(YIQ{T}, convert(RGB{T}, c))
 
 # Everything to YCbCr
 # -------------------
-
+# FIXME
 correct_gamut(c::YCbCr{T}) where {T} = YCbCr{T}(clamp(c.y, convert(T,16), convert(T,235)),
                                          clamp(c.cb, convert(T,16), convert(T,240)),
                                          clamp(c.cr, convert(T,16), convert(T,240)))
-
+# FIXME
 function cnvt(::Type{YCbCr{T}}, c::AbstractRGB) where T
     rgb = correct_gamut(c)
     YCbCr{T}(16+65.481*red(rgb)+128.553*green(rgb)+24.966*blue(rgb),
