@@ -35,6 +35,24 @@ using InteractiveUtils # for `subtypes`
     @test Colors.pow12_5(0.6) ≈ Colors.pow12_5(big"0.6") atol=1e-6
     @test Colors.pow12_5(0.6N0f16) ≈ Colors.pow12_5(big"0.6") atol=1e-6
 
+    # TODO: migrate to ColorTypes.jl
+    @testset "atan360" begin
+        for y in (-Inf, -0.0, +0.0, Inf, NaN), x in (-Inf, -0.0, +0.0, Inf, NaN)
+            z0 = atand(y, x)
+            z = signbit(z0) ? 360 + z0 : z0
+            @test Colors.atan360(y, x) === z
+            @test Colors.atan360(Float32(y), Float32(x)) === Float32(z)
+        end
+        for theta in 0.0:15.0:360.0
+            yf64, xf64 = (sind(theta), cosd(theta)) .* 65.4321
+            ybf, xbf = big(yf64), big(xf64)
+            @test Colors.atan360(yf64, xf64) ≈ Colors.atan360(ybf, xbf) rtol=3eps(Float64)
+            yf32, xf32 = Float32(yf64), Float32(xf64)
+            ybf, xbf = big(yf32), big(xf32)
+            @test Colors.atan360(yf32, xf32) ≈ Colors.atan360(ybf, xbf) rtol=3eps(Float32)
+        end
+    end
+
     @testset "hex" begin
         @test hex(RGB(1,0.5,0)) == "FF8000"
         @test hex(RGBA(1,0.5,0,0.25)) == "FF800040"
