@@ -199,21 +199,29 @@ function _colordiff(ai::Color, bi::Color, m::DE_2000)
     sc = 1 + 0.045mc
 
     # hue weight
-    t = 1 - 0.17 * cosd(mh - 30) +
-            0.24 * cosd(2mh) +
-            0.32 * cosd(3mh + 6) -
-            0.20 * cosd(4mh - 63)
-    sh = 1 + 0.015 * mc * t
+    sh = 1 + 0.015 * mc * _de2000_t(mh)
 
     # rotation term
-    dtheta = 60 * exp(-((mh - 275)/25)^2)
     cr = 2 * sqrt(pow7(mc) / (pow7(mc) + twentyfive7))
-    tr = -sind(dtheta) * cr
+    rt = -cr * _de2000_rot(mh)
 
     # Final calculation
     sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2 +
-         tr * (dc/(m.kc*sc)) * (dh/(m.kh*sh)))
+         rt * (dc/(m.kc*sc)) * (dh/(m.kh*sh)))
 end
+
+@inline function _de2000_t(mh::F) where F
+    h2 = mh < F(180) ? mh : mh - F(180)
+    h3 = mh < F(120) ? mh : mh - F(240)
+    h4 = h2 < F( 90) ? h2 : h2 - F(90)
+    c = F(-17) * cos(muladd(π/F(180), mh, deg2rad(F(-30)))) +
+        F( 24) * cos(  h2 * π/F( 90)) +
+        F( 32) * cos(muladd(π/F( 60), h3, deg2rad(F(6)))) +
+        F(-20) * cos(muladd(π/F( 45), h4, deg2rad(F(-63))))
+    muladd(1/F(100), c, 1)
+end
+
+@inline _de2000_rot(mh::F) where {F} = sin(π/F(3) * exp(-((mh - 275) * F(1/25))^2))
 
 # Delta E94
 function _colordiff(ai::Color, bi::Color, m::DE_94)
