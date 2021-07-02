@@ -4,10 +4,10 @@ The [`colordiff`](@ref) function gives an approximate value for the difference b
 
 ```jldoctest example; setup = :(using Colors)
 julia> colordiff(colorant"red", colorant"darkred")
-23.75414245117878
+23.754147f0
 
 julia> colordiff(colorant"red", colorant"blue")
-52.88135569435473
+52.881363f0
 
 julia> colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
 19.485908737785326

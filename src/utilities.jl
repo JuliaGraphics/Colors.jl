@@ -149,7 +149,6 @@ pow12_5(x::BigFloat) = x^big"2.4"
 end
 
 pow7(x) = (y = x*x*x; y*y*x)
-pow7(x::Integer) = pow7(Float64(x)) # avoid overflow
 
 # TODO: migrate to ColorTypes.jl
 @inline function atan360_kernel(t::Float64)
