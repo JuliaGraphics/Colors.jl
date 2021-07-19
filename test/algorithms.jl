@@ -14,6 +14,18 @@ using Test, Colors
     end
     @test_throws Exception LMS(1,1,1) - XYZ(1,1,1)
 
+    @testset "whitebalance" begin
+        white_d65 = RGB(1, 1, 1)
+        white_d50 = oftype(white_d65, Colors.WP_D50)
+        @test whitebalance(white_d65, Colors.WP_D65, Colors.WP_D50) ≈ white_d50 atol=0.1
+        @test whitebalance(white_d50, Colors.WP_D50, Colors.WP_D65) ≈ white_d65 atol=0.1
+        for C in (Lab, Luv)
+            src = C(50, 40, 30)
+            @test colordiff(whitebalance(src, Colors.WP_D65, Colors.WP_D50), src) < 5
+            @test whitebalance(C(0, 0, 0), Colors.WP_D65, Colors.WP_F2).l ≈ 0
+        end
+    end
+
     # issue #349
     msc_h_diff = 0
     for hsv_h in 0:0.1:360

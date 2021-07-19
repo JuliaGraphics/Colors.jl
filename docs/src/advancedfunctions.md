@@ -25,9 +25,30 @@ colormatch
 
 The `whitebalance()` function converts a color according to a reference white point.
 
-`whitebalance{T <: Color}(c::T, src_white::Color, ref_white::Color)`
+```julia
+whitebalance(c::Color, src_white::Color, ref_white::Color)
+```
 
-Convert a color `c` viewed under conditions with a given source whitepoint `src_whitepoint` to appear the same under different conditions specified by a reference whitepoint `ref_white`.
+Convert a color `c` viewed under conditions with a given source whitepoint `src_white` to appear the same under different conditions specified by a reference whitepoint `ref_white`.
+
+For example, suppose you take a picture under a fluorescent light of the following color (about 4000 K).
+```@example whitebalance
+using Colors #hide
+Colors.WP_F2 #hide
+```
+The following picture on the left shows it. However, if you stay under the fluorescent light for a long time, the color of the table may look more whitish than the picture.
+So, to get more perceptual colors, i.e. the colors seen in sunlight, you can use `whitebalance(c, Color.WP_F2, Color.WP_D65)`.
+The picture on the right shows the result of whitebalancing.
+```@example whitebalance
+using Main: SampleImages # hide
+wb_f2(c) = whitebalance(c, Colors.WP_D65, Colors.WP_F2) # hide
+SampleImages.BeadsImageSVG("Original", filter=wb_f2) # hide
+```
+```@example whitebalance
+wb(c) = whitebalance(wb_f2(c), Colors.WP_F2, Colors.WP_D65) # hide
+SampleImages.BeadsImageSVG("D65 (whitebalanced)", filter=wb) # hide
+```
+Note that both of the above two photos are represented in the sRGB color space with the D65 whitepoint. If you assign a color profile with the F2 whitepoint to the photo on the left, and your display device (browser) supports color management, they would be displayed in similar colors.
 
 ```@docs
 whitebalance
