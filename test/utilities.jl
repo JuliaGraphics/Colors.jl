@@ -212,6 +212,11 @@ using InteractiveUtils # for `subtypes`
         @test_throws DomainError Colors.delta_h(LCHab(50, -1f-9, 70), LCHab(50, 60, 70))
         @test @inferred(Colors.delta_h(Lab(50, -10, 10), Lab(50, 10, -10))) ≈ 28.284271f0
         @test @inferred(Colors.delta_h(ALuv(50, 0, 0), ALuv(50, 0, 10))) === 0.0f0
+
+        a, b = Lab(50, 4, 80), Lab(60, 5, 101)
+        @test Colors.delta_h(a, b) ≈ -0.04444444f0 atol = 1f-4
+        dhb = Colors.delta_h(Lab{BigFloat}(a), Lab{BigFloat}(b))
+        @test Colors.delta_h(Lab{Float64}(a), Lab{Float64}(b)) ≈ dhb atol = 1e-13
     end
 
     # test utility function weighted_color_mean
