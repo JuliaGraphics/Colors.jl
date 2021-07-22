@@ -371,12 +371,27 @@ function mean_hue(a::C, b::C) where {Cb <: Union{HSV, HSL, HSI},
 end
 mean_hue(a, b) = mean_hue(promote(a, b)...)
 
+_delta_h_th(T) = zero(T)
+_delta_h_th(::Type{Float32}) = 4.5f-2
+_delta_h_th(::Type{Float64}) = 1.25e-3
+
 function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
-    da, db, dc = comp2(a) - comp2(b), comp3(a) - comp3(b), chroma(a) - chroma(b)
-    d = comp3(a) * comp2(b) - comp2(a) * comp3(b)
-    dh = @fastmath sqrt(max(muladd(dc, -dc, muladd(da, da, db^2)), 0))
-    return copysign(dh, d)
+    a1, b1, a2, b2 = comp2(a), comp3(a), comp2(b), comp3(b)
+    c1, c2 = chroma(a), chroma(b)
+    dp = muladd(a1, a2, b1 * b2) # dot product
+    dt = muladd(b1, a2, -a1 * b2)
+    if _delta_h_th(typeof(dp)) * dp <= abs(dt)
+        da, db, dc = a1 - a2, b1 - b2, c1 - c2
+        dh = @fastmath sqrt(max(muladd(dc, -dc, muladd(da, da, db^2)), 0))
+        return copysign(dh, dt)
+    else
+        tn = dt / dp #    tan(Δh) = x +  (1/3)*Δh^3 + ...
+                     # 2sin(Δh/2) = x + (1/24)*Δh^3 - ...
+                     #            ≈ tan(Δh) - (3/8)*tan(Δh)^3
+        sn = muladd(oftype(tn, -3/8), tn^2, 1) * tn # 2sin(Δh/2)
+        return @fastmath sqrt(c1 * c2) * sn
+    end
 end
 function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
