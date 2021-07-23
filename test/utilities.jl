@@ -219,6 +219,12 @@ using InteractiveUtils # for `subtypes`
         @test Colors.delta_h(Lab{Float64}(a), Lab{Float64}(b)) ≈ dhb atol = 1e-13
     end
 
+    @testset "delta_c" begin
+        a, b = Lab(50, 40, -31), Lab(90, -30, 41)
+        @test @inferred(Colors.delta_c(a, b)) ≈ -0.19721946f0 atol = 1f-7
+        @test @inferred(Colors.delta_c(LCHab(a), LCHab(b))) ≈ -0.19721946f0 atol = 1f-6
+    end
+
     # test utility function weighted_color_mean
     parametric2 = [GrayA,AGray32,AGray]
     parametric3 = ColorTypes.parametric3

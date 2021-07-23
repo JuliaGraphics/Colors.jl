@@ -382,8 +382,12 @@ function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
     dp = muladd(a1, a2, b1 * b2) # dot product
     dt = muladd(b1, a2, -a1 * b2)
     if _delta_h_th(typeof(dp)) * dp <= abs(dt)
-        da, db, dc = a1 - a2, b1 - b2, c1 - c2
-        dh = @fastmath sqrt(max(muladd(dc, -dc, muladd(da, da, db^2)), 0))
+        if dp < 0
+            dh = @fastmath sqrt(2 * muladd(c1, c2, -dp))
+        else
+            da, db, dc = a1 - a2, b1 - b2, delta_c(a, b)
+            dh = @fastmath sqrt(max(muladd(dc, -dc, muladd(da, da, db^2)), 0))
+        end
         return copysign(dh, dt)
     else
         tn = dt / dp #    tan(Δh) = x +  (1/3)*Δh^3 + ...
@@ -401,6 +405,14 @@ function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
     2 * sqrt(chroma(a) * chroma(b)) * sinpi(d)
 end
 delta_h(a, b) = delta_h(promote(a, b)...)
+
+@inline function delta_c(a::C, b::C) where {Cb <: Union{Lab{Float32}, Luv{Float32}},
+                                    C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    n1, m1 = @fastmath minmax(comp2(a)^2, comp3(a)^2)
+    n2, m2 = @fastmath minmax(comp2(b)^2, comp3(b)^2)
+    ((m1 - m2) + (n1 - n2)) / @fastmath(max(chroma(a) + chroma(b), floatmin(Float32)))
+end
+delta_c(a, b) = chroma(a) - chroma(b)
 
 """
     weighted_color_mean(w1, c1, c2)
