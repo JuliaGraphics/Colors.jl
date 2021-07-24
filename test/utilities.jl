@@ -200,6 +200,10 @@ using InteractiveUtils # for `subtypes`
         @test @inferred(mean_hue(Lab(50, 0, 10), Lab(50, 10, -10))) === 22.5f0
         @test @inferred(mean_hue(ALuv(50, 0, 0), ALuv(50, 0, 10))) === 90.0f0
 
+        @test @inferred(mean_hue(LCHab(50, 60, 270), LCHab(90, 80, 80))) === 355.0f0
+        @test @inferred(mean_hue(LCHuv(50, 60, 80), LCHuv(90, 0, 70))) === 80.0f0
+        @test @inferred(mean_hue(LCHabA(90.0, 0, 70), LCHabA(50, 60, 80))) === 80.0
+
         @test_throws Exception mean_hue(RGB(0.1, 0.2, 0.3), RGB(0.4, 0.5, 0.6))
         @test_throws Exception mean_hue(LChab(10, 20, 30), LCHuv(10, 20, 30))
     end
