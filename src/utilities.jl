@@ -149,7 +149,6 @@ pow12_5(x::BigFloat) = x^big"2.4"
 end
 
 pow7(x) = (y = x*x*x; y*y*x)
-pow7(x::Integer) = pow7(Float64(x)) # avoid overflow
 
 # TODO: migrate to ColorTypes.jl
 @inline function atan360_kernel(t::Float64)
@@ -372,28 +371,29 @@ end
 mean_hue(a, b) = mean_hue(promote(a, b)...)
 
 _delta_h_th(T) = zero(T)
-_delta_h_th(::Type{Float32}) = 4.5f-2
-_delta_h_th(::Type{Float64}) = 1.25e-3
+_delta_h_th(::Type{Float32}) = 0.1f0
+_delta_h_th(::Type{Float64}) = 6.5e-3
 
 function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     a1, b1, a2, b2 = comp2(a), comp3(a), comp2(b), comp3(b)
     c1, c2 = chroma(a), chroma(b)
     dp = muladd(a1, a2, b1 * b2) # dot product
-    dt = muladd(b1, a2, -a1 * b2)
+    dt = b1 * a2 - a1 * b2
     if _delta_h_th(typeof(dp)) * dp <= abs(dt)
-        if dp < 0
+        if dp isa Float32 || dp < 0
             dh = @fastmath sqrt(2 * muladd(c1, c2, -dp))
         else
-            da, db, dc = a1 - a2, b1 - b2, delta_c(a, b)
+            da, db, dc = a1 - a2, b1 - b2, c1 - c2
             dh = @fastmath sqrt(max(muladd(dc, -dc, muladd(da, da, db^2)), 0))
         end
         return copysign(dh, dt)
     else
-        tn = dt / dp #    tan(Δh) = x +  (1/3)*Δh^3 + ...
-                     # 2sin(Δh/2) = x + (1/24)*Δh^3 - ...
-                     #            ≈ tan(Δh) - (3/8)*tan(Δh)^3
-        sn = muladd(oftype(tn, -3/8), tn^2, 1) * tn # 2sin(Δh/2)
+        dtf = muladd(b1, a2, -a1 * b2)
+        tn = dtf / dp #    tan(Δh) = Δh +  (1/3)*Δh^3 +   (2/15)*Δh^5 + ...
+                      # 2sin(Δh/2) = Δh - (1/24)*Δh^3 + (1/1920)*Δh^5 - ...
+                      #            ≈ tan(Δh) - (3/8)*tan(Δh)^3 + (31/128)*tan(Δh)^5
+        sn = tn * @evalpoly(tn^2, 1, oftype(tn, -3/8), oftype(tn, 31/128)) # 2sin(Δh/2)
         return @fastmath sqrt(c1 * c2) * sn
     end
 end

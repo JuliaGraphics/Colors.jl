@@ -1,4 +1,5 @@
 using Colors, Test, FixedPointNumbers
+using Colors: _de2000_t, _de2000_rot
 
 # Test the colordiff function against example input and output from:
 #
@@ -53,7 +54,17 @@ using Colors, Test, FixedPointNumbers
             a64, b64 = Lab(a...), Lab(b...)
             @test colordiff(a64, b64; metric=metric) ≈ dexpect atol=eps_cdiff
             @test colordiff(b64, a64; metric=metric) ≈ dexpect atol=eps_cdiff
+            a32, b32 = Lab{Float32}(a64), Lab{Float32}(b64)
+            @test colordiff(a32, b32; metric=metric) ≈ dexpect atol=eps_cdiff
+            @test colordiff(b32, a32; metric=metric) ≈ dexpect atol=eps_cdiff
         end
+
+        h64 = 0.0:0.1:360.0
+        h32 = 0.0f0:0.1f0:360.0f0
+        @test all(h -> isapprox(_de2000_t(h), _de2000_t(big(h)), atol=3eps(Float64)), h64)
+        @test all(h -> isapprox(_de2000_t(h), _de2000_t(big(h)), atol=2eps(Float32)), h32)
+        @test all(h -> isapprox(_de2000_rot(h), _de2000_rot(big(h)), atol=eps(Float64)), h64)
+        @test all(h -> isapprox(_de2000_rot(h), _de2000_rot(big(h)), atol=eps(Float32)), h32)
     end
 
     jl_red    =    RGB{N0f8}(Colors.JULIA_LOGO_COLORS.red)

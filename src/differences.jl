@@ -167,47 +167,49 @@ DE_DIN99o()
 
 
 # Delta E 2000
-function _colordiff(ai::Color, bi::Color, m::DE_2000)
-    twentyfive7 = pow7(25)
-
-    # Ensure that the input values are in L*a*b* space
-    a_Lab = convert(Lab, ai)
-    b_Lab = convert(Lab, bi)
+# Ensure that the input values are in L*a*b* space
+function _colordiff(a::Color, b::Color, m::DE_2000)
+    _colordiff(promote(convert(Lab, a), convert(Lab, b))..., m)
+end
+function _colordiff(a_lab::Lab{T}, b_lab::Lab{T}, m::DE_2000) where T
+    F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
+    _sqrt(x) = @fastmath(sqrt(x))
 
     # Calculate some necessary factors from the L*a*b* values
-    mc = (chroma(a_Lab) + chroma(b_Lab))/2
-    g = (1 - sqrt(pow7(mc) / (pow7(mc) + twentyfive7))) / 2
+    mco7 = pow7((chroma(a_lab) + chroma(b_lab)) * F(0.5 / 25))
+    g = F(0.5) - F(0.5) * F(_sqrt(mco7 / (mco7 + 1)))
 
-    a_Lab_r = Lab(a_Lab.l, a_Lab.a * (1 + g), a_Lab.b)
-    b_Lab_r = Lab(b_Lab.l, b_Lab.a * (1 + g), b_Lab.b)
+    ar = Lab{F}(a_lab.l, muladd(a_lab.a, g, a_lab.a), a_lab.b)
+    br = Lab{F}(b_lab.l, muladd(b_lab.a, g, b_lab.a), b_lab.b)
 
     # Convert to L*C*h, where the remainder of the calculations are performed
-    a = convert(LCHab, a_Lab_r)
-    b = convert(LCHab, b_Lab_r)
+    a = LCHab{F}(ar.l, chroma(ar), hue(ar))
+    b = LCHab{F}(br.l, chroma(br), hue(br))
 
     # Calculate the delta values for each channel
-    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b_Lab_r, a_Lab_r)
+    dl, dc, dh = b.l - a.l, delta_c(br, ar), delta_h(br, ar)
 
     # Calculate mean L*, C* and hue values
-    ml, mc, mh = (a.l + b.l) / 2, (a.c + b.c) / 2, mean_hue(a, b)
+    ml, mc, mh = (a.l + b.l) * F(0.5), (a.c + b.c) * F(0.5), mean_hue(a, b)
 
     # lightness weight
     mls = (ml - 50)^2
-    sl = 1.0 + 0.015 * mls / sqrt(20 + mls)
+    sl = muladd(F(0.015), mls / _sqrt(20 + mls), 1)
 
     # chroma weight
-    sc = 1 + 0.045mc
+    sc = muladd(F(0.045), mc, 1)
 
     # hue weight
-    sh = 1 + 0.015 * mc * _de2000_t(mh)
+    sh = muladd(F(0.015), mc * _de2000_t(mh), 1)
 
     # rotation term
-    cr = 2 * sqrt(pow7(mc) / (pow7(mc) + twentyfive7))
-    rt = -cr * _de2000_rot(mh)
+    mc7 = pow7(mc * F(1 / 25))
+    rt = -2 * F(_sqrt(mc7 / (mc7 + 1))) * _de2000_rot(mh)
 
     # Final calculation
-    sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2 +
-         rt * (dc/(m.kc*sc)) * (dh/(m.kh*sh)))
+    kl, kc, kh = F(m.kl), F(m.kc), F(m.kh)
+    dsl, dsc, dsh = dl / (kl * sl), dc / (kc * sc), dh / (kh * sh)
+    F(_sqrt(dsl^2 + dsc^2 + dsh^2 + rt * dsc * dsh))
 end
 
 @inline function _de2000_t(mh::F) where F
@@ -220,8 +222,54 @@ end
         F(-20) * cos(muladd(π/F( 45), h4, deg2rad(F(-63))))
     muladd(1/F(100), c, 1)
 end
+function _de2000_t(mh::Float32)
+    if mh < 64.0f0
+        return @evalpoly((mh - 32.0f0) * (1.0f0/64),
+            0.78425723f0, -0.71428823f0, 1.0606939f0, -0.3320813f0, -1.6548954f0, 1.4866706f0,
+            1.0461172f0, -0.9630005f0, -0.35182664f0, 0.2700254f0, 0.06314228f0)
+    elseif mh < 128.0f0
+        return @evalpoly((mh - 96.0f0) * (1.0f0/64),
+            0.6708259f0, 0.7022065f0, 1.4496115f0, -0.091134265f0, -2.14522f0, -0.81226975f0,
+            1.5013183f0, 0.60370386f0, -0.5584273f0, -0.1776522f0, 0.11164045f0)
+    elseif mh < 192.0f0
+        return @evalpoly((mh - 160.0f0) * (1.0f0/64),
+            1.2647604f0, -0.9152141f0, -1.0652254f0, 3.0960295f0, 1.8619311f0, -2.6234343f0,
+            -1.4259213f0, 1.0765249f0, 0.55065846f0, -0.2422152f0, -0.11089423f0)
+    elseif mh < 236.0f0
+        return @evalpoly((mh - 214.0f0) * (1.0f0/64),
+            1.2999026f0, 1.364039f0, -0.30168927f0, -4.335773f0, -0.34714356f0, 3.8063064f0,
+            0.43577778f0, -1.6205053f0, -0.19063109f0, 0.3946184f0, 0.0470799f0)
+    elseif mh < 268.0f0
+        return @evalpoly((mh - 252.0f0) * (1.0f0/64),
+            1.3113983f0, -1.7916181f0, -2.341132f0, 3.733874f0, 3.4045563f0, -2.9195895f0,
+            -1.9971917f0, 1.2059773f0, 0.6468915f0, -0.2969976f0, -0.1274673f0)
+    elseif mh < 320.0f0
+        return @evalpoly((mh - 294.0f0) * (1.0f0/64),
+            0.37643716f0, 0.47334087f0, 3.8213744f0, -1.4942352f0, -4.5954514f0, 1.4621881f0,
+            2.4966235f0, -0.71292526f0, -0.78470963f0, 0.18798664f0, 0.1509905f0)
+    else
+        return @evalpoly((mh - 340.0f0) * (1.0f0/64),
+            1.4223951f0, 0.5289211f0, -3.0410407f0, -0.09073099f0, 3.824369f0, -0.80474544f0,
+            -2.16635f0, 0.59577477f0, 0.70546037f0, -0.18656555f0, -0.1424503f0)
+    end
+end
 
 @inline _de2000_rot(mh::F) where {F} = sin(π/F(3) * exp(-((mh - 275) * F(1/25))^2))
+
+const DE2000_SINEXP_F32 = [Float32(π/3 * exp(-i)) for i = 0.0:0.25:87.25]
+@inline function _de2000_rot(mh::Float32)
+    dh2 = ((mh - 275.0f0) * (1.0f0 / 25))^2
+    di = reinterpret(UInt32, dh2 + Float32(0x3p20))
+    i = di % UInt16 # round(UInt16, dh2 * 4.0)
+    i >= UInt16(350) && return 0.0f0 # avoid subnormal numbers
+    t = (reinterpret(Float32, di) - Float32(0x3p20)) - dh2 # |t| <= 0.125
+    sinexp = @inbounds DE2000_SINEXP_F32[i + 1] # π/3 * exp(-dh2) = (π/3 * exp(-i/4)) * exp(t)
+    em1 = @evalpoly(t, 1.0f0, 0.49999988f0, 0.16666684f0, 0.041693877f0, 0.008323605f0) * t
+    ex = muladd(sinexp, em1, sinexp)
+    ex < eps(0.5f0) && return ex
+    sn = @evalpoly(ex^2, -0.16666667f0, 0.008333333f0, -0.00019841234f0, 2.7550889f-6, -2.4529042f-8)
+    return muladd(sn * ex, ex^2, ex)
+end
 
 # Delta E94
 function _colordiff(ai::Color, bi::Color, m::DE_94)
