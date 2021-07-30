@@ -272,46 +272,49 @@ const DE2000_SINEXP_F32 = [Float32(π/3 * exp(-i)) for i = 0.0:0.25:87.25]
 end
 
 # Delta E94
-function _colordiff(ai::Color, bi::Color, m::DE_94)
-    a = convert(LCHab, ai)
-    b = convert(LCHab, bi)
+function _colordiff(a::Color, b::Color, m::DE_94)
+    _colordiff(promote(convert(Lab, a), convert(Lab, b))..., m)
+end
+function _colordiff(a::C, b::C, m::DE_94) where {T, C <: Union{Lab{T}, LCHab{T}}}
+    F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
 
     # Calculate the delta values for each channel
-    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
+    dl, dc, dh = b.l - a.l, delta_c(b, a), delta_h(b, a)
 
     # Lightness, hue, chroma correction terms
-    sl = 1
-    sc = 1 + m.k1 * a.c
-    sh = 1 + m.k2 * a.c
+    # sl = 1
+    sc = muladd(F(m.k1), chroma(a), 1)
+    sh = muladd(F(m.k2), chroma(a), 1)
 
-    sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/(m.kh*sh))^2)
+    sqrt((dl/F(m.kl))^2 + (dc/(F(m.kc)*sc))^2 + (dh/(F(m.kh)*sh))^2)
 end
 
 # Metric form of jpc79 color difference equation (mostly obsolete)
-function _colordiff(ai::Color, bi::Color, m::DE_JPC79)
-    # Convert directly into LCh
-    a = convert(LCHab, ai)
-    b = convert(LCHab, bi)
+function _colordiff(a::Color, b::Color, m::DE_JPC79)
+    _colordiff(promote(convert(Lab, a), convert(Lab, b))..., m)
+end
+function _colordiff(a::C, b::C, ::DE_JPC79) where {T, C <: Union{Lab{T}, LCHab{T}}}
+    F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
 
     # Calculate deltas in each direction
-    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
+    dl, dc, dh = b.l - a.l, delta_c(b, a), delta_h(b, a)
 
     # Calculate mean lightness, chroma and hue
-    ml, mc, mh = (a.l + b.l) / 2, (a.c + b.c) / 2, mean_hue(a, b)
+    ml, mc, mh = (a.l + b.l) * F(0.5), (chroma(a) + chroma(b)) * F(0.5), mean_hue(a, b)
 
     # L* adjustment term
-    sl = 0.08195*ml/(1+0.01765*ml)
+    sl = F(0.08195) * ml / muladd(F(0.01765), ml, 1)
 
     # C* adjustment term
-    sc = 0.638+(0.0638*mc/(1+0.0131*mc))
+    sc = F(0.638) + F(0.0638) * mc / muladd(F(0.0131), mc, 1)
 
     # H* adjustment term
-    if (mc < 0.38)
+    if mc < F(0.38)
         sh = sc
-    elseif (mh >= 164 && mh <= 345)
-        sh = sc*(0.56+abs(0.2*cosd(mh+168)))
+    elseif mh >= 164 && mh <= 345
+        sh = sc * muladd(F(0.2), abs(cosd(mh + 168)), F(0.56))
     else
-        sh = sc*(0.38+abs(0.4*cosd(mh+35)))
+        sh = sc * muladd(F(0.4), abs(cosd(mh +  35)), F(0.38))
     end
 
     # Calculate the final difference
@@ -320,94 +323,102 @@ end
 
 
 # Metric form of the cmc color difference
-function _colordiff(ai::Color, bi::Color, m::DE_CMC)
-    # Convert directly into LCh
-    a = convert(LCHab, ai)
-    b = convert(LCHab, bi)
+function _colordiff(a::Color, b::Color, m::DE_CMC)
+    _colordiff(promote(convert(Lab, a), convert(Lab, b))..., m)
+end
+function _colordiff(a::C, b::C, m::DE_CMC) where {T, C <: Union{Lab{T}, LCHab{T}}}
+    F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
+
+    ac, ah = chroma(a), hue(a)
 
     # Calculate deltas in each direction
-    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
+    dl, dc, dh = b.l - a.l, delta_c(b, a), delta_h(b, a)
 
     # L* adjustment term
-    if (a.l <= 16)
-        sl = 0.511
+    if a.l < 16
+        sl = F(0.511)
     else
-        sl = 0.040975 * a.l / (1 + 0.01765 * a.l)
+        sl = F(0.040975) * a.l / muladd(F(0.01765), a.l, 1)
     end
 
     # C* adjustment term
-    sc = 0.0638 * a.c / (1 + 0.0131 * a.c) + 0.638
+    sc = F(0.0638) * ac / muladd(F(0.0131), ac, 1) + F(0.638)
 
-    f = sqrt(a.c^4 / (a.c^4 + 1900))
+    f = sqrt(ac^4 / (ac^4 + 1900))
 
-    if 164 <= a.h <= 345
-        t = 0.56 + abs(0.2 * cosd(a.h + 168))
+    if 164 <= ah <= 345
+        t = muladd(F(0.2), abs(cosd(ah + 168)), F(0.56))
     else
-        t = 0.36 + abs(0.4 * cosd(a.h + 35))
+        t = muladd(F(0.4), abs(cosd(ah +  35)), F(0.36))
     end
 
     # H* adjustment term
-    sh = sc*(t*f+1-f)
+    sh = sc * muladd(t, f, 1 - f)
 
     # Calculate the final difference
-    sqrt((dl/(m.kl*sl))^2 + (dc/(m.kc*sc))^2 + (dh/sh)^2)
+    sqrt((dl/(F(m.kl)*sl))^2 + (dc/(F(m.kc)*sc))^2 + (dh/sh)^2)
 end
 
 # The BFD color difference equation
-function _colordiff(ai::Color, bi::Color, m::DE_BFD)
+function _colordiff(a::Color, b::Color, m::DE_BFD)
+    # We have to start back in XYZ because BFD uses a different L equation
     # Currently, support for the `wp` argument of `convert` is limited.
-    function to_xyz(c::Color, wp)
+    function to_xyz(c::Color{T}, wp) where T
+        F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
         c isa XYZ && return c
         (c isa xyY || c isa LMS) && return convert(XYZ, c)
-        (c isa Lab || c isa Luv) && return convert(XYZ, c, wp)
-        c isa LCHuv && return convert(XYZ, convert(Luv, c), wp)
-        convert(XYZ, convert(Lab, c), wp)
+        wpf = XYZ{F}(wp)
+        (c isa Lab || c isa Luv) && return convert(XYZ, c, wpf)
+        c isa LCHuv && return convert(XYZ, convert(Luv, c), wpf)
+        convert(XYZ, convert(Lab, c), wpf)
     end
+    _colordiff(promote(to_xyz(a, m.wp), to_xyz(b, m.wp))..., m)
+end
+function _colordiff(a_xyz::XYZ{T}, b_xyz::XYZ{T}, m::DE_BFD) where T
+    F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
 
-    # We have to start back in XYZ because BFD uses a different L equation
-    a_XYZ = to_xyz(ai, m.wp)
-    b_XYZ = to_xyz(bi, m.wp)
-
-    la = 54.6*log10(a_XYZ.y+1.5)-9.6
-    lb = 54.6*log10(b_XYZ.y+1.5)-9.6
+    la = muladd(F(54.6), log10(a_xyz.y + F(1.5)), F(-9.6))
+    lb = muladd(F(54.6), log10(b_xyz.y + F(1.5)), F(-9.6))
 
     # Convert into LCh with the proper white point
-    a_Lab = convert(Lab, a_XYZ, m.wp)
-    b_Lab = convert(Lab, b_XYZ, m.wp)
+    wpf = XYZ{F}(m.wp)
+    a_lab = convert(Lab, a_xyz, wpf)
+    b_lab = convert(Lab, b_xyz, wpf)
 
     # Substitute in the different L values into the L*C*h values
-    a = LCHab(la, chroma(a_Lab), hue(a_Lab))
-    b = LCHab(lb, chroma(b_Lab), hue(b_Lab))
+    a = LCHab(la, chroma(a_lab), hue(a_lab))
+    b = LCHab(lb, chroma(b_lab), hue(b_lab))
 
     # Calculate deltas in each direction
-    dl, dc, dh = b.l - a.l, b.c - a.c, delta_h(b, a)
+    dl, dc, dh = b.l - a.l, delta_c(b_lab, a_lab), delta_h(b_lab, a_lab)
 
     # Find the mean value of the inputs to use as the "standard"
-    ml, mc, mh = (a.l + b.l) / 2, (a.c + b.c) / 2, mean_hue(a, b)
+    mc, mh = (a.c + b.c) * F(0.5), mean_hue(a, b)
 
     # Correction terms for a variety of nonlinearities in CIELAB.
-    g = sqrt(mc^4/(mc^4 + 14000))
+    g = sqrt(mc^4 / (mc^4 + 14000))
 
-    t = 0.627 + 0.055 * cosd( mh - 245) -
-                0.040 * cosd(2mh - 136) +
-                0.070 * cosd(3mh -  32) +
-                0.049 * cosd(4mh + 114) -
-                0.015 * cosd(5mh + 103)
+    t_cos = F( 55) * cosd( mh - 245) +
+            F(-40) * cosd(2mh - 136) +
+            F( 70) * cosd(3mh -  32) +
+            F( 49) * cosd(4mh + 114) +
+            F(-15) * cosd(5mh + 103)
+    t = muladd(F(1/1000), t_cos, F(0.627))
 
-    rc = sqrt(mc^6/(mc^6 + 7e7))
+    rc = sqrt(mc^6 / (mc^6 + F(7e7)))
 
-    rh = -0.260 * cosd( mh - 308) -
-          0.379 * cosd(2mh - 160) -
-          0.636 * cosd(3mh - 254) +
-          0.226 * cosd(4mh + 140) -
-          0.194 * cosd(5mh + 280)
+    rh = F(-0.260) * cosd( mh - 308) +
+         F(-0.379) * cosd(2mh - 160) +
+         F(-0.636) * cosd(3mh - 254) +
+         F( 0.226) * cosd(4mh + 140) +
+         F(-0.194) * cosd(5mh + 280)
 
-    dcc = 0.035*mc/(1+0.00365*mc) + 0.521
-    dhh = dcc*(g*t+1-g)
-    rt = rc*rh
+    dcc = muladd(F(0.035), mc / muladd(F(0.00365), mc, 1) , F(0.521))
+    dhh = dcc * muladd(g, t, 1 - g)
+    rt = rc * rh
 
     # Final calculation
-    sqrt((dl/m.kl)^2 + (dc/(m.kc*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
+    sqrt((dl/F(m.kl))^2 + (dc/(F(m.kc)*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
 end
 
 function _colordiff(ai::Color, bi::Color,
