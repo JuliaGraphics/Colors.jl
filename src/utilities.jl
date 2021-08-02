@@ -93,7 +93,6 @@ pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 # `pow5_12` is called from `srgb_compand`.
 pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
 @inline function pow5_12(x::Float64)
-    @noinline _cbrt(x) = cbrt01(x)
     p3_4 = pow3_4(x)
     # x^(-1/6)
     if x < 0.02
@@ -106,7 +105,7 @@ pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
         t0 = @evalpoly(x, 1.7047813285940905, -3.1261253501167308,
             7.498744828350077, -10.100319516746419, 6.820601476522508, -1.7978894213531524)
     else
-        return p3_4 / _cbrt(x)
+        return p3_4 / cbrt01(x)
     end
     # x^(-1/3)
     t1 = t0 * t0
@@ -164,7 +163,7 @@ end
 
 # a variant of `atand` returning the angle in the range of [0, 360]
 atan360(y, x) = (a = atand(y, x); signbit(a) ? oftype(a, a + 360) : a)
-function atan360(y::T, x::T) where T <: Union{Float32, Float64}
+@inline function atan360(y::T, x::T) where T <: Union{Float32, Float64}
     (isnan(x) | isnan(y)) && return T(NaN)
     ax, ay = abs(x), abs(y)
     n, m = @fastmath minmax(ax, ay)
@@ -190,8 +189,8 @@ function atan360(y::T, x::T) where T <: Union{Float32, Float64}
 end
 
 # override only the `Lab` and `Luv` versions just for now
-ColorTypes.hue(c::Lab) = atan360(c.b, c.a)
-ColorTypes.hue(c::Luv) = atan360(c.v, c.u)
+@inline ColorTypes.hue(c::Lab) = atan360(c.b, c.a)
+@inline ColorTypes.hue(c::Luv) = atan360(c.v, c.u)
 
 @inline function sin_kernel(x::Float64)
     x * @evalpoly(x^2,
