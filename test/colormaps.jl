@@ -1,18 +1,27 @@
+using Test, Colors
+
 @testset "Colormaps" begin
-    col = distinguishable_colors(10)
-    @test isconcretetype(eltype(col))
-    local mindiff
-    mindiff = Inf
-    for i = 1:10
-        for j = i+1:10
-            mindiff = min(mindiff, colordiff(col[i], col[j]))
+    @testset "distinguishable_colors" begin
+        cols = distinguishable_colors(10)
+        @test isconcretetype(eltype(cols))
+
+        mindiff = Inf
+        for i = 1:10, j = i+1:10
+            mindiff = min(mindiff, colordiff(cols[i], cols[j]))
         end
+        @test mindiff > 8
+
+        seed = distinguishable_colors(1)
+        @test colordiff(distinguishable_colors(1, seed)[1], seed[1]) == 0.0
+        @test colordiff(distinguishable_colors(1, seed; dropseed=true)[1], seed[1]) > 50
+
+        cols_i = distinguishable_colors(4, LCHab(60, 50, 40), transform=identity,
+                                        lchoices=[40, 60], cchoices=[50], hchoices=[40, 140])
+        cols_p = distinguishable_colors(4, LCHab(60, 50, 40), transform=protanopic,
+                                        lchoices=[40, 60], cchoices=[50], hchoices=[40, 140])
+        @test cols_i[2] ≈ LCHab(40, 50, 140) atol=1f-3 # green
+        @test cols_p[2] ≈ LCHab(40, 50,  40) atol=1f-3 # red
     end
-    @test mindiff > 8
-
-    cols = distinguishable_colors(1)
-    @test colordiff(distinguishable_colors(1, cols; dropseed=true)[1], cols[1]) > 50
-
 
     @test length(colormap("RdBu", 100)) == 100
 
