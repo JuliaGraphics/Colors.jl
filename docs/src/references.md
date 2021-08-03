@@ -8,7 +8,7 @@ What perceptually uniform colorspaces are and why you should be using them:
 
 Functions in this library were mostly implemented according to:
 
-* Schanda, J., ed. [Colorimetry: Understanding the CIE system](http://books.google.pt/books?id=uZadszSGe9MC). Wiley-Interscience, 2007.
+* Schanda, J., ed. [Colorimetry: Understanding the CIE system](http://books.google.com/books?id=uZadszSGe9MC). Wiley-Interscience, 2007.
 
 * Sharma, G., Wu, W., and Dalal, E. N. (2005). [The CIEDE2000 color‐difference formula](http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf): Implementation notes, supplementary test data, and mathematical observations. Color Research & Application, 30(1), 21–30. doi:10.1002/col
 
@@ -17,6 +17,6 @@ Functions in this library were mostly implemented according to:
 * Lindbloom, B. (2013).
   [Useful Color Equations](http://www.brucelindbloom.com/index.html?ColorCalculator.html)
 
-* Wijffelaars, M., Vliegen, R., van Wijk, J., van der Linden, E-J. (2008). [Generating Color Palettes using Intuitive Parameters](http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf)
+* Wijffelaars, M., Vliegen, R., van Wijk, J., van der Linden, E-J. (2008). [Generating Color Palettes using Intuitive Parameters](https://dl.acm.org/doi/10.1111/j.1467-8659.2008.01203.x)
 
-* Georg A. Klein [Industrial Color Physics](http://http://books.google.de/books?id=WsKOAVCrLnwC). Springer Series in Optical Sciences, 2010. ISSN 0342-4111, ISBN 978-1-4419-1197-1.
+* Georg A. Klein [Industrial Color Physics](http://books.google.com/books?id=WsKOAVCrLnwC). Springer Series in Optical Sciences, 2010. ISSN 0342-4111, ISBN 978-1-4419-1197-1.

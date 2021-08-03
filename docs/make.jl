@@ -7,10 +7,11 @@ function Base.show(io::IO, ::MIME"text/html", svg::SVG)
     write(io, "</body></html>")
     flush(io)
 end
-
+include("png16x16.jl")
 include("crosssectionalcharts.jl")
 include("colordiffcharts.jl")
 include("colormaps.jl")
+include("colormapparams.jl")
 include("namedcolorcharts.jl")
 include("sampleimages.jl")
 
