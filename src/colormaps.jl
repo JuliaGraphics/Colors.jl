@@ -206,10 +206,10 @@ function _sequential_palette(N, logscale, h, w, d, c, s, b, wcolor, dcolor)
         cc = bezier(tt, p0.c, p2.c, q0.c, q1.c, q2.c)
         hh = bezier(tt, p0.h, p2.h, q0.h, q1.h, q2.h)
 
-        @inbounds pal[i] =LCHuv{Float64}(ll, cc, hh)
+        @inbounds pal[i] = LCHuv{Float64}(ll, cc, hh)
     end
-
-    RGB{Float64}.(pal)
+    # TODO: Decide whether or not to do this conversion in the loop above
+    RGB{Float64}.(pal)::Vector{RGB{Float64}}
 end
 
 """
@@ -263,9 +263,9 @@ function _diverging_palette(N, mid, logscale, h1, h2, w, d1, d2, c, s, b, wcolor
 
     if isodd(N)
         midcol = weighted_color_mean(0.5, pal1[1], pal2[1])
-        return [pal1[end:-1:2]; midcol; pal2[2:end]]
+        return @views vcat(pal1[end:-1:2], midcol, pal2[2:end])
     else
-        return [pal1[end:-1:2]; pal2[2:end]]
+        return @views vcat(pal1[end:-1:2], pal2[2:end])
     end
 end
 
@@ -325,7 +325,8 @@ function _colormap(cname::String, N::Int, kvs)
         end
         mid = Float64(get(kvs, :mid, 0.5))
         pd(i) = oftype(pbd[i], get(kvs, keys_d[i], pbd[i]))
-        return _diverging_palette(N, mid, logscale, (pd(i) for i in eachindex(pbd))...)
+        params = Tuple(pd(i) for i in eachindex(pbd))::typeof(pbd)
+        return _diverging_palette(N, mid, logscale, params...)
     end
     throw(ArgumentError(string("Unknown colormap: ", cname)))
 end
