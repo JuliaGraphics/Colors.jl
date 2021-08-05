@@ -349,6 +349,10 @@ Compute the mean of two hue angles in degrees.
 If the inputs are HSV-like or Lab-like color objects, this will also return a
 hue, not a color. If one of the colors is achromatic, i.e. has zero saturation
 or chroma, the hue of the other color is returned instead of the mean.
+
+When the hue difference is exactly 180 degrees, which of the two mean hues is
+returned depends on the implementation. In other words, it may vary by the color
+type and version.
 """
 function mean_hue(h1::T, h2::T) where {T <: Real}
     @fastmath hmin, hmax = minmax(h1, h2)
@@ -357,12 +361,29 @@ function mean_hue(h1::T, h2::T) where {T <: Real}
     mh = muladd(F(0.5), d, hmin)
     return mh < 0 ? mh + 360 : mh
 end
-
-function mean_hue(a::C, b::C) where {Cb <: Union{Lab, LCHab, Luv, LCHuv},
+@inline function mean_hue(a::C, b::C) where {Cb <: Union{Lab, Luv},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
-    h1 = chroma(a) == 0 ? hue(b) : hue(a)
-    h2 = chroma(b) == 0 ? hue(a) : hue(b)
-    mean_hue(h1, h2)
+    a1, b1, a2, b2 = comp2(a), comp3(a), comp2(b), comp3(b)
+    c1, c2 = chroma(a), chroma(b)
+    k1 = c1 == zero(c1) ? oneunit(c1) : c1
+    k2 = c2 == zero(c2) ? oneunit(c2) : c2
+    dp = muladd(a1, a2, b1 * b2) # dot product
+    dt = b1 * a2 - a1 * b2
+    if dp < zero(dp)
+        # 90 deg rotations
+        a1, b1 = @fastmath flipsign( b1, dt), flipsign(-a1, dt)
+        a2, b2 = @fastmath flipsign(-b2, dt), flipsign( a2, dt)
+        if dt == zero(dt) && a1 > zero(a1)
+            k1, k2 = -k1, -k2
+        end
+    end
+    ma = muladd(k2, a1, k1 * a2)
+    mb = muladd(k2, b1, k1 * b2)
+    hue(Cb(zero(ma), ma, mb))
+end
+function mean_hue(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
+                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    mean_hue(a.c == 0 ? b.h : a.h, b.c == 0 ? a.h : b.h)
 end
 function mean_hue(a::C, b::C) where {Cb <: Union{HSV, HSL, HSI},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}

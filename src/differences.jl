@@ -179,18 +179,14 @@ function _colordiff(a_lab::Lab{T}, b_lab::Lab{T}, m::DE_2000) where T
     mco7 = pow7((chroma(a_lab) + chroma(b_lab)) * F(0.5 / 25))
     g = F(0.5) - F(0.5) * F(_sqrt(mco7 / (mco7 + 1)))
 
-    ar = Lab{F}(a_lab.l, muladd(a_lab.a, g, a_lab.a), a_lab.b)
-    br = Lab{F}(b_lab.l, muladd(b_lab.a, g, b_lab.a), b_lab.b)
-
-    # Convert to L*C*h, where the remainder of the calculations are performed
-    a = LCHab{F}(ar.l, chroma(ar), hue(ar))
-    b = LCHab{F}(br.l, chroma(br), hue(br))
+    a = Lab{F}(a_lab.l, muladd(a_lab.a, g, a_lab.a), a_lab.b)
+    b = Lab{F}(b_lab.l, muladd(b_lab.a, g, b_lab.a), b_lab.b)
 
     # Calculate the delta values for each channel
-    dl, dc, dh = b.l - a.l, delta_c(br, ar), delta_h(br, ar)
+    dl, dc, dh = b.l - a.l, delta_c(b, a), delta_h(b, a)
 
     # Calculate mean L*, C* and hue values
-    ml, mc, mh = (a.l + b.l) * F(0.5), (a.c + b.c) * F(0.5), mean_hue(a, b)
+    ml, mc, mh = (a.l + b.l) * F(0.5), (chroma(a) + chroma(b)) * F(0.5), mean_hue(a, b)
 
     # lightness weight
     mls = (ml - 50)^2
@@ -380,20 +376,20 @@ function _colordiff(a_xyz::XYZ{T}, b_xyz::XYZ{T}, m::DE_BFD) where T
     la = muladd(F(54.6), log10(a_xyz.y + F(1.5)), F(-9.6))
     lb = muladd(F(54.6), log10(b_xyz.y + F(1.5)), F(-9.6))
 
-    # Convert into LCh with the proper white point
+    # Convert into Lab with the proper white point
     wpf = XYZ{F}(m.wp)
     a_lab = convert(Lab, a_xyz, wpf)
     b_lab = convert(Lab, b_xyz, wpf)
 
-    # Substitute in the different L values into the L*C*h values
-    a = LCHab(la, chroma(a_lab), hue(a_lab))
-    b = LCHab(lb, chroma(b_lab), hue(b_lab))
+    # Substitute the different L values
+    a = Lab(la, a_lab.a, a_lab.b)
+    b = Lab(lb, b_lab.a, b_lab.b)
 
     # Calculate deltas in each direction
-    dl, dc, dh = b.l - a.l, delta_c(b_lab, a_lab), delta_h(b_lab, a_lab)
+    dl, dc, dh = b.l - a.l, delta_c(b, a), delta_h(b, a)
 
     # Find the mean value of the inputs to use as the "standard"
-    mc, mh = (a.c + b.c) * F(0.5), mean_hue(a, b)
+    mc, mh = (chroma(a) + chroma(b)) * F(0.5), mean_hue(a, b)
 
     # Correction terms for a variety of nonlinearities in CIELAB.
     g = sqrt(mc^4 / (mc^4 + 14000))
