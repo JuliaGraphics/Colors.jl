@@ -468,8 +468,7 @@ end
 
 
 function cnvt(::Type{Lab{T}}, c::LCHab) where T
-    b, a = c.c .* sincos(deg2rad(c.h))
-    Lab{T}(c.l, a, b)
+    Lab{T}(c.l, polar_to_cartesian(c.c, c.h)...)
 end
 
 
@@ -562,8 +561,7 @@ end
 
 
 function cnvt(::Type{Luv{T}}, c::LCHuv) where T
-    v, u = c.c .* sincos(deg2rad(c.h))
-    Luv{T}(c.l, u, v)
+    Luv{T}(c.l, polar_to_cartesian(c.c, c.h)...)
 end
 
 cnvt(::Type{Luv{T}}, c::Color) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c))

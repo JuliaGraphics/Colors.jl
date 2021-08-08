@@ -200,8 +200,7 @@ function MSC(h)
     end
     p, t = pt(h)
 
-    alpha=-sind(h)
-    beta=cosd(h)
+    beta, alpha = polar_to_cartesian(1.0, -h)
 
     # un & vn are calculated based on reference white (D65)
     un, vn = xyz_to_uv(WP_DEFAULT)
