@@ -53,6 +53,22 @@ using InteractiveUtils # for `subtypes`
         end
     end
 
+    @testset "polar_to_cartesian" begin
+        @test Colors.polar_to_cartesian(50.0, NaN) === (NaN, NaN)
+        @test Colors.polar_to_cartesian(0.0f0, Inf32) === (NaN32, NaN32)
+        @test Float64.(Colors.polar_to_cartesian(big"2.0", big"120.0")) === (-1.0, sqrt(3.0))
+
+        theta = -360.0:15.0:540.0
+        yxbf = [sincos(deg2rad(big(t))) .* 64.5 for t in theta]
+        xyf64 = Colors.polar_to_cartesian.(64.5, theta)
+        xyf32 = Colors.polar_to_cartesian.(64.5f0, Float32.(theta))
+
+        @test all(((a, b),) -> isapprox(a[1], b[2], atol=1e-14) &&
+                               isapprox(a[2], b[1], atol=1e-14), zip(xyf64, yxbf))
+        @test all(((a, b),) -> isapprox(a[1], b[2], atol=1e-6) &&
+                               isapprox(a[2], b[1], atol=1e-6), zip(xyf32, yxbf))
+    end
+
     @testset "hex" begin
         @test hex(RGB(1,0.5,0)) == "FF8000"
         @test hex(RGBA(1,0.5,0,0.25)) == "FF800040"

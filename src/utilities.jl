@@ -193,6 +193,48 @@ end
 ColorTypes.hue(c::Lab) = atan360(c.b, c.a)
 ColorTypes.hue(c::Luv) = atan360(c.v, c.u)
 
+@inline function sin_kernel(x::Float64)
+    x * @evalpoly(x^2,
+        1.117010721276371, -0.23228479064016105, 0.014491237085286733, -0.00043049771889962576,
+        7.460244157055791e-6, -8.462038405688494e-8, 6.767827147797153e-10, -3.987482394639226e-12)
+end
+@inline function sin_kernel(x::Float32)
+    y = @evalpoly(x^2, 0.11701072f0, -0.23228478f0, 0.014491233f0, -0.0004304645f0, 7.368049f-6)
+    muladd(x, y, x)
+end
+@inline function cos_kernel(x::Float64)
+    @evalpoly(x^2, 1.0,
+        -0.6238564757231793, 0.06486615038362423, -0.002697811198135598, 6.010882091788964e-5,
+        -8.333171603045294e-7, 7.876495580576226e-9, -5.351642293798961e-11)
+end
+@inline function cos_kernel(x::Float32)
+    @evalpoly(x^2, 1.0f0, -0.6238565f0,0.06486606f0,-0.002697325f0, 5.904168f-5)
+end
+
+sincos360(x) = sincos(deg2rad(x))
+@inline function sincos360(x::T) where T <: Union{Float32, Float64}
+    isfinite(x) || return T(NaN), T(NaN)
+    t = x - round(x * T(1/360)) * 360 # [-180, 180]
+    a0 = @fastmath abs(t)              # [0, 180]
+    a1 = a0 <= 90 ? a0 : 180 - a0      # [0, 90]
+    a2 = a1 <= 45 ? a1 : 90 - a1       # [0, 45]
+    ax = a2 * T(1/64)
+    sn, cs  = sin_kernel(ax), cos_kernel(ax)
+    sn1, cs1 = a1 === a2 ? (sn, cs) : (cs, sn)
+    return @fastmath flipsign(sn1, t), flipsign(cs1, 90 - a0)
+end
+
+"""
+    x, y = polar_to_cartesian(r, theta)
+
+Convert a polar coordinate of radius `r` and angle `theta` (in degrees) to a
+Cartesian coordinate.
+"""
+@inline function polar_to_cartesian(r, theta)
+    y, x = r .* sincos360(theta)
+    return x, y
+end
+
 # Linear interpolation in [a, b] where x is in [0,1],
 # or coerced to be if not.
 function lerp(x, a, b)
