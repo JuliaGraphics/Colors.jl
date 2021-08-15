@@ -157,59 +157,55 @@ function sequential_palette(h,
                                RGB{F}(wcolor), RGB{F}(dcolor))
 end
 
-function _sequential_palette(N, logscale, h, w, d, c, s, b, wcolor, dcolor)
-    function mix_hue(h0, h1, w)
-        m = normalize_hue(180.0 + h1 - h0) - 180.0
-        normalize_hue(h0 + w * m)
-    end
-    mix_linearly(a::Float64, b::Float64, w) = (1.0 - w) * a + w * b
-    mix_linearly(a::LCHuv{Float64}, b::LCHuv{Float64}, w) = weighted_color_mean(w, b, a)
+function mix_hue(h0::Float64, h1::Float64, w)
+    m = normalize_hue(180.0 + h1 - h0) - 180.0
+    normalize_hue(h0 + w * m)
+end
+mix_linearly(a::Float64, b::Float64, w) = (1.0 - w) * a + w * b
+mix_linearly(a::LCHuv{Float64}, b::LCHuv{Float64}, w) = weighted_color_mean(w, b, a)
 
+function _sequential_palette(N, logscale, h, w, d, c, s, b, wcolor, dcolor)
+
+    function term_point(pb, l1, l2, weight)
+        pl = mix_linearly(l1, l2, weight)
+        ph = mix_hue(h, pb.h, weight)
+        mc = find_maximum_chroma(LCHuv{Float64}(pl, 0.0, ph))
+        pc = min(mc, weight * s * pb.c)
+        LCHuv{Float64}(pl, pc, ph)
+    end
     pstart = convert(LCHuv{Float64}, wcolor)
     pend   = convert(LCHuv{Float64}, dcolor)
+
+    p2 = term_point(pstart, 100.0, pstart.l, w) # multi-hue start point
     p1 = MSC(h)
-    #p0=LCHuv(0,0,h) #original end point
-
-    #multi-hue start point
-    p2l = mix_linearly(100.0, pstart.l, w)
-    p2h = mix_hue(h, pstart.h, w)
-    p2c = min(MSC(p2h, p2l), w * s * pstart.c)
-    p2 = LCHuv{Float64}(p2l, p2c, p2h)
-
-    #multi-hue ending point
-    p0l = 20.0 * d
-    p0h = mix_hue(h, pend.h, d)
-    p0c = min(MSC(p0h, p0l), d * s * pend.c)
-    p0 = LCHuv{Float64}(p0l, p0c, p0h)
+    p0 = term_point(pend, 0.0, 20.0, d) # multi-hue ending point
 
     q0 = mix_linearly(p0, p1, s)
     q2 = mix_linearly(p2, p1, s)
     q1 = mix_linearly(q0, q2, 0.5)
 
-    pal = Vector{LCHuv{Float64}}(undef, N)
+    pal = Vector{RGB{Float64}}(undef, N)
 
-    if logscale
-        absc = exp10.(range(-2., stop=0., length=N))
-    else
-        absc = range(0., stop=1., length=N)
-    end
+    step = 1.0 / (N - 1.0)
+    for i = 0:N-1
+        if logscale
+            u = 1.0 - exp10(2.0 * i * step - 2.0)
+        else
+            u = 1.0 - i * step
+        end
 
-    for (i, t) in enumerate(absc)
-        u = 1.0 - t
-
-        #Change grid to favor light colors and to be uniform along the curve
+        # Change grid to favor light colors and to be uniform along the curve
         lt = 125.0 - 125.0 * 0.2^mix_linearly(b, u, c)
         tt = inv_bezier(lt, p0.l, p2.l, q0.l, q1.l, q2.l)
 
-        #Get color components from Bezier curves
+        # Get color components from Bezier curves
         ll = bezier(tt, p0.l, p2.l, q0.l, q1.l, q2.l)
         cc = bezier(tt, p0.c, p2.c, q0.c, q1.c, q2.c)
         hh = bezier(tt, p0.h, p2.h, q0.h, q1.h, q2.h)
 
-        @inbounds pal[i] = LCHuv{Float64}(ll, cc, hh)
+        @inbounds pal[i + 1] = convert(RGB{Float64}, LCHuv{Float64}(ll, cc, hh))
     end
-    # TODO: Decide whether or not to do this conversion in the loop above
-    RGB{Float64}.(pal)::Vector{RGB{Float64}}
+    pal
 end
 
 """
