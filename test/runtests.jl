@@ -1,5 +1,5 @@
 using Colors, Test
-@test isempty(detect_ambiguities(Colors, Base, Core))
+@test isempty(detect_ambiguities(Colors))
 
 include("algorithms.jl")
 include("conversion.jl")
@@ -10,3 +10,6 @@ include("din99.jl")
 include("display.jl")
 include("parse.jl")
 include("utilities.jl")
+
+using AbstractTrees
+isempty(detect_ambiguities(Colors))
