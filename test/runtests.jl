@@ -12,4 +12,4 @@ include("parse.jl")
 include("utilities.jl")
 
 using AbstractTrees
-isempty(detect_ambiguities(Colors))
+@test isempty(detect_ambiguities(Colors))
