@@ -6,10 +6,9 @@ struct Mat3x3{T} <: AbstractMatrix{T}
     e::NTuple{9, T}
 end
 Mat3x3(mat::Matrix{T}) where {T} = Mat3x3{T}(Tuple(mat))
+Base.IndexStyle(::Type{<:Mat3x3}) = IndexLinear()
 Base.size(::Mat3x3) = (3, 3)
-Base.getindex(M::Mat3x3{T}, i) where {T} = M.e[i]
-Base.getindex(M::Mat3x3{T}, i::Integer, j::Integer) where {T} = M.e[3j + i - 3]
-Base.getindex(M::Mat3x3, I::CartesianIndex{2}) = getindex(M, I.I...)
+Base.getindex(M::Mat3x3{T}, i::Int) where {T} = M.e[i]
 
 macro mul3x3(C, M, c1, c2, c3)
     esc(quote
