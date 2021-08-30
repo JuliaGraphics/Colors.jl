@@ -157,15 +157,16 @@ function sequential_palette(h,
                                RGB{F}(wcolor), RGB{F}(dcolor))
 end
 
-function mix_hue(h0::Float64, h1::Float64, w)
-    m = normalize_hue(180.0 + h1 - h0) - 180.0
-    normalize_hue(h0 + w * m)
-end
+mix_hue(h0::Float64, h1::Float64, w) = h0 + w * (normalize_hue(180.0 + h1 - h0) - 180.0)
 mix_linearly(a::Float64, b::Float64, w) = (1.0 - w) * a + w * b
-mix_linearly(a::LCHuv{Float64}, b::LCHuv{Float64}, w) = weighted_color_mean(w, b, a)
+function mix_linearly(a::LCHuv{Float64}, b::LCHuv{Float64}, w)
+    l = mix_linearly(a.l, b.l, w)
+    c = mix_linearly(a.c, b.c, w)
+    h = mix_hue(a.h, b.h, w)
+    LCHuv{Float64}(l, c, h) # without hue normalization
+end
 
 function _sequential_palette(N, logscale, h, w, d, c, s, b, wcolor, dcolor)
-
     function term_point(pb, l1, l2, weight)
         pl = mix_linearly(l1, l2, weight)
         ph = mix_hue(h, pb.h, weight)
@@ -173,8 +174,12 @@ function _sequential_palette(N, logscale, h, w, d, c, s, b, wcolor, dcolor)
         pc = min(mc, weight * s * pb.c)
         LCHuv{Float64}(pl, pc, ph)
     end
-    pstart = convert(LCHuv{Float64}, wcolor)
-    pend   = convert(LCHuv{Float64}, dcolor)
+
+    pstart0 = convert(LCHuv{Float64}, wcolor)
+    pend0   = convert(LCHuv{Float64}, dcolor)
+    # Modify the hue of gray
+    pstart = LCHuv{Float64}(pstart0.l, pstart0.c, pstart0.c < 1e-4 ? h : pstart0.h)
+    pend   = LCHuv{Float64}(pend0.l,   pend0.c,   pend0.c   < 1e-4 ? h : pend0.h)
 
     p2 = term_point(pstart, 100.0, pstart.l, w) # multi-hue start point
     p1 = MSC(h)

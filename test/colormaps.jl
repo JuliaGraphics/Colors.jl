@@ -83,5 +83,9 @@ using Test, Colors
     @test max_colordiff(colormap("Reds", 5), to_rgb.(reds_old)) < 1
     @test max_colordiff(colormap("RdBu", 5), to_rgb.(rdbu_old)) < 1
 
-    # TODO: add more tests
+    cyans = sequential_palette(192, w=1.0, d=1.0, wcolor=RGB(1,1,1), dcolor=RGB(0,0,0))
+    @test all(c -> isapprox(green(c), blue(c), atol=1e-3), cyans)
+
+    ryr = diverging_palette(0.0, 359.999, 45, w=0.9, c=0.7, dcolor1=RGB(0,0,1))
+    @test all(c -> isapprox(c[1], c[2], atol=1e-3), zip(ryr, reverse(ryr)))
 end
