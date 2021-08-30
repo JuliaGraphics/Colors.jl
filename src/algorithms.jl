@@ -219,7 +219,7 @@ function MSC(h::Float64)
 
     col = ntuple(i -> i == p ? cpc : Float64(i == t), Val(3))
 
-    return convert(LCHuv, RGB{Float64}(col...))
+    return convert(LCHuv{Float64}, RGB{Float64}(col...))
 end
 
 

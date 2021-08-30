@@ -263,8 +263,8 @@ function _diverging_palette(N, mid, logscale, h1, h2, w, d1, d2, c, s, b, wcolor
     pal2 = _sequential_palette(N2 + 1, logscale, h2, w, d2, c, s, b, wcolor, dcolor2)
 
     if isodd(N)
-        midcol = weighted_color_mean(0.5, pal1[1], pal2[1])
-        return @views vcat(pal1[end:-1:2], midcol, pal2[2:end])
+        pal2[1] = weighted_color_mean(0.5, pal1[1], pal2[1])
+        return @views vcat(pal1[end:-1:2], pal2[1:end])
     else
         return @views vcat(pal1[end:-1:2], pal2[2:end])
     end
@@ -303,12 +303,15 @@ You can also use keyword argument names that match the argument names in
 function colormap(cname::AbstractString, N::Integer=100; kvs...)
     _colormap(String(cname), Int(N), kvs)
 end
+
 function _colormap(cname::String, N::Int, kvs)
     logscale = get(kvs, :logscale, false)::Bool
     lcname = lowercase(cname)
+    F = Float64
     if haskey(colormaps_sequential, lcname)
-        pbs = colormaps_sequential[lcname]
         keys_s = (:h, :w, :d, :c, :s, :b, :wcolor, :dcolor)
+        Ts = Tuple{F,  F,  F,  F,  F,  F,  RGB{F},  RGB{F}}
+        pbs = colormaps_sequential[lcname]::Ts
         for k in keys(kvs)
             k === :logscale && continue
             k in keys_s || throw(ArgumentError("Unknown keyword argument: $k"))
@@ -317,8 +320,9 @@ function _colormap(cname::String, N::Int, kvs)
         return _sequential_palette(N, logscale, (ps(i) for i in eachindex(pbs))...)
     end
     if haskey(colormaps_diverging, lcname)
-        pbd = colormaps_diverging[lcname]
         keys_d = (:h1, :h2, :w, :d1, :d2, :c, :s, :b, :wcolor, :dcolor1, :dcolor2)
+        Td = Tuple{F,   F,   F,  F,   F,   F,  F,  F,  RGB{F},  RGB{F},   RGB{F}}
+        pbd = colormaps_diverging[lcname]::Td
         for k in keys(kvs)
             k === :logscale && continue
             k === :mid && continue
@@ -326,8 +330,7 @@ function _colormap(cname::String, N::Int, kvs)
         end
         mid = Float64(get(kvs, :mid, 0.5))
         pd(i) = oftype(pbd[i], get(kvs, keys_d[i], pbd[i]))
-        params = Tuple(pd(i) for i in eachindex(pbd))::typeof(pbd)
-        return _diverging_palette(N, mid, logscale, params...)
+        return _diverging_palette(N, mid, logscale, (pd(i) for i in eachindex(pbd))...)
     end
     throw(ArgumentError(string("Unknown colormap: ", cname)))
 end
