@@ -257,17 +257,18 @@ end
 function _diverging_palette(N, mid, logscale, h1, h2, w, d1, d2, c, s, b, wcolor, dcolor1, dcolor2)
     n = isodd(N) ? (N - 1) : N
     N1 = max(ceil(Int, mid * n), 1)
-    N2 = Int(max(n - N1, 1))
+    N2 = max(n - N1, 1)
 
     pal1 = _sequential_palette(N1 + 1, logscale, h1, w, d1, c, s, b, wcolor, dcolor1)
     pal2 = _sequential_palette(N2 + 1, logscale, h2, w, d2, c, s, b, wcolor, dcolor2)
 
-    if isodd(N)
-        pal2[1] = weighted_color_mean(0.5, pal1[1], pal2[1])
-        return @views vcat(pal1[end:-1:2], pal2[1:end])
-    else
-        return @views vcat(pal1[end:-1:2], pal2[2:end])
+    pal = Vector{RGB{Float64}}(undef, N1 + N2 + isodd(N))
+    # concatenation without `vcat`, which is not precompilable
+    @inbounds pal2[1] = weighted_color_mean(0.5, pal1[1], pal2[1])
+    @inbounds for i in eachindex(pal)
+        pal[i] = i <= N1 ? pal1[end - i + 1] : pal2[i - N1 + iseven(N)]
     end
+    pal
 end
 
 
