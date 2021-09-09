@@ -94,34 +94,29 @@ weighted_color_mean
 
 This package provides some pre-defined colormaps (described below). There are also several other packages which provide colormaps:
 
+- [ColorSchemes](https://github.com/JuliaGraphics/ColorSchemes.jl)
 - [PerceptualColourMaps](https://github.com/peterkovesi/PerceptualColourMaps.jl)
 - [ColorBrewer](https://github.com/timothyrenner/ColorBrewer.jl)
-- [ColorSchemes.jl](https://github.com/JuliaGraphics/ColorSchemes.jl)
 - [NoveltyColors](https://github.com/randyzwitch/NoveltyColors.jl)
 
 
 ### Predefined sequential and diverging colormaps
 
-The `colormap()` function returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).
+The [`colormap()`](@ref) function returns a predefined sequential or diverging
+colormap computed using the algorithm by Wijffelaars, M., et al. (2008).
 
-`colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])`
+```julia
+colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, <keyword arguments>])
+```
 
-The optional arguments are:
-
-- the number of colors `N`
-- position of the middle point `mid`
-- the use of logarithmic scaling with the `logscale` keyword
-
-Colormaps computed by this algorithm are guaranteed to have an increasing perceived depth or saturation making them ideal for data visualization. This also means that they are (in most cases) color-blind friendly and suitable for black-and-white printing.
-
-The currently supported colormap names are:
+The `cname` specifies the name of colormap. The currently supported names are:
 
 #### Sequential
 
 - "Blues"
 ```@example colormap
 using Colors # hide
-using Main: Colormaps # hide
+using Main: Colormaps, ColormapParams # hide
 Colormaps.ColormapSVG(colormap("Blues", 32)) # hide
 ```
 
@@ -159,16 +154,29 @@ Colormaps.ColormapSVG(colormap("RdBu", 32)) # hide
 
 ###
 
+The optional arguments of `colormap()` are:
+
+- the number of colors `N`
+- position of the middle point `mid` for diverging colormaps
+- the use of logarithmic scaling with the `logscale` keyword
+
+Colormaps computed by this algorithm are guaranteed to have an increasing
+perceived depth or saturation making them ideal for data visualization.
+This also means that they are (in most cases) color-blind friendly and suitable
+for black-and-white printing.
+
 ```@docs
 colormap
 ```
 
 ### Sequential and diverging color palettes
 
-You can create your own color palettes by using `sequential_palette()`:
+You can create your own color palettes by using [`sequential_palette()`](@ref):
 
-`sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0, wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])`
-
+```julia
+sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0,
+                   wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])
+```
 which creates a sequential map for a hue `h` (defined in LCHuv space).
 
 Other possible parameters that you can fine tune are:
@@ -181,30 +189,60 @@ Other possible parameters that you can fine tune are:
 * `d` - depth of the ending color [0,1]
 * `wcolor` - starting color (usually defined to be yellow)
 * `dcolor` - ending color (depth)
-* `logscale` - true/false for toggling logspacing
+* `logscale` - `true`/`false` for toggling logspacing
 
-Two sequential maps can also be combined into a diverging colormap by using:
+```@example colormap
+ColormapParams.ColormapParamSVG(:c) # hide
+```
+```@example colormap
+ColormapParams.ColormapParamSVG(:s) # hide
+```
+```@example colormap
+ColormapParams.ColormapParamSVG(:b) # hide
+```
+```@example colormap
+ColormapParams.ColormapParamSVG(:w) # hide
+```
+```@example colormap
+ColormapParams.ColormapParamSVG(:d) # hide
+```
 
-`diverging_palette(h1, h2 [, N::Int=100; mid=0.5,c=0.88, s=0.6, b=0.75, w=0.15, d1=0.0, d2=0.0, wcolor=RGB(1,1,0), dcolor1=RGB(1,0,0), dcolor2=RGB(0,0,1), logscale=false])`
+Two sequential maps can also be combined into a diverging colormap by using
+[`diverging_palette()`](@ref):
+
+```julia
+diverging_palette(h1, h2 [, N::Int=100; mid=0.5, c=0.88, s=0.6, b=0.75, w=0.15, d1=0.0, d2=0.0,
+                  wcolor=RGB(1,1,0), dcolor1=RGB(1,0,0), dcolor2=RGB(0,0,1), logscale=false])
+```
 
 where the arguments are:
 
-* `h1` - the main hue of the left side [0,360]
-* `h2` - the main hue of the right side [0,360]
+* `h1`, `h2` - the main hue of the first/latter part [0,360]
 
 and the optional arguments are:
 
 * `N` - number of colors
-* `c` - the overall lightness contrast [0,1]
-* `s` - saturation [0,1]
-* `b` - brightness [0,1]
+* `mid` - the position of the midpoint (0,1)
+* `c`, `s`, `b` - contrast, saturation, brightness [0,1]
 * `w` - cold/warm parameter, i.e. the strength of the middle color [0,1]
-* `d1` - depth of the end color in the left side [0,1]
-* `d2` - depth of the end color in the right side [0,1]
-* `wcolor` - starting color i.e. the middle color (warmness, usually defined to be yellow)
-* `dcolor1` - end color of the left side (depth)
-* `dcolor2` - end color of the right side (depth)
-* `logscale` - true/false for toggling logspacing
+* `d1`, `d2` - depth of the ending color in the first/latter part [0,1]
+* `wcolor` - starting color i.e. the middle color
+* `dcolor1`, `dcolor2` - ending color of the first/latter part (depth)
+* `logscale` - `true`/`false` for toggling logspacing
+
+For examples:
+```@example colormap
+diverging_palette(0, 200, 32)
+Colormaps.ColormapSVG(diverging_palette(0, 200, 32)) # hide
+```
+```@example colormap
+diverging_palette(0, 200, 32, mid=0.3)
+Colormaps.ColormapSVG(diverging_palette(0, 200, 32, mid=0.3)) # hide
+```
+```@example colormap
+diverging_palette(0, 200, 32, mid=0.3, logscale=true)
+Colormaps.ColormapSVG(diverging_palette(0, 200, 32, mid=0.3, logscale=true)) # hide
+```
 
 ```@docs
 sequential_palette
@@ -213,17 +251,17 @@ diverging_palette
 
 ## Generating distinguishable colors
 
-`distinguishable_colors()` generates `n` maximally distinguishable colors in LCHab space. A seed color or array of seed colors can be provided, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
+[`distinguishable_colors()`](@ref) generates `n` maximally distinguishable colors in LCHab space. A seed color or array of seed colors can be provided, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.
 
 ```julia
 distinguishable_colors(n::Integer, seed::Color)
-distinguishable_colors{T<:Color}(n::Integer,seed::AbstractVector{T})
+distinguishable_colors(n::Integer, seed::AbstractVector{<:Color})
 ```
 
-By default, `distinguishable_colors` chooses maximally distinguishable colors from the outer product of lightness, chroma, and hue values specified by `lchoices = range(0, stop=100, length=15)`, `cchoices = range(0, stop=100, length=15)`, and `hchoices = range(0, stop=342, length=20)`. The set of colors that `distinguishable_colors` chooses from can be specified by passing different choices as keyword arguments.
+By default, `distinguishable_colors` chooses maximally distinguishable colors from the outer product of lightness, chroma, and hue values specified by `lchoices`, `cchoices`, and `hchoices`. The set of colors that `distinguishable_colors` chooses from can be specified by passing different choices as keyword arguments.
 
 ```julia
-distinguishable_colors{T<:Color}(n::Integer, seed::AbstractVector{T};
+distinguishable_colors(n::Integer, seed::AbstractVector{<:Color};
     dropseed = false,
     transform::Function = identity,
     lchoices::AbstractVector = range(0, stop=100, length=15),
