@@ -151,12 +151,12 @@ tritanopic(c::Color)   = tritanopic(c, 1.0)
 # MSC - Most Saturated Colorant for given hue h
 # ---------------------
 
-const LUV_HUE_R = hue(convert(Luv, RGB(1.0, 0.0, 0.0)))
-const LUV_HUE_Y = hue(convert(Luv, RGB(1.0, 1.0, 0.0)))
-const LUV_HUE_G = hue(convert(Luv, RGB(0.0, 1.0, 0.0)))
-const LUV_HUE_C = hue(convert(Luv, RGB(0.0, 1.0, 1.0)))
-const LUV_HUE_B = hue(convert(Luv, RGB(0.0, 0.0, 1.0)))
-const LUV_HUE_M = hue(convert(Luv, RGB(1.0, 0.0, 1.0)))
+const LUV_HUE_R = 12.17397852379156 # hue(convert(Luv, RGB(1.0, 0.0, 0.0)))
+const LUV_HUE_Y = 85.87273351614108 # hue(convert(Luv, RGB(1.0, 1.0, 0.0)))
+const LUV_HUE_G = 127.72355232980077 # hue(convert(Luv, RGB(0.0, 1.0, 0.0)))
+const LUV_HUE_C = 192.17397852379156 # hue(convert(Luv, RGB(0.0, 1.0, 1.0)))
+const LUV_HUE_B = 265.8727335161411 # hue(convert(Luv, RGB(0.0, 0.0, 1.0)))
+const LUV_HUE_M = 307.7235523298008 # hue(convert(Luv, RGB(1.0, 0.0, 1.0)))
 """
     MSC(h)
     MSC(h, l; linear=false)
@@ -259,7 +259,7 @@ function find_maximum_chroma(c::C,
     end
 end
 
-const LAB_HUE_Y = hue(convert(Lab, RGB(1.0, 1.0, 0.0)))
+const LAB_HUE_Y = 102.85123437653252 # hue(convert(Lab, RGB(1.0, 1.0, 0.0)))
 
 function find_maximum_chroma(c::LCHab{T}) where T
     maxc = find_maximum_chroma(c, 0, 135)
