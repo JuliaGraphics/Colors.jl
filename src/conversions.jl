@@ -59,9 +59,11 @@ convert(::Type{XYZ{T}}, c, wp::XYZ) where {T} = cnvt(XYZ{T}, c, wp)
 convert(::Type{Lab{T}}, c, wp::XYZ) where {T} = cnvt(Lab{T}, c, wp)
 convert(::Type{Luv{T}}, c, wp::XYZ) where {T} = cnvt(Luv{T}, c, wp)
 
-# FIXME: inference helpers for LCH --> RGB conversions
+# FIXME: inference helpers for LCH <--> RGB conversions
 convert(::Type{RGB},    c::Union{LCHab{T}, LCHuv{T}}) where {T} = cnvt(RGB{T}, cnvt(XYZ{T}, c))
 convert(::Type{RGB{T}}, c::Union{LCHab{T}, LCHuv{T}}) where {T} = cnvt(RGB{T}, cnvt(XYZ{T}, c))
+convert(::Type{Lab{T}}, c::RGB{T}) where {T} = cnvt(Lab{T}, cnvt(XYZ{T}, c))
+convert(::Type{Luv{T}}, c::RGB{T}) where {T} = cnvt(Luv{T}, cnvt(XYZ{T}, c))
 
 # Fallback to catch undefined operations
 cnvt(::Type{C}, c::TransparentColor) where {C<:Color} = cnvt(C, color(c))

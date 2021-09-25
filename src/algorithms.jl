@@ -180,10 +180,11 @@ may also be specified.
     value. This behavior might change in a future release.
 
 """
-function MSC(h)
+MSC(h) = MSC(Float64(h))
+function MSC(h::Float64)
 
     #Wrap h to [0, 360] range
-    h = normalize_hue(Float64(h))
+    h = normalize_hue(h)
 
     #Selecting edge of RGB cube; R=1 G=2 B=3
     # p #variable
@@ -218,7 +219,7 @@ function MSC(h)
 
     col = ntuple(i -> i == p ? cpc : Float64(i == t), Val(3))
 
-    return convert(LCHuv, RGB(col...))
+    return convert(LCHuv{Float64}, RGB{Float64}(col...))
 end
 
 
@@ -233,37 +234,38 @@ function MSC(h, l; linear::Bool=false)
         pend_l = l > pmid.l ? 100.0 : 0.0
         return (pend_l - l) / (pend_l - pmid.l) * pmid.c
     end
-    return find_maximum_chroma(LCHuv{Float64}(l, 0, h))
+    return find_maximum_chroma(LCHuv{Float64}(l, 0.0, h))
 end
 
 # This function finds the maximum chroma for the lightness `c.l` and hue `c.h`
 # by means of the binary search. Even though this requires more than 20
 # iterations, somehow, this is fast.
-function find_maximum_chroma(c::C,
-                             low::Real=0,
-                             high::Real=180) where {T, C<:Union{LCHab{T}, LCHuv{T}}}
+function find_maximum_chroma(c::C) where {T, C<:LCHuv{T}}
+    _find_maximum_chroma(c, convert(T, 0), convert(T, 180))
+end
+function _find_maximum_chroma(c::C, low::T, high::T) where {T, C<:Union{LCHab{T}, LCHuv{T}}}
     err = convert(T, 1e-6)
-    l, h = convert(T, low), convert(T, high)
-    h - l < err && return l
-
-    mid = convert(T, (l + h) / 2)
-    min(mid - l, h - mid) == zero(T) && return l
-    lchm = C(c.l, mid, c.h)
-    rgbm = xyz_to_linear_rgb(convert(XYZ{T}, lchm))
-    clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
-              min(red(rgbm), green(rgbm), blue(rgbm)) <= 0
-    if clamped
-        return find_maximum_chroma(c, l, mid)::T
-    else
-        return find_maximum_chroma(c, mid, h)::T
+    l, h = low, high
+    while true
+        mid = convert(T, (l + h) * oftype(l, 0.5))
+        @fastmath min(mid - l, h - mid) < err && break
+        lchm = C(c.l, mid, c.h)
+        rgbm = xyz_to_linear_rgb(convert(XYZ{T}, lchm))
+        clamped = max(red(rgbm), green(rgbm), blue(rgbm)) > 1-err ||
+                  min(red(rgbm), green(rgbm), blue(rgbm)) <= 0
+        l = clamped ? l : mid
+        h = clamped ? mid : h
     end
+    return l
 end
 
 const LAB_HUE_Y = 102.85123437653252 # hue(convert(Lab, RGB(1.0, 1.0, 0.0)))
 
-function find_maximum_chroma(c::LCHab{T}) where T
-    maxc = find_maximum_chroma(c, 0, 135)
-
+function find_maximum_chroma(c::C) where {T, C<:LCHab{T}}
+    find_maximum_chroma(c, convert(T, 0), convert(T, 135))
+end
+function find_maximum_chroma(c::C, low::T, high::T) where {T, C<:LCHab{T}}
+    maxc = _find_maximum_chroma(c, low, high)
     # The sRGB gamut in LCHab space has a *hollow* around the yellow corner.
     # Since the following boundary is based on the D65 white point, the values
     # should be modified on other conditions.

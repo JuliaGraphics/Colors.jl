@@ -556,8 +556,8 @@ import Base: linspace
 Base.@deprecate linspace(start::Colorant, stop::Colorant, n::Integer=100) range(start, stop=stop, length=n)
 end
 
-#Double quadratic Bezier curve
-function Bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
+# Double quadratic Bezier curve
+function bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
     B(t,a,b,c)=a*(1.0-t)^2 + 2.0b*(1.0-t)*t + c*t^2
     if t <= 0.5
         return B(2.0t, p0, q0, q1)
@@ -566,8 +566,8 @@ function Bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
     end
 end
 
-#Inverse double quadratic Bezier curve
-function invBezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
+# Inverse double quadratic Bezier curve
+function inv_bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
     invB(t,a,b,c)=(a-b+sqrt(b^2-a*c+(a-2.0b+c)*t))/(a-2.0b+c)
     if t < q1
         return 0.5*invB(t,p0,q0,q1)
