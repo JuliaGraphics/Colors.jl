@@ -203,7 +203,7 @@ end
 # To avoid stack overflow, the source types which do not support direct or
 # indirect conversion to RGB should be rejected.
 cnvt(::Type{CV}, c::Union{LMS, xyY}              ) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
-cnvt(::Type{CV}, c::Union{Lab, Luv, LCHab, LCHuv}) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
+cnvt(::Type{CV}, c::Union{Lab, Luv, Oklab, LCHab, LCHuv, LCHOklab}) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
 cnvt(::Type{CV}, c::Union{DIN99d, DIN99o, DIN99} ) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
 @noinline function cnvt(::Type{CV}, @nospecialize(c::Color)) where {CV<:AbstractRGB}
     error("No conversion of ", c, " to ", CV, " has been defined")
@@ -428,6 +428,13 @@ function cnvt(::Type{XYZ{T}}, c::LMS) where T
     @mul3x3 XYZ{T} CAT02_INV c.l c.m c.s
 end
 
+function cnvt(::Type{XYZ{T}}, c::Oklab) where T
+    lms = @mul3x3 LMS{T} XYZ2LMS_OKLAB_INV c.l c.a c.b
+    lmsp = LMS{T}([lms.l, lms.m, lms.s].^3...)
+    @mul3x3 XYZ{T} LMSP2OKLAB_INV lmsp.l lmsp.m lmsp.s
+end
+
+cnvt(::Type{XYZ{T}}, c::LCHOklab) where {T} = cnvt(XYZ{T}, cnvt(Oklab{T}, c))
 cnvt(::Type{XYZ{T}}, c::Union{LCHab, DIN99, DIN99o}) where {T} = cnvt(XYZ{T}, cnvt(Lab{T}, c))
 cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, cnvt(Luv{T}, c))
 cnvt(::Type{XYZ{T}}, c::Color) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c)::RGB{T})
@@ -571,6 +578,35 @@ end
 cnvt(::Type{Luv{T}}, c::Color) where {T} = cnvt(Luv{T}, convert(XYZ{T}, c)::XYZ{T})
 
 
+# Everything to Oklab
+# -----------------
+
+# Matrices from the original definition at https://bottosson.github.io/posts/oklab/
+const XYZ2LMS_OKLAB = Mat3x3([ 0.8189330101  0.3618667424 -0.1288597137
+                               0.0329845436  0.9293118715  0.0361456387
+                               0.0482003018  0.2643662691  0.6338517070 ])
+
+const XYZ2LMS_OKLAB_INV = Mat3x3(inv(Float64.(XYZ2LMS_OKLAB)))
+
+const LMSP2OKLAB = Mat3x3([ 0.2104542553  0.7936177850 -0.0040720468
+                            1.9779984951 -2.4285922050  0.4505937099
+                            0.0259040371  0.7827717662 -0.8086757660])
+
+const LMSP2OKLAB_INV = Mat3x3(inv(Float64.(LMSP2OKLAB)))
+
+function cnvt(::Type{Oklab{T}}, c::XYZ) where T
+    lms = @mul3x3 LMS{T} XYZ2LMS_OKLAB c.x c.y c.z
+    lms.l, lms.m, lms.s = cbrt01.([lms.l, lms.m, lms.s])
+    @mul3x3 Oklab{T} LMSP2OKLAB lms.l lms.m lms.s
+end
+
+function cnvt(::Type{Oklab{T}}, c::LCHOklab) where T
+    Oklab{T}(c.l, polar_to_cartesian(c.c, c.h)...)
+end
+
+cnvt(::Type{Oklab{T}}, c::Color) where {T} = cnvt(Oklab{T}, convert(XYZ{T}, c)::XYZ{T})
+
+
 # Everything to LCHuv
 # -------------------
 
@@ -591,6 +627,17 @@ end
 
 
 cnvt(::Type{LCHab{T}}, c::Color) where {T} = cnvt(LCHab{T}, convert(Lab{T}, c)::Lab{T})
+
+
+# Everything to LCHOklab
+# -------------------
+
+function cnvt(::Type{LCHOklab{T}}, c::Oklab) where T
+    LCHOklab{T}(c.l, chroma(c), hue(c))
+end
+
+
+cnvt(::Type{LCHOklab{T}}, c::Color) where {T} = cnvt(LCHOklab{T}, convert(Oklab{T}, c)::Lab{T})
 
 
 # Everything to DIN99
