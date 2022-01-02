@@ -429,9 +429,9 @@ function cnvt(::Type{XYZ{T}}, c::LMS) where T
 end
 
 function cnvt(::Type{XYZ{T}}, c::Oklab) where T
-    lms = @mul3x3 LMS{T} XYZ2LMS_OKLAB_INV c.l c.a c.b
+    lms = @mul3x3 LMS{T} LMSP2OKLAB_INV c.l c.a c.b
     lmsp = LMS{T}([lms.l, lms.m, lms.s].^3...)
-    @mul3x3 XYZ{T} LMSP2OKLAB_INV lmsp.l lmsp.m lmsp.s
+    @mul3x3 XYZ{T} XYZ2LMS_OKLAB_INV lmsp.l lmsp.m lmsp.s
 end
 
 cnvt(::Type{XYZ{T}}, c::LCHOklab) where {T} = cnvt(XYZ{T}, cnvt(Oklab{T}, c))
