@@ -637,7 +637,7 @@ function cnvt(::Type{LCHOklab{T}}, c::Oklab) where T
 end
 
 
-cnvt(::Type{LCHOklab{T}}, c::Color) where {T} = cnvt(LCHOklab{T}, convert(Oklab{T}, c)::Lab{T})
+cnvt(::Type{LCHOklab{T}}, c::Color) where {T} = cnvt(LCHOklab{T}, convert(Oklab{T}, c)::Oklab{T})
 
 
 # Everything to DIN99
