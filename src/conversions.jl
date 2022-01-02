@@ -596,8 +596,8 @@ const LMSP2OKLAB_INV = Mat3x3(inv(Float64.(LMSP2OKLAB)))
 
 function cnvt(::Type{Oklab{T}}, c::XYZ) where T
     lms = @mul3x3 LMS{T} XYZ2LMS_OKLAB c.x c.y c.z
-    lms.l, lms.m, lms.s = cbrt01.([lms.l, lms.m, lms.s])
-    @mul3x3 Oklab{T} LMSP2OKLAB lms.l lms.m lms.s
+    lmsp = LMS{T}(cbrt01.([lms.l, lms.m, lms.s])...)
+    @mul3x3 Oklab{T} LMSP2OKLAB lmsp.l lmsp.m lmsp.s
 end
 
 function cnvt(::Type{Oklab{T}}, c::LCHOklab) where T
