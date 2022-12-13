@@ -135,7 +135,7 @@ function tritanopic(q::T, p, neutral::LMS) where T <: Color
 
     q = LMS(q.l,
             q.m,
-            (one(p) - p) * q.l + p * (-(a*q.l + b*q.m)/c))
+            (one(p) - p) * q.s + p * (-(a*q.l + b*q.m)/c))
     convert(T, q)
 end
 

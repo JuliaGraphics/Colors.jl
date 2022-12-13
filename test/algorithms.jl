@@ -55,4 +55,10 @@ using Test, Colors
     # yellow in LCHab
     @test Colors.find_maximum_chroma(LCHab(94.2, 0, 100)) ≈ 93.749 atol=0.01
     @test Colors.find_maximum_chroma(LCHab(97.6, 0, 105)) ≈ 68.828 atol=0.01
+
+    # Color vision deficiency simulations at p=0
+    rgb = RGB(0.44, 0.26, 0.8)
+    @test protanopic(rgb, 0) .≈ rgb
+    @test deuteranopic(rgb, 0) .≈ rgb
+    @test tritanopic(rgb, 0) .≈ rgb
 end
