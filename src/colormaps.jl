@@ -52,7 +52,8 @@ function distinguishable_colors(n::Integer,
         cchoices::AbstractVector{<:Real} = range(0.0f0, stop=100.0f0, length=15),
         hchoices::AbstractVector{<:Real} = range(0.0f0, stop=342.0f0, length=20))
     if n <= length(seed) && !dropseed
-        return seed[1:n]
+        i₀ = firstindex(seed)
+        return seed[i₀:n+i₀-1]
     end
 
     # Candidate colors

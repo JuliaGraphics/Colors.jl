@@ -277,7 +277,7 @@ end
 
     function convcompare(from, to, tol; showfailure::Bool=false)
         errmax = 0.0
-        for i = 1:length(from)
+        for i in eachindex(from)
             t = to[i]
             f = convert(typeof(t), from[i])
             diff = diffnorm(t, f)
