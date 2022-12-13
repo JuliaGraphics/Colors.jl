@@ -139,6 +139,21 @@ RGB{N0f8}(0.502,0.251,0.749)
 
 Depending on the source and destination colorspace, this may not be perfectly lossless.
 
+## Transparent - Opaque Conversions
+
+Colors.jl allows you to convert colors to transparent or opaque types.
+
+```jldoctest example
+julia> col = colorant"yellow"
+RGB{N0f8}(1.0,1.0,0.0)
+
+julia> transparent = alphacolor(col, 0.5)  # or coloralpha(col)
+ARGB{N0f8}(1.0,1.0,0.0,0.502)
+
+julia> opaque = color(transparent)
+RGB{N0f8}(1.0,1.0,0.0)
+```
+
 ---
 
 ```@docs
