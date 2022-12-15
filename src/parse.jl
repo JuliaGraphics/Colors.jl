@@ -252,7 +252,7 @@ Base.parse(::Type{C}, desc::Symbol) where {C<:Colorant} = parse(C, string(desc))
 
 @noinline function Base.parse(::Type{C}, c::Colorant) where {C<:Colorant}
     Base.depwarn("""
-        `parse(::Type, ::Coloarant)` is deprecated.
+        `parse(::Type, ::Colorant)` is deprecated.
           Do not call `parse` if the object does not need to be parsed.""", :parse)
     c
 end
