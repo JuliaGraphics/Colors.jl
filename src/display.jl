@@ -33,13 +33,13 @@ end
 
 
 function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractVector{T};
-                   max_swatches::Integer=0) where {Union{} <: T <: Color}
+                   max_swatches::Integer=0) where T <: Color
     mat = Base.ReshapedArray(cs, (1, length(cs)), ())
     show(io, mime, mat, max_swatches=max_swatches)
 end
 
 function Base.show(io::IO, mime::MIME"image/svg+xml",cs::AbstractVector{T};
-                   max_swatches::Integer=0) where {Union{} <: T <: TransparentColor}
+                   max_swatches::Integer=0) where T <: TransparentColor
 
     # use random id to avoid id collision when the SVG is embedded inline
     id = "pat_" * string(rand(UInt32), base=62)
@@ -97,7 +97,7 @@ end
 
 
 function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
-                   max_swatches::Integer=0) where {Union{} <: T <: Color}
+                   max_swatches::Integer=0) where T <: Color
     m, n = size(cs)
     actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
     if m * n > actual_max_swatches
@@ -151,7 +151,7 @@ end
 
 
 function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
-                      max_swatches::Integer=0) where {Union{} <: T <: Color}
+                      max_swatches::Integer=0) where T <: Color
     m, n = size(cs)
     actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
     # When `max_swatches` is specified, the following warning is suppressed.
