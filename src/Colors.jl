@@ -47,7 +47,6 @@ const JULIA_LOGO_COLORS = (red = RGB{N0f8}(0.796, 0.235, 0.2),  # colorant"#cb3c
 
 if VERSION >= v"1.1"   # work around https://github.com/JuliaLang/julia/issues/34121
     include("precompile.jl")
-    _precompile_()
 end
 
 end # module
