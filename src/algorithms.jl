@@ -14,14 +14,35 @@ const Linear3 = Union{XYZ, LMS}
 # Chromatic Adaptation / Whitebalancing
 # -------------------------------------
 
+# Currently, support for the `wp` argument of `convert` is limited.
+function _to_lms(c::C, wp::XYZ) where C <: Color
+    C <: LMS && return c
+    C <: Union{Lab, LCHab, DIN99, DIN99o} && return convert(LMS, convert(XYZ, convert(Lab, c), wp))
+    C <: Union{Luv, LCHuv} && return convert(LMS, convert(XYZ, convert(Luv, c), wp))
+    return convert(LMS, c)
+end
+function _from_lms(::Type{C}, c::LMS, wp::XYZ) where C <: Color
+    C <: LMS && return c
+    xyz = convert(XYZ, c)
+    C <: Union{Lab, LCHab, DIN99, DIN99o} && return convert(C, convert(Lab, xyz, wp))
+    C <: Union{Luv, LCHuv} && return convert(C, convert(Luv, xyz, wp))
+    return convert(C, c)
+end
+
 """
     whitebalance(c, src_white, ref_white)
 
-Whitebalance a color.
+Returns a whitebalanced color.
 
 Input a source (adopted) and destination (reference) white. For example, if you want a photo
 taken under fluorescent lighting to appear correct in regular sunlight, you might do
-something like `whitebalance(c, WP_F2, WP_D65)`.
+something like `whitebalance(c, Colors.WP_F2, Colors.WP_D65)`.
+
+This function uses the [CAT02](https://en.wikipedia.org/wiki/CIECAM02#CAT02)
+chromatic adaptation transform matrix, and the degree of adaptation is set to
+`1`.
+The CAT02 transform gives a different result than the Bradford transform, which
+is often used in color management systems.
 
 # Arguments
 
@@ -29,22 +50,20 @@ something like `whitebalance(c, WP_F2, WP_D65)`.
 - `src_white`: Adopted or source white corresponding to `c`
 - `ref_white`: Reference or destination white.
 
-Returns a whitebalanced color.
+!!! note
+    Since color spaces such as `Lab` and `Luv` are relative to the whitepoint,
+    `whitebalance` makes little difference numerically.
 """
-function whitebalance(c::T, src_white::Color, ref_white::Color) where T <: Color
-    c_lms = convert(LMS, c)
+function whitebalance(c::C, src_white::Color, ref_white::Color) where C <: Color
+    c_lms = _to_lms(c, convert(XYZ, src_white))
     src_wp = convert(LMS, src_white)
     dest_wp = convert(LMS, ref_white)
 
-    # This is sort of simplistic, it sets the degree of adaptation term in
-    # CAT02 to 0.
-    # Setting the degree of adaptation to 0 is rather odd. Wouldn’t setting
-    # it to 1.0 make more sense as a temporary default value?
-    ans = LMS(c_lms.l * dest_wp.l / src_wp.l,
+    # This is sort of simplistic, it sets the degree of adaptation term in CAT02 to 1.
+    lms = LMS(c_lms.l * dest_wp.l / src_wp.l,
               c_lms.m * dest_wp.m / src_wp.m,
               c_lms.s * dest_wp.s / src_wp.s)
-
-    convert(T, ans)
+    _from_lms(C, lms,  convert(XYZ, ref_white))
 end
 
 
