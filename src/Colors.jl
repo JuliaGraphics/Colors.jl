@@ -8,8 +8,8 @@ Base.@deprecate_binding RGB1 XRGB
 Base.@deprecate_binding RGB4 RGBX
 
 
-import Base: ==, +, -, *, /
-import Base: convert, eltype, isless, range, show, showable, typemin, typemax
+import Base: +, -, *, / # for XYZ and LMS arithmetic
+import Base: convert, parse, range, show, showable
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,
