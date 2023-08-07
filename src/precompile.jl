@@ -6,7 +6,7 @@ function _precompile_()
     cctypes = (Gray24, AGray32, RGB24, ARGB32)       # non-parametric colors
     # conversions
     ## from/to XYZ
-    for T in feltypes, C in (HSV,LCHab,LCHuv,Lab,Luv)
+    for T in feltypes, C in (HSV,LCHab,LCHuv,Lab,Luv,Oklab,Oklch)
         precompile(Tuple{typeof(convert),Type{C{T}},XYZ{T}})
         precompile(Tuple{typeof(convert),Type{XYZ{T}},C{T}})
     end
@@ -15,7 +15,7 @@ function _precompile_()
         precompile(Tuple{typeof(convert),Type{XYZ{T}},RGB{F}})
     end
     ## to RGB
-    for T in eltypes, F in feltypes, C in (HSV,LCHab,LCHuv,Lab,Luv)
+    for T in eltypes, F in feltypes, C in (HSV,LCHab,LCHuv,Lab,Luv,Oklab,Oklch)
         precompile(Tuple{typeof(convert),Type{RGB{T}},C{F}})
     end
     # parse
