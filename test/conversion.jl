@@ -271,8 +271,14 @@ end
     function diffnorm(a::T, b::T) where {T<:Union{Lab,Luv}}
         sqrt(sqd(a.l, b.l, 100) + sqd(comp2(a), comp2(b), 200) + sqd(comp3(a), comp3(b), 200))/sqrt(3)
     end
+    function diffnorm(a::T, b::T) where {T<:Oklab}
+        sqrt(sqd(a.l, b.l) + sqd(a.a, b.a, 0.4) + sqd(a.b, b.b, 0.4))/sqrt(3)
+    end
     function diffnorm(a::T, b::T) where {T<:Union{LCHab,LCHuv}}
         sqrt(sqd(a.l, b.l, 100) + sqd(a.c, b.c, 100) + sqd(a.h, b.h, 360))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Oklch}
+        sqrt(sqd(a.l, b.l, 1) + sqd(a.c, b.c, 0.4) + sqd(a.h, b.h, 360))/sqrt(3)
     end
     function diffnorm(a::T, b::T) where {T<:Union{DIN99,DIN99d,DIN99o}} # csconv has no DIN99 case
         sqrt(sqd(a.l, b.l, 100) + sqd(a.a, b.a, 100) + sqd(a.b, b.b, 100))/sqrt(3)

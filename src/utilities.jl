@@ -187,9 +187,10 @@ atan360(y, x) = (a = atand(y, x); signbit(a) ? oftype(a, a + 360) : a)
     return dd
 end
 
-# override only the `Lab` and `Luv` versions just for now
+# override only the `Lab`, `Luv`, and `Oklab` versions just for now
 @inline ColorTypes.hue(c::Lab) = atan360(c.b, c.a)
 @inline ColorTypes.hue(c::Luv) = atan360(c.v, c.u)
+@inline ColorTypes.hue(c::Oklab) = atan360(c.b, c.a)
 
 @inline function sin_kernel(x::Float64)
     x * @evalpoly(x^2,
@@ -376,8 +377,8 @@ hue, in degrees, in [0, 360]. The normalization is essentially equivalent to
 normalize_hue(c::C) where {C <: Union{HSV, HSL, HSI}} = C(normalize_hue(c.h), c.s, comp3(c))
 normalize_hue(c::C) where {Cb <: Union{HSV, HSL, HSI}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
     C(normalize_hue(c.h), c.s, comp3(c), alpha(c))
-normalize_hue(c::C) where C <: Union{LCHab, LCHuv} = C(c.l, c.c, normalize_hue(c.h))
-normalize_hue(c::C) where {Cb <: Union{LCHab, LCHuv}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
+normalize_hue(c::C) where C <: Union{LCHab, LCHuv, Oklch} = C(c.l, c.c, normalize_hue(c.h))
+normalize_hue(c::C) where {Cb <: Union{LCHab, LCHuv, Oklch}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
     C(c.l, c.c, normalize_hue(c.h), c.alpha)
 
 """
@@ -401,7 +402,7 @@ function mean_hue(h1::T, h2::T) where {T <: Real}
     mh = muladd(F(0.5), d, hmin)
     return mh < 0 ? mh + 360 : mh
 end
-@inline function mean_hue(a::C, b::C) where {Cb <: Union{Lab, Luv},
+@inline function mean_hue(a::C, b::C) where {Cb <: Union{Lab, Luv, Oklab},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     a1, b1, a2, b2 = comp2(a), comp3(a), comp2(b), comp3(b)
     c1, c2 = chroma(a), chroma(b)
@@ -421,7 +422,7 @@ end
     mb = muladd(k2, b1, k1 * b2)
     hue(Cb(zero(ma), ma, mb))
 end
-function mean_hue(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
+function mean_hue(a::C, b::C) where {Cb <: Union{LCHab, LCHuv, Oklch},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     mean_hue(a.c == 0 ? b.h : a.h, b.c == 0 ? a.h : b.h)
 end
@@ -435,7 +436,7 @@ _delta_h_th(T) = zero(T)
 _delta_h_th(::Type{Float32}) = 0.1f0
 _delta_h_th(::Type{Float64}) = 6.5e-3
 
-function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
+function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv, Oklab},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     a1, b1, a2, b2 = comp2(a), comp3(a), comp2(b), comp3(b)
     c1, c2 = chroma(a), chroma(b)
@@ -458,7 +459,7 @@ function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv},
         return @fastmath sqrt(c1 * c2) * sn
     end
 end
-function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
+function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv, Oklch},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     dh0 = hue(a) - hue(b)
     sh = muladd(dh0, oftype(dh0, 1 / 360), oftype(dh0, 0.5))
@@ -467,7 +468,7 @@ function delta_h(a::C, b::C) where {Cb <: Union{LCHab, LCHuv},
 end
 delta_h(a, b) = delta_h(promote(a, b)...)
 
-@inline function delta_c(a::C, b::C) where {Cb <: Union{Lab{Float32}, Luv{Float32}},
+@inline function delta_c(a::C, b::C) where {Cb <: Union{Lab{Float32}, Luv{Float32}, Oklab{Float32}},
                                     C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     n1, m1 = @fastmath minmax(comp2(a)^2, comp3(a)^2)
     n2, m2 = @fastmath minmax(comp2(b)^2, comp3(b)^2)
@@ -482,7 +483,7 @@ Returns the color `w1*c1 + (1-w1)*c2` that is the weighted mean of `c1` and
 `c2`, where `c1` has a weight 0 ≤ `w1` ≤ 1.
 """
 weighted_color_mean(w1::Real, c1::Colorant, c2::Colorant) = _weighted_color_mean(w1, c1, c2)
-function weighted_color_mean(w1::Real, c1::C, c2::C) where {Cb <: Union{HSV, HSL, HSI, LCHab, LCHuv},
+function weighted_color_mean(w1::Real, c1::C, c2::C) where {Cb <: Union{HSV, HSL, HSI, LCHab, LCHuv, Oklch},
                                                             C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     normalize_hue(_weighted_color_mean(w1, c1, c2))
 end

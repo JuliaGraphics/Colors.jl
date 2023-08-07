@@ -60,10 +60,11 @@ convert(::Type{Lab{T}}, c, wp::XYZ) where {T} = cnvt(Lab{T}, c, wp)
 convert(::Type{Luv{T}}, c, wp::XYZ) where {T} = cnvt(Luv{T}, c, wp)
 
 # FIXME: inference helpers for LCH <--> RGB conversions
-convert(::Type{RGB},    c::Union{LCHab{T}, LCHuv{T}}) where {T} = cnvt(RGB{T}, cnvt(XYZ{T}, c))
-convert(::Type{RGB{T}}, c::Union{LCHab{T}, LCHuv{T}}) where {T} = cnvt(RGB{T}, cnvt(XYZ{T}, c))
+convert(::Type{RGB},    c::Union{LCHab{T}, LCHuv{T}, Oklch{T}}) where {T} = cnvt(RGB{T}, cnvt(XYZ{T}, c))
+convert(::Type{RGB{T}}, c::Union{LCHab{T}, LCHuv{T}, Oklch{T}}) where {T} = cnvt(RGB{T}, cnvt(XYZ{T}, c))
 convert(::Type{Lab{T}}, c::RGB{T}) where {T} = cnvt(Lab{T}, cnvt(XYZ{T}, c))
 convert(::Type{Luv{T}}, c::RGB{T}) where {T} = cnvt(Luv{T}, cnvt(XYZ{T}, c))
+convert(::Type{Oklab{T}}, c::RGB{T}) where {T} = cnvt(Oklab{T}, cnvt(XYZ{T}, c))
 
 # Fallback to catch undefined operations
 cnvt(::Type{C}, c::TransparentColor) where {C<:Color} = cnvt(C, color(c))
@@ -202,9 +203,9 @@ end
 
 # To avoid stack overflow, the source types which do not support direct or
 # indirect conversion to RGB should be rejected.
-cnvt(::Type{CV}, c::Union{LMS, xyY}              ) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
-cnvt(::Type{CV}, c::Union{Lab, Luv, LCHab, LCHuv}) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
-cnvt(::Type{CV}, c::Union{DIN99d, DIN99o, DIN99} ) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
+cnvt(::Type{CV}, c::Union{LMS, xyY}) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
+cnvt(::Type{CV}, c::Union{Lab, Luv, Oklab, LCHab, LCHuv, Oklch}) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
+cnvt(::Type{CV}, c::Union{DIN99d, DIN99o, DIN99}) where {CV<:AbstractRGB} = cnvt(CV, cnvt(XYZ{eltype(c)}, c))
 @noinline function cnvt(::Type{CV}, @nospecialize(c::Color)) where {CV<:AbstractRGB}
     error("No conversion of ", c, " to ", CV, " has been defined")
 end
@@ -428,6 +429,14 @@ function cnvt(::Type{XYZ{T}}, c::LMS) where T
     @mul3x3 XYZ{T} CAT02_INV c.l c.m c.s
 end
 
+
+function cnvt(::Type{XYZ{T}}, c::Oklab) where T
+    lmsp = @mul3x3 LMS{T} M_OKLMSP2OKLAB_INV c.l c.a c.b
+    @mul3x3 XYZ{T} M_XYZ2OKLMS_INV lmsp.l^3 lmsp.m^3 lmsp.s^3
+end
+
+cnvt(::Type{XYZ{T}}, c::Oklch) where {T} = cnvt(XYZ{T}, cnvt(Oklab{T}, c))
+
 cnvt(::Type{XYZ{T}}, c::Union{LCHab, DIN99, DIN99o}) where {T} = cnvt(XYZ{T}, cnvt(Lab{T}, c))
 cnvt(::Type{XYZ{T}}, c::LCHuv) where {T} = cnvt(XYZ{T}, cnvt(Luv{T}, c))
 cnvt(::Type{XYZ{T}}, c::Color) where {T} = cnvt(XYZ{T}, convert(RGB{T}, c)::RGB{T})
@@ -591,6 +600,44 @@ end
 
 
 cnvt(::Type{LCHab{T}}, c::Color) where {T} = cnvt(LCHab{T}, convert(Lab{T}, c)::Lab{T})
+
+
+# Everything to Oklab
+# -------------------
+
+# Matrices as specified in https://bottosson.github.io/posts/oklab/
+const M_XYZ2OKLMS = Mat3x3([0.8189330101 0.3618667424 -0.1288597137
+                            0.0329845436 0.9293118715  0.0361456387
+                            0.0482003018 0.2643662691  0.6338517070])
+
+const M_XYZ2OKLMS_INV = Mat3x3(inv(Float64.(M_XYZ2OKLMS)))
+
+const M_OKLMSP2OKLAB = Mat3x3([0.2104542553  0.7936177850 -0.0040720468
+                               1.9779984951 -2.4285922050  0.4505937099
+                               0.0259040371  0.7827717662 -0.8086757660])
+
+const M_OKLMSP2OKLAB_INV = Mat3x3(inv(Float64.(M_OKLMSP2OKLAB)))
+
+function cnvt(::Type{Oklab{T}}, c::XYZ) where T
+    lms = @mul3x3 LMS{T} M_XYZ2OKLMS c.x c.y c.z
+    @mul3x3 Oklab{T} M_OKLMSP2OKLAB cbrt(lms.l) cbrt(lms.m) cbrt(lms.s)
+end
+
+function cnvt(::Type{Oklab{T}}, c::Oklch) where T
+    Oklab{T}(c.l, polar_to_cartesian(c.c, c.h)...)
+end
+
+cnvt(::Type{Oklab{T}}, c::Color) where {T} = cnvt(Oklab{T}, convert(XYZ{T}, c)::XYZ{T})
+
+
+# Everything to Oklch
+# -------------------
+
+function cnvt(::Type{Oklch{T}}, c::Oklab) where T
+    Oklch{T}(c.l, chroma(c), hue(c))
+end
+
+cnvt(::Type{Oklch{T}}, c::Color) where {T} = cnvt(Oklch{T}, convert(Oklab{T}, c)::Oklab{T})
 
 
 # Everything to DIN99
