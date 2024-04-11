@@ -236,6 +236,32 @@ end
         @test convert(RGB{Float64}, HSI{BigFloat}(-360120, .5, .5)) ≈ RGB{Float64}(.25,.25,1)
     end
 
+    # Oklab examples from Björn Ottosson (https://bottosson.github.io/posts/oklab/)
+    @testset "Oklab <-> XYZ" begin
+        @test convert(Oklab, XYZ{Float32}(0.950, 1.000, 1.089)) ≈ Oklab{Float32}(1.000,  0.000,  0.000) atol=2e-3
+        @test convert(Oklab, XYZ{Float32}(1.000, 0.000, 0.000)) ≈ Oklab{Float32}(0.450,  1.236, -0.019) atol=2e-3
+        @test convert(Oklab, XYZ{Float32}(0.000, 1.000, 0.000)) ≈ Oklab{Float32}(0.922, -0.671,  0.263) atol=2e-3
+        @test convert(Oklab, XYZ{Float32}(0.000, 0.000, 1.000)) ≈ Oklab{Float32}(0.153, -1.415, -0.449) atol=2e-3
+
+        @test convert(XYZ, Oklab{Float32}(1.000,  0.000,  0.000)) ≈ XYZ{Float32}(0.950, 1.000, 1.089) atol=2e-3
+        @test convert(XYZ, Oklab{Float32}(0.450,  1.236, -0.019)) ≈ XYZ{Float32}(1.000, 0.000, 0.000) atol=2e-3
+        @test convert(XYZ, Oklab{Float32}(0.922, -0.671,  0.263)) ≈ XYZ{Float32}(0.000, 1.000, 0.000) atol=2e-3
+        @test convert(XYZ, Oklab{Float32}(0.153, -1.415, -0.449)) ≈ XYZ{Float32}(0.000, 0.000, 1.000) atol=2e-3
+    end
+
+    # Selection of Oklch tests from the WPT test suite (https://wpt.fyi/results/css/css-color)
+    @testset "Oklch <-> RGB" begin
+        @test convert(Oklch, RGB{Float32}(0.706, 0.024, 0.371)) ≈ Oklch{Float32}(0.50, 0.20,   0) atol=1e-1
+        @test convert(Oklch, RGB{Float32}(0.231, 0.317, 0.826)) ≈ Oklch{Float32}(0.50, 0.20, 270) atol=1e-1
+        @test convert(Oklch, RGB{Float32}(0.320, 0.858, 0.611)) ≈ Oklch{Float32}(0.80, 0.15, 160) atol=1e-1
+        @test convert(Oklch, RGB{Float32}(0.673, 0.278, 0.523)) ≈ Oklch{Float32}(0.55, 0.15, 345) atol=1e-1
+
+        @test convert(RGB, Oklch{Float32}(0.50, 0.20,   0)) ≈ RGB{Float32}(0.706, 0.024, 0.371) atol=1e-1
+        @test convert(RGB, Oklch{Float32}(0.50, 0.20, 270)) ≈ RGB{Float32}(0.231, 0.317, 0.826) atol=1e-1
+        @test convert(RGB, Oklch{Float32}(0.80, 0.15, 160)) ≈ RGB{Float32}(0.320, 0.858, 0.611) atol=1e-1
+        @test convert(RGB, Oklch{Float32}(0.55, 0.15, 345)) ≈ RGB{Float32}(0.673, 0.278, 0.523) atol=1e-1
+    end
+
     @testset "custom types" begin
         # issue #465
         @test_throws ErrorException convert(RGB,   C3{Float32}(1, 2, 3))
