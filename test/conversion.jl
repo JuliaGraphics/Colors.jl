@@ -1,6 +1,21 @@
 using Colors, FixedPointNumbers
 using Test
-using ColorTypes: eltype_default, parametric3
+using ColorTypes: eltype_default
+
+# The filter mechanism should not be removed, as new types may be added in the future.
+const supported_p3 = filter(ColorTypes.parametric3) do C
+    sym = Symbol(C)
+    # TODO: Remove the following exclusions when the color types are supported.
+    sym in (:Oklab, :Oklch) && return false
+    return true
+end
+if supported_p3 == ColorTypes.parametric3
+    @test supported_p3 == ColorTypes.parametric3
+else
+    @test_broken supported_p3 == ColorTypes.parametric3
+    notsupported = setdiff(ColorTypes.parametric3, supported_p3)
+    @warn "The following may not be fully tested: $notsupported"
+end
 
 struct C3{T} <: Color{T,3}
     c1::T; c2::T; c3::T;
@@ -42,19 +57,19 @@ end
     @test RGB(UInt8(1), UInt8(0), UInt8(0)) == redF64 # != colorant"#010000"
     @test convert(RGB, red24) == redF64
 
-    @testset "type check: RGB24-->$Cto" for Cto in parametric3
+    @testset "type check: RGB24-->$Cto" for Cto in supported_p3
         @test typeof(convert(Cto, red24)) == Cto{eltype_default(Cto)}
         @test typeof(convert(Cto{Float64}, red24)) == Cto{Float64}
     end
 
-    @testset "type check: C{Float}-->C{Float}" for Cfrom in parametric3, Tfrom in (Float32, Float64)
+    @testset "type check: C{Float}-->C{Float}" for Cfrom in supported_p3, Tfrom in (Float32, Float64)
         c = convert(Cfrom{Tfrom}, redF64)
         @test typeof(c) == Cfrom{Tfrom}
-        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in parametric3
+        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in supported_p3
             c1 = convert(Cto, c)
             @test eltype(c1) == Tfrom
         end
-        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in parametric3, Tto in (Float32, Float64)
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in supported_p3, Tto in (Float32, Float64)
             c2 = convert(Cto{Tto}, c)
             @test typeof(c2) == Cto{Tto}
         end
@@ -65,19 +80,19 @@ end
     @testset "type check: C{Normed}-->C{Float}" for Cfrom in fractional_types, Tfrom in normed_types
         c = convert(Cfrom{Tfrom}, redF64)
         @test typeof(c) == Cfrom{Tfrom}
-        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in parametric3
+        @testset "$Cfrom{$Tfrom}-->$Cto" for Cto in supported_p3
             eltype_default(Cto) <: FixedPoint && continue
             c1 = convert(Cto, c)
             @test eltype(c1) == eltype_default(Cto)
         end
-        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in parametric3, Tto in (Float32, Float64)
+        @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in supported_p3, Tto in (Float32, Float64)
             c2 = convert(Cto{Tto}, c)
             @test typeof(c2) == Cto{Tto}
         end
     end
 
     # Test conversion to Normed types
-    @testset "type check: C{Float}-->C{Normed}" for Cfrom in parametric3, Tfrom in (Float32, Float64)
+    @testset "type check: C{Float}-->C{Normed}" for Cfrom in supported_p3, Tfrom in (Float32, Float64)
         c = convert(Cfrom{Tfrom}, redF64)
         @test typeof(c) == Cfrom{Tfrom}
         @testset "$Cfrom{$Tfrom}-->$Cto{$Tto}" for Cto in fractional_types, Tto in normed_types
@@ -158,7 +173,7 @@ end
     @test convert(RGB, grayN0f16) == RGB{N0f16}(0.8,0.8,0.8)
     @test convert(RGB{Float32}, grayN0f16) == RGB{Float32}(0.8,0.8,0.8)
 
-    @testset "$C-->Gray" for C in parametric3
+    @testset "$C-->Gray" for C in supported_p3
         c = convert(C, RGB(1,1,1))
         g1 = convert(Gray, c)
         @test isa(g1, Gray)
@@ -269,7 +284,7 @@ end
         sqrt(sqd(a.y, b.y, 219) + sqd(a.cb, b.cb, 224) + sqd(a.cr, b.cr, 224))/sqrt(3)
     end
 
-    for C in ColorTypes.parametric3
+    for C in supported_p3
         y = convert(C, RGB(1.0,1.0,0.0))
         b = convert(C, RGB(0.1,0.1,0.2))
         diffnorm(y, b) < 0.5 && @warn("`diffnorm` for $C may be broken")
