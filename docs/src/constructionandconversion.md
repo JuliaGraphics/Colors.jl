@@ -116,10 +116,10 @@ You can convert colors to hexadecimal strings using the [`hex`](@ref) function.
 Note that the conversion result does not have the prefix `"#"`.
 
 ```jldoctest example
-julia> color = colorant"#C0FFEE"
+julia> col = colorant"#C0FFEE"
 RGB{N0f8}(0.753,1.0,0.933)
 
-julia> hex(color)
+julia> hex(col)
 "C0FFEE"
 ```
 
