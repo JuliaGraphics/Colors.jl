@@ -373,8 +373,8 @@ end
 function _colordiff(a_xyz::XYZ{T}, b_xyz::XYZ{T}, m::DE_BFD) where T
     F = typeof(0.5f0 * zero(T)) === Float32 ? Float32 : promote_type(Float64, T)
 
-    la = muladd(F(54.6), log10(a_xyz.y + F(1.5)), F(-9.6))
-    lb = muladd(F(54.6), log10(b_xyz.y + F(1.5)), F(-9.6))
+    l_bfd(y) = muladd(F(54.6), log10(y + F(1.5)), F(-9.6))
+    la, lb = l_bfd.((a_xyz.y, b_xyz.y))
 
     # Convert into Lab with the proper white point
     wpf = XYZ{F}(m.wp)
