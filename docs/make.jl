@@ -17,6 +17,7 @@ makedocs(
     clean = false,
     modules = [Colors],
     format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true",
+                             size_threshold = nothing,
                              assets = ["assets/resize_svg.js", "assets/favicon.ico"]),
     checkdocs = :exports,
     sitename = "Colors",

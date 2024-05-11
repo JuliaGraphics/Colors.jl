@@ -10,7 +10,7 @@ julia> colordiff(colorant"red", colorant"blue")
 52.88136782250768
 
 julia> colordiff(HSV(0, 0.75, 0.5), HSL(0, 0.75, 0.5))
-19.48591066257134
+19.485910662571335
 ```
 
 ```julia
