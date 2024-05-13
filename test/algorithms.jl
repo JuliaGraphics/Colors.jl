@@ -58,7 +58,7 @@ using Test, Colors
 
     # Color vision deficiency simulations at p=0
     rgb = RGB(0.44, 0.26, 0.8)
-    @test protanopic(rgb, 0) .≈ rgb
-    @test deuteranopic(rgb, 0) .≈ rgb
-    @test tritanopic(rgb, 0) .≈ rgb
+    @test protanopic(rgb, 0) ≈ rgb
+    @test deuteranopic(rgb, 0) ≈ rgb
+    @test tritanopic(rgb, 0) ≈ rgb
 end
