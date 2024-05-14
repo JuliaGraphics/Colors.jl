@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 91.0"
+     width="150mm" height="91.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Whites</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFFF" /><text><tspan x="7.4" y="4.2">white</tspan></text><text x="7.4" y="13">1.0, 1.0, 1.0</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFF0" /><text><tspan x="7.4" y="4.2">ivory</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.94</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFF0" /><text><tspan x="7.4" y="4.2">ivory1</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.94</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#F5FFFA" /><text><tspan x="7.4" y="4.2">mintcream</tspan></text><text x="7.4" y="13">0.96, 1.0, 0.98</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFAFA" /><text><tspan x="7.4" y="4.2">snow</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.98</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFAFA" /><text><tspan x="7.4" y="4.2">snow1</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.98</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#F0FFF0" /><text><tspan x="7.4" y="4.2">honeydew</tspan></text><text x="7.4" y="13">0.94, 1.0, 0.94</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#F0FFF0" /><text><tspan x="7.4" y="4.2">honeydew1</tspan></text><text x="7.4" y="13">0.94, 1.0, 0.94</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFAF0" /><text><tspan x="7.4" y="4.2">floralwhite</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.94</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#F8F8FF" /><text><tspan x="7.4" y="4.2">ghostwhite</tspan></text><text x="7.4" y="13">0.97, 0.97, 1.0</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF8DC" /><text><tspan x="7.4" y="4.2">cornsilk</tspan></text><text x="7.4" y="13">1.0, 0.97, 0.86</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF8DC" /><text><tspan x="7.4" y="4.2">cornsilk1</tspan></text><text x="7.4" y="13">1.0, 0.97, 0.86</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF5EE" /><text><tspan x="7.4" y="4.2">seashell</tspan></text><text x="7.4" y="13">1.0, 0.96, 0.93</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF5EE" /><text><tspan x="7.4" y="4.2">seashell1</tspan></text><text x="7.4" y="13">1.0, 0.96, 0.93</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#FDF5E6" /><text><tspan x="7.4" y="4.2">oldlace</tspan></text><text x="7.4" y="13">0.99, 0.96, 0.9</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#F5F5F5" /><text><tspan x="7.4" y="4.2">whitesmoke</tspan></text><text x="7.4" y="13">0.96, 0.96, 0.96</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#F5F5DC" /><text><tspan x="7.4" y="4.2">beige</tspan></text><text x="7.4" y="13">0.96, 0.96, 0.86</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#FAF0E6" /><text><tspan x="7.4" y="4.2">linen</tspan></text><text x="7.4" y="13">0.98, 0.94, 0.9</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#FFEFDB" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white1</tspan></text><text x="7.4" y="13">1.0, 0.94, 0.86</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#EEEEE0" /><text><tspan x="7.4" y="4.2">ivory2</tspan></text><text x="7.4" y="13">0.93, 0.93, 0.88</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FAEBD7" /><text><tspan x="7.4" y="4.2">antiquewhite</tspan></text><text x="7.4" y="13">0.98, 0.92, 0.84</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#E0EEE0" /><text><tspan x="7.4" y="4.2">honeydew2</tspan></text><text x="7.4" y="13">0.88, 0.93, 0.88</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#EEE9E9" /><text><tspan x="7.4" y="4.2">snow2</tspan></text><text x="7.4" y="13">0.93, 0.91, 0.91</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#EEE8CD" /><text><tspan x="7.4" y="4.2">cornsilk2</tspan></text><text x="7.4" y="13">0.93, 0.91, 0.8</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#EEE5DE" /><text><tspan x="7.4" y="4.2">seashell2</tspan></text><text x="7.4" y="13">0.93, 0.9, 0.87</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FFDEAD" /><text><tspan x="7.4" y="4.2">navajowhite</tspan></text><text x="7.4" y="13">1.0, 0.87, 0.68</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#FFDEAD" /><text><tspan x="7.4" y="4.2">navajowhite1</tspan></text><text x="7.4" y="13">1.0, 0.87, 0.68</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#EEDFCC" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white2</tspan></text><text x="7.4" y="13">0.93, 0.87, 0.8</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#EECFA1" /><text><tspan x="7.4" y="4.2">navajowhite2</tspan></text><text x="7.4" y="13">0.93, 0.81, 0.63</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#CDCDC1" /><text><tspan x="7.4" y="4.2">ivory3</tspan></text><text x="7.4" y="13">0.8, 0.8, 0.76</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC9C9" /><text><tspan x="7.4" y="4.2">snow3</tspan></text><text x="7.4" y="13">0.8, 0.79, 0.79</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#C1CDC1" /><text><tspan x="7.4" y="4.2">honeydew3</tspan></text><text x="7.4" y="13">0.76, 0.8, 0.76</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC8B1" /><text><tspan x="7.4" y="4.2">cornsilk3</tspan></text><text x="7.4" y="13">0.8, 0.78, 0.69</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC5BF" /><text><tspan x="7.4" y="4.2">seashell3</tspan></text><text x="7.4" y="13">0.8, 0.77, 0.75</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC0B0" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white3</tspan></text><text x="7.4" y="13">0.8, 0.75, 0.69</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#C0C0C0" /><text><tspan x="7.4" y="4.2">silver</tspan></text><text x="7.4" y="13">0.75, 0.75, 0.75</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#CDB38B" /><text><tspan x="7.4" y="4.2">navajowhite3</tspan></text><text x="7.4" y="13">0.8, 0.7, 0.55</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#8B8B83" /><text><tspan x="7.4" y="4.2">ivory4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.55, 0.51</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8B8989" /><text><tspan x="7.4" y="4.2">snow4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.54, 0.54</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#838B83" /><text><tspan x="7.4" y="4.2">honeydew4</tspan></text><text x="7.4" y="13" class="w">0.51, 0.55, 0.51</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8878" /><text><tspan x="7.4" y="4.2">cornsilk4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.53, 0.47</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8682" /><text><tspan x="7.4" y="4.2">seashell4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.53, 0.51</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8378" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.51, 0.47</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#8B795E" /><text><tspan x="7.4" y="4.2">navajowhite4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.47, 0.37</text></g>
+</svg>
