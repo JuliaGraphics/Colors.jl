@@ -34,6 +34,13 @@ CrossSectionalCharts.crosssection(LCHab) # hide
 ```@example cross
 CrossSectionalCharts.crosssection(LCHuv) # hide
 ```
+- `Oklab`, `Oklch` and their transparent variants
+```@example cross
+CrossSectionalCharts.crosssection(Oklab) # hide
+```
+```@example cross
+CrossSectionalCharts.crosssection(Oklch) # hide
+```
 - `DIN99`, `DIN99d`, `DIN99o` and all 6 transparent variants
 
 - Storage formats `YIQ`, `YCbCr` and their transparent variants

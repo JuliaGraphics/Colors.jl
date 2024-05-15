@@ -184,6 +184,12 @@ crosssection(::Type{LCHab}) = crosssection(LCHab, x=(2, "C*", 0:100),
 crosssection(::Type{LCHuv}) = crosssection(LCHuv, x=(2, "C*", 0:100),
                                                   y=(1, "L*", 0:100),
                                                   z=(3, "H", 0:360))
+crosssection(::Type{Oklab}) = crosssection(Oklab, x=(2, "a", -0.4:0.01:0.4),
+                                                  y=(3, "b", -0.4:0.01:0.4),
+                                                  z=(1, "L", 0:1))
+crosssection(::Type{Oklch}) = crosssection(Oklch, x=(2, "C", 0:0.01:0.4),
+                                                  y=(1, "L", 0:1),
+                                                  z=(3, "h", 0:360))
 
 crosssection(::Type{YIQ}) = crosssection(YIQ, x=(2, "I", -1:1),
                                               y=(3, "Q", -1:1),
