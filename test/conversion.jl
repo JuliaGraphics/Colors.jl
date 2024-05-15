@@ -5,8 +5,8 @@ using ColorTypes: eltype_default
 # The filter mechanism should not be removed, as new types may be added in the future.
 const supported_p3 = filter(ColorTypes.parametric3) do C
     sym = Symbol(C)
-    # TODO: Remove the following exclusions when the color types are supported.
-    sym in (:Oklab, :Oklch) && return false
+    # NOTE: Add any currently unsupported color types here.
+    # sym in (:unsupported1, :unsupported2) && return false
     return true
 end
 if supported_p3 == ColorTypes.parametric3
