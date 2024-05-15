@@ -1,7 +1,7 @@
 module ColormapParams
 
 using Colors
-using Main.PNG16x16
+using Main: write_webp_as_data
 
 struct ColormapParamSVG <: Main.SVG
     buf::IOBuffer
@@ -63,7 +63,7 @@ function write_chart_csb(io, target::Symbol)
         <g transform="translate(80, 20)" fill="none" stroke-width="1.5"
            style="font-size: 18px; font-style: italic;">
             <image width="100" height="100" transform="scale(1.75, 2)" xlink:href=\"""")
-    write_png_as_data(io, plane)
+    write_webp_as_data(io, plane)
     write(io, "\" />\n")
     mc_coords = join(string(round(Int, mc(100 - l)), ",", 2l, " ") for l = 0:2:100)
     write(io,
