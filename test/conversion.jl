@@ -5,8 +5,8 @@ using ColorTypes: eltype_default
 # The filter mechanism should not be removed, as new types may be added in the future.
 const supported_p3 = filter(ColorTypes.parametric3) do C
     sym = Symbol(C)
-    # TODO: Remove the following exclusions when the color types are supported.
-    sym in (:Oklab, :Oklch) && return false
+    # NOTE: Add any currently unsupported color types here.
+    # sym in (:unsupported1, :unsupported2) && return false
     return true
 end
 if supported_p3 == ColorTypes.parametric3
@@ -236,6 +236,32 @@ end
         @test convert(RGB{Float64}, HSI{BigFloat}(-360120, .5, .5)) ≈ RGB{Float64}(.25,.25,1)
     end
 
+    # Oklab examples from Björn Ottosson (https://bottosson.github.io/posts/oklab/)
+    @testset "Oklab <-> XYZ" begin
+        @test convert(Oklab, XYZ{Float32}(0.950, 1.000, 1.089)) ≈ Oklab{Float32}(1.000,  0.000,  0.000) atol=2e-3
+        @test convert(Oklab, XYZ{Float32}(1.000, 0.000, 0.000)) ≈ Oklab{Float32}(0.450,  1.236, -0.019) atol=2e-3
+        @test convert(Oklab, XYZ{Float32}(0.000, 1.000, 0.000)) ≈ Oklab{Float32}(0.922, -0.671,  0.263) atol=2e-3
+        @test convert(Oklab, XYZ{Float32}(0.000, 0.000, 1.000)) ≈ Oklab{Float32}(0.153, -1.415, -0.449) atol=2e-3
+
+        @test convert(XYZ, Oklab{Float32}(1.000,  0.000,  0.000)) ≈ XYZ{Float32}(0.950, 1.000, 1.089) atol=2e-3
+        @test convert(XYZ, Oklab{Float32}(0.450,  1.236, -0.019)) ≈ XYZ{Float32}(1.000, 0.000, 0.000) atol=2e-3
+        @test convert(XYZ, Oklab{Float32}(0.922, -0.671,  0.263)) ≈ XYZ{Float32}(0.000, 1.000, 0.000) atol=2e-3
+        @test convert(XYZ, Oklab{Float32}(0.153, -1.415, -0.449)) ≈ XYZ{Float32}(0.000, 0.000, 1.000) atol=2e-3
+    end
+
+    # Selection of Oklch tests from the WPT test suite (https://wpt.fyi/results/css/css-color)
+    @testset "Oklch <-> RGB" begin
+        @test convert(Oklch, RGB{Float32}(0.00000, 0.00000, 0.00000)) ≈ Oklch{Float32}(0.00, 0.00,   0) rtol=2e-2
+        @test convert(Oklch, RGB{Float32}(0.23056, 0.31730, 0.82628)) ≈ Oklch{Float32}(0.50, 0.20, 270) rtol=2e-2
+        @test convert(Oklch, RGB{Float32}(0.32022, 0.85805, 0.61147)) ≈ Oklch{Float32}(0.80, 0.15, 160) rtol=2e-2
+        @test convert(Oklch, RGB{Float32}(0.67293, 0.27791, 0.52280)) ≈ Oklch{Float32}(0.55, 0.15, 345) rtol=2e-2
+
+        @test convert(RGB, Oklch{Float32}(0.00, 0.00,   0)) ≈ RGB{Float32}(0.00000, 0.00000, 0.00000) rtol=2e-2
+        @test convert(RGB, Oklch{Float32}(0.50, 0.20, 270)) ≈ RGB{Float32}(0.23056, 0.31730, 0.82628) rtol=2e-2
+        @test convert(RGB, Oklch{Float32}(0.80, 0.15, 160)) ≈ RGB{Float32}(0.32022, 0.85805, 0.61147) rtol=2e-2
+        @test convert(RGB, Oklch{Float32}(0.55, 0.15, 345)) ≈ RGB{Float32}(0.67293, 0.27791, 0.52280) rtol=2e-2
+    end
+
     @testset "custom types" begin
         # issue #465
         @test_throws ErrorException convert(RGB,   C3{Float32}(1, 2, 3))
@@ -271,8 +297,14 @@ end
     function diffnorm(a::T, b::T) where {T<:Union{Lab,Luv}}
         sqrt(sqd(a.l, b.l, 100) + sqd(comp2(a), comp2(b), 200) + sqd(comp3(a), comp3(b), 200))/sqrt(3)
     end
+    function diffnorm(a::T, b::T) where {T<:Oklab}
+        sqrt(sqd(a.l, b.l) + sqd(a.a, b.a, 0.4) + sqd(a.b, b.b, 0.4))/sqrt(3)
+    end
     function diffnorm(a::T, b::T) where {T<:Union{LCHab,LCHuv}}
         sqrt(sqd(a.l, b.l, 100) + sqd(a.c, b.c, 100) + sqd(a.h, b.h, 360))/sqrt(3)
+    end
+    function diffnorm(a::T, b::T) where {T<:Oklch}
+        sqrt(sqd(a.l, b.l, 1) + sqd(a.c, b.c, 0.4) + sqd(a.h, b.h, 360))/sqrt(3)
     end
     function diffnorm(a::T, b::T) where {T<:Union{DIN99,DIN99d,DIN99o}} # csconv has no DIN99 case
         sqrt(sqd(a.l, b.l, 100) + sqd(a.a, b.a, 100) + sqd(a.b, b.b, 100))/sqrt(3)
