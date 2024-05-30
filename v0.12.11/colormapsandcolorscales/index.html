@@ -262,260 +262,260 @@ julia&gt; range(c1, stop=c2, length=15)
 <rect width="1" height=".96" x="88" y="0" fill="%23FF6FBF" />
 <rect width="1" height=".96" x="89" y="0" fill="%23FF6DAE" />
 </svg>'/><p>While sometimes useful in particular circumstances, typically it is recommended that the hue be within [0, 360]. See <a href="../constructionandconversion/#Colors.normalize_hue"><code>normalize_hue</code></a>.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Base.range" href="#Base.range"><code>Base.range</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">range(start::T; stop::T, length=100) where T&lt;:Colorant
-range(start::T, stop::T; length=100) where T&lt;:Colorant</code></pre><p>Generates N (=<code>length</code>) &gt;2 colors in a linearly interpolated ramp from <code>start</code> to<code>stop</code>, inclusive, returning an <code>Array</code> of colors.</p><div class="admonition is-compat"><header class="admonition-header">Julia 1.1</header><div class="admonition-body"><p><code>stop</code> as a positional argument requires at least Julia 1.1.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/e66792170e766818969ae367a861a6bd19d03d33/src/utilities.jl#L311-L320">source</a></section></article><h3 id="Weighted-color-means"><a class="docs-heading-anchor" href="#Weighted-color-means">Weighted color means</a><a id="Weighted-color-means-1"></a><a class="docs-heading-anchor-permalink" href="#Weighted-color-means" title="Permalink"></a></h3><p>The <a href="#Colors.weighted_color_mean"><code>weighted_color_mean()</code></a> function returns a color that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p><p>For example:</p><pre><code class="language-julia-repl hljs">julia&gt; weighted_color_mean(0.5, colorant&quot;red&quot;, colorant&quot;green&quot;)
-RGB{N0f8}(0.502,0.251,0.0)</code></pre><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.weighted_color_mean" href="#Colors.weighted_color_mean"><code>Colors.weighted_color_mean</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">weighted_color_mean(w1, c1, c2)</code></pre><p>Returns the color <code>w1*c1 + (1-w1)*c2</code> that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/e66792170e766818969ae367a861a6bd19d03d33/src/utilities.jl#L290-L295">source</a></section></article><h2 id="Colormaps"><a class="docs-heading-anchor" href="#Colormaps">Colormaps</a><a id="Colormaps-1"></a><a class="docs-heading-anchor-permalink" href="#Colormaps" title="Permalink"></a></h2><p>This package provides some pre-defined colormaps (described below). There are also several other packages which provide colormaps:</p><ul><li><a href="https://github.com/peterkovesi/PerceptualColourMaps.jl">PerceptualColourMaps</a></li><li><a href="https://github.com/timothyrenner/ColorBrewer.jl">ColorBrewer</a></li><li><a href="https://github.com/JuliaGraphics/ColorSchemes.jl">ColorSchemes.jl</a></li><li><a href="https://github.com/randyzwitch/NoveltyColors.jl">NoveltyColors</a></li></ul><h3 id="Predefined-sequential-and-diverging-colormaps"><a class="docs-heading-anchor" href="#Predefined-sequential-and-diverging-colormaps">Predefined sequential and diverging colormaps</a><a id="Predefined-sequential-and-diverging-colormaps-1"></a><a class="docs-heading-anchor-permalink" href="#Predefined-sequential-and-diverging-colormaps" title="Permalink"></a></h3><p>The <code>colormap()</code> function returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).</p><p><code>colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])</code></p><p>The optional arguments are:</p><ul><li>the number of colors <code>N</code></li><li>position of the middle point <code>mid</code></li><li>the use of logarithmic scaling with the <code>logscale</code> keyword</li></ul><p>Colormaps computed by this algorithm are guaranteed to have an increasing perceived depth or saturation making them ideal for data visualization. This also means that they are (in most cases) color-blind friendly and suitable for black-and-white printing.</p><p>The currently supported colormap names are:</p><h4 id="Sequential"><a class="docs-heading-anchor" href="#Sequential">Sequential</a><a id="Sequential-1"></a><a class="docs-heading-anchor-permalink" href="#Sequential" title="Permalink"></a></h4><ul><li>&quot;Blues&quot;</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+range(start::T, stop::T; length=100) where T&lt;:Colorant</code></pre><p>Generates N (=<code>length</code>) &gt;2 colors in a linearly interpolated ramp from <code>start</code> to<code>stop</code>, inclusive, returning an <code>Array</code> of colors.</p><div class="admonition is-compat"><header class="admonition-header">Julia 1.1</header><div class="admonition-body"><p><code>stop</code> as a positional argument requires at least Julia 1.1.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/42b8548eb8888ca6a12ee5ccd5e035ba3253f145/src/utilities.jl#L311-L320">source</a></section></article><h3 id="Weighted-color-means"><a class="docs-heading-anchor" href="#Weighted-color-means">Weighted color means</a><a id="Weighted-color-means-1"></a><a class="docs-heading-anchor-permalink" href="#Weighted-color-means" title="Permalink"></a></h3><p>The <a href="#Colors.weighted_color_mean"><code>weighted_color_mean()</code></a> function returns a color that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p><p>For example:</p><pre><code class="language-julia-repl hljs">julia&gt; weighted_color_mean(0.5, colorant&quot;red&quot;, colorant&quot;green&quot;)
+RGB{N0f8}(0.502,0.251,0.0)</code></pre><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.weighted_color_mean" href="#Colors.weighted_color_mean"><code>Colors.weighted_color_mean</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">weighted_color_mean(w1, c1, c2)</code></pre><p>Returns the color <code>w1*c1 + (1-w1)*c2</code> that is the weighted mean of <code>c1</code> and <code>c2</code>, where <code>c1</code> has a weight 0 ≤ <code>w1</code> ≤ 1.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/42b8548eb8888ca6a12ee5ccd5e035ba3253f145/src/utilities.jl#L290-L295">source</a></section></article><h2 id="Colormaps"><a class="docs-heading-anchor" href="#Colormaps">Colormaps</a><a id="Colormaps-1"></a><a class="docs-heading-anchor-permalink" href="#Colormaps" title="Permalink"></a></h2><p>This package provides some pre-defined colormaps (described below). There are also several other packages which provide colormaps:</p><ul><li><a href="https://github.com/peterkovesi/PerceptualColourMaps.jl">PerceptualColourMaps</a></li><li><a href="https://github.com/timothyrenner/ColorBrewer.jl">ColorBrewer</a></li><li><a href="https://github.com/JuliaGraphics/ColorSchemes.jl">ColorSchemes.jl</a></li><li><a href="https://github.com/randyzwitch/NoveltyColors.jl">NoveltyColors</a></li></ul><h3 id="Predefined-sequential-and-diverging-colormaps"><a class="docs-heading-anchor" href="#Predefined-sequential-and-diverging-colormaps">Predefined sequential and diverging colormaps</a><a id="Predefined-sequential-and-diverging-colormaps-1"></a><a class="docs-heading-anchor-permalink" href="#Predefined-sequential-and-diverging-colormaps" title="Permalink"></a></h3><p>The <code>colormap()</code> function returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).</p><p><code>colormap(cname::String [, N::Int=100; mid=0.5, logscale=false, kvs...])</code></p><p>The optional arguments are:</p><ul><li>the number of colors <code>N</code></li><li>position of the middle point <code>mid</code></li><li>the use of logarithmic scaling with the <code>logscale</code> keyword</li></ul><p>Colormaps computed by this algorithm are guaranteed to have an increasing perceived depth or saturation making them ideal for data visualization. This also means that they are (in most cases) color-blind friendly and suitable for black-and-white printing.</p><p>The currently supported colormap names are:</p><h4 id="Sequential"><a class="docs-heading-anchor" href="#Sequential">Sequential</a><a id="Sequential-1"></a><a class="docs-heading-anchor-permalink" href="#Sequential" title="Permalink"></a></h4><ul><li>&quot;Blues&quot;</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23F5FDFF" />
-<rect width="31" height="1" x="1" y="0" fill="%23EDFAFD" />
-<rect width="30" height="1" x="2" y="0" fill="%23E5F8FC" />
-<rect width="29" height="1" x="3" y="0" fill="%23DDF5FA" />
-<rect width="28" height="1" x="4" y="0" fill="%23D5F1F9" />
-<rect width="27" height="1" x="5" y="0" fill="%23CCEEF7" />
-<rect width="26" height="1" x="6" y="0" fill="%23C3EAF6" />
-<rect width="25" height="1" x="7" y="0" fill="%23BAE7F5" />
-<rect width="24" height="1" x="8" y="0" fill="%23B1E2F4" />
-<rect width="23" height="1" x="9" y="0" fill="%23A7DEF2" />
-<rect width="22" height="1" x="10" y="0" fill="%239DD9F1" />
-<rect width="21" height="1" x="11" y="0" fill="%2393D4EF" />
-<rect width="20" height="1" x="12" y="0" fill="%2389CFEE" />
-<rect width="19" height="1" x="13" y="0" fill="%237EC9EC" />
-<rect width="18" height="1" x="14" y="0" fill="%2374C3EA" />
-<rect width="17" height="1" x="15" y="0" fill="%236ABDE8" />
-<rect width="16" height="1" x="16" y="0" fill="%2360B6E5" />
-<rect width="15" height="1" x="17" y="0" fill="%2356AEE2" />
-<rect width="14" height="1" x="18" y="0" fill="%234CA7DF" />
-<rect width="13" height="1" x="19" y="0" fill="%23439FDB" />
-<rect width="12" height="1" x="20" y="0" fill="%233B96D6" />
-<rect width="11" height="1" x="21" y="0" fill="%23348DD0" />
-<rect width="10" height="1" x="22" y="0" fill="%232E84C9" />
-<rect width="9" height="1" x="23" y="0" fill="%23297BC1" />
-<rect width="8" height="1" x="24" y="0" fill="%232571B8" />
-<rect width="7" height="1" x="25" y="0" fill="%232267AD" />
-<rect width="6" height="1" x="26" y="0" fill="%231E5DA2" />
-<rect width="5" height="1" x="27" y="0" fill="%231B5295" />
-<rect width="4" height="1" x="28" y="0" fill="%23184887" />
-<rect width="3" height="1" x="29" y="0" fill="%23143D78" />
-<rect width="2" height="1" x="30" y="0" fill="%230F3268" />
-<rect width="1" height="1" x="31" y="0" fill="%230A2858" />
-</svg>'/><ul><li>&quot;Greens&quot;</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+<rect width="32" height="1" x="0" y="0" fill="#F5FDFF" />
+<rect width="31" height="1" x="1" y="0" fill="#EDFAFD" />
+<rect width="30" height="1" x="2" y="0" fill="#E5F8FC" />
+<rect width="29" height="1" x="3" y="0" fill="#DDF5FA" />
+<rect width="28" height="1" x="4" y="0" fill="#D5F1F9" />
+<rect width="27" height="1" x="5" y="0" fill="#CCEEF7" />
+<rect width="26" height="1" x="6" y="0" fill="#C3EAF6" />
+<rect width="25" height="1" x="7" y="0" fill="#BAE7F5" />
+<rect width="24" height="1" x="8" y="0" fill="#B1E2F4" />
+<rect width="23" height="1" x="9" y="0" fill="#A7DEF2" />
+<rect width="22" height="1" x="10" y="0" fill="#9DD9F1" />
+<rect width="21" height="1" x="11" y="0" fill="#93D4EF" />
+<rect width="20" height="1" x="12" y="0" fill="#89CFEE" />
+<rect width="19" height="1" x="13" y="0" fill="#7EC9EC" />
+<rect width="18" height="1" x="14" y="0" fill="#74C3EA" />
+<rect width="17" height="1" x="15" y="0" fill="#6ABDE8" />
+<rect width="16" height="1" x="16" y="0" fill="#60B6E5" />
+<rect width="15" height="1" x="17" y="0" fill="#56AEE2" />
+<rect width="14" height="1" x="18" y="0" fill="#4CA7DF" />
+<rect width="13" height="1" x="19" y="0" fill="#439FDB" />
+<rect width="12" height="1" x="20" y="0" fill="#3B96D6" />
+<rect width="11" height="1" x="21" y="0" fill="#348DD0" />
+<rect width="10" height="1" x="22" y="0" fill="#2E84C9" />
+<rect width="9" height="1" x="23" y="0" fill="#297BC1" />
+<rect width="8" height="1" x="24" y="0" fill="#2571B8" />
+<rect width="7" height="1" x="25" y="0" fill="#2267AD" />
+<rect width="6" height="1" x="26" y="0" fill="#1E5DA2" />
+<rect width="5" height="1" x="27" y="0" fill="#1B5295" />
+<rect width="4" height="1" x="28" y="0" fill="#184887" />
+<rect width="3" height="1" x="29" y="0" fill="#143D78" />
+<rect width="2" height="1" x="30" y="0" fill="#0F3268" />
+<rect width="1" height="1" x="31" y="0" fill="#0A2858" />
+</svg></body></html><ul><li>&quot;Greens&quot;</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23FAFFF8" />
-<rect width="31" height="1" x="1" y="0" fill="%23F0FFE8" />
-<rect width="30" height="1" x="2" y="0" fill="%23E6FEDB" />
-<rect width="29" height="1" x="3" y="0" fill="%23DDFCCF" />
-<rect width="28" height="1" x="4" y="0" fill="%23D5FAC4" />
-<rect width="27" height="1" x="5" y="0" fill="%23CCF7BA" />
-<rect width="26" height="1" x="6" y="0" fill="%23C4F4B1" />
-<rect width="25" height="1" x="7" y="0" fill="%23BCF0A8" />
-<rect width="24" height="1" x="8" y="0" fill="%23B4ED9F" />
-<rect width="23" height="1" x="9" y="0" fill="%23ACE997" />
-<rect width="22" height="1" x="10" y="0" fill="%23A3E48F" />
-<rect width="21" height="1" x="11" y="0" fill="%239BE087" />
-<rect width="20" height="1" x="12" y="0" fill="%2393DB80" />
-<rect width="19" height="1" x="13" y="0" fill="%238BD579" />
-<rect width="18" height="1" x="14" y="0" fill="%2382D073" />
-<rect width="17" height="1" x="15" y="0" fill="%237ACA6C" />
-<rect width="16" height="1" x="16" y="0" fill="%2371C466" />
-<rect width="15" height="1" x="17" y="0" fill="%2368BD60" />
-<rect width="14" height="1" x="18" y="0" fill="%235FB65B" />
-<rect width="13" height="1" x="19" y="0" fill="%2357AF55" />
-<rect width="12" height="1" x="20" y="0" fill="%234EA750" />
-<rect width="11" height="1" x="21" y="0" fill="%23459F4B" />
-<rect width="10" height="1" x="22" y="0" fill="%233B9646" />
-<rect width="9" height="1" x="23" y="0" fill="%23328D42" />
-<rect width="8" height="1" x="24" y="0" fill="%2328843D" />
-<rect width="7" height="1" x="25" y="0" fill="%231E7B38" />
-<rect width="6" height="1" x="26" y="0" fill="%23147133" />
-<rect width="5" height="1" x="27" y="0" fill="%2307662F" />
-<rect width="4" height="1" x="28" y="0" fill="%23005C2A" />
-<rect width="3" height="1" x="29" y="0" fill="%23005125" />
-<rect width="2" height="1" x="30" y="0" fill="%2300451F" />
-<rect width="1" height="1" x="31" y="0" fill="%2300391A" />
-</svg>'/><ul><li>&quot;Grays&quot;</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+<rect width="32" height="1" x="0" y="0" fill="#FAFFF8" />
+<rect width="31" height="1" x="1" y="0" fill="#F0FFE8" />
+<rect width="30" height="1" x="2" y="0" fill="#E6FEDB" />
+<rect width="29" height="1" x="3" y="0" fill="#DDFCCF" />
+<rect width="28" height="1" x="4" y="0" fill="#D5FAC4" />
+<rect width="27" height="1" x="5" y="0" fill="#CCF7BA" />
+<rect width="26" height="1" x="6" y="0" fill="#C4F4B1" />
+<rect width="25" height="1" x="7" y="0" fill="#BCF0A8" />
+<rect width="24" height="1" x="8" y="0" fill="#B4ED9F" />
+<rect width="23" height="1" x="9" y="0" fill="#ACE997" />
+<rect width="22" height="1" x="10" y="0" fill="#A3E48F" />
+<rect width="21" height="1" x="11" y="0" fill="#9BE087" />
+<rect width="20" height="1" x="12" y="0" fill="#93DB80" />
+<rect width="19" height="1" x="13" y="0" fill="#8BD579" />
+<rect width="18" height="1" x="14" y="0" fill="#82D073" />
+<rect width="17" height="1" x="15" y="0" fill="#7ACA6C" />
+<rect width="16" height="1" x="16" y="0" fill="#71C466" />
+<rect width="15" height="1" x="17" y="0" fill="#68BD60" />
+<rect width="14" height="1" x="18" y="0" fill="#5FB65B" />
+<rect width="13" height="1" x="19" y="0" fill="#57AF55" />
+<rect width="12" height="1" x="20" y="0" fill="#4EA750" />
+<rect width="11" height="1" x="21" y="0" fill="#459F4B" />
+<rect width="10" height="1" x="22" y="0" fill="#3B9646" />
+<rect width="9" height="1" x="23" y="0" fill="#328D42" />
+<rect width="8" height="1" x="24" y="0" fill="#28843D" />
+<rect width="7" height="1" x="25" y="0" fill="#1E7B38" />
+<rect width="6" height="1" x="26" y="0" fill="#147133" />
+<rect width="5" height="1" x="27" y="0" fill="#07662F" />
+<rect width="4" height="1" x="28" y="0" fill="#005C2A" />
+<rect width="3" height="1" x="29" y="0" fill="#005125" />
+<rect width="2" height="1" x="30" y="0" fill="#00451F" />
+<rect width="1" height="1" x="31" y="0" fill="#00391A" />
+</svg></body></html><ul><li>&quot;Grays&quot;</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23FFFFFF" />
-<rect width="31" height="1" x="1" y="0" fill="%23FBFBFB" />
-<rect width="30" height="1" x="2" y="0" fill="%23F7F7F7" />
-<rect width="29" height="1" x="3" y="0" fill="%23F3F3F3" />
-<rect width="28" height="1" x="4" y="0" fill="%23EEEEEE" />
-<rect width="27" height="1" x="5" y="0" fill="%23EAEAEA" />
-<rect width="26" height="1" x="6" y="0" fill="%23E5E5E5" />
-<rect width="25" height="1" x="7" y="0" fill="%23E0E0E0" />
-<rect width="24" height="1" x="8" y="0" fill="%23DADADA" />
-<rect width="23" height="1" x="9" y="0" fill="%23D5D5D5" />
-<rect width="22" height="1" x="10" y="0" fill="%23CFCFCF" />
-<rect width="21" height="1" x="11" y="0" fill="%23C8C8C8" />
-<rect width="20" height="1" x="12" y="0" fill="%23C2C2C2" />
-<rect width="19" height="1" x="13" y="0" fill="%23BBBBBB" />
-<rect width="18" height="1" x="14" y="0" fill="%23B4B4B4" />
-<rect width="17" height="1" x="15" y="0" fill="%23ACACAC" />
-<rect width="16" height="1" x="16" y="0" fill="%23A5A5A5" />
-<rect width="15" height="1" x="17" y="0" fill="%239D9D9D" />
-<rect width="14" height="1" x="18" y="0" fill="%23949494" />
-<rect width="13" height="1" x="19" y="0" fill="%238B8B8B" />
-<rect width="12" height="1" x="20" y="0" fill="%23828282" />
-<rect width="11" height="1" x="21" y="0" fill="%23787878" />
-<rect width="10" height="1" x="22" y="0" fill="%236F6F6F" />
-<rect width="9" height="1" x="23" y="0" fill="%23646464" />
-<rect width="8" height="1" x="24" y="0" fill="%235A5A5A" />
-<rect width="7" height="1" x="25" y="0" fill="%234F4F4F" />
-<rect width="6" height="1" x="26" y="0" fill="%23434343" />
-<rect width="5" height="1" x="27" y="0" fill="%23383838" />
-<rect width="4" height="1" x="28" y="0" fill="%232C2C2C" />
-<rect width="3" height="1" x="29" y="0" fill="%23202020" />
-<rect width="2" height="1" x="30" y="0" fill="%23141414" />
-<rect width="1" height="1" x="31" y="0" fill="%23000000" />
-</svg>'/><ul><li>&quot;Oranges&quot;</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+<rect width="32" height="1" x="0" y="0" fill="#FFFFFF" />
+<rect width="31" height="1" x="1" y="0" fill="#FBFBFB" />
+<rect width="30" height="1" x="2" y="0" fill="#F7F7F7" />
+<rect width="29" height="1" x="3" y="0" fill="#F3F3F3" />
+<rect width="28" height="1" x="4" y="0" fill="#EEEEEE" />
+<rect width="27" height="1" x="5" y="0" fill="#EAEAEA" />
+<rect width="26" height="1" x="6" y="0" fill="#E5E5E5" />
+<rect width="25" height="1" x="7" y="0" fill="#E0E0E0" />
+<rect width="24" height="1" x="8" y="0" fill="#DADADA" />
+<rect width="23" height="1" x="9" y="0" fill="#D5D5D5" />
+<rect width="22" height="1" x="10" y="0" fill="#CFCFCF" />
+<rect width="21" height="1" x="11" y="0" fill="#C8C8C8" />
+<rect width="20" height="1" x="12" y="0" fill="#C2C2C2" />
+<rect width="19" height="1" x="13" y="0" fill="#BBBBBB" />
+<rect width="18" height="1" x="14" y="0" fill="#B4B4B4" />
+<rect width="17" height="1" x="15" y="0" fill="#ACACAC" />
+<rect width="16" height="1" x="16" y="0" fill="#A5A5A5" />
+<rect width="15" height="1" x="17" y="0" fill="#9D9D9D" />
+<rect width="14" height="1" x="18" y="0" fill="#949494" />
+<rect width="13" height="1" x="19" y="0" fill="#8B8B8B" />
+<rect width="12" height="1" x="20" y="0" fill="#828282" />
+<rect width="11" height="1" x="21" y="0" fill="#787878" />
+<rect width="10" height="1" x="22" y="0" fill="#6F6F6F" />
+<rect width="9" height="1" x="23" y="0" fill="#646464" />
+<rect width="8" height="1" x="24" y="0" fill="#5A5A5A" />
+<rect width="7" height="1" x="25" y="0" fill="#4F4F4F" />
+<rect width="6" height="1" x="26" y="0" fill="#434343" />
+<rect width="5" height="1" x="27" y="0" fill="#383838" />
+<rect width="4" height="1" x="28" y="0" fill="#2C2C2C" />
+<rect width="3" height="1" x="29" y="0" fill="#202020" />
+<rect width="2" height="1" x="30" y="0" fill="#141414" />
+<rect width="1" height="1" x="31" y="0" fill="#000000" />
+</svg></body></html><ul><li>&quot;Oranges&quot;</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23FFFBF8" />
-<rect width="31" height="1" x="1" y="0" fill="%23FFF7F1" />
-<rect width="30" height="1" x="2" y="0" fill="%23FFF3E9" />
-<rect width="29" height="1" x="3" y="0" fill="%23FFEFE0" />
-<rect width="28" height="1" x="4" y="0" fill="%23FFEAD8" />
-<rect width="27" height="1" x="5" y="0" fill="%23FFE5CF" />
-<rect width="26" height="1" x="6" y="0" fill="%23FFE0C6" />
-<rect width="25" height="1" x="7" y="0" fill="%23FFDBBD" />
-<rect width="24" height="1" x="8" y="0" fill="%23FFD5B3" />
-<rect width="23" height="1" x="9" y="0" fill="%23FFCFA9" />
-<rect width="22" height="1" x="10" y="0" fill="%23FFC89F" />
-<rect width="21" height="1" x="11" y="0" fill="%23FFC194" />
-<rect width="20" height="1" x="12" y="0" fill="%23FFBA89" />
-<rect width="19" height="1" x="13" y="0" fill="%23FFB27E" />
-<rect width="18" height="1" x="14" y="0" fill="%23FFAA72" />
-<rect width="17" height="1" x="15" y="0" fill="%23FFA266" />
-<rect width="16" height="1" x="16" y="0" fill="%23FF985A" />
-<rect width="15" height="1" x="17" y="0" fill="%23FF8F4D" />
-<rect width="14" height="1" x="18" y="0" fill="%23FF8440" />
-<rect width="13" height="1" x="19" y="0" fill="%23FF7932" />
-<rect width="12" height="1" x="20" y="0" fill="%23FE6C23" />
-<rect width="11" height="1" x="21" y="0" fill="%23FB5F11" />
-<rect width="10" height="1" x="22" y="0" fill="%23F2570B" />
-<rect width="9" height="1" x="23" y="0" fill="%23E6510C" />
-<rect width="8" height="1" x="24" y="0" fill="%23D94B0D" />
-<rect width="7" height="1" x="25" y="0" fill="%23CC450D" />
-<rect width="6" height="1" x="26" y="0" fill="%23BE400D" />
-<rect width="5" height="1" x="27" y="0" fill="%23B03A0D" />
-<rect width="4" height="1" x="28" y="0" fill="%23A2330C" />
-<rect width="3" height="1" x="29" y="0" fill="%23922D0A" />
-<rect width="2" height="1" x="30" y="0" fill="%23832709" />
-<rect width="1" height="1" x="31" y="0" fill="%23732007" />
-</svg>'/><ul><li>&quot;Purples&quot;</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+<rect width="32" height="1" x="0" y="0" fill="#FFFBF8" />
+<rect width="31" height="1" x="1" y="0" fill="#FFF7F1" />
+<rect width="30" height="1" x="2" y="0" fill="#FFF3E9" />
+<rect width="29" height="1" x="3" y="0" fill="#FFEFE0" />
+<rect width="28" height="1" x="4" y="0" fill="#FFEAD8" />
+<rect width="27" height="1" x="5" y="0" fill="#FFE5CF" />
+<rect width="26" height="1" x="6" y="0" fill="#FFE0C6" />
+<rect width="25" height="1" x="7" y="0" fill="#FFDBBD" />
+<rect width="24" height="1" x="8" y="0" fill="#FFD5B3" />
+<rect width="23" height="1" x="9" y="0" fill="#FFCFA9" />
+<rect width="22" height="1" x="10" y="0" fill="#FFC89F" />
+<rect width="21" height="1" x="11" y="0" fill="#FFC194" />
+<rect width="20" height="1" x="12" y="0" fill="#FFBA89" />
+<rect width="19" height="1" x="13" y="0" fill="#FFB27E" />
+<rect width="18" height="1" x="14" y="0" fill="#FFAA72" />
+<rect width="17" height="1" x="15" y="0" fill="#FFA266" />
+<rect width="16" height="1" x="16" y="0" fill="#FF985A" />
+<rect width="15" height="1" x="17" y="0" fill="#FF8F4D" />
+<rect width="14" height="1" x="18" y="0" fill="#FF8440" />
+<rect width="13" height="1" x="19" y="0" fill="#FF7932" />
+<rect width="12" height="1" x="20" y="0" fill="#FE6C23" />
+<rect width="11" height="1" x="21" y="0" fill="#FB5F11" />
+<rect width="10" height="1" x="22" y="0" fill="#F2570B" />
+<rect width="9" height="1" x="23" y="0" fill="#E6510C" />
+<rect width="8" height="1" x="24" y="0" fill="#D94B0D" />
+<rect width="7" height="1" x="25" y="0" fill="#CC450D" />
+<rect width="6" height="1" x="26" y="0" fill="#BE400D" />
+<rect width="5" height="1" x="27" y="0" fill="#B03A0D" />
+<rect width="4" height="1" x="28" y="0" fill="#A2330C" />
+<rect width="3" height="1" x="29" y="0" fill="#922D0A" />
+<rect width="2" height="1" x="30" y="0" fill="#832709" />
+<rect width="1" height="1" x="31" y="0" fill="#732007" />
+</svg></body></html><ul><li>&quot;Purples&quot;</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23FBFBFB" />
-<rect width="31" height="1" x="1" y="0" fill="%23F7F7FB" />
-<rect width="30" height="1" x="2" y="0" fill="%23F4F3FB" />
-<rect width="29" height="1" x="3" y="0" fill="%23F0EEFA" />
-<rect width="28" height="1" x="4" y="0" fill="%23ECEAFA" />
-<rect width="27" height="1" x="5" y="0" fill="%23E8E5F9" />
-<rect width="26" height="1" x="6" y="0" fill="%23E3E0F8" />
-<rect width="25" height="1" x="7" y="0" fill="%23DFDBF7" />
-<rect width="24" height="1" x="8" y="0" fill="%23DAD6F6" />
-<rect width="23" height="1" x="9" y="0" fill="%23D5D1F4" />
-<rect width="22" height="1" x="10" y="0" fill="%23D0CBF3" />
-<rect width="21" height="1" x="11" y="0" fill="%23CAC5F1" />
-<rect width="20" height="1" x="12" y="0" fill="%23C5BFEF" />
-<rect width="19" height="1" x="13" y="0" fill="%23BFB8EC" />
-<rect width="18" height="1" x="14" y="0" fill="%23B8B2EA" />
-<rect width="17" height="1" x="15" y="0" fill="%23B2ABE7" />
-<rect width="16" height="1" x="16" y="0" fill="%23ABA4E4" />
-<rect width="15" height="1" x="17" y="0" fill="%23A49CE0" />
-<rect width="14" height="1" x="18" y="0" fill="%239D94DC" />
-<rect width="13" height="1" x="19" y="0" fill="%23968CD8" />
-<rect width="12" height="1" x="20" y="0" fill="%238F84D3" />
-<rect width="11" height="1" x="21" y="0" fill="%23877BCD" />
-<rect width="10" height="1" x="22" y="0" fill="%238072C7" />
-<rect width="9" height="1" x="23" y="0" fill="%237868C1" />
-<rect width="8" height="1" x="24" y="0" fill="%23705EB9" />
-<rect width="7" height="1" x="25" y="0" fill="%236954B1" />
-<rect width="6" height="1" x="26" y="0" fill="%236149A8" />
-<rect width="5" height="1" x="27" y="0" fill="%235A3E9E" />
-<rect width="4" height="1" x="28" y="0" fill="%23533193" />
-<rect width="3" height="1" x="29" y="0" fill="%234C2486" />
-<rect width="2" height="1" x="30" y="0" fill="%23441678" />
-<rect width="1" height="1" x="31" y="0" fill="%233C0468" />
-</svg>'/><ul><li>&quot;Reds&quot;</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+<rect width="32" height="1" x="0" y="0" fill="#FBFBFB" />
+<rect width="31" height="1" x="1" y="0" fill="#F7F7FB" />
+<rect width="30" height="1" x="2" y="0" fill="#F4F3FB" />
+<rect width="29" height="1" x="3" y="0" fill="#F0EEFA" />
+<rect width="28" height="1" x="4" y="0" fill="#ECEAFA" />
+<rect width="27" height="1" x="5" y="0" fill="#E8E5F9" />
+<rect width="26" height="1" x="6" y="0" fill="#E3E0F8" />
+<rect width="25" height="1" x="7" y="0" fill="#DFDBF7" />
+<rect width="24" height="1" x="8" y="0" fill="#DAD6F6" />
+<rect width="23" height="1" x="9" y="0" fill="#D5D1F4" />
+<rect width="22" height="1" x="10" y="0" fill="#D0CBF3" />
+<rect width="21" height="1" x="11" y="0" fill="#CAC5F1" />
+<rect width="20" height="1" x="12" y="0" fill="#C5BFEF" />
+<rect width="19" height="1" x="13" y="0" fill="#BFB8EC" />
+<rect width="18" height="1" x="14" y="0" fill="#B8B2EA" />
+<rect width="17" height="1" x="15" y="0" fill="#B2ABE7" />
+<rect width="16" height="1" x="16" y="0" fill="#ABA4E4" />
+<rect width="15" height="1" x="17" y="0" fill="#A49CE0" />
+<rect width="14" height="1" x="18" y="0" fill="#9D94DC" />
+<rect width="13" height="1" x="19" y="0" fill="#968CD8" />
+<rect width="12" height="1" x="20" y="0" fill="#8F84D3" />
+<rect width="11" height="1" x="21" y="0" fill="#877BCD" />
+<rect width="10" height="1" x="22" y="0" fill="#8072C7" />
+<rect width="9" height="1" x="23" y="0" fill="#7868C1" />
+<rect width="8" height="1" x="24" y="0" fill="#705EB9" />
+<rect width="7" height="1" x="25" y="0" fill="#6954B1" />
+<rect width="6" height="1" x="26" y="0" fill="#6149A8" />
+<rect width="5" height="1" x="27" y="0" fill="#5A3E9E" />
+<rect width="4" height="1" x="28" y="0" fill="#533193" />
+<rect width="3" height="1" x="29" y="0" fill="#4C2486" />
+<rect width="2" height="1" x="30" y="0" fill="#441678" />
+<rect width="1" height="1" x="31" y="0" fill="#3C0468" />
+</svg></body></html><ul><li>&quot;Reds&quot;</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23FFF1EE" />
-<rect width="31" height="1" x="1" y="0" fill="%23FFECE8" />
-<rect width="30" height="1" x="2" y="0" fill="%23FFE7E2" />
-<rect width="29" height="1" x="3" y="0" fill="%23FFE1DB" />
-<rect width="28" height="1" x="4" y="0" fill="%23FFDCD5" />
-<rect width="27" height="1" x="5" y="0" fill="%23FFD6CE" />
-<rect width="26" height="1" x="6" y="0" fill="%23FFD0C7" />
-<rect width="25" height="1" x="7" y="0" fill="%23FFC9BF" />
-<rect width="24" height="1" x="8" y="0" fill="%23FFC2B8" />
-<rect width="23" height="1" x="9" y="0" fill="%23FFBBB0" />
-<rect width="22" height="1" x="10" y="0" fill="%23FFB4A8" />
-<rect width="21" height="1" x="11" y="0" fill="%23FFAC9F" />
-<rect width="20" height="1" x="12" y="0" fill="%23FFA497" />
-<rect width="19" height="1" x="13" y="0" fill="%23FF9C8E" />
-<rect width="18" height="1" x="14" y="0" fill="%23FF9385" />
-<rect width="17" height="1" x="15" y="0" fill="%23FF8A7B" />
-<rect width="16" height="1" x="16" y="0" fill="%23FF8071" />
-<rect width="15" height="1" x="17" y="0" fill="%23FF7567" />
-<rect width="14" height="1" x="18" y="0" fill="%23FF6A5D" />
-<rect width="13" height="1" x="19" y="0" fill="%23FF5F52" />
-<rect width="12" height="1" x="20" y="0" fill="%23FF5246" />
-<rect width="11" height="1" x="21" y="0" fill="%23FB443A" />
-<rect width="10" height="1" x="22" y="0" fill="%23F4352D" />
-<rect width="9" height="1" x="23" y="0" fill="%23EA2A24" />
-<rect width="8" height="1" x="24" y="0" fill="%23DE231F" />
-<rect width="7" height="1" x="25" y="0" fill="%23D01D1B" />
-<rect width="6" height="1" x="26" y="0" fill="%23C11917" />
-<rect width="5" height="1" x="27" y="0" fill="%23B11514" />
-<rect width="4" height="1" x="28" y="0" fill="%23A11212" />
-<rect width="3" height="1" x="29" y="0" fill="%23900F0F" />
-<rect width="2" height="1" x="30" y="0" fill="%237F0D0E" />
-<rect width="1" height="1" x="31" y="0" fill="%236D0B0C" />
-</svg>'/><h4 id="Diverging"><a class="docs-heading-anchor" href="#Diverging">Diverging</a><a id="Diverging-1"></a><a class="docs-heading-anchor-permalink" href="#Diverging" title="Permalink"></a></h4><ul><li>&quot;RdBu&quot; (from red to blue)</li></ul><img src='data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+<rect width="32" height="1" x="0" y="0" fill="#FFF1EE" />
+<rect width="31" height="1" x="1" y="0" fill="#FFECE8" />
+<rect width="30" height="1" x="2" y="0" fill="#FFE7E2" />
+<rect width="29" height="1" x="3" y="0" fill="#FFE1DB" />
+<rect width="28" height="1" x="4" y="0" fill="#FFDCD5" />
+<rect width="27" height="1" x="5" y="0" fill="#FFD6CE" />
+<rect width="26" height="1" x="6" y="0" fill="#FFD0C7" />
+<rect width="25" height="1" x="7" y="0" fill="#FFC9BF" />
+<rect width="24" height="1" x="8" y="0" fill="#FFC2B8" />
+<rect width="23" height="1" x="9" y="0" fill="#FFBBB0" />
+<rect width="22" height="1" x="10" y="0" fill="#FFB4A8" />
+<rect width="21" height="1" x="11" y="0" fill="#FFAC9F" />
+<rect width="20" height="1" x="12" y="0" fill="#FFA497" />
+<rect width="19" height="1" x="13" y="0" fill="#FF9C8E" />
+<rect width="18" height="1" x="14" y="0" fill="#FF9385" />
+<rect width="17" height="1" x="15" y="0" fill="#FF8A7B" />
+<rect width="16" height="1" x="16" y="0" fill="#FF8071" />
+<rect width="15" height="1" x="17" y="0" fill="#FF7567" />
+<rect width="14" height="1" x="18" y="0" fill="#FF6A5D" />
+<rect width="13" height="1" x="19" y="0" fill="#FF5F52" />
+<rect width="12" height="1" x="20" y="0" fill="#FF5246" />
+<rect width="11" height="1" x="21" y="0" fill="#FB443A" />
+<rect width="10" height="1" x="22" y="0" fill="#F4352D" />
+<rect width="9" height="1" x="23" y="0" fill="#EA2A24" />
+<rect width="8" height="1" x="24" y="0" fill="#DE231F" />
+<rect width="7" height="1" x="25" y="0" fill="#D01D1B" />
+<rect width="6" height="1" x="26" y="0" fill="#C11917" />
+<rect width="5" height="1" x="27" y="0" fill="#B11514" />
+<rect width="4" height="1" x="28" y="0" fill="#A11212" />
+<rect width="3" height="1" x="29" y="0" fill="#900F0F" />
+<rect width="2" height="1" x="30" y="0" fill="#7F0D0E" />
+<rect width="1" height="1" x="31" y="0" fill="#6D0B0C" />
+</svg></body></html><h4 id="Diverging"><a class="docs-heading-anchor" href="#Diverging">Diverging</a><a id="Diverging-1"></a><a class="docs-heading-anchor-permalink" href="#Diverging" title="Permalink"></a></h4><ul><li>&quot;RdBu&quot; (from red to blue)</li></ul><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
      width="96mm" height="4mm"
      viewBox="0 0 32 1" preserveAspectRatio="none"
      shape-rendering="crispEdges" stroke="none">
-<rect width="32" height="1" x="0" y="0" fill="%23610102" />
-<rect width="31" height="1" x="1" y="0" fill="%23820C0A" />
-<rect width="30" height="1" x="2" y="0" fill="%23A11C18" />
-<rect width="29" height="1" x="3" y="0" fill="%23BB2E26" />
-<rect width="28" height="1" x="4" y="0" fill="%23D14136" />
-<rect width="27" height="1" x="5" y="0" fill="%23E35546" />
-<rect width="26" height="1" x="6" y="0" fill="%23F16858" />
-<rect width="25" height="1" x="7" y="0" fill="%23FB7B6A" />
-<rect width="24" height="1" x="8" y="0" fill="%23FF8D7B" />
-<rect width="23" height="1" x="9" y="0" fill="%23FF9E8C" />
-<rect width="22" height="1" x="10" y="0" fill="%23FFAE9D" />
-<rect width="21" height="1" x="11" y="0" fill="%23FFBCAD" />
-<rect width="20" height="1" x="12" y="0" fill="%23FFCABD" />
-<rect width="19" height="1" x="13" y="0" fill="%23FFD6CC" />
-<rect width="18" height="1" x="14" y="0" fill="%23FFE2DA" />
-<rect width="17" height="1" x="15" y="0" fill="%23FFECE7" />
-<rect width="16" height="1" x="16" y="0" fill="%23E5F4FD" />
-<rect width="15" height="1" x="17" y="0" fill="%23D7EEFB" />
-<rect width="14" height="1" x="18" y="0" fill="%23C8E6F9" />
-<rect width="13" height="1" x="19" y="0" fill="%23B9DEF7" />
-<rect width="12" height="1" x="20" y="0" fill="%23A9D5F4" />
-<rect width="11" height="1" x="21" y="0" fill="%2398CBF1" />
-<rect width="10" height="1" x="22" y="0" fill="%2387C0ED" />
-<rect width="9" height="1" x="23" y="0" fill="%2376B4E8" />
-<rect width="8" height="1" x="24" y="0" fill="%2365A7E1" />
-<rect width="7" height="1" x="25" y="0" fill="%235598D8" />
-<rect width="6" height="1" x="26" y="0" fill="%234588CC" />
-<rect width="5" height="1" x="27" y="0" fill="%233777BC" />
-<rect width="4" height="1" x="28" y="0" fill="%232B65A9" />
-<rect width="3" height="1" x="29" y="0" fill="%231F5392" />
-<rect width="2" height="1" x="30" y="0" fill="%23143F77" />
-<rect width="1" height="1" x="31" y="0" fill="%23082C59" />
-</svg>'/><h3 id><a class="docs-heading-anchor" href="#"></a><a id="-1"></a><a class="docs-heading-anchor-permalink" href="#" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.colormap" href="#Colors.colormap"><code>Colors.colormap</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">colormap(cname, N=100; mid=0.5, logscale=false, kvs...])</code></pre><p>Returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).</p><p>Sequential colormaps <code>cname</code> choices are:</p><ul><li><code>Blues</code></li><li><code>Greens</code></li><li><code>Grays</code></li><li><code>Oranges</code></li><li><code>Purples</code>,</li><li><code>Reds</code></li></ul><p>Diverging colormap choices are <code>RdBu</code>.</p><p>Optionally, you can specify the number of colors <code>N</code> (default 100).</p><p>Extra control is provided by keyword arguments.</p><ul><li><code>mid</code> sets the position of the midpoint for diverging colormaps.</li><li><code>logscale=true</code> uses logarithmically-spaced steps in the colormap.</li></ul><p>You can also use keyword argument names that match the argument names in <a href="#Colors.sequential_palette"><code>sequential_palette</code></a> or <a href="#Colors.diverging_palette"><code>diverging_palette</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/e66792170e766818969ae367a861a6bd19d03d33/src/colormaps.jl#L259-L283">source</a></section></article><h3 id="Sequential-and-diverging-color-palettes"><a class="docs-heading-anchor" href="#Sequential-and-diverging-color-palettes">Sequential and diverging color palettes</a><a id="Sequential-and-diverging-color-palettes-1"></a><a class="docs-heading-anchor-permalink" href="#Sequential-and-diverging-color-palettes" title="Permalink"></a></h3><p>You can create your own color palettes by using <code>sequential_palette()</code>:</p><p><code>sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0, wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])</code></p><p>which creates a sequential map for a hue <code>h</code> (defined in LCHuv space).</p><p>Other possible parameters that you can fine tune are:</p><ul><li><code>N</code> - number of colors</li><li><code>c</code> - the overall lightness contrast [0,1]</li><li><code>s</code> - saturation [0,1]</li><li><code>b</code> - brightness [0,1]</li><li><code>w</code> - cold/warm parameter, i.e. the strength of the starting color [0,1]</li><li><code>d</code> - depth of the ending color [0,1]</li><li><code>wcolor</code> - starting color (usually defined to be yellow)</li><li><code>dcolor</code> - ending color (depth)</li><li><code>logscale</code> - true/false for toggling logspacing</li></ul><p>Two sequential maps can also be combined into a diverging colormap by using:</p><p><code>diverging_palette(h1, h2 [, N::Int=100; mid=0.5,c=0.88, s=0.6, b=0.75, w=0.15, d1=0.0, d2=0.0, wcolor=RGB(1,1,0), dcolor1=RGB(1,0,0), dcolor2=RGB(0,0,1), logscale=false])</code></p><p>where the arguments are:</p><ul><li><code>h1</code> - the main hue of the left side [0,360]</li><li><code>h2</code> - the main hue of the right side [0,360]</li></ul><p>and the optional arguments are:</p><ul><li><code>N</code> - number of colors</li><li><code>c</code> - the overall lightness contrast [0,1]</li><li><code>s</code> - saturation [0,1]</li><li><code>b</code> - brightness [0,1]</li><li><code>w</code> - cold/warm parameter, i.e. the strength of the middle color [0,1]</li><li><code>d1</code> - depth of the end color in the left side [0,1]</li><li><code>d2</code> - depth of the end color in the right side [0,1]</li><li><code>wcolor</code> - starting color i.e. the middle color (warmness, usually defined to be yellow)</li><li><code>dcolor1</code> - end color of the left side (depth)</li><li><code>dcolor2</code> - end color of the right side (depth)</li><li><code>logscale</code> - true/false for toggling logspacing</li></ul><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.sequential_palette" href="#Colors.sequential_palette"><code>Colors.sequential_palette</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">sequential_palette(h, N::Int=100; &lt;keyword arguments&gt;)</code></pre><p>Implements the color palette creation technique by <a href="http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf">Wijffelaars, M., et al. (2008)</a>.</p><p>Colormaps are formed using Bézier curves in LCHuv colorspace with some constant hue. In addition, start and end points can be given that are then blended to the original hue smoothly.</p><p><strong>Arguments</strong></p><ul><li>N        - number of colors</li><li>h        - the main hue [0,360]</li><li>c        - the overall lightness contrast [0,1]</li><li>s        - saturation [0,1]</li><li>b        - brightness [0,1]</li><li>w        - cold/warm parameter, i.e. the strength of the starting color [0,1]</li><li>d        - depth of the ending color [0,1]</li><li>wcolor   - starting color (warmness)</li><li>dcolor   - ending color (depth)</li><li>logscale - true/false for toggling logspacing</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/e66792170e766818969ae367a861a6bd19d03d33/src/colormaps.jl#L109-L130">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.diverging_palette" href="#Colors.diverging_palette"><code>Colors.diverging_palette</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">diverging_palette(h1, h2, N::Int=100; &lt;keyword arguments&gt;)</code></pre><p>Create diverging palettes by combining 2 sequential palettes</p><p><strong>Arguments</strong></p><ul><li>N        - number of colors</li><li>h1       - the main hue of the left side [0,360]</li><li>h2       - the main hue of the right side [0,360]</li><li>c        - the overall lightness contrast [0,1]</li><li>s        - saturation [0,1]</li><li>b        - brightness [0,1]</li><li>w        - cold/warm parameter, i.e. the strength of the starting color [0,1]</li><li>d1       - depth of the ending color in the left side [0,1]</li><li>d2       - depth of the ending color in the right side [0,1]</li><li>wcolor   - starting color (warmness)</li><li>dcolor1  - ending color of the left side (depth)</li><li>dcolor2  - ending color of the right side (depth)</li><li>logscale - true/false for toggling logspacing</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/e66792170e766818969ae367a861a6bd19d03d33/src/colormaps.jl#L197-L217">source</a></section></article><h2 id="Generating-distinguishable-colors"><a class="docs-heading-anchor" href="#Generating-distinguishable-colors">Generating distinguishable colors</a><a id="Generating-distinguishable-colors-1"></a><a class="docs-heading-anchor-permalink" href="#Generating-distinguishable-colors" title="Permalink"></a></h2><p><code>distinguishable_colors()</code> generates <code>n</code> maximally distinguishable colors in LCHab space. A seed color or array of seed colors can be provided, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.</p><pre><code class="language-julia hljs">distinguishable_colors(n::Integer, seed::Color)
+<rect width="32" height="1" x="0" y="0" fill="#610102" />
+<rect width="31" height="1" x="1" y="0" fill="#820C0A" />
+<rect width="30" height="1" x="2" y="0" fill="#A11C18" />
+<rect width="29" height="1" x="3" y="0" fill="#BB2E26" />
+<rect width="28" height="1" x="4" y="0" fill="#D14136" />
+<rect width="27" height="1" x="5" y="0" fill="#E35546" />
+<rect width="26" height="1" x="6" y="0" fill="#F16858" />
+<rect width="25" height="1" x="7" y="0" fill="#FB7B6A" />
+<rect width="24" height="1" x="8" y="0" fill="#FF8D7B" />
+<rect width="23" height="1" x="9" y="0" fill="#FF9E8C" />
+<rect width="22" height="1" x="10" y="0" fill="#FFAE9D" />
+<rect width="21" height="1" x="11" y="0" fill="#FFBCAD" />
+<rect width="20" height="1" x="12" y="0" fill="#FFCABD" />
+<rect width="19" height="1" x="13" y="0" fill="#FFD6CC" />
+<rect width="18" height="1" x="14" y="0" fill="#FFE2DA" />
+<rect width="17" height="1" x="15" y="0" fill="#FFECE7" />
+<rect width="16" height="1" x="16" y="0" fill="#E5F4FD" />
+<rect width="15" height="1" x="17" y="0" fill="#D7EEFB" />
+<rect width="14" height="1" x="18" y="0" fill="#C8E6F9" />
+<rect width="13" height="1" x="19" y="0" fill="#B9DEF7" />
+<rect width="12" height="1" x="20" y="0" fill="#A9D5F4" />
+<rect width="11" height="1" x="21" y="0" fill="#98CBF1" />
+<rect width="10" height="1" x="22" y="0" fill="#87C0ED" />
+<rect width="9" height="1" x="23" y="0" fill="#76B4E8" />
+<rect width="8" height="1" x="24" y="0" fill="#65A7E1" />
+<rect width="7" height="1" x="25" y="0" fill="#5598D8" />
+<rect width="6" height="1" x="26" y="0" fill="#4588CC" />
+<rect width="5" height="1" x="27" y="0" fill="#3777BC" />
+<rect width="4" height="1" x="28" y="0" fill="#2B65A9" />
+<rect width="3" height="1" x="29" y="0" fill="#1F5392" />
+<rect width="2" height="1" x="30" y="0" fill="#143F77" />
+<rect width="1" height="1" x="31" y="0" fill="#082C59" />
+</svg></body></html><h3 id><a class="docs-heading-anchor" href="#"></a><a id="-1"></a><a class="docs-heading-anchor-permalink" href="#" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.colormap" href="#Colors.colormap"><code>Colors.colormap</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">colormap(cname, N=100; mid=0.5, logscale=false, kvs...])</code></pre><p>Returns a predefined sequential or diverging colormap computed using the algorithm by Wijffelaars, M., et al. (2008).</p><p>Sequential colormaps <code>cname</code> choices are:</p><ul><li><code>Blues</code></li><li><code>Greens</code></li><li><code>Grays</code></li><li><code>Oranges</code></li><li><code>Purples</code>,</li><li><code>Reds</code></li></ul><p>Diverging colormap choices are <code>RdBu</code>.</p><p>Optionally, you can specify the number of colors <code>N</code> (default 100).</p><p>Extra control is provided by keyword arguments.</p><ul><li><code>mid</code> sets the position of the midpoint for diverging colormaps.</li><li><code>logscale=true</code> uses logarithmically-spaced steps in the colormap.</li></ul><p>You can also use keyword argument names that match the argument names in <a href="#Colors.sequential_palette"><code>sequential_palette</code></a> or <a href="#Colors.diverging_palette"><code>diverging_palette</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/42b8548eb8888ca6a12ee5ccd5e035ba3253f145/src/colormaps.jl#L259-L283">source</a></section></article><h3 id="Sequential-and-diverging-color-palettes"><a class="docs-heading-anchor" href="#Sequential-and-diverging-color-palettes">Sequential and diverging color palettes</a><a id="Sequential-and-diverging-color-palettes-1"></a><a class="docs-heading-anchor-permalink" href="#Sequential-and-diverging-color-palettes" title="Permalink"></a></h3><p>You can create your own color palettes by using <code>sequential_palette()</code>:</p><p><code>sequential_palette(h, [N::Int=100; c=0.88, s=0.6, b=0.75, w=0.15, d=0.0, wcolor=RGB(1,1,0), dcolor=RGB(0,0,1), logscale=false])</code></p><p>which creates a sequential map for a hue <code>h</code> (defined in LCHuv space).</p><p>Other possible parameters that you can fine tune are:</p><ul><li><code>N</code> - number of colors</li><li><code>c</code> - the overall lightness contrast [0,1]</li><li><code>s</code> - saturation [0,1]</li><li><code>b</code> - brightness [0,1]</li><li><code>w</code> - cold/warm parameter, i.e. the strength of the starting color [0,1]</li><li><code>d</code> - depth of the ending color [0,1]</li><li><code>wcolor</code> - starting color (usually defined to be yellow)</li><li><code>dcolor</code> - ending color (depth)</li><li><code>logscale</code> - true/false for toggling logspacing</li></ul><p>Two sequential maps can also be combined into a diverging colormap by using:</p><p><code>diverging_palette(h1, h2 [, N::Int=100; mid=0.5,c=0.88, s=0.6, b=0.75, w=0.15, d1=0.0, d2=0.0, wcolor=RGB(1,1,0), dcolor1=RGB(1,0,0), dcolor2=RGB(0,0,1), logscale=false])</code></p><p>where the arguments are:</p><ul><li><code>h1</code> - the main hue of the left side [0,360]</li><li><code>h2</code> - the main hue of the right side [0,360]</li></ul><p>and the optional arguments are:</p><ul><li><code>N</code> - number of colors</li><li><code>c</code> - the overall lightness contrast [0,1]</li><li><code>s</code> - saturation [0,1]</li><li><code>b</code> - brightness [0,1]</li><li><code>w</code> - cold/warm parameter, i.e. the strength of the middle color [0,1]</li><li><code>d1</code> - depth of the end color in the left side [0,1]</li><li><code>d2</code> - depth of the end color in the right side [0,1]</li><li><code>wcolor</code> - starting color i.e. the middle color (warmness, usually defined to be yellow)</li><li><code>dcolor1</code> - end color of the left side (depth)</li><li><code>dcolor2</code> - end color of the right side (depth)</li><li><code>logscale</code> - true/false for toggling logspacing</li></ul><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.sequential_palette" href="#Colors.sequential_palette"><code>Colors.sequential_palette</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">sequential_palette(h, N::Int=100; &lt;keyword arguments&gt;)</code></pre><p>Implements the color palette creation technique by <a href="http://magnaview.nl/documents/MagnaView-M_Wijffelaars-Generating_color_palettes_using_intuitive_parameters.pdf">Wijffelaars, M., et al. (2008)</a>.</p><p>Colormaps are formed using Bézier curves in LCHuv colorspace with some constant hue. In addition, start and end points can be given that are then blended to the original hue smoothly.</p><p><strong>Arguments</strong></p><ul><li>N        - number of colors</li><li>h        - the main hue [0,360]</li><li>c        - the overall lightness contrast [0,1]</li><li>s        - saturation [0,1]</li><li>b        - brightness [0,1]</li><li>w        - cold/warm parameter, i.e. the strength of the starting color [0,1]</li><li>d        - depth of the ending color [0,1]</li><li>wcolor   - starting color (warmness)</li><li>dcolor   - ending color (depth)</li><li>logscale - true/false for toggling logspacing</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/42b8548eb8888ca6a12ee5ccd5e035ba3253f145/src/colormaps.jl#L109-L130">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.diverging_palette" href="#Colors.diverging_palette"><code>Colors.diverging_palette</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">diverging_palette(h1, h2, N::Int=100; &lt;keyword arguments&gt;)</code></pre><p>Create diverging palettes by combining 2 sequential palettes</p><p><strong>Arguments</strong></p><ul><li>N        - number of colors</li><li>h1       - the main hue of the left side [0,360]</li><li>h2       - the main hue of the right side [0,360]</li><li>c        - the overall lightness contrast [0,1]</li><li>s        - saturation [0,1]</li><li>b        - brightness [0,1]</li><li>w        - cold/warm parameter, i.e. the strength of the starting color [0,1]</li><li>d1       - depth of the ending color in the left side [0,1]</li><li>d2       - depth of the ending color in the right side [0,1]</li><li>wcolor   - starting color (warmness)</li><li>dcolor1  - ending color of the left side (depth)</li><li>dcolor2  - ending color of the right side (depth)</li><li>logscale - true/false for toggling logspacing</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/42b8548eb8888ca6a12ee5ccd5e035ba3253f145/src/colormaps.jl#L197-L217">source</a></section></article><h2 id="Generating-distinguishable-colors"><a class="docs-heading-anchor" href="#Generating-distinguishable-colors">Generating distinguishable colors</a><a id="Generating-distinguishable-colors-1"></a><a class="docs-heading-anchor-permalink" href="#Generating-distinguishable-colors" title="Permalink"></a></h2><p><code>distinguishable_colors()</code> generates <code>n</code> maximally distinguishable colors in LCHab space. A seed color or array of seed colors can be provided, and the remaining colors will be chosen to be maximally distinguishable from the seed colors and each other.</p><pre><code class="language-julia hljs">distinguishable_colors(n::Integer, seed::Color)
 distinguishable_colors{T&lt;:Color}(n::Integer,seed::AbstractVector{T})</code></pre><p>By default, <code>distinguishable_colors</code> chooses maximally distinguishable colors from the outer product of lightness, chroma, and hue values specified by <code>lchoices = range(0, stop=100, length=15)</code>, <code>cchoices = range(0, stop=100, length=15)</code>, and <code>hchoices = range(0, stop=342, length=20)</code>. The set of colors that <code>distinguishable_colors</code> chooses from can be specified by passing different choices as keyword arguments.</p><pre><code class="language-julia hljs">distinguishable_colors{T&lt;:Color}(n::Integer, seed::AbstractVector{T};
     dropseed = false,
     transform::Function = identity,
@@ -576,4 +576,4 @@ legend(vars, loc=&quot;upper right&quot;, bbox_to_anchor=[1.1, 1.])</code></pre>
                                 transform=identity,
                                 lchoices=range(0, stop=100, length=15),
                                 cchoices=range(0, stop=100, length=15),
-                                hchoices=range(0, stop=342, length=20))</code></pre><p>Generate n maximally distinguishable colors.</p><p>This uses a greedy brute-force approach to choose n colors that are maximally distinguishable. Given seed color(s), and a set of possible hue, chroma, and lightness values (in LCHab space), it repeatedly chooses the next color as the one that maximizes the minimum pairwise distance to any of the colors already in the palette.</p><p><strong>Arguments</strong></p><ul><li><code>n</code>: Number of colors to generate.</li><li><code>seed</code>: Initial color(s) included in the palette.</li></ul><p><strong>Keyword arguments</strong></p><ul><li><code>dropseed</code>: if true, the <code>seed</code> values will be dropped. This provides an easy mechanism to ensure that the chosen colors are distinguishable from the seed value(s). When true, <code>n</code> does not include the seed color(s).</li><li><code>transform</code>: Transform applied to colors before measuring distance. Default is <code>identity</code>; other choices include <code>deuteranopic</code> to simulate color-blindness.</li><li><code>lchoices</code>: Possible lightness values</li><li><code>cchoices</code>: Possible chroma values</li><li><code>hchoices</code>: Possible hue values</li></ul><p>Returns a <code>Vector</code> of colors of length <code>n</code>, of the type specified in <code>seed</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/e66792170e766818969ae367a861a6bd19d03d33/src/colormaps.jl#L7-L40">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../colordifferences/">« Color Differences</a><a class="docs-footer-nextpage" href="../namedcolors/">Named Colors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.1 on <span class="colophon-date" title="Tuesday 14 May 2024 05:47">Tuesday 14 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+                                hchoices=range(0, stop=342, length=20))</code></pre><p>Generate n maximally distinguishable colors.</p><p>This uses a greedy brute-force approach to choose n colors that are maximally distinguishable. Given seed color(s), and a set of possible hue, chroma, and lightness values (in LCHab space), it repeatedly chooses the next color as the one that maximizes the minimum pairwise distance to any of the colors already in the palette.</p><p><strong>Arguments</strong></p><ul><li><code>n</code>: Number of colors to generate.</li><li><code>seed</code>: Initial color(s) included in the palette.</li></ul><p><strong>Keyword arguments</strong></p><ul><li><code>dropseed</code>: if true, the <code>seed</code> values will be dropped. This provides an easy mechanism to ensure that the chosen colors are distinguishable from the seed value(s). When true, <code>n</code> does not include the seed color(s).</li><li><code>transform</code>: Transform applied to colors before measuring distance. Default is <code>identity</code>; other choices include <code>deuteranopic</code> to simulate color-blindness.</li><li><code>lchoices</code>: Possible lightness values</li><li><code>cchoices</code>: Possible chroma values</li><li><code>hchoices</code>: Possible hue values</li></ul><p>Returns a <code>Vector</code> of colors of length <code>n</code>, of the type specified in <code>seed</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/42b8548eb8888ca6a12ee5ccd5e035ba3253f145/src/colormaps.jl#L7-L40">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../colordifferences/">« Color Differences</a><a class="docs-footer-nextpage" href="../namedcolors/">Named Colors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.1 on <span class="colophon-date" title="Thursday 30 May 2024 12:00">Thursday 30 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
