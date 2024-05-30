@@ -1,8 +1,10 @@
 using Documenter, Colors
 
 abstract type SVG end
-function Base.show(io::IO, mime::MIME"image/svg+xml", svg::SVG)
+function Base.show(io::IO, ::MIME"text/html", svg::SVG)
+    write(io, "<html><body>")
     write(io, take!(svg.buf))
+    write(io, "</body></html>")
     flush(io)
 end
 
