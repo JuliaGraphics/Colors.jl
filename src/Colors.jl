@@ -4,8 +4,10 @@ using FixedPointNumbers
 using Reexport
 
 @reexport using ColorTypes
-Base.@deprecate_binding RGB1 XRGB
-Base.@deprecate_binding RGB4 RGBX
+# remove deprecated bindings 
+# see discussion https://github.com/JuliaIO/ImageMagick.jl/issues/235
+# Base.@deprecate_binding RGB1 XRGB
+# Base.@deprecate_binding RGB4 RGBX
 
 
 import Base: ==, +, -, *, /

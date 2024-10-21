@@ -72,6 +72,9 @@ cnvt(::Type{C}, c) where {C} = convert(C, convert(RGB{eltype(C)}, c)::RGB{eltype
 
 # Conversions from grayscale
 # --------------------------
+function ColorTypes._convert(::Type{Cdest}, ::Type{O}, ::Type{O}, g) where {Cdest<:Color,O<:AbstractGray}
+    cnvt(Cdest, g)
+end
 function ColorTypes._convert(::Type{Cdest}, ::Type{Odest}, ::Type{Osrc}, g) where {Cdest<:Color,Odest,Osrc<:AbstractGray}
     cnvt(Cdest, convert(RGB{eltype(Cdest)}, g))
 end
