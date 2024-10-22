@@ -508,10 +508,10 @@ This is semantically equivalent to the calculation of `sum(weights .* colors)`.
 julia> rgbs = (RGB(1, 0, 0), RGB(0, 1, 0), RGB(0, 0, 1));
 
 julia> weighted_color_mean([0.2, 0.2, 0.6], rgbs)
-RGB{N0f8}(0.2,0.2,0.6)
+RGB{N0f8}(0.2, 0.2, 0.6)
 
 julia> weighted_color_mean(0.5:-0.25:0.0, RGB{Float64}.(rgbs))
-RGB{Float64}(0.5,0.25,0.0)
+RGB{Float64}(0.5, 0.25, 0.0)
 ```
 
 !!! compat "Colors v0.13"
