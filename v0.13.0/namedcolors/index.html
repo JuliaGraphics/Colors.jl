@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Named Colors · Colors</title><meta name="title" content="Named Colors · Colors"/><meta property="og:title" content="Named Colors · Colors"/><meta property="twitter:title" content="Named Colors · Colors"/><meta name="description" content="Documentation for Colors."/><meta property="og:description" content="Documentation for Colors."/><meta property="twitter:description" content="Documentation for Colors."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><script src="../assets/resize_svg.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Colors logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Colors</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../constructionandconversion/">Construction and Conversion</a></li><li><a class="tocitem" href="../colordifferences/">Color Differences</a></li><li><a class="tocitem" href="../colormapsandcolorscales/">Colormaps and Colorscales</a></li><li class="is-active"><a class="tocitem" href>Named Colors</a><ul class="internal"><li><a class="tocitem" href="#Julia-logo-colors"><span>Julia logo colors</span></a></li></ul></li><li><a class="tocitem" href="../advancedfunctions/">Advanced Functions</a></li><li><a class="tocitem" href="../references/">References</a></li><li><a class="tocitem" href="../functionindex/">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Named Colors</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Named Colors</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaGraphics/Colors.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaGraphics/Colors.jl/blob/master/docs/src/namedcolors.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Named-Colors"><a class="docs-heading-anchor" href="#Named-Colors">Named Colors</a><a id="Named-Colors-1"></a><a class="docs-heading-anchor-permalink" href="#Named-Colors" title="Permalink"></a></h1><p>The names of available colors are stored in alphabetical order in the dictionary <a href="https://github.com/JuliaGraphics/Colors.jl/blob/master/src/names_data.jl"><code>Colors.color_names</code></a>:</p><pre><code class="language-julia hljs">color_names = Dict(
+    &quot;aliceblue&quot;            =&gt; (240, 248, 255),
+    &quot;antiquewhite&quot;         =&gt; (250, 235, 215),
+    &quot;antiquewhite1&quot;        =&gt; (255, 239, 219),
+    ...</code></pre><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 91.0"
+     width="150mm" height="91.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Whites</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFFF" /><text><tspan x="7.4" y="4.2">white</tspan></text><text x="7.4" y="13">1.0, 1.0, 1.0</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFF0" /><text><tspan x="7.4" y="4.2">ivory</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.94</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFF0" /><text><tspan x="7.4" y="4.2">ivory1</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.94</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#F5FFFA" /><text><tspan x="7.4" y="4.2">mintcream</tspan></text><text x="7.4" y="13">0.96, 1.0, 0.98</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFAFA" /><text><tspan x="7.4" y="4.2">snow</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.98</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFAFA" /><text><tspan x="7.4" y="4.2">snow1</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.98</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#F0FFF0" /><text><tspan x="7.4" y="4.2">honeydew</tspan></text><text x="7.4" y="13">0.94, 1.0, 0.94</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#F0FFF0" /><text><tspan x="7.4" y="4.2">honeydew1</tspan></text><text x="7.4" y="13">0.94, 1.0, 0.94</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFAF0" /><text><tspan x="7.4" y="4.2">floralwhite</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.94</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#F8F8FF" /><text><tspan x="7.4" y="4.2">ghostwhite</tspan></text><text x="7.4" y="13">0.97, 0.97, 1.0</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF8DC" /><text><tspan x="7.4" y="4.2">cornsilk</tspan></text><text x="7.4" y="13">1.0, 0.97, 0.86</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF8DC" /><text><tspan x="7.4" y="4.2">cornsilk1</tspan></text><text x="7.4" y="13">1.0, 0.97, 0.86</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF5EE" /><text><tspan x="7.4" y="4.2">seashell</tspan></text><text x="7.4" y="13">1.0, 0.96, 0.93</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#FFF5EE" /><text><tspan x="7.4" y="4.2">seashell1</tspan></text><text x="7.4" y="13">1.0, 0.96, 0.93</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#FDF5E6" /><text><tspan x="7.4" y="4.2">oldlace</tspan></text><text x="7.4" y="13">0.99, 0.96, 0.9</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#F5F5F5" /><text><tspan x="7.4" y="4.2">whitesmoke</tspan></text><text x="7.4" y="13">0.96, 0.96, 0.96</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#F5F5DC" /><text><tspan x="7.4" y="4.2">beige</tspan></text><text x="7.4" y="13">0.96, 0.96, 0.86</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#FAF0E6" /><text><tspan x="7.4" y="4.2">linen</tspan></text><text x="7.4" y="13">0.98, 0.94, 0.9</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#FFEFDB" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white1</tspan></text><text x="7.4" y="13">1.0, 0.94, 0.86</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#EEEEE0" /><text><tspan x="7.4" y="4.2">ivory2</tspan></text><text x="7.4" y="13">0.93, 0.93, 0.88</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FAEBD7" /><text><tspan x="7.4" y="4.2">antiquewhite</tspan></text><text x="7.4" y="13">0.98, 0.92, 0.84</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#E0EEE0" /><text><tspan x="7.4" y="4.2">honeydew2</tspan></text><text x="7.4" y="13">0.88, 0.93, 0.88</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#EEE9E9" /><text><tspan x="7.4" y="4.2">snow2</tspan></text><text x="7.4" y="13">0.93, 0.91, 0.91</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#EEE8CD" /><text><tspan x="7.4" y="4.2">cornsilk2</tspan></text><text x="7.4" y="13">0.93, 0.91, 0.8</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#EEE5DE" /><text><tspan x="7.4" y="4.2">seashell2</tspan></text><text x="7.4" y="13">0.93, 0.9, 0.87</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FFDEAD" /><text><tspan x="7.4" y="4.2">navajowhite</tspan></text><text x="7.4" y="13">1.0, 0.87, 0.68</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#FFDEAD" /><text><tspan x="7.4" y="4.2">navajowhite1</tspan></text><text x="7.4" y="13">1.0, 0.87, 0.68</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#EEDFCC" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white2</tspan></text><text x="7.4" y="13">0.93, 0.87, 0.8</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#EECFA1" /><text><tspan x="7.4" y="4.2">navajowhite2</tspan></text><text x="7.4" y="13">0.93, 0.81, 0.63</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#CDCDC1" /><text><tspan x="7.4" y="4.2">ivory3</tspan></text><text x="7.4" y="13">0.8, 0.8, 0.76</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC9C9" /><text><tspan x="7.4" y="4.2">snow3</tspan></text><text x="7.4" y="13">0.8, 0.79, 0.79</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#C1CDC1" /><text><tspan x="7.4" y="4.2">honeydew3</tspan></text><text x="7.4" y="13">0.76, 0.8, 0.76</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC8B1" /><text><tspan x="7.4" y="4.2">cornsilk3</tspan></text><text x="7.4" y="13">0.8, 0.78, 0.69</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC5BF" /><text><tspan x="7.4" y="4.2">seashell3</tspan></text><text x="7.4" y="13">0.8, 0.77, 0.75</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#CDC0B0" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white3</tspan></text><text x="7.4" y="13">0.8, 0.75, 0.69</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#C0C0C0" /><text><tspan x="7.4" y="4.2">silver</tspan></text><text x="7.4" y="13">0.75, 0.75, 0.75</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#CDB38B" /><text><tspan x="7.4" y="4.2">navajowhite3</tspan></text><text x="7.4" y="13">0.8, 0.7, 0.55</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#8B8B83" /><text><tspan x="7.4" y="4.2">ivory4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.55, 0.51</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8B8989" /><text><tspan x="7.4" y="4.2">snow4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.54, 0.54</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#838B83" /><text><tspan x="7.4" y="4.2">honeydew4</tspan></text><text x="7.4" y="13" class="w">0.51, 0.55, 0.51</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8878" /><text><tspan x="7.4" y="4.2">cornsilk4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.53, 0.47</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8682" /><text><tspan x="7.4" y="4.2">seashell4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.53, 0.51</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8378" /><text><tspan x="7.4" y="2.3">antique</tspan><tspan x="7.4" y="4.5">white4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.51, 0.47</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#8B795E" /><text><tspan x="7.4" y="4.2">navajowhite4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.47, 0.37</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 76.0"
+     width="150mm" height="76.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Reds</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFA07A" /><text><tspan x="7.4" y="4.2">lightsalmon</tspan></text><text x="7.4" y="13">1.0, 0.63, 0.48</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFA07A" /><text><tspan x="7.4" y="4.2">lightsalmon1</tspan></text><text x="7.4" y="13">1.0, 0.63, 0.48</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FF8C69" /><text><tspan x="7.4" y="4.2">salmon1</tspan></text><text x="7.4" y="13">1.0, 0.55, 0.41</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#EE9572" /><text><tspan x="7.4" y="4.2">lightsalmon2</tspan></text><text x="7.4" y="13">0.93, 0.58, 0.45</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#E9967A" /><text><tspan x="7.4" y="4.2">darksalmon</tspan></text><text x="7.4" y="13">0.91, 0.59, 0.48</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FF7F50" /><text><tspan x="7.4" y="4.2">coral</tspan></text><text x="7.4" y="13">1.0, 0.5, 0.31</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FA8072" /><text><tspan x="7.4" y="4.2">salmon</tspan></text><text x="7.4" y="13">0.98, 0.5, 0.45</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#F08080" /><text><tspan x="7.4" y="4.2">lightcoral</tspan></text><text x="7.4" y="13">0.94, 0.5, 0.5</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#EE8262" /><text><tspan x="7.4" y="4.2">salmon2</tspan></text><text x="7.4" y="13">0.93, 0.51, 0.38</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FF7256" /><text><tspan x="7.4" y="4.2">coral1</tspan></text><text x="7.4" y="13">1.0, 0.45, 0.34</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FF6A6A" /><text><tspan x="7.4" y="4.2">indianred1</tspan></text><text x="7.4" y="13">1.0, 0.42, 0.42</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#FF6347" /><text><tspan x="7.4" y="4.2">tomato</tspan></text><text x="7.4" y="13">1.0, 0.39, 0.28</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#FF6347" /><text><tspan x="7.4" y="4.2">tomato1</tspan></text><text x="7.4" y="13">1.0, 0.39, 0.28</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#CD8162" /><text><tspan x="7.4" y="4.2">lightsalmon3</tspan></text><text x="7.4" y="13">0.8, 0.51, 0.38</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#EE6A50" /><text><tspan x="7.4" y="4.2">coral2</tspan></text><text x="7.4" y="13">0.93, 0.42, 0.31</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#EE6363" /><text><tspan x="7.4" y="4.2">indianred2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.39, 0.39</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#EE5C42" /><text><tspan x="7.4" y="4.2">tomato2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.36, 0.26</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#CD7054" /><text><tspan x="7.4" y="4.2">salmon3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.44, 0.33</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#FF3030" /><text><tspan x="7.4" y="4.2">firebrick1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.19, 0.19</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#CD5C5C" /><text><tspan x="7.4" y="4.2">indianred</tspan></text><text x="7.4" y="13" class="w">0.8, 0.36, 0.36</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FF0000" /><text><tspan x="7.4" y="4.2">red</tspan></text><text x="7.4" y="13" class="w">1.0, 0.0, 0.0</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#FF0000" /><text><tspan x="7.4" y="4.2">red1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.0, 0.0</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#CD5B45" /><text><tspan x="7.4" y="4.2">coral3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.36, 0.27</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#EE2C2C" /><text><tspan x="7.4" y="4.2">firebrick2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.17, 0.17</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#CD5555" /><text><tspan x="7.4" y="4.2">indianred3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.33, 0.33</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#CD4F39" /><text><tspan x="7.4" y="4.2">tomato3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.31, 0.22</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#EE0000" /><text><tspan x="7.4" y="4.2">red2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.0, 0.0</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#DC143C" /><text><tspan x="7.4" y="4.2">crimson</tspan></text><text x="7.4" y="13" class="w">0.86, 0.08, 0.24</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#CD2626" /><text><tspan x="7.4" y="4.2">firebrick3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.15, 0.15</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#CD0000" /><text><tspan x="7.4" y="4.2">red3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.0, 0.0</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#8B5742" /><text><tspan x="7.4" y="4.2">lightsalmon4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.34, 0.26</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#8B4C39" /><text><tspan x="7.4" y="4.2">salmon4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.3, 0.22</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#B22222" /><text><tspan x="7.4" y="4.2">firebrick</tspan></text><text x="7.4" y="13" class="w">0.7, 0.13, 0.13</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8B3E2F" /><text><tspan x="7.4" y="4.2">coral4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.24, 0.18</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#8B3A3A" /><text><tspan x="7.4" y="4.2">indianred4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.23, 0.23</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#8B3626" /><text><tspan x="7.4" y="4.2">tomato4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.21, 0.15</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#8B1A1A" /><text><tspan x="7.4" y="4.2">firebrick4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.1, 0.1</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#8B0000" /><text><tspan x="7.4" y="4.2">darkred</tspan></text><text x="7.4" y="13" class="w">0.55, 0.0, 0.0</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8B0000" /><text><tspan x="7.4" y="4.2">red4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.0, 0.0</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 46.0"
+     width="150mm" height="46.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Oranges</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFA500" /><text><tspan x="7.4" y="4.2">orange</tspan></text><text x="7.4" y="13">1.0, 0.65, 0.0</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFA500" /><text><tspan x="7.4" y="4.2">orange1</tspan></text><text x="7.4" y="13">1.0, 0.65, 0.0</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#EE9A00" /><text><tspan x="7.4" y="4.2">orange2</tspan></text><text x="7.4" y="13">0.93, 0.6, 0.0</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FF8C00" /><text><tspan x="7.4" y="4.2">darkorange</tspan></text><text x="7.4" y="13">1.0, 0.55, 0.0</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FF7F00" /><text><tspan x="7.4" y="4.2">darkorange1</tspan></text><text x="7.4" y="13">1.0, 0.5, 0.0</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#EE7600" /><text><tspan x="7.4" y="4.2">darkorange2</tspan></text><text x="7.4" y="13">0.93, 0.46, 0.0</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#CD8500" /><text><tspan x="7.4" y="4.2">orange3</tspan></text><text x="7.4" y="13">0.8, 0.52, 0.0</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FF4500" /><text><tspan x="7.4" y="4.2">orangered</tspan></text><text x="7.4" y="13" class="w">1.0, 0.27, 0.0</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FF4500" /><text><tspan x="7.4" y="4.2">orangered1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.27, 0.0</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#CD6600" /><text><tspan x="7.4" y="4.2">darkorange3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.4, 0.0</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#EE4000" /><text><tspan x="7.4" y="4.2">orangered2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.25, 0.0</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#CD3700" /><text><tspan x="7.4" y="4.2">orangered3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.22, 0.0</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#8B5A00" /><text><tspan x="7.4" y="4.2">orange4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.35, 0.0</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#8B4500" /><text><tspan x="7.4" y="4.2">darkorange4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.27, 0.0</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#8B2500" /><text><tspan x="7.4" y="4.2">orangered4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.15, 0.0</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 91.0"
+     width="150mm" height="91.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Yellows</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFE0" /><text><tspan x="7.4" y="4.2">lightyellow</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.88</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFE0" /><text><tspan x="7.4" y="4.2">lightyellow1</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.88</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFACD" /><text><tspan x="7.4" y="4.2">lemonchiffon</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.8</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFACD" /><text><tspan x="7.4" y="2.3">lemon</tspan><tspan x="7.4" y="4.5">chiffon1</tspan></text><text x="7.4" y="13">1.0, 0.98, 0.8</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FAFAD2" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">goldenrodyellow</tspan></text><text x="7.4" y="13">0.98, 0.98, 0.82</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFF00" /><text><tspan x="7.4" y="4.2">yellow</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.0</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFF00" /><text><tspan x="7.4" y="4.2">yellow1</tspan></text><text x="7.4" y="13">1.0, 1.0, 0.0</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFF68F" /><text><tspan x="7.4" y="4.2">khaki1</tspan></text><text x="7.4" y="13">1.0, 0.96, 0.56</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#EEEED1" /><text><tspan x="7.4" y="4.2">lightyellow2</tspan></text><text x="7.4" y="13">0.93, 0.93, 0.82</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FFEC8B" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">goldenrod1</tspan></text><text x="7.4" y="13">1.0, 0.93, 0.55</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FFE7BA" /><text><tspan x="7.4" y="4.2">wheat1</tspan></text><text x="7.4" y="13">1.0, 0.91, 0.73</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#EEE9BF" /><text><tspan x="7.4" y="2.3">lemon</tspan><tspan x="7.4" y="4.5">chiffon2</tspan></text><text x="7.4" y="13">0.93, 0.91, 0.75</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EEEE00" /><text><tspan x="7.4" y="4.2">yellow2</tspan></text><text x="7.4" y="13">0.93, 0.93, 0.0</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#EEE8AA" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">goldenrod</tspan></text><text x="7.4" y="13">0.93, 0.91, 0.67</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#F0E68C" /><text><tspan x="7.4" y="4.2">khaki</tspan></text><text x="7.4" y="13">0.94, 0.9, 0.55</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#EEE685" /><text><tspan x="7.4" y="4.2">khaki2</tspan></text><text x="7.4" y="13">0.93, 0.9, 0.52</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#F5DEB3" /><text><tspan x="7.4" y="4.2">wheat</tspan></text><text x="7.4" y="13">0.96, 0.87, 0.7</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EEDD82" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">goldenrod</tspan></text><text x="7.4" y="13">0.93, 0.87, 0.51</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#EEDC82" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">goldenrod2</tspan></text><text x="7.4" y="13">0.93, 0.86, 0.51</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#EED8AE" /><text><tspan x="7.4" y="4.2">wheat2</tspan></text><text x="7.4" y="13">0.93, 0.85, 0.68</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FFD700" /><text><tspan x="7.4" y="4.2">gold</tspan></text><text x="7.4" y="13">1.0, 0.84, 0.0</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#FFD700" /><text><tspan x="7.4" y="4.2">gold1</tspan></text><text x="7.4" y="13">1.0, 0.84, 0.0</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#EEC900" /><text><tspan x="7.4" y="4.2">gold2</tspan></text><text x="7.4" y="13">0.93, 0.79, 0.0</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#CDCDB4" /><text><tspan x="7.4" y="4.2">lightyellow3</tspan></text><text x="7.4" y="13">0.8, 0.8, 0.71</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#FFC125" /><text><tspan x="7.4" y="4.2">goldenrod1</tspan></text><text x="7.4" y="13">1.0, 0.76, 0.15</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#CDC9A5" /><text><tspan x="7.4" y="2.3">lemon</tspan><tspan x="7.4" y="4.5">chiffon3</tspan></text><text x="7.4" y="13">0.8, 0.79, 0.65</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#CDCD00" /><text><tspan x="7.4" y="4.2">yellow3</tspan></text><text x="7.4" y="13">0.8, 0.8, 0.0</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#FFB90F" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">goldenrod1</tspan></text><text x="7.4" y="13">1.0, 0.73, 0.06</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#CDC673" /><text><tspan x="7.4" y="4.2">khaki3</tspan></text><text x="7.4" y="13">0.8, 0.78, 0.45</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#CDBE70" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">goldenrod3</tspan></text><text x="7.4" y="13">0.8, 0.75, 0.44</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#EEB422" /><text><tspan x="7.4" y="4.2">goldenrod2</tspan></text><text x="7.4" y="13">0.93, 0.71, 0.13</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#CDBA96" /><text><tspan x="7.4" y="4.2">wheat3</tspan></text><text x="7.4" y="13">0.8, 0.73, 0.59</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#EEAD0E" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">goldenrod2</tspan></text><text x="7.4" y="13">0.93, 0.68, 0.05</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#BDB76B" /><text><tspan x="7.4" y="4.2">darkkhaki</tspan></text><text x="7.4" y="13">0.74, 0.72, 0.42</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#CDAD00" /><text><tspan x="7.4" y="4.2">gold3</tspan></text><text x="7.4" y="13">0.8, 0.68, 0.0</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#DAA520" /><text><tspan x="7.4" y="4.2">goldenrod</tspan></text><text x="7.4" y="13">0.85, 0.65, 0.13</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#CD9B1D" /><text><tspan x="7.4" y="4.2">goldenrod3</tspan></text><text x="7.4" y="13">0.8, 0.61, 0.11</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#CD950C" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">goldenrod3</tspan></text><text x="7.4" y="13">0.8, 0.58, 0.05</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#B8860B" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">goldenrod</tspan></text><text x="7.4" y="13" class="w">0.72, 0.53, 0.04</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#8B8B7A" /><text><tspan x="7.4" y="4.2">lightyellow4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.55, 0.48</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8970" /><text><tspan x="7.4" y="2.3">lemon</tspan><tspan x="7.4" y="4.5">chiffon4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.54, 0.44</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8B8B00" /><text><tspan x="7.4" y="4.2">yellow4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.55, 0.0</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#8B864E" /><text><tspan x="7.4" y="4.2">khaki4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.53, 0.31</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#8B814C" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">goldenrod4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.51, 0.3</text></g>
+<g transform="translate(60.2,75.0)"><rect y="5" width="14.8" height="9" fill="#8B7E66" /><text><tspan x="7.4" y="4.2">wheat4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.49, 0.4</text></g>
+<g transform="translate(75.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B7500" /><text><tspan x="7.4" y="4.2">gold4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.46, 0.0</text></g>
+<g transform="translate(89.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8B6914" /><text><tspan x="7.4" y="4.2">goldenrod4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.41, 0.08</text></g>
+<g transform="translate(104.6,75.0)"><rect y="5" width="14.8" height="9" fill="#8B6508" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">goldenrod4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.4, 0.03</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 106.0"
+     width="150mm" height="106.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Greens</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#C1FFC1" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">seagreen1</tspan></text><text x="7.4" y="13">0.76, 1.0, 0.76</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#CAFF70" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">olivegreen1</tspan></text><text x="7.4" y="13">0.79, 1.0, 0.44</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#C0FF3E" /><text><tspan x="7.4" y="4.2">olivedrab1</tspan></text><text x="7.4" y="13">0.75, 1.0, 0.24</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#7FFFD4" /><text><tspan x="7.4" y="4.2">aquamarine</tspan></text><text x="7.4" y="13">0.5, 1.0, 0.83</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#7FFFD4" /><text><tspan x="7.4" y="4.2">aquamarine1</tspan></text><text x="7.4" y="13">0.5, 1.0, 0.83</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#9AFF9A" /><text><tspan x="7.4" y="4.2">palegreen1</tspan></text><text x="7.4" y="13">0.6, 1.0, 0.6</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#ADFF2F" /><text><tspan x="7.4" y="4.2">greenyellow</tspan></text><text x="7.4" y="13">0.68, 1.0, 0.18</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#98FB98" /><text><tspan x="7.4" y="4.2">palegreen</tspan></text><text x="7.4" y="13">0.6, 0.98, 0.6</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#7FFF00" /><text><tspan x="7.4" y="4.2">chartreuse</tspan></text><text x="7.4" y="13">0.5, 1.0, 0.0</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#7FFF00" /><text><tspan x="7.4" y="4.2">chartreuse1</tspan></text><text x="7.4" y="13">0.5, 1.0, 0.0</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#54FF9F" /><text><tspan x="7.4" y="4.2">seagreen1</tspan></text><text x="7.4" y="13">0.33, 1.0, 0.62</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#B4EEB4" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">seagreen2</tspan></text><text x="7.4" y="13">0.71, 0.93, 0.71</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#7CFC00" /><text><tspan x="7.4" y="4.2">lawngreen</tspan></text><text x="7.4" y="13">0.49, 0.99, 0.0</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#00FF7F" /><text><tspan x="7.4" y="4.2">springgreen</tspan></text><text x="7.4" y="13">0.0, 1.0, 0.5</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#00FF7F" /><text><tspan x="7.4" y="4.2">springgreen1</tspan></text><text x="7.4" y="13">0.0, 1.0, 0.5</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#BCEE68" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">olivegreen2</tspan></text><text x="7.4" y="13">0.74, 0.93, 0.41</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#00FF00" /><text><tspan x="7.4" y="4.2">green1</tspan></text><text x="7.4" y="13">0.0, 1.0, 0.0</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#00FF00" /><text><tspan x="7.4" y="4.2">lime</tspan></text><text x="7.4" y="13">0.0, 1.0, 0.0</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#B3EE3A" /><text><tspan x="7.4" y="4.2">olivedrab2</tspan></text><text x="7.4" y="13">0.7, 0.93, 0.23</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#00FA9A" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">springgreen</tspan></text><text x="7.4" y="13">0.0, 0.98, 0.6</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#90EE90" /><text><tspan x="7.4" y="4.2">lightgreen</tspan></text><text x="7.4" y="13">0.56, 0.93, 0.56</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#90EE90" /><text><tspan x="7.4" y="4.2">palegreen2</tspan></text><text x="7.4" y="13">0.56, 0.93, 0.56</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#76EEC6" /><text><tspan x="7.4" y="4.2">aquamarine2</tspan></text><text x="7.4" y="13">0.46, 0.93, 0.78</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#76EE00" /><text><tspan x="7.4" y="4.2">chartreuse2</tspan></text><text x="7.4" y="13">0.46, 0.93, 0.0</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#4EEE94" /><text><tspan x="7.4" y="4.2">seagreen2</tspan></text><text x="7.4" y="13">0.31, 0.93, 0.58</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#00EE76" /><text><tspan x="7.4" y="4.2">springgreen2</tspan></text><text x="7.4" y="13">0.0, 0.93, 0.46</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#00EE00" /><text><tspan x="7.4" y="4.2">green2</tspan></text><text x="7.4" y="13">0.0, 0.93, 0.0</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#9BCD9B" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">seagreen3</tspan></text><text x="7.4" y="13">0.61, 0.8, 0.61</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#A2CD5A" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">olivegreen3</tspan></text><text x="7.4" y="13">0.64, 0.8, 0.35</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#9ACD32" /><text><tspan x="7.4" y="4.2">olivedrab3</tspan></text><text x="7.4" y="13">0.6, 0.8, 0.2</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#9ACD32" /><text><tspan x="7.4" y="4.2">yellowgreen</tspan></text><text x="7.4" y="13">0.6, 0.8, 0.2</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#7CCD7C" /><text><tspan x="7.4" y="4.2">palegreen3</tspan></text><text x="7.4" y="13">0.49, 0.8, 0.49</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#66CDAA" /><text><tspan x="7.4" y="4.2">aquamarine3</tspan></text><text x="7.4" y="13">0.4, 0.8, 0.67</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#66CDAA" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">aquamarine</tspan></text><text x="7.4" y="13">0.4, 0.8, 0.67</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#66CD00" /><text><tspan x="7.4" y="4.2">chartreuse3</tspan></text><text x="7.4" y="13">0.4, 0.8, 0.0</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#43CD80" /><text><tspan x="7.4" y="4.2">seagreen3</tspan></text><text x="7.4" y="13">0.26, 0.8, 0.5</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#00CD66" /><text><tspan x="7.4" y="4.2">springgreen3</tspan></text><text x="7.4" y="13">0.0, 0.8, 0.4</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#32CD32" /><text><tspan x="7.4" y="4.2">limegreen</tspan></text><text x="7.4" y="13">0.2, 0.8, 0.2</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8FBC8F" /><text><tspan x="7.4" y="4.2">darkseagreen</tspan></text><text x="7.4" y="13">0.56, 0.74, 0.56</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#00CD00" /><text><tspan x="7.4" y="4.2">green3</tspan></text><text x="7.4" y="13">0.0, 0.8, 0.0</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#20B2AA" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">seagreen</tspan></text><text x="7.4" y="13">0.13, 0.7, 0.67</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#3CB371" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">seagreen</tspan></text><text x="7.4" y="13">0.24, 0.7, 0.44</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#6B8E23" /><text><tspan x="7.4" y="4.2">olivedrab</tspan></text><text x="7.4" y="13" class="w">0.42, 0.56, 0.14</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#698B69" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">seagreen4</tspan></text><text x="7.4" y="13" class="w">0.41, 0.55, 0.41</text></g>
+<g transform="translate(60.2,75.0)"><rect y="5" width="14.8" height="9" fill="#6E8B3D" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">olivegreen4</tspan></text><text x="7.4" y="13" class="w">0.43, 0.55, 0.24</text></g>
+<g transform="translate(75.0,75.0)"><rect y="5" width="14.8" height="9" fill="#698B22" /><text><tspan x="7.4" y="4.2">olivedrab4</tspan></text><text x="7.4" y="13" class="w">0.41, 0.55, 0.13</text></g>
+<g transform="translate(89.8,75.0)"><rect y="5" width="14.8" height="9" fill="#458B74" /><text><tspan x="7.4" y="4.2">aquamarine4</tspan></text><text x="7.4" y="13" class="w">0.27, 0.55, 0.45</text></g>
+<g transform="translate(104.6,75.0)"><rect y="5" width="14.8" height="9" fill="#548B54" /><text><tspan x="7.4" y="4.2">palegreen4</tspan></text><text x="7.4" y="13" class="w">0.33, 0.55, 0.33</text></g>
+<g transform="translate(119.4,75.0)"><rect y="5" width="14.8" height="9" fill="#808000" /><text><tspan x="7.4" y="4.2">olive</tspan></text><text x="7.4" y="13" class="w">0.5, 0.5, 0.0</text></g>
+<g transform="translate(134.2,75.0)"><rect y="5" width="14.8" height="9" fill="#2E8B57" /><text><tspan x="7.4" y="4.2">seagreen</tspan></text><text x="7.4" y="13" class="w">0.18, 0.55, 0.34</text></g>
+<g transform="translate(1.0,90.0)"><rect y="5" width="14.8" height="9" fill="#2E8B57" /><text><tspan x="7.4" y="4.2">seagreen4</tspan></text><text x="7.4" y="13" class="w">0.18, 0.55, 0.34</text></g>
+<g transform="translate(15.8,90.0)"><rect y="5" width="14.8" height="9" fill="#458B00" /><text><tspan x="7.4" y="4.2">chartreuse4</tspan></text><text x="7.4" y="13" class="w">0.27, 0.55, 0.0</text></g>
+<g transform="translate(30.6,90.0)"><rect y="5" width="14.8" height="9" fill="#228B22" /><text><tspan x="7.4" y="4.2">forestgreen</tspan></text><text x="7.4" y="13" class="w">0.13, 0.55, 0.13</text></g>
+<g transform="translate(45.4,90.0)"><rect y="5" width="14.8" height="9" fill="#008B45" /><text><tspan x="7.4" y="4.2">springgreen4</tspan></text><text x="7.4" y="13" class="w">0.0, 0.55, 0.27</text></g>
+<g transform="translate(60.2,90.0)"><rect y="5" width="14.8" height="9" fill="#008B00" /><text><tspan x="7.4" y="4.2">green4</tspan></text><text x="7.4" y="13" class="w">0.0, 0.55, 0.0</text></g>
+<g transform="translate(75.0,90.0)"><rect y="5" width="14.8" height="9" fill="#008000" /><text><tspan x="7.4" y="4.2">green</tspan></text><text x="7.4" y="13" class="w">0.0, 0.5, 0.0</text></g>
+<g transform="translate(89.8,90.0)"><rect y="5" width="14.8" height="9" fill="#556B2F" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">olivegreen</tspan></text><text x="7.4" y="13" class="w">0.33, 0.42, 0.18</text></g>
+<g transform="translate(104.6,90.0)"><rect y="5" width="14.8" height="9" fill="#006400" /><text><tspan x="7.4" y="4.2">darkgreen</tspan></text><text x="7.4" y="13" class="w">0.0, 0.39, 0.0</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 61.0"
+     width="150mm" height="61.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Cyans</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#E0FFFF" /><text><tspan x="7.4" y="4.2">lightcyan</tspan></text><text x="7.4" y="13">0.88, 1.0, 1.0</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#E0FFFF" /><text><tspan x="7.4" y="4.2">lightcyan1</tspan></text><text x="7.4" y="13">0.88, 1.0, 1.0</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#BBFFFF" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">turquoise1</tspan></text><text x="7.4" y="13">0.73, 1.0, 1.0</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#D1EEEE" /><text><tspan x="7.4" y="4.2">lightcyan2</tspan></text><text x="7.4" y="13">0.82, 0.93, 0.93</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#00FFFF" /><text><tspan x="7.4" y="4.2">aqua</tspan></text><text x="7.4" y="13">0.0, 1.0, 1.0</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#00FFFF" /><text><tspan x="7.4" y="4.2">cyan</tspan></text><text x="7.4" y="13">0.0, 1.0, 1.0</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#00FFFF" /><text><tspan x="7.4" y="4.2">cyan1</tspan></text><text x="7.4" y="13">0.0, 1.0, 1.0</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#AFEEEE" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">turquoise</tspan></text><text x="7.4" y="13">0.69, 0.93, 0.93</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#AEEEEE" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">turquoise2</tspan></text><text x="7.4" y="13">0.68, 0.93, 0.93</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#00F5FF" /><text><tspan x="7.4" y="4.2">turquoise1</tspan></text><text x="7.4" y="13">0.0, 0.96, 1.0</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#00EEEE" /><text><tspan x="7.4" y="4.2">cyan2</tspan></text><text x="7.4" y="13">0.0, 0.93, 0.93</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#00E5EE" /><text><tspan x="7.4" y="4.2">turquoise2</tspan></text><text x="7.4" y="13">0.0, 0.9, 0.93</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#40E0D0" /><text><tspan x="7.4" y="4.2">turquoise</tspan></text><text x="7.4" y="13">0.25, 0.88, 0.82</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#B4CDCD" /><text><tspan x="7.4" y="4.2">lightcyan3</tspan></text><text x="7.4" y="13">0.71, 0.8, 0.8</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#96CDCD" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">turquoise3</tspan></text><text x="7.4" y="13">0.59, 0.8, 0.8</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#48D1CC" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">turquoise</tspan></text><text x="7.4" y="13">0.28, 0.82, 0.8</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#00CED1" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">turquoise</tspan></text><text x="7.4" y="13">0.0, 0.81, 0.82</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#00CDCD" /><text><tspan x="7.4" y="4.2">cyan3</tspan></text><text x="7.4" y="13">0.0, 0.8, 0.8</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#00C5CD" /><text><tspan x="7.4" y="4.2">turquoise3</tspan></text><text x="7.4" y="13">0.0, 0.77, 0.8</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#7A8B8B" /><text><tspan x="7.4" y="4.2">lightcyan4</tspan></text><text x="7.4" y="13" class="w">0.48, 0.55, 0.55</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#668B8B" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">turquoise4</tspan></text><text x="7.4" y="13" class="w">0.4, 0.55, 0.55</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#008B8B" /><text><tspan x="7.4" y="4.2">cyan4</tspan></text><text x="7.4" y="13" class="w">0.0, 0.55, 0.55</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#008B8B" /><text><tspan x="7.4" y="4.2">darkcyan</tspan></text><text x="7.4" y="13" class="w">0.0, 0.55, 0.55</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#00868B" /><text><tspan x="7.4" y="4.2">turquoise4</tspan></text><text x="7.4" y="13" class="w">0.0, 0.53, 0.55</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#008080" /><text><tspan x="7.4" y="4.2">teal</tspan></text><text x="7.4" y="13" class="w">0.0, 0.5, 0.5</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 151.0"
+     width="150mm" height="151.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Blues</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#F0FFFF" /><text><tspan x="7.4" y="4.2">azure</tspan></text><text x="7.4" y="13">0.94, 1.0, 1.0</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#F0FFFF" /><text><tspan x="7.4" y="4.2">azure1</tspan></text><text x="7.4" y="13">0.94, 1.0, 1.0</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#F0F8FF" /><text><tspan x="7.4" y="4.2">aliceblue</tspan></text><text x="7.4" y="13">0.94, 0.97, 1.0</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#97FFFF" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slategray1</tspan></text><text x="7.4" y="13">0.59, 1.0, 1.0</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#E0EEEE" /><text><tspan x="7.4" y="4.2">azure2</tspan></text><text x="7.4" y="13">0.88, 0.93, 0.93</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#BFEFFF" /><text><tspan x="7.4" y="4.2">lightblue1</tspan></text><text x="7.4" y="13">0.75, 0.94, 1.0</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#98F5FF" /><text><tspan x="7.4" y="4.2">cadetblue1</tspan></text><text x="7.4" y="13">0.6, 0.96, 1.0</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#CAE1FF" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">steelblue1</tspan></text><text x="7.4" y="13">0.79, 0.88, 1.0</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#C6E2FF" /><text><tspan x="7.4" y="4.2">slategray1</tspan></text><text x="7.4" y="13">0.78, 0.89, 1.0</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#8DEEEE" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slategray2</tspan></text><text x="7.4" y="13">0.55, 0.93, 0.93</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#DCDCDC" /><text><tspan x="7.4" y="4.2">gainsboro</tspan></text><text x="7.4" y="13">0.86, 0.86, 0.86</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#B0E2FF" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">skyblue1</tspan></text><text x="7.4" y="13">0.69, 0.89, 1.0</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#B2DFEE" /><text><tspan x="7.4" y="4.2">lightblue2</tspan></text><text x="7.4" y="13">0.7, 0.87, 0.93</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#B0E0E6" /><text><tspan x="7.4" y="4.2">powderblue</tspan></text><text x="7.4" y="13">0.69, 0.88, 0.9</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#8EE5EE" /><text><tspan x="7.4" y="4.2">cadetblue2</tspan></text><text x="7.4" y="13">0.56, 0.9, 0.93</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#ADD8E6" /><text><tspan x="7.4" y="4.2">lightblue</tspan></text><text x="7.4" y="13">0.68, 0.85, 0.9</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#B9D3EE" /><text><tspan x="7.4" y="4.2">slategray2</tspan></text><text x="7.4" y="13">0.73, 0.83, 0.93</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#BCD2EE" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">steelblue2</tspan></text><text x="7.4" y="13">0.74, 0.82, 0.93</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#A4D3EE" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">skyblue2</tspan></text><text x="7.4" y="13">0.64, 0.83, 0.93</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#C1CDCD" /><text><tspan x="7.4" y="4.2">azure3</tspan></text><text x="7.4" y="13">0.76, 0.8, 0.8</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#87CEFF" /><text><tspan x="7.4" y="4.2">skyblue1</tspan></text><text x="7.4" y="13">0.53, 0.81, 1.0</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#87CEFA" /><text><tspan x="7.4" y="4.2">lightskyblue</tspan></text><text x="7.4" y="13">0.53, 0.81, 0.98</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#87CEEB" /><text><tspan x="7.4" y="4.2">skyblue</tspan></text><text x="7.4" y="13">0.53, 0.81, 0.92</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#B0C4DE" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">steelblue</tspan></text><text x="7.4" y="13">0.69, 0.77, 0.87</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#79CDCD" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slategray3</tspan></text><text x="7.4" y="13">0.47, 0.8, 0.8</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#9AC0CD" /><text><tspan x="7.4" y="4.2">lightblue3</tspan></text><text x="7.4" y="13">0.6, 0.75, 0.8</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#7AC5CD" /><text><tspan x="7.4" y="4.2">cadetblue3</tspan></text><text x="7.4" y="13">0.48, 0.77, 0.8</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#7EC0EE" /><text><tspan x="7.4" y="4.2">skyblue2</tspan></text><text x="7.4" y="13">0.49, 0.75, 0.93</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#9FB6CD" /><text><tspan x="7.4" y="4.2">slategray3</tspan></text><text x="7.4" y="13">0.62, 0.71, 0.8</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#A2B5CD" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">steelblue3</tspan></text><text x="7.4" y="13">0.64, 0.71, 0.8</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#00BFFF" /><text><tspan x="7.4" y="4.2">deepskyblue</tspan></text><text x="7.4" y="13">0.0, 0.75, 1.0</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#00BFFF" /><text><tspan x="7.4" y="4.2">deepskyblue1</tspan></text><text x="7.4" y="13">0.0, 0.75, 1.0</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#63B8FF" /><text><tspan x="7.4" y="4.2">steelblue1</tspan></text><text x="7.4" y="13">0.39, 0.72, 1.0</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8DB6CD" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">skyblue3</tspan></text><text x="7.4" y="13">0.55, 0.71, 0.8</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#00B2EE" /><text><tspan x="7.4" y="4.2">deepskyblue2</tspan></text><text x="7.4" y="13">0.0, 0.7, 0.93</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#5CACEE" /><text><tspan x="7.4" y="4.2">steelblue2</tspan></text><text x="7.4" y="13">0.36, 0.67, 0.93</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#6CA6CD" /><text><tspan x="7.4" y="4.2">skyblue3</tspan></text><text x="7.4" y="13">0.42, 0.65, 0.8</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#6495ED" /><text><tspan x="7.4" y="2.3">cornflower</tspan><tspan x="7.4" y="4.5">blue</tspan></text><text x="7.4" y="13">0.39, 0.58, 0.93</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#5F9EA0" /><text><tspan x="7.4" y="4.2">cadetblue</tspan></text><text x="7.4" y="13">0.37, 0.62, 0.63</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#009ACD" /><text><tspan x="7.4" y="4.2">deepskyblue3</tspan></text><text x="7.4" y="13" class="w">0.0, 0.6, 0.8</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#1E90FF" /><text><tspan x="7.4" y="4.2">dodgerblue</tspan></text><text x="7.4" y="13" class="w">0.12, 0.56, 1.0</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#1E90FF" /><text><tspan x="7.4" y="4.2">dodgerblue1</tspan></text><text x="7.4" y="13" class="w">0.12, 0.56, 1.0</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#4F94CD" /><text><tspan x="7.4" y="4.2">steelblue3</tspan></text><text x="7.4" y="13" class="w">0.31, 0.58, 0.8</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#838B8B" /><text><tspan x="7.4" y="4.2">azure4</tspan></text><text x="7.4" y="13" class="w">0.51, 0.55, 0.55</text></g>
+<g transform="translate(60.2,75.0)"><rect y="5" width="14.8" height="9" fill="#778899" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">slategray</tspan></text><text x="7.4" y="13" class="w">0.47, 0.53, 0.6</text></g>
+<g transform="translate(75.0,75.0)"><rect y="5" width="14.8" height="9" fill="#778899" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">slategrey</tspan></text><text x="7.4" y="13" class="w">0.47, 0.53, 0.6</text></g>
+<g transform="translate(89.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8470FF" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">slateblue</tspan></text><text x="7.4" y="13" class="w">0.52, 0.44, 1.0</text></g>
+<g transform="translate(104.6,75.0)"><rect y="5" width="14.8" height="9" fill="#1C86EE" /><text><tspan x="7.4" y="4.2">dodgerblue2</tspan></text><text x="7.4" y="13" class="w">0.11, 0.53, 0.93</text></g>
+<g transform="translate(119.4,75.0)"><rect y="5" width="14.8" height="9" fill="#836FFF" /><text><tspan x="7.4" y="4.2">slateblue1</tspan></text><text x="7.4" y="13" class="w">0.51, 0.44, 1.0</text></g>
+<g transform="translate(134.2,75.0)"><rect y="5" width="14.8" height="9" fill="#528B8B" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slategray4</tspan></text><text x="7.4" y="13" class="w">0.32, 0.55, 0.55</text></g>
+<g transform="translate(1.0,90.0)"><rect y="5" width="14.8" height="9" fill="#4876FF" /><text><tspan x="7.4" y="4.2">royalblue1</tspan></text><text x="7.4" y="13" class="w">0.28, 0.46, 1.0</text></g>
+<g transform="translate(15.8,90.0)"><rect y="5" width="14.8" height="9" fill="#68838B" /><text><tspan x="7.4" y="4.2">lightblue4</tspan></text><text x="7.4" y="13" class="w">0.41, 0.51, 0.55</text></g>
+<g transform="translate(30.6,90.0)"><rect y="5" width="14.8" height="9" fill="#708090" /><text><tspan x="7.4" y="4.2">slategray</tspan></text><text x="7.4" y="13" class="w">0.44, 0.5, 0.56</text></g>
+<g transform="translate(45.4,90.0)"><rect y="5" width="14.8" height="9" fill="#708090" /><text><tspan x="7.4" y="4.2">slategrey</tspan></text><text x="7.4" y="13" class="w">0.44, 0.5, 0.56</text></g>
+<g transform="translate(60.2,90.0)"><rect y="5" width="14.8" height="9" fill="#53868B" /><text><tspan x="7.4" y="4.2">cadetblue4</tspan></text><text x="7.4" y="13" class="w">0.33, 0.53, 0.55</text></g>
+<g transform="translate(75.0,90.0)"><rect y="5" width="14.8" height="9" fill="#4682B4" /><text><tspan x="7.4" y="4.2">steelblue</tspan></text><text x="7.4" y="13" class="w">0.27, 0.51, 0.71</text></g>
+<g transform="translate(89.8,90.0)"><rect y="5" width="14.8" height="9" fill="#7B68EE" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">slateblue</tspan></text><text x="7.4" y="13" class="w">0.48, 0.41, 0.93</text></g>
+<g transform="translate(104.6,90.0)"><rect y="5" width="14.8" height="9" fill="#7A67EE" /><text><tspan x="7.4" y="4.2">slateblue2</tspan></text><text x="7.4" y="13" class="w">0.48, 0.4, 0.93</text></g>
+<g transform="translate(119.4,90.0)"><rect y="5" width="14.8" height="9" fill="#6E7B8B" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">steelblue4</tspan></text><text x="7.4" y="13" class="w">0.43, 0.48, 0.55</text></g>
+<g transform="translate(134.2,90.0)"><rect y="5" width="14.8" height="9" fill="#6C7B8B" /><text><tspan x="7.4" y="4.2">slategray4</tspan></text><text x="7.4" y="13" class="w">0.42, 0.48, 0.55</text></g>
+<g transform="translate(1.0,105.0)"><rect y="5" width="14.8" height="9" fill="#607B8B" /><text><tspan x="7.4" y="2.3">light</tspan><tspan x="7.4" y="4.5">skyblue4</tspan></text><text x="7.4" y="13" class="w">0.38, 0.48, 0.55</text></g>
+<g transform="translate(15.8,105.0)"><rect y="5" width="14.8" height="9" fill="#436EEE" /><text><tspan x="7.4" y="4.2">royalblue2</tspan></text><text x="7.4" y="13" class="w">0.26, 0.43, 0.93</text></g>
+<g transform="translate(30.6,105.0)"><rect y="5" width="14.8" height="9" fill="#1874CD" /><text><tspan x="7.4" y="4.2">dodgerblue3</tspan></text><text x="7.4" y="13" class="w">0.09, 0.45, 0.8</text></g>
+<g transform="translate(45.4,105.0)"><rect y="5" width="14.8" height="9" fill="#4169E1" /><text><tspan x="7.4" y="4.2">royalblue</tspan></text><text x="7.4" y="13" class="w">0.25, 0.41, 0.88</text></g>
+<g transform="translate(60.2,105.0)"><rect y="5" width="14.8" height="9" fill="#4A708B" /><text><tspan x="7.4" y="4.2">skyblue4</tspan></text><text x="7.4" y="13" class="w">0.29, 0.44, 0.55</text></g>
+<g transform="translate(75.0,105.0)"><rect y="5" width="14.8" height="9" fill="#6A5ACD" /><text><tspan x="7.4" y="4.2">slateblue</tspan></text><text x="7.4" y="13" class="w">0.42, 0.35, 0.8</text></g>
+<g transform="translate(89.8,105.0)"><rect y="5" width="14.8" height="9" fill="#6959CD" /><text><tspan x="7.4" y="4.2">slateblue3</tspan></text><text x="7.4" y="13" class="w">0.41, 0.35, 0.8</text></g>
+<g transform="translate(104.6,105.0)"><rect y="5" width="14.8" height="9" fill="#3A5FCD" /><text><tspan x="7.4" y="4.2">royalblue3</tspan></text><text x="7.4" y="13" class="w">0.23, 0.37, 0.8</text></g>
+<g transform="translate(119.4,105.0)"><rect y="5" width="14.8" height="9" fill="#00688B" /><text><tspan x="7.4" y="4.2">deepskyblue4</tspan></text><text x="7.4" y="13" class="w">0.0, 0.41, 0.55</text></g>
+<g transform="translate(134.2,105.0)"><rect y="5" width="14.8" height="9" fill="#36648B" /><text><tspan x="7.4" y="4.2">steelblue4</tspan></text><text x="7.4" y="13" class="w">0.21, 0.39, 0.55</text></g>
+<g transform="translate(1.0,120.0)"><rect y="5" width="14.8" height="9" fill="#104E8B" /><text><tspan x="7.4" y="4.2">dodgerblue4</tspan></text><text x="7.4" y="13" class="w">0.06, 0.31, 0.55</text></g>
+<g transform="translate(15.8,120.0)"><rect y="5" width="14.8" height="9" fill="#0000FF" /><text><tspan x="7.4" y="4.2">blue</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 1.0</text></g>
+<g transform="translate(30.6,120.0)"><rect y="5" width="14.8" height="9" fill="#0000FF" /><text><tspan x="7.4" y="4.2">blue1</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 1.0</text></g>
+<g transform="translate(45.4,120.0)"><rect y="5" width="14.8" height="9" fill="#2F4F4F" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slategray</tspan></text><text x="7.4" y="13" class="w">0.18, 0.31, 0.31</text></g>
+<g transform="translate(60.2,120.0)"><rect y="5" width="14.8" height="9" fill="#2F4F4F" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slategrey</tspan></text><text x="7.4" y="13" class="w">0.18, 0.31, 0.31</text></g>
+<g transform="translate(75.0,120.0)"><rect y="5" width="14.8" height="9" fill="#483D8B" /><text><tspan x="7.4" y="2.3">dark</tspan><tspan x="7.4" y="4.5">slateblue</tspan></text><text x="7.4" y="13" class="w">0.28, 0.24, 0.55</text></g>
+<g transform="translate(89.8,120.0)"><rect y="5" width="14.8" height="9" fill="#473C8B" /><text><tspan x="7.4" y="4.2">slateblue4</tspan></text><text x="7.4" y="13" class="w">0.28, 0.24, 0.55</text></g>
+<g transform="translate(104.6,120.0)"><rect y="5" width="14.8" height="9" fill="#0000EE" /><text><tspan x="7.4" y="4.2">blue2</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.93</text></g>
+<g transform="translate(119.4,120.0)"><rect y="5" width="14.8" height="9" fill="#27408B" /><text><tspan x="7.4" y="4.2">royalblue4</tspan></text><text x="7.4" y="13" class="w">0.15, 0.25, 0.55</text></g>
+<g transform="translate(134.2,120.0)"><rect y="5" width="14.8" height="9" fill="#0000CD" /><text><tspan x="7.4" y="4.2">blue3</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.8</text></g>
+<g transform="translate(1.0,135.0)"><rect y="5" width="14.8" height="9" fill="#0000CD" /><text><tspan x="7.4" y="4.2">mediumblue</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.8</text></g>
+<g transform="translate(15.8,135.0)"><rect y="5" width="14.8" height="9" fill="#4B0082" /><text><tspan x="7.4" y="4.2">indigo</tspan></text><text x="7.4" y="13" class="w">0.29, 0.0, 0.51</text></g>
+<g transform="translate(30.6,135.0)"><rect y="5" width="14.8" height="9" fill="#191970" /><text><tspan x="7.4" y="4.2">midnightblue</tspan></text><text x="7.4" y="13" class="w">0.1, 0.1, 0.44</text></g>
+<g transform="translate(45.4,135.0)"><rect y="5" width="14.8" height="9" fill="#00008B" /><text><tspan x="7.4" y="4.2">blue4</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.55</text></g>
+<g transform="translate(60.2,135.0)"><rect y="5" width="14.8" height="9" fill="#00008B" /><text><tspan x="7.4" y="4.2">darkblue</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.55</text></g>
+<g transform="translate(75.0,135.0)"><rect y="5" width="14.8" height="9" fill="#000080" /><text><tspan x="7.4" y="4.2">navy</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.5</text></g>
+<g transform="translate(89.8,135.0)"><rect y="5" width="14.8" height="9" fill="#000080" /><text><tspan x="7.4" y="4.2">navyblue</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.5</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 106.0"
+     width="150mm" height="106.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Purples</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFF0F5" /><text><tspan x="7.4" y="2.3">lavender</tspan><tspan x="7.4" y="4.5">blush</tspan></text><text x="7.4" y="13">1.0, 0.94, 0.96</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFF0F5" /><text><tspan x="7.4" y="2.3">lavender</tspan><tspan x="7.4" y="4.5">blush1</tspan></text><text x="7.4" y="13">1.0, 0.94, 0.96</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFE1FF" /><text><tspan x="7.4" y="4.2">thistle1</tspan></text><text x="7.4" y="13">1.0, 0.88, 1.0</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FFE4E1" /><text><tspan x="7.4" y="4.2">mistyrose</tspan></text><text x="7.4" y="13">1.0, 0.89, 0.88</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FFE4E1" /><text><tspan x="7.4" y="4.2">mistyrose1</tspan></text><text x="7.4" y="13">1.0, 0.89, 0.88</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#E6E6FA" /><text><tspan x="7.4" y="4.2">lavender</tspan></text><text x="7.4" y="13">0.9, 0.9, 0.98</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#EEE0E5" /><text><tspan x="7.4" y="2.3">lavender</tspan><tspan x="7.4" y="4.5">blush2</tspan></text><text x="7.4" y="13">0.93, 0.88, 0.9</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#EED2EE" /><text><tspan x="7.4" y="4.2">thistle2</tspan></text><text x="7.4" y="13">0.93, 0.82, 0.93</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#EED5D2" /><text><tspan x="7.4" y="4.2">mistyrose2</tspan></text><text x="7.4" y="13">0.93, 0.84, 0.82</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FFBBFF" /><text><tspan x="7.4" y="4.2">plum1</tspan></text><text x="7.4" y="13">1.0, 0.73, 1.0</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#D8BFD8" /><text><tspan x="7.4" y="4.2">thistle</tspan></text><text x="7.4" y="13">0.85, 0.75, 0.85</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#CDC1C5" /><text><tspan x="7.4" y="2.3">lavender</tspan><tspan x="7.4" y="4.5">blush3</tspan></text><text x="7.4" y="13">0.8, 0.76, 0.77</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EEAEEE" /><text><tspan x="7.4" y="4.2">plum2</tspan></text><text x="7.4" y="13">0.93, 0.68, 0.93</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#CDB5CD" /><text><tspan x="7.4" y="4.2">thistle3</tspan></text><text x="7.4" y="13">0.8, 0.71, 0.8</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#CDB7B5" /><text><tspan x="7.4" y="4.2">mistyrose3</tspan></text><text x="7.4" y="13">0.8, 0.72, 0.71</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#DDA0DD" /><text><tspan x="7.4" y="4.2">plum</tspan></text><text x="7.4" y="13">0.87, 0.63, 0.87</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#FF83FA" /><text><tspan x="7.4" y="4.2">orchid1</tspan></text><text x="7.4" y="13">1.0, 0.51, 0.98</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EE82EE" /><text><tspan x="7.4" y="4.2">violet</tspan></text><text x="7.4" y="13">0.93, 0.51, 0.93</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#CD96CD" /><text><tspan x="7.4" y="4.2">plum3</tspan></text><text x="7.4" y="13">0.8, 0.59, 0.8</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#EE7AE9" /><text><tspan x="7.4" y="4.2">orchid2</tspan></text><text x="7.4" y="13">0.93, 0.48, 0.91</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#E066FF" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">orchid1</tspan></text><text x="7.4" y="13">0.88, 0.4, 1.0</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#AB82FF" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">purple1</tspan></text><text x="7.4" y="13">0.67, 0.51, 1.0</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#DA70D6" /><text><tspan x="7.4" y="4.2">orchid</tspan></text><text x="7.4" y="13">0.85, 0.44, 0.84</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#FF00FF" /><text><tspan x="7.4" y="4.2">fuchsia</tspan></text><text x="7.4" y="13">1.0, 0.0, 1.0</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#FF00FF" /><text><tspan x="7.4" y="4.2">magenta</tspan></text><text x="7.4" y="13">1.0, 0.0, 1.0</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#FF00FF" /><text><tspan x="7.4" y="4.2">magenta1</tspan></text><text x="7.4" y="13">1.0, 0.0, 1.0</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#D15FEE" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">orchid2</tspan></text><text x="7.4" y="13" class="w">0.82, 0.37, 0.93</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#CD69C9" /><text><tspan x="7.4" y="4.2">orchid3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.41, 0.79</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#9F79EE" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">purple2</tspan></text><text x="7.4" y="13" class="w">0.62, 0.47, 0.93</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#EE00EE" /><text><tspan x="7.4" y="4.2">magenta2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.0, 0.93</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#8B8386" /><text><tspan x="7.4" y="2.3">lavender</tspan><tspan x="7.4" y="4.5">blush4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.51, 0.53</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#9370DB" /><text><tspan x="7.4" y="4.2">mediumpurple</tspan></text><text x="7.4" y="13" class="w">0.58, 0.44, 0.86</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#BF3EFF" /><text><tspan x="7.4" y="4.2">darkorchid1</tspan></text><text x="7.4" y="13" class="w">0.75, 0.24, 1.0</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#BA55D3" /><text><tspan x="7.4" y="4.2">mediumorchid</tspan></text><text x="7.4" y="13" class="w">0.73, 0.33, 0.83</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#8B7D7B" /><text><tspan x="7.4" y="4.2">mistyrose4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.49, 0.48</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#8B7B8B" /><text><tspan x="7.4" y="4.2">thistle4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.48, 0.55</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#B452CD" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">orchid3</tspan></text><text x="7.4" y="13" class="w">0.71, 0.32, 0.8</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#8968CD" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">purple3</tspan></text><text x="7.4" y="13" class="w">0.54, 0.41, 0.8</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#B23AEE" /><text><tspan x="7.4" y="4.2">darkorchid2</tspan></text><text x="7.4" y="13" class="w">0.7, 0.23, 0.93</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#CD00CD" /><text><tspan x="7.4" y="4.2">magenta3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.0, 0.8</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B668B" /><text><tspan x="7.4" y="4.2">plum4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.4, 0.55</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#9B30FF" /><text><tspan x="7.4" y="4.2">purple1</tspan></text><text x="7.4" y="13" class="w">0.61, 0.19, 1.0</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#912CEE" /><text><tspan x="7.4" y="4.2">purple2</tspan></text><text x="7.4" y="13" class="w">0.57, 0.17, 0.93</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#9A32CD" /><text><tspan x="7.4" y="4.2">darkorchid3</tspan></text><text x="7.4" y="13" class="w">0.6, 0.2, 0.8</text></g>
+<g transform="translate(60.2,75.0)"><rect y="5" width="14.8" height="9" fill="#9932CC" /><text><tspan x="7.4" y="4.2">darkorchid</tspan></text><text x="7.4" y="13" class="w">0.6, 0.2, 0.8</text></g>
+<g transform="translate(75.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8A2BE2" /><text><tspan x="7.4" y="4.2">blueviolet</tspan></text><text x="7.4" y="13" class="w">0.54, 0.17, 0.89</text></g>
+<g transform="translate(89.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8B4789" /><text><tspan x="7.4" y="4.2">orchid4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.28, 0.54</text></g>
+<g transform="translate(104.6,75.0)"><rect y="5" width="14.8" height="9" fill="#9400D3" /><text><tspan x="7.4" y="4.2">darkviolet</tspan></text><text x="7.4" y="13" class="w">0.58, 0.0, 0.83</text></g>
+<g transform="translate(119.4,75.0)"><rect y="5" width="14.8" height="9" fill="#7D26CD" /><text><tspan x="7.4" y="4.2">purple3</tspan></text><text x="7.4" y="13" class="w">0.49, 0.15, 0.8</text></g>
+<g transform="translate(134.2,75.0)"><rect y="5" width="14.8" height="9" fill="#7A378B" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">orchid4</tspan></text><text x="7.4" y="13" class="w">0.48, 0.22, 0.55</text></g>
+<g transform="translate(1.0,90.0)"><rect y="5" width="14.8" height="9" fill="#5D478B" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">purple4</tspan></text><text x="7.4" y="13" class="w">0.36, 0.28, 0.55</text></g>
+<g transform="translate(15.8,90.0)"><rect y="5" width="14.8" height="9" fill="#663399" /><text><tspan x="7.4" y="2.3">rebecca</tspan><tspan x="7.4" y="4.5">purple</tspan></text><text x="7.4" y="13" class="w">0.4, 0.2, 0.6</text></g>
+<g transform="translate(30.6,90.0)"><rect y="5" width="14.8" height="9" fill="#8B008B" /><text><tspan x="7.4" y="4.2">darkmagenta</tspan></text><text x="7.4" y="13" class="w">0.55, 0.0, 0.55</text></g>
+<g transform="translate(45.4,90.0)"><rect y="5" width="14.8" height="9" fill="#8B008B" /><text><tspan x="7.4" y="4.2">magenta4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.0, 0.55</text></g>
+<g transform="translate(60.2,90.0)"><rect y="5" width="14.8" height="9" fill="#800080" /><text><tspan x="7.4" y="4.2">purple</tspan></text><text x="7.4" y="13" class="w">0.5, 0.0, 0.5</text></g>
+<g transform="translate(75.0,90.0)"><rect y="5" width="14.8" height="9" fill="#68228B" /><text><tspan x="7.4" y="4.2">darkorchid4</tspan></text><text x="7.4" y="13" class="w">0.41, 0.13, 0.55</text></g>
+<g transform="translate(89.8,90.0)"><rect y="5" width="14.8" height="9" fill="#551A8B" /><text><tspan x="7.4" y="4.2">purple4</tspan></text><text x="7.4" y="13" class="w">0.33, 0.1, 0.55</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 76.0"
+     width="150mm" height="76.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Pinks</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFC0CB" /><text><tspan x="7.4" y="4.2">pink</tspan></text><text x="7.4" y="13">1.0, 0.75, 0.8</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFB6C1" /><text><tspan x="7.4" y="4.2">lightpink</tspan></text><text x="7.4" y="13">1.0, 0.71, 0.76</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFB5C5" /><text><tspan x="7.4" y="4.2">pink1</tspan></text><text x="7.4" y="13">1.0, 0.71, 0.77</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FFAEB9" /><text><tspan x="7.4" y="4.2">lightpink1</tspan></text><text x="7.4" y="13">1.0, 0.68, 0.73</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#EEA9B8" /><text><tspan x="7.4" y="4.2">pink2</tspan></text><text x="7.4" y="13">0.93, 0.66, 0.72</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#EEA2AD" /><text><tspan x="7.4" y="4.2">lightpink2</tspan></text><text x="7.4" y="13">0.93, 0.64, 0.68</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FF82AB" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">violetred1</tspan></text><text x="7.4" y="13">1.0, 0.51, 0.67</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FF6EB4" /><text><tspan x="7.4" y="4.2">hotpink1</tspan></text><text x="7.4" y="13">1.0, 0.43, 0.71</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#CD919E" /><text><tspan x="7.4" y="4.2">pink3</tspan></text><text x="7.4" y="13">0.8, 0.57, 0.62</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FF69B4" /><text><tspan x="7.4" y="4.2">hotpink</tspan></text><text x="7.4" y="13">1.0, 0.41, 0.71</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#EE799F" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">violetred2</tspan></text><text x="7.4" y="13">0.93, 0.47, 0.62</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#CD8C95" /><text><tspan x="7.4" y="4.2">lightpink3</tspan></text><text x="7.4" y="13">0.8, 0.55, 0.58</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EE6AA7" /><text><tspan x="7.4" y="4.2">hotpink2</tspan></text><text x="7.4" y="13">0.93, 0.42, 0.65</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#DB7093" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">violetred</tspan></text><text x="7.4" y="13">0.86, 0.44, 0.58</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#FF34B3" /><text><tspan x="7.4" y="4.2">maroon1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.2, 0.7</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FF3E96" /><text><tspan x="7.4" y="4.2">violetred1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.24, 0.59</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#CD6889" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">violetred3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.41, 0.54</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#FF1493" /><text><tspan x="7.4" y="4.2">deeppink</tspan></text><text x="7.4" y="13" class="w">1.0, 0.08, 0.58</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#FF1493" /><text><tspan x="7.4" y="4.2">deeppink1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.08, 0.58</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#CD6090" /><text><tspan x="7.4" y="4.2">hotpink3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.38, 0.56</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#EE3A8C" /><text><tspan x="7.4" y="4.2">violetred2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.23, 0.55</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#EE30A7" /><text><tspan x="7.4" y="4.2">maroon2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.19, 0.65</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#EE1289" /><text><tspan x="7.4" y="4.2">deeppink2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.07, 0.54</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#CD3278" /><text><tspan x="7.4" y="4.2">violetred3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.2, 0.47</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#CD2990" /><text><tspan x="7.4" y="4.2">maroon3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.16, 0.56</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#D02090" /><text><tspan x="7.4" y="4.2">violetred</tspan></text><text x="7.4" y="13" class="w">0.82, 0.13, 0.56</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#8B636C" /><text><tspan x="7.4" y="4.2">pink4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.39, 0.42</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#CD1076" /><text><tspan x="7.4" y="4.2">deeppink3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.06, 0.46</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#8B5F65" /><text><tspan x="7.4" y="4.2">lightpink4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.37, 0.4</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#C71585" /><text><tspan x="7.4" y="2.3">medium</tspan><tspan x="7.4" y="4.5">violetred</tspan></text><text x="7.4" y="13" class="w">0.78, 0.08, 0.52</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#8B475D" /><text><tspan x="7.4" y="2.3">pale</tspan><tspan x="7.4" y="4.5">violetred4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.28, 0.36</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#8B3A62" /><text><tspan x="7.4" y="4.2">hotpink4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.23, 0.38</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#8B2252" /><text><tspan x="7.4" y="4.2">violetred4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.13, 0.32</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#8B1C62" /><text><tspan x="7.4" y="4.2">maroon4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.11, 0.38</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#8B0A50" /><text><tspan x="7.4" y="4.2">deeppink4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.04, 0.31</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#800000" /><text><tspan x="7.4" y="4.2">maroon</tspan></text><text x="7.4" y="13" class="w">0.5, 0.0, 0.0</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 91.0"
+     width="150mm" height="91.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Browns</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFEFD5" /><text><tspan x="7.4" y="4.2">papayawhip</tspan></text><text x="7.4" y="13">1.0, 0.94, 0.84</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFEBCD" /><text><tspan x="7.4" y="2.3">blanched</tspan><tspan x="7.4" y="4.5">almond</tspan></text><text x="7.4" y="13">1.0, 0.92, 0.8</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFE4C4" /><text><tspan x="7.4" y="4.2">bisque</tspan></text><text x="7.4" y="13">1.0, 0.89, 0.77</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FFE4C4" /><text><tspan x="7.4" y="4.2">bisque1</tspan></text><text x="7.4" y="13">1.0, 0.89, 0.77</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FFE4B5" /><text><tspan x="7.4" y="4.2">moccasin</tspan></text><text x="7.4" y="13">1.0, 0.89, 0.71</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFDAB9" /><text><tspan x="7.4" y="4.2">peachpuff</tspan></text><text x="7.4" y="13">1.0, 0.85, 0.73</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFDAB9" /><text><tspan x="7.4" y="4.2">peachpuff1</tspan></text><text x="7.4" y="13">1.0, 0.85, 0.73</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FFD39B" /><text><tspan x="7.4" y="4.2">burlywood1</tspan></text><text x="7.4" y="13">1.0, 0.83, 0.61</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#EED5B7" /><text><tspan x="7.4" y="4.2">bisque2</tspan></text><text x="7.4" y="13">0.93, 0.84, 0.72</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#EECBAD" /><text><tspan x="7.4" y="4.2">peachpuff2</tspan></text><text x="7.4" y="13">0.93, 0.8, 0.68</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FFC1C1" /><text><tspan x="7.4" y="4.2">rosybrown1</tspan></text><text x="7.4" y="13">1.0, 0.76, 0.76</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#EEC591" /><text><tspan x="7.4" y="4.2">burlywood2</tspan></text><text x="7.4" y="13">0.93, 0.77, 0.57</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EEB4B4" /><text><tspan x="7.4" y="4.2">rosybrown2</tspan></text><text x="7.4" y="13">0.93, 0.71, 0.71</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#DEB887" /><text><tspan x="7.4" y="4.2">burlywood</tspan></text><text x="7.4" y="13">0.87, 0.72, 0.53</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#CDB79E" /><text><tspan x="7.4" y="4.2">bisque3</tspan></text><text x="7.4" y="13">0.8, 0.72, 0.62</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#FFA54F" /><text><tspan x="7.4" y="4.2">tan1</tspan></text><text x="7.4" y="13">1.0, 0.65, 0.31</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#D2B48C" /><text><tspan x="7.4" y="4.2">tan</tspan></text><text x="7.4" y="13">0.82, 0.71, 0.55</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#F4A460" /><text><tspan x="7.4" y="4.2">sandybrown</tspan></text><text x="7.4" y="13">0.96, 0.64, 0.38</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#CDAF95" /><text><tspan x="7.4" y="4.2">peachpuff3</tspan></text><text x="7.4" y="13">0.8, 0.69, 0.58</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#CDAA7D" /><text><tspan x="7.4" y="4.2">burlywood3</tspan></text><text x="7.4" y="13">0.8, 0.67, 0.49</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#EE9A49" /><text><tspan x="7.4" y="4.2">tan2</tspan></text><text x="7.4" y="13">0.93, 0.6, 0.29</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#CD9B9B" /><text><tspan x="7.4" y="4.2">rosybrown3</tspan></text><text x="7.4" y="13">0.8, 0.61, 0.61</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#FF8247" /><text><tspan x="7.4" y="4.2">sienna1</tspan></text><text x="7.4" y="13">1.0, 0.51, 0.28</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#FF7F24" /><text><tspan x="7.4" y="4.2">chocolate1</tspan></text><text x="7.4" y="13">1.0, 0.5, 0.14</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#BC8F8F" /><text><tspan x="7.4" y="4.2">rosybrown</tspan></text><text x="7.4" y="13">0.74, 0.56, 0.56</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#EE7942" /><text><tspan x="7.4" y="4.2">sienna2</tspan></text><text x="7.4" y="13">0.93, 0.47, 0.26</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#EE7621" /><text><tspan x="7.4" y="4.2">chocolate2</tspan></text><text x="7.4" y="13">0.93, 0.46, 0.13</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#CD853F" /><text><tspan x="7.4" y="4.2">peru</tspan></text><text x="7.4" y="13">0.8, 0.52, 0.25</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#CD853F" /><text><tspan x="7.4" y="4.2">tan3</tspan></text><text x="7.4" y="13">0.8, 0.52, 0.25</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#FF4040" /><text><tspan x="7.4" y="4.2">brown1</tspan></text><text x="7.4" y="13" class="w">1.0, 0.25, 0.25</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#D2691E" /><text><tspan x="7.4" y="4.2">chocolate</tspan></text><text x="7.4" y="13" class="w">0.82, 0.41, 0.12</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#CD6839" /><text><tspan x="7.4" y="4.2">sienna3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.41, 0.22</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#CD661D" /><text><tspan x="7.4" y="4.2">chocolate3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.4, 0.11</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#EE3B3B" /><text><tspan x="7.4" y="4.2">brown2</tspan></text><text x="7.4" y="13" class="w">0.93, 0.23, 0.23</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#8B7D6B" /><text><tspan x="7.4" y="4.2">bisque4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.49, 0.42</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#8B7765" /><text><tspan x="7.4" y="4.2">peachpuff4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.47, 0.4</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#8B7355" /><text><tspan x="7.4" y="4.2">burlywood4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.45, 0.33</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#8B6969" /><text><tspan x="7.4" y="4.2">rosybrown4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.41, 0.41</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#CD3333" /><text><tspan x="7.4" y="4.2">brown3</tspan></text><text x="7.4" y="13" class="w">0.8, 0.2, 0.2</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#A0522D" /><text><tspan x="7.4" y="4.2">sienna</tspan></text><text x="7.4" y="13" class="w">0.63, 0.32, 0.18</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B5A2B" /><text><tspan x="7.4" y="4.2">tan4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.35, 0.17</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#8B4726" /><text><tspan x="7.4" y="4.2">sienna4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.28, 0.15</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#A52A2A" /><text><tspan x="7.4" y="4.2">brown</tspan></text><text x="7.4" y="13" class="w">0.65, 0.16, 0.16</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#8B4513" /><text><tspan x="7.4" y="4.2">chocolate4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.27, 0.07</text></g>
+<g transform="translate(60.2,75.0)"><rect y="5" width="14.8" height="9" fill="#8B4513" /><text><tspan x="7.4" y="4.2">saddlebrown</tspan></text><text x="7.4" y="13" class="w">0.55, 0.27, 0.07</text></g>
+<g transform="translate(75.0,75.0)"><rect y="5" width="14.8" height="9" fill="#8B2323" /><text><tspan x="7.4" y="4.2">brown4</tspan></text><text x="7.4" y="13" class="w">0.55, 0.14, 0.14</text></g>
+</svg></body></html><html><body><svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     viewBox="0 0 150 346.0"
+     width="150mm" height="346.0mm"
+     style="width:100%; height:auto;"
+     shape-rendering="crispEdges" stroke="none">
+<defs>
+    <style><![CDATA[
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed&display=swap');
+        g text:last-child {
+            font-size: 2px;
+            fill: #000;
+        }
+        g text {
+            text-anchor: middle;
+            font-size: 2.5px;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Condensed', 'Futura Condensed Medium', 'Segoe UI', 'Roboto Condensed', sans-serif;
+            fill: currentColor;
+        }
+        .header {
+            font-size: 5px;
+            text-anchor: start;
+            font-family: 'Lato', 'Helvetica Neue', 'Arial', sans-serif;
+            font-weight: bold;
+            fill: currentColor;
+        }
+        .w {
+            fill: #fff !important;
+        }
+    ]]></style>
+</defs>
+<text x="1.0" y="10" class="header">Grays</text>
+<path d="M0,12 h150" stroke="#888" stroke-width="0.25" />
+<g transform="translate(1.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFFF" /><text><tspan x="7.4" y="4.2">gray100</tspan></text><text x="7.4" y="13">1.0, 1.0, 1.0</text></g>
+<g transform="translate(15.8,15.0)"><rect y="5" width="14.8" height="9" fill="#FFFFFF" /><text><tspan x="7.4" y="4.2">grey100</tspan></text><text x="7.4" y="13">1.0, 1.0, 1.0</text></g>
+<g transform="translate(30.6,15.0)"><rect y="5" width="14.8" height="9" fill="#FCFCFC" /><text><tspan x="7.4" y="4.2">gray99</tspan></text><text x="7.4" y="13">0.99, 0.99, 0.99</text></g>
+<g transform="translate(45.4,15.0)"><rect y="5" width="14.8" height="9" fill="#FCFCFC" /><text><tspan x="7.4" y="4.2">grey99</tspan></text><text x="7.4" y="13">0.99, 0.99, 0.99</text></g>
+<g transform="translate(60.2,15.0)"><rect y="5" width="14.8" height="9" fill="#FAFAFA" /><text><tspan x="7.4" y="4.2">gray98</tspan></text><text x="7.4" y="13">0.98, 0.98, 0.98</text></g>
+<g transform="translate(75.0,15.0)"><rect y="5" width="14.8" height="9" fill="#FAFAFA" /><text><tspan x="7.4" y="4.2">grey98</tspan></text><text x="7.4" y="13">0.98, 0.98, 0.98</text></g>
+<g transform="translate(89.8,15.0)"><rect y="5" width="14.8" height="9" fill="#F7F7F7" /><text><tspan x="7.4" y="4.2">gray97</tspan></text><text x="7.4" y="13">0.97, 0.97, 0.97</text></g>
+<g transform="translate(104.6,15.0)"><rect y="5" width="14.8" height="9" fill="#F7F7F7" /><text><tspan x="7.4" y="4.2">grey97</tspan></text><text x="7.4" y="13">0.97, 0.97, 0.97</text></g>
+<g transform="translate(119.4,15.0)"><rect y="5" width="14.8" height="9" fill="#F5F5F5" /><text><tspan x="7.4" y="4.2">gray96</tspan></text><text x="7.4" y="13">0.96, 0.96, 0.96</text></g>
+<g transform="translate(134.2,15.0)"><rect y="5" width="14.8" height="9" fill="#F5F5F5" /><text><tspan x="7.4" y="4.2">grey96</tspan></text><text x="7.4" y="13">0.96, 0.96, 0.96</text></g>
+<g transform="translate(1.0,30.0)"><rect y="5" width="14.8" height="9" fill="#F2F2F2" /><text><tspan x="7.4" y="4.2">gray95</tspan></text><text x="7.4" y="13">0.95, 0.95, 0.95</text></g>
+<g transform="translate(15.8,30.0)"><rect y="5" width="14.8" height="9" fill="#F2F2F2" /><text><tspan x="7.4" y="4.2">grey95</tspan></text><text x="7.4" y="13">0.95, 0.95, 0.95</text></g>
+<g transform="translate(30.6,30.0)"><rect y="5" width="14.8" height="9" fill="#F0F0F0" /><text><tspan x="7.4" y="4.2">gray94</tspan></text><text x="7.4" y="13">0.94, 0.94, 0.94</text></g>
+<g transform="translate(45.4,30.0)"><rect y="5" width="14.8" height="9" fill="#F0F0F0" /><text><tspan x="7.4" y="4.2">grey94</tspan></text><text x="7.4" y="13">0.94, 0.94, 0.94</text></g>
+<g transform="translate(60.2,30.0)"><rect y="5" width="14.8" height="9" fill="#EDEDED" /><text><tspan x="7.4" y="4.2">gray93</tspan></text><text x="7.4" y="13">0.93, 0.93, 0.93</text></g>
+<g transform="translate(75.0,30.0)"><rect y="5" width="14.8" height="9" fill="#EDEDED" /><text><tspan x="7.4" y="4.2">grey93</tspan></text><text x="7.4" y="13">0.93, 0.93, 0.93</text></g>
+<g transform="translate(89.8,30.0)"><rect y="5" width="14.8" height="9" fill="#EBEBEB" /><text><tspan x="7.4" y="4.2">gray92</tspan></text><text x="7.4" y="13">0.92, 0.92, 0.92</text></g>
+<g transform="translate(104.6,30.0)"><rect y="5" width="14.8" height="9" fill="#EBEBEB" /><text><tspan x="7.4" y="4.2">grey92</tspan></text><text x="7.4" y="13">0.92, 0.92, 0.92</text></g>
+<g transform="translate(119.4,30.0)"><rect y="5" width="14.8" height="9" fill="#E8E8E8" /><text><tspan x="7.4" y="4.2">gray91</tspan></text><text x="7.4" y="13">0.91, 0.91, 0.91</text></g>
+<g transform="translate(134.2,30.0)"><rect y="5" width="14.8" height="9" fill="#E8E8E8" /><text><tspan x="7.4" y="4.2">grey91</tspan></text><text x="7.4" y="13">0.91, 0.91, 0.91</text></g>
+<g transform="translate(1.0,45.0)"><rect y="5" width="14.8" height="9" fill="#E5E5E5" /><text><tspan x="7.4" y="4.2">gray90</tspan></text><text x="7.4" y="13">0.9, 0.9, 0.9</text></g>
+<g transform="translate(15.8,45.0)"><rect y="5" width="14.8" height="9" fill="#E5E5E5" /><text><tspan x="7.4" y="4.2">grey90</tspan></text><text x="7.4" y="13">0.9, 0.9, 0.9</text></g>
+<g transform="translate(30.6,45.0)"><rect y="5" width="14.8" height="9" fill="#E3E3E3" /><text><tspan x="7.4" y="4.2">gray89</tspan></text><text x="7.4" y="13">0.89, 0.89, 0.89</text></g>
+<g transform="translate(45.4,45.0)"><rect y="5" width="14.8" height="9" fill="#E3E3E3" /><text><tspan x="7.4" y="4.2">grey89</tspan></text><text x="7.4" y="13">0.89, 0.89, 0.89</text></g>
+<g transform="translate(60.2,45.0)"><rect y="5" width="14.8" height="9" fill="#E0E0E0" /><text><tspan x="7.4" y="4.2">gray88</tspan></text><text x="7.4" y="13">0.88, 0.88, 0.88</text></g>
+<g transform="translate(75.0,45.0)"><rect y="5" width="14.8" height="9" fill="#E0E0E0" /><text><tspan x="7.4" y="4.2">grey88</tspan></text><text x="7.4" y="13">0.88, 0.88, 0.88</text></g>
+<g transform="translate(89.8,45.0)"><rect y="5" width="14.8" height="9" fill="#DEDEDE" /><text><tspan x="7.4" y="4.2">gray87</tspan></text><text x="7.4" y="13">0.87, 0.87, 0.87</text></g>
+<g transform="translate(104.6,45.0)"><rect y="5" width="14.8" height="9" fill="#DEDEDE" /><text><tspan x="7.4" y="4.2">grey87</tspan></text><text x="7.4" y="13">0.87, 0.87, 0.87</text></g>
+<g transform="translate(119.4,45.0)"><rect y="5" width="14.8" height="9" fill="#DBDBDB" /><text><tspan x="7.4" y="4.2">gray86</tspan></text><text x="7.4" y="13">0.86, 0.86, 0.86</text></g>
+<g transform="translate(134.2,45.0)"><rect y="5" width="14.8" height="9" fill="#DBDBDB" /><text><tspan x="7.4" y="4.2">grey86</tspan></text><text x="7.4" y="13">0.86, 0.86, 0.86</text></g>
+<g transform="translate(1.0,60.0)"><rect y="5" width="14.8" height="9" fill="#D9D9D9" /><text><tspan x="7.4" y="4.2">gray85</tspan></text><text x="7.4" y="13">0.85, 0.85, 0.85</text></g>
+<g transform="translate(15.8,60.0)"><rect y="5" width="14.8" height="9" fill="#D9D9D9" /><text><tspan x="7.4" y="4.2">grey85</tspan></text><text x="7.4" y="13">0.85, 0.85, 0.85</text></g>
+<g transform="translate(30.6,60.0)"><rect y="5" width="14.8" height="9" fill="#D6D6D6" /><text><tspan x="7.4" y="4.2">gray84</tspan></text><text x="7.4" y="13">0.84, 0.84, 0.84</text></g>
+<g transform="translate(45.4,60.0)"><rect y="5" width="14.8" height="9" fill="#D6D6D6" /><text><tspan x="7.4" y="4.2">grey84</tspan></text><text x="7.4" y="13">0.84, 0.84, 0.84</text></g>
+<g transform="translate(60.2,60.0)"><rect y="5" width="14.8" height="9" fill="#D4D4D4" /><text><tspan x="7.4" y="4.2">gray83</tspan></text><text x="7.4" y="13">0.83, 0.83, 0.83</text></g>
+<g transform="translate(75.0,60.0)"><rect y="5" width="14.8" height="9" fill="#D4D4D4" /><text><tspan x="7.4" y="4.2">grey83</tspan></text><text x="7.4" y="13">0.83, 0.83, 0.83</text></g>
+<g transform="translate(89.8,60.0)"><rect y="5" width="14.8" height="9" fill="#D3D3D3" /><text><tspan x="7.4" y="4.2">lightgray</tspan></text><text x="7.4" y="13">0.83, 0.83, 0.83</text></g>
+<g transform="translate(104.6,60.0)"><rect y="5" width="14.8" height="9" fill="#D3D3D3" /><text><tspan x="7.4" y="4.2">lightgrey</tspan></text><text x="7.4" y="13">0.83, 0.83, 0.83</text></g>
+<g transform="translate(119.4,60.0)"><rect y="5" width="14.8" height="9" fill="#D1D1D1" /><text><tspan x="7.4" y="4.2">gray82</tspan></text><text x="7.4" y="13">0.82, 0.82, 0.82</text></g>
+<g transform="translate(134.2,60.0)"><rect y="5" width="14.8" height="9" fill="#D1D1D1" /><text><tspan x="7.4" y="4.2">grey82</tspan></text><text x="7.4" y="13">0.82, 0.82, 0.82</text></g>
+<g transform="translate(1.0,75.0)"><rect y="5" width="14.8" height="9" fill="#CFCFCF" /><text><tspan x="7.4" y="4.2">gray81</tspan></text><text x="7.4" y="13">0.81, 0.81, 0.81</text></g>
+<g transform="translate(15.8,75.0)"><rect y="5" width="14.8" height="9" fill="#CFCFCF" /><text><tspan x="7.4" y="4.2">grey81</tspan></text><text x="7.4" y="13">0.81, 0.81, 0.81</text></g>
+<g transform="translate(30.6,75.0)"><rect y="5" width="14.8" height="9" fill="#CCCCCC" /><text><tspan x="7.4" y="4.2">gray80</tspan></text><text x="7.4" y="13">0.8, 0.8, 0.8</text></g>
+<g transform="translate(45.4,75.0)"><rect y="5" width="14.8" height="9" fill="#CCCCCC" /><text><tspan x="7.4" y="4.2">grey80</tspan></text><text x="7.4" y="13">0.8, 0.8, 0.8</text></g>
+<g transform="translate(60.2,75.0)"><rect y="5" width="14.8" height="9" fill="#C9C9C9" /><text><tspan x="7.4" y="4.2">gray79</tspan></text><text x="7.4" y="13">0.79, 0.79, 0.79</text></g>
+<g transform="translate(75.0,75.0)"><rect y="5" width="14.8" height="9" fill="#C9C9C9" /><text><tspan x="7.4" y="4.2">grey79</tspan></text><text x="7.4" y="13">0.79, 0.79, 0.79</text></g>
+<g transform="translate(89.8,75.0)"><rect y="5" width="14.8" height="9" fill="#C7C7C7" /><text><tspan x="7.4" y="4.2">gray78</tspan></text><text x="7.4" y="13">0.78, 0.78, 0.78</text></g>
+<g transform="translate(104.6,75.0)"><rect y="5" width="14.8" height="9" fill="#C7C7C7" /><text><tspan x="7.4" y="4.2">grey78</tspan></text><text x="7.4" y="13">0.78, 0.78, 0.78</text></g>
+<g transform="translate(119.4,75.0)"><rect y="5" width="14.8" height="9" fill="#C4C4C4" /><text><tspan x="7.4" y="4.2">gray77</tspan></text><text x="7.4" y="13">0.77, 0.77, 0.77</text></g>
+<g transform="translate(134.2,75.0)"><rect y="5" width="14.8" height="9" fill="#C4C4C4" /><text><tspan x="7.4" y="4.2">grey77</tspan></text><text x="7.4" y="13">0.77, 0.77, 0.77</text></g>
+<g transform="translate(1.0,90.0)"><rect y="5" width="14.8" height="9" fill="#C2C2C2" /><text><tspan x="7.4" y="4.2">gray76</tspan></text><text x="7.4" y="13">0.76, 0.76, 0.76</text></g>
+<g transform="translate(15.8,90.0)"><rect y="5" width="14.8" height="9" fill="#C2C2C2" /><text><tspan x="7.4" y="4.2">grey76</tspan></text><text x="7.4" y="13">0.76, 0.76, 0.76</text></g>
+<g transform="translate(30.6,90.0)"><rect y="5" width="14.8" height="9" fill="#BFBFBF" /><text><tspan x="7.4" y="4.2">gray75</tspan></text><text x="7.4" y="13">0.75, 0.75, 0.75</text></g>
+<g transform="translate(45.4,90.0)"><rect y="5" width="14.8" height="9" fill="#BFBFBF" /><text><tspan x="7.4" y="4.2">grey75</tspan></text><text x="7.4" y="13">0.75, 0.75, 0.75</text></g>
+<g transform="translate(60.2,90.0)"><rect y="5" width="14.8" height="9" fill="#BDBDBD" /><text><tspan x="7.4" y="4.2">gray74</tspan></text><text x="7.4" y="13">0.74, 0.74, 0.74</text></g>
+<g transform="translate(75.0,90.0)"><rect y="5" width="14.8" height="9" fill="#BDBDBD" /><text><tspan x="7.4" y="4.2">grey74</tspan></text><text x="7.4" y="13">0.74, 0.74, 0.74</text></g>
+<g transform="translate(89.8,90.0)"><rect y="5" width="14.8" height="9" fill="#BABABA" /><text><tspan x="7.4" y="4.2">gray73</tspan></text><text x="7.4" y="13">0.73, 0.73, 0.73</text></g>
+<g transform="translate(104.6,90.0)"><rect y="5" width="14.8" height="9" fill="#BABABA" /><text><tspan x="7.4" y="4.2">grey73</tspan></text><text x="7.4" y="13">0.73, 0.73, 0.73</text></g>
+<g transform="translate(119.4,90.0)"><rect y="5" width="14.8" height="9" fill="#B8B8B8" /><text><tspan x="7.4" y="4.2">gray72</tspan></text><text x="7.4" y="13">0.72, 0.72, 0.72</text></g>
+<g transform="translate(134.2,90.0)"><rect y="5" width="14.8" height="9" fill="#B8B8B8" /><text><tspan x="7.4" y="4.2">grey72</tspan></text><text x="7.4" y="13">0.72, 0.72, 0.72</text></g>
+<g transform="translate(1.0,105.0)"><rect y="5" width="14.8" height="9" fill="#B5B5B5" /><text><tspan x="7.4" y="4.2">gray71</tspan></text><text x="7.4" y="13">0.71, 0.71, 0.71</text></g>
+<g transform="translate(15.8,105.0)"><rect y="5" width="14.8" height="9" fill="#B5B5B5" /><text><tspan x="7.4" y="4.2">grey71</tspan></text><text x="7.4" y="13">0.71, 0.71, 0.71</text></g>
+<g transform="translate(30.6,105.0)"><rect y="5" width="14.8" height="9" fill="#B3B3B3" /><text><tspan x="7.4" y="4.2">gray70</tspan></text><text x="7.4" y="13">0.7, 0.7, 0.7</text></g>
+<g transform="translate(45.4,105.0)"><rect y="5" width="14.8" height="9" fill="#B3B3B3" /><text><tspan x="7.4" y="4.2">grey70</tspan></text><text x="7.4" y="13">0.7, 0.7, 0.7</text></g>
+<g transform="translate(60.2,105.0)"><rect y="5" width="14.8" height="9" fill="#B0B0B0" /><text><tspan x="7.4" y="4.2">gray69</tspan></text><text x="7.4" y="13">0.69, 0.69, 0.69</text></g>
+<g transform="translate(75.0,105.0)"><rect y="5" width="14.8" height="9" fill="#B0B0B0" /><text><tspan x="7.4" y="4.2">grey69</tspan></text><text x="7.4" y="13">0.69, 0.69, 0.69</text></g>
+<g transform="translate(89.8,105.0)"><rect y="5" width="14.8" height="9" fill="#ADADAD" /><text><tspan x="7.4" y="4.2">gray68</tspan></text><text x="7.4" y="13">0.68, 0.68, 0.68</text></g>
+<g transform="translate(104.6,105.0)"><rect y="5" width="14.8" height="9" fill="#ADADAD" /><text><tspan x="7.4" y="4.2">grey68</tspan></text><text x="7.4" y="13">0.68, 0.68, 0.68</text></g>
+<g transform="translate(119.4,105.0)"><rect y="5" width="14.8" height="9" fill="#ABABAB" /><text><tspan x="7.4" y="4.2">gray67</tspan></text><text x="7.4" y="13">0.67, 0.67, 0.67</text></g>
+<g transform="translate(134.2,105.0)"><rect y="5" width="14.8" height="9" fill="#ABABAB" /><text><tspan x="7.4" y="4.2">grey67</tspan></text><text x="7.4" y="13">0.67, 0.67, 0.67</text></g>
+<g transform="translate(1.0,120.0)"><rect y="5" width="14.8" height="9" fill="#A9A9A9" /><text><tspan x="7.4" y="4.2">darkgray</tspan></text><text x="7.4" y="13">0.66, 0.66, 0.66</text></g>
+<g transform="translate(15.8,120.0)"><rect y="5" width="14.8" height="9" fill="#A9A9A9" /><text><tspan x="7.4" y="4.2">darkgrey</tspan></text><text x="7.4" y="13">0.66, 0.66, 0.66</text></g>
+<g transform="translate(30.6,120.0)"><rect y="5" width="14.8" height="9" fill="#A8A8A8" /><text><tspan x="7.4" y="4.2">gray66</tspan></text><text x="7.4" y="13">0.66, 0.66, 0.66</text></g>
+<g transform="translate(45.4,120.0)"><rect y="5" width="14.8" height="9" fill="#A8A8A8" /><text><tspan x="7.4" y="4.2">grey66</tspan></text><text x="7.4" y="13">0.66, 0.66, 0.66</text></g>
+<g transform="translate(60.2,120.0)"><rect y="5" width="14.8" height="9" fill="#A6A6A6" /><text><tspan x="7.4" y="4.2">gray65</tspan></text><text x="7.4" y="13">0.65, 0.65, 0.65</text></g>
+<g transform="translate(75.0,120.0)"><rect y="5" width="14.8" height="9" fill="#A6A6A6" /><text><tspan x="7.4" y="4.2">grey65</tspan></text><text x="7.4" y="13">0.65, 0.65, 0.65</text></g>
+<g transform="translate(89.8,120.0)"><rect y="5" width="14.8" height="9" fill="#A3A3A3" /><text><tspan x="7.4" y="4.2">gray64</tspan></text><text x="7.4" y="13">0.64, 0.64, 0.64</text></g>
+<g transform="translate(104.6,120.0)"><rect y="5" width="14.8" height="9" fill="#A3A3A3" /><text><tspan x="7.4" y="4.2">grey64</tspan></text><text x="7.4" y="13">0.64, 0.64, 0.64</text></g>
+<g transform="translate(119.4,120.0)"><rect y="5" width="14.8" height="9" fill="#A1A1A1" /><text><tspan x="7.4" y="4.2">gray63</tspan></text><text x="7.4" y="13">0.63, 0.63, 0.63</text></g>
+<g transform="translate(134.2,120.0)"><rect y="5" width="14.8" height="9" fill="#A1A1A1" /><text><tspan x="7.4" y="4.2">grey63</tspan></text><text x="7.4" y="13">0.63, 0.63, 0.63</text></g>
+<g transform="translate(1.0,135.0)"><rect y="5" width="14.8" height="9" fill="#9E9E9E" /><text><tspan x="7.4" y="4.2">gray62</tspan></text><text x="7.4" y="13">0.62, 0.62, 0.62</text></g>
+<g transform="translate(15.8,135.0)"><rect y="5" width="14.8" height="9" fill="#9E9E9E" /><text><tspan x="7.4" y="4.2">grey62</tspan></text><text x="7.4" y="13">0.62, 0.62, 0.62</text></g>
+<g transform="translate(30.6,135.0)"><rect y="5" width="14.8" height="9" fill="#9C9C9C" /><text><tspan x="7.4" y="4.2">gray61</tspan></text><text x="7.4" y="13">0.61, 0.61, 0.61</text></g>
+<g transform="translate(45.4,135.0)"><rect y="5" width="14.8" height="9" fill="#9C9C9C" /><text><tspan x="7.4" y="4.2">grey61</tspan></text><text x="7.4" y="13">0.61, 0.61, 0.61</text></g>
+<g transform="translate(60.2,135.0)"><rect y="5" width="14.8" height="9" fill="#999999" /><text><tspan x="7.4" y="4.2">gray60</tspan></text><text x="7.4" y="13">0.6, 0.6, 0.6</text></g>
+<g transform="translate(75.0,135.0)"><rect y="5" width="14.8" height="9" fill="#999999" /><text><tspan x="7.4" y="4.2">grey60</tspan></text><text x="7.4" y="13">0.6, 0.6, 0.6</text></g>
+<g transform="translate(89.8,135.0)"><rect y="5" width="14.8" height="9" fill="#969696" /><text><tspan x="7.4" y="4.2">gray59</tspan></text><text x="7.4" y="13">0.59, 0.59, 0.59</text></g>
+<g transform="translate(104.6,135.0)"><rect y="5" width="14.8" height="9" fill="#969696" /><text><tspan x="7.4" y="4.2">grey59</tspan></text><text x="7.4" y="13">0.59, 0.59, 0.59</text></g>
+<g transform="translate(119.4,135.0)"><rect y="5" width="14.8" height="9" fill="#949494" /><text><tspan x="7.4" y="4.2">gray58</tspan></text><text x="7.4" y="13">0.58, 0.58, 0.58</text></g>
+<g transform="translate(134.2,135.0)"><rect y="5" width="14.8" height="9" fill="#949494" /><text><tspan x="7.4" y="4.2">grey58</tspan></text><text x="7.4" y="13">0.58, 0.58, 0.58</text></g>
+<g transform="translate(1.0,150.0)"><rect y="5" width="14.8" height="9" fill="#919191" /><text><tspan x="7.4" y="4.2">gray57</tspan></text><text x="7.4" y="13">0.57, 0.57, 0.57</text></g>
+<g transform="translate(15.8,150.0)"><rect y="5" width="14.8" height="9" fill="#919191" /><text><tspan x="7.4" y="4.2">grey57</tspan></text><text x="7.4" y="13">0.57, 0.57, 0.57</text></g>
+<g transform="translate(30.6,150.0)"><rect y="5" width="14.8" height="9" fill="#8F8F8F" /><text><tspan x="7.4" y="4.2">gray56</tspan></text><text x="7.4" y="13" class="w">0.56, 0.56, 0.56</text></g>
+<g transform="translate(45.4,150.0)"><rect y="5" width="14.8" height="9" fill="#8F8F8F" /><text><tspan x="7.4" y="4.2">grey56</tspan></text><text x="7.4" y="13" class="w">0.56, 0.56, 0.56</text></g>
+<g transform="translate(60.2,150.0)"><rect y="5" width="14.8" height="9" fill="#8C8C8C" /><text><tspan x="7.4" y="4.2">gray55</tspan></text><text x="7.4" y="13" class="w">0.55, 0.55, 0.55</text></g>
+<g transform="translate(75.0,150.0)"><rect y="5" width="14.8" height="9" fill="#8C8C8C" /><text><tspan x="7.4" y="4.2">grey55</tspan></text><text x="7.4" y="13" class="w">0.55, 0.55, 0.55</text></g>
+<g transform="translate(89.8,150.0)"><rect y="5" width="14.8" height="9" fill="#8A8A8A" /><text><tspan x="7.4" y="4.2">gray54</tspan></text><text x="7.4" y="13" class="w">0.54, 0.54, 0.54</text></g>
+<g transform="translate(104.6,150.0)"><rect y="5" width="14.8" height="9" fill="#8A8A8A" /><text><tspan x="7.4" y="4.2">grey54</tspan></text><text x="7.4" y="13" class="w">0.54, 0.54, 0.54</text></g>
+<g transform="translate(119.4,150.0)"><rect y="5" width="14.8" height="9" fill="#878787" /><text><tspan x="7.4" y="4.2">gray53</tspan></text><text x="7.4" y="13" class="w">0.53, 0.53, 0.53</text></g>
+<g transform="translate(134.2,150.0)"><rect y="5" width="14.8" height="9" fill="#878787" /><text><tspan x="7.4" y="4.2">grey53</tspan></text><text x="7.4" y="13" class="w">0.53, 0.53, 0.53</text></g>
+<g transform="translate(1.0,165.0)"><rect y="5" width="14.8" height="9" fill="#858585" /><text><tspan x="7.4" y="4.2">gray52</tspan></text><text x="7.4" y="13" class="w">0.52, 0.52, 0.52</text></g>
+<g transform="translate(15.8,165.0)"><rect y="5" width="14.8" height="9" fill="#858585" /><text><tspan x="7.4" y="4.2">grey52</tspan></text><text x="7.4" y="13" class="w">0.52, 0.52, 0.52</text></g>
+<g transform="translate(30.6,165.0)"><rect y="5" width="14.8" height="9" fill="#828282" /><text><tspan x="7.4" y="4.2">gray51</tspan></text><text x="7.4" y="13" class="w">0.51, 0.51, 0.51</text></g>
+<g transform="translate(45.4,165.0)"><rect y="5" width="14.8" height="9" fill="#828282" /><text><tspan x="7.4" y="4.2">grey51</tspan></text><text x="7.4" y="13" class="w">0.51, 0.51, 0.51</text></g>
+<g transform="translate(60.2,165.0)"><rect y="5" width="14.8" height="9" fill="#808080" /><text><tspan x="7.4" y="4.2">gray</tspan></text><text x="7.4" y="13" class="w">0.5, 0.5, 0.5</text></g>
+<g transform="translate(75.0,165.0)"><rect y="5" width="14.8" height="9" fill="#808080" /><text><tspan x="7.4" y="4.2">grey</tspan></text><text x="7.4" y="13" class="w">0.5, 0.5, 0.5</text></g>
+<g transform="translate(89.8,165.0)"><rect y="5" width="14.8" height="9" fill="#7F7F7F" /><text><tspan x="7.4" y="4.2">gray50</tspan></text><text x="7.4" y="13" class="w">0.5, 0.5, 0.5</text></g>
+<g transform="translate(104.6,165.0)"><rect y="5" width="14.8" height="9" fill="#7F7F7F" /><text><tspan x="7.4" y="4.2">grey50</tspan></text><text x="7.4" y="13" class="w">0.5, 0.5, 0.5</text></g>
+<g transform="translate(119.4,165.0)"><rect y="5" width="14.8" height="9" fill="#7D7D7D" /><text><tspan x="7.4" y="4.2">gray49</tspan></text><text x="7.4" y="13" class="w">0.49, 0.49, 0.49</text></g>
+<g transform="translate(134.2,165.0)"><rect y="5" width="14.8" height="9" fill="#7D7D7D" /><text><tspan x="7.4" y="4.2">grey49</tspan></text><text x="7.4" y="13" class="w">0.49, 0.49, 0.49</text></g>
+<g transform="translate(1.0,180.0)"><rect y="5" width="14.8" height="9" fill="#7A7A7A" /><text><tspan x="7.4" y="4.2">gray48</tspan></text><text x="7.4" y="13" class="w">0.48, 0.48, 0.48</text></g>
+<g transform="translate(15.8,180.0)"><rect y="5" width="14.8" height="9" fill="#7A7A7A" /><text><tspan x="7.4" y="4.2">grey48</tspan></text><text x="7.4" y="13" class="w">0.48, 0.48, 0.48</text></g>
+<g transform="translate(30.6,180.0)"><rect y="5" width="14.8" height="9" fill="#787878" /><text><tspan x="7.4" y="4.2">gray47</tspan></text><text x="7.4" y="13" class="w">0.47, 0.47, 0.47</text></g>
+<g transform="translate(45.4,180.0)"><rect y="5" width="14.8" height="9" fill="#787878" /><text><tspan x="7.4" y="4.2">grey47</tspan></text><text x="7.4" y="13" class="w">0.47, 0.47, 0.47</text></g>
+<g transform="translate(60.2,180.0)"><rect y="5" width="14.8" height="9" fill="#757575" /><text><tspan x="7.4" y="4.2">gray46</tspan></text><text x="7.4" y="13" class="w">0.46, 0.46, 0.46</text></g>
+<g transform="translate(75.0,180.0)"><rect y="5" width="14.8" height="9" fill="#757575" /><text><tspan x="7.4" y="4.2">grey46</tspan></text><text x="7.4" y="13" class="w">0.46, 0.46, 0.46</text></g>
+<g transform="translate(89.8,180.0)"><rect y="5" width="14.8" height="9" fill="#737373" /><text><tspan x="7.4" y="4.2">gray45</tspan></text><text x="7.4" y="13" class="w">0.45, 0.45, 0.45</text></g>
+<g transform="translate(104.6,180.0)"><rect y="5" width="14.8" height="9" fill="#737373" /><text><tspan x="7.4" y="4.2">grey45</tspan></text><text x="7.4" y="13" class="w">0.45, 0.45, 0.45</text></g>
+<g transform="translate(119.4,180.0)"><rect y="5" width="14.8" height="9" fill="#707070" /><text><tspan x="7.4" y="4.2">gray44</tspan></text><text x="7.4" y="13" class="w">0.44, 0.44, 0.44</text></g>
+<g transform="translate(134.2,180.0)"><rect y="5" width="14.8" height="9" fill="#707070" /><text><tspan x="7.4" y="4.2">grey44</tspan></text><text x="7.4" y="13" class="w">0.44, 0.44, 0.44</text></g>
+<g transform="translate(1.0,195.0)"><rect y="5" width="14.8" height="9" fill="#6E6E6E" /><text><tspan x="7.4" y="4.2">gray43</tspan></text><text x="7.4" y="13" class="w">0.43, 0.43, 0.43</text></g>
+<g transform="translate(15.8,195.0)"><rect y="5" width="14.8" height="9" fill="#6E6E6E" /><text><tspan x="7.4" y="4.2">grey43</tspan></text><text x="7.4" y="13" class="w">0.43, 0.43, 0.43</text></g>
+<g transform="translate(30.6,195.0)"><rect y="5" width="14.8" height="9" fill="#6B6B6B" /><text><tspan x="7.4" y="4.2">gray42</tspan></text><text x="7.4" y="13" class="w">0.42, 0.42, 0.42</text></g>
+<g transform="translate(45.4,195.0)"><rect y="5" width="14.8" height="9" fill="#6B6B6B" /><text><tspan x="7.4" y="4.2">grey42</tspan></text><text x="7.4" y="13" class="w">0.42, 0.42, 0.42</text></g>
+<g transform="translate(60.2,195.0)"><rect y="5" width="14.8" height="9" fill="#696969" /><text><tspan x="7.4" y="4.2">dimgray</tspan></text><text x="7.4" y="13" class="w">0.41, 0.41, 0.41</text></g>
+<g transform="translate(75.0,195.0)"><rect y="5" width="14.8" height="9" fill="#696969" /><text><tspan x="7.4" y="4.2">dimgrey</tspan></text><text x="7.4" y="13" class="w">0.41, 0.41, 0.41</text></g>
+<g transform="translate(89.8,195.0)"><rect y="5" width="14.8" height="9" fill="#696969" /><text><tspan x="7.4" y="4.2">gray41</tspan></text><text x="7.4" y="13" class="w">0.41, 0.41, 0.41</text></g>
+<g transform="translate(104.6,195.0)"><rect y="5" width="14.8" height="9" fill="#696969" /><text><tspan x="7.4" y="4.2">grey41</tspan></text><text x="7.4" y="13" class="w">0.41, 0.41, 0.41</text></g>
+<g transform="translate(119.4,195.0)"><rect y="5" width="14.8" height="9" fill="#666666" /><text><tspan x="7.4" y="4.2">gray40</tspan></text><text x="7.4" y="13" class="w">0.4, 0.4, 0.4</text></g>
+<g transform="translate(134.2,195.0)"><rect y="5" width="14.8" height="9" fill="#666666" /><text><tspan x="7.4" y="4.2">grey40</tspan></text><text x="7.4" y="13" class="w">0.4, 0.4, 0.4</text></g>
+<g transform="translate(1.0,210.0)"><rect y="5" width="14.8" height="9" fill="#636363" /><text><tspan x="7.4" y="4.2">gray39</tspan></text><text x="7.4" y="13" class="w">0.39, 0.39, 0.39</text></g>
+<g transform="translate(15.8,210.0)"><rect y="5" width="14.8" height="9" fill="#636363" /><text><tspan x="7.4" y="4.2">grey39</tspan></text><text x="7.4" y="13" class="w">0.39, 0.39, 0.39</text></g>
+<g transform="translate(30.6,210.0)"><rect y="5" width="14.8" height="9" fill="#616161" /><text><tspan x="7.4" y="4.2">gray38</tspan></text><text x="7.4" y="13" class="w">0.38, 0.38, 0.38</text></g>
+<g transform="translate(45.4,210.0)"><rect y="5" width="14.8" height="9" fill="#616161" /><text><tspan x="7.4" y="4.2">grey38</tspan></text><text x="7.4" y="13" class="w">0.38, 0.38, 0.38</text></g>
+<g transform="translate(60.2,210.0)"><rect y="5" width="14.8" height="9" fill="#5E5E5E" /><text><tspan x="7.4" y="4.2">gray37</tspan></text><text x="7.4" y="13" class="w">0.37, 0.37, 0.37</text></g>
+<g transform="translate(75.0,210.0)"><rect y="5" width="14.8" height="9" fill="#5E5E5E" /><text><tspan x="7.4" y="4.2">grey37</tspan></text><text x="7.4" y="13" class="w">0.37, 0.37, 0.37</text></g>
+<g transform="translate(89.8,210.0)"><rect y="5" width="14.8" height="9" fill="#5C5C5C" /><text><tspan x="7.4" y="4.2">gray36</tspan></text><text x="7.4" y="13" class="w">0.36, 0.36, 0.36</text></g>
+<g transform="translate(104.6,210.0)"><rect y="5" width="14.8" height="9" fill="#5C5C5C" /><text><tspan x="7.4" y="4.2">grey36</tspan></text><text x="7.4" y="13" class="w">0.36, 0.36, 0.36</text></g>
+<g transform="translate(119.4,210.0)"><rect y="5" width="14.8" height="9" fill="#595959" /><text><tspan x="7.4" y="4.2">gray35</tspan></text><text x="7.4" y="13" class="w">0.35, 0.35, 0.35</text></g>
+<g transform="translate(134.2,210.0)"><rect y="5" width="14.8" height="9" fill="#595959" /><text><tspan x="7.4" y="4.2">grey35</tspan></text><text x="7.4" y="13" class="w">0.35, 0.35, 0.35</text></g>
+<g transform="translate(1.0,225.0)"><rect y="5" width="14.8" height="9" fill="#575757" /><text><tspan x="7.4" y="4.2">gray34</tspan></text><text x="7.4" y="13" class="w">0.34, 0.34, 0.34</text></g>
+<g transform="translate(15.8,225.0)"><rect y="5" width="14.8" height="9" fill="#575757" /><text><tspan x="7.4" y="4.2">grey34</tspan></text><text x="7.4" y="13" class="w">0.34, 0.34, 0.34</text></g>
+<g transform="translate(30.6,225.0)"><rect y="5" width="14.8" height="9" fill="#545454" /><text><tspan x="7.4" y="4.2">gray33</tspan></text><text x="7.4" y="13" class="w">0.33, 0.33, 0.33</text></g>
+<g transform="translate(45.4,225.0)"><rect y="5" width="14.8" height="9" fill="#545454" /><text><tspan x="7.4" y="4.2">grey33</tspan></text><text x="7.4" y="13" class="w">0.33, 0.33, 0.33</text></g>
+<g transform="translate(60.2,225.0)"><rect y="5" width="14.8" height="9" fill="#525252" /><text><tspan x="7.4" y="4.2">gray32</tspan></text><text x="7.4" y="13" class="w">0.32, 0.32, 0.32</text></g>
+<g transform="translate(75.0,225.0)"><rect y="5" width="14.8" height="9" fill="#525252" /><text><tspan x="7.4" y="4.2">grey32</tspan></text><text x="7.4" y="13" class="w">0.32, 0.32, 0.32</text></g>
+<g transform="translate(89.8,225.0)"><rect y="5" width="14.8" height="9" fill="#4F4F4F" /><text><tspan x="7.4" y="4.2">gray31</tspan></text><text x="7.4" y="13" class="w">0.31, 0.31, 0.31</text></g>
+<g transform="translate(104.6,225.0)"><rect y="5" width="14.8" height="9" fill="#4F4F4F" /><text><tspan x="7.4" y="4.2">grey31</tspan></text><text x="7.4" y="13" class="w">0.31, 0.31, 0.31</text></g>
+<g transform="translate(119.4,225.0)"><rect y="5" width="14.8" height="9" fill="#4D4D4D" /><text><tspan x="7.4" y="4.2">gray30</tspan></text><text x="7.4" y="13" class="w">0.3, 0.3, 0.3</text></g>
+<g transform="translate(134.2,225.0)"><rect y="5" width="14.8" height="9" fill="#4D4D4D" /><text><tspan x="7.4" y="4.2">grey30</tspan></text><text x="7.4" y="13" class="w">0.3, 0.3, 0.3</text></g>
+<g transform="translate(1.0,240.0)"><rect y="5" width="14.8" height="9" fill="#4A4A4A" /><text><tspan x="7.4" y="4.2">gray29</tspan></text><text x="7.4" y="13" class="w">0.29, 0.29, 0.29</text></g>
+<g transform="translate(15.8,240.0)"><rect y="5" width="14.8" height="9" fill="#4A4A4A" /><text><tspan x="7.4" y="4.2">grey29</tspan></text><text x="7.4" y="13" class="w">0.29, 0.29, 0.29</text></g>
+<g transform="translate(30.6,240.0)"><rect y="5" width="14.8" height="9" fill="#474747" /><text><tspan x="7.4" y="4.2">gray28</tspan></text><text x="7.4" y="13" class="w">0.28, 0.28, 0.28</text></g>
+<g transform="translate(45.4,240.0)"><rect y="5" width="14.8" height="9" fill="#474747" /><text><tspan x="7.4" y="4.2">grey28</tspan></text><text x="7.4" y="13" class="w">0.28, 0.28, 0.28</text></g>
+<g transform="translate(60.2,240.0)"><rect y="5" width="14.8" height="9" fill="#454545" /><text><tspan x="7.4" y="4.2">gray27</tspan></text><text x="7.4" y="13" class="w">0.27, 0.27, 0.27</text></g>
+<g transform="translate(75.0,240.0)"><rect y="5" width="14.8" height="9" fill="#454545" /><text><tspan x="7.4" y="4.2">grey27</tspan></text><text x="7.4" y="13" class="w">0.27, 0.27, 0.27</text></g>
+<g transform="translate(89.8,240.0)"><rect y="5" width="14.8" height="9" fill="#424242" /><text><tspan x="7.4" y="4.2">gray26</tspan></text><text x="7.4" y="13" class="w">0.26, 0.26, 0.26</text></g>
+<g transform="translate(104.6,240.0)"><rect y="5" width="14.8" height="9" fill="#424242" /><text><tspan x="7.4" y="4.2">grey26</tspan></text><text x="7.4" y="13" class="w">0.26, 0.26, 0.26</text></g>
+<g transform="translate(119.4,240.0)"><rect y="5" width="14.8" height="9" fill="#404040" /><text><tspan x="7.4" y="4.2">gray25</tspan></text><text x="7.4" y="13" class="w">0.25, 0.25, 0.25</text></g>
+<g transform="translate(134.2,240.0)"><rect y="5" width="14.8" height="9" fill="#404040" /><text><tspan x="7.4" y="4.2">grey25</tspan></text><text x="7.4" y="13" class="w">0.25, 0.25, 0.25</text></g>
+<g transform="translate(1.0,255.0)"><rect y="5" width="14.8" height="9" fill="#3D3D3D" /><text><tspan x="7.4" y="4.2">gray24</tspan></text><text x="7.4" y="13" class="w">0.24, 0.24, 0.24</text></g>
+<g transform="translate(15.8,255.0)"><rect y="5" width="14.8" height="9" fill="#3D3D3D" /><text><tspan x="7.4" y="4.2">grey24</tspan></text><text x="7.4" y="13" class="w">0.24, 0.24, 0.24</text></g>
+<g transform="translate(30.6,255.0)"><rect y="5" width="14.8" height="9" fill="#3B3B3B" /><text><tspan x="7.4" y="4.2">gray23</tspan></text><text x="7.4" y="13" class="w">0.23, 0.23, 0.23</text></g>
+<g transform="translate(45.4,255.0)"><rect y="5" width="14.8" height="9" fill="#3B3B3B" /><text><tspan x="7.4" y="4.2">grey23</tspan></text><text x="7.4" y="13" class="w">0.23, 0.23, 0.23</text></g>
+<g transform="translate(60.2,255.0)"><rect y="5" width="14.8" height="9" fill="#383838" /><text><tspan x="7.4" y="4.2">gray22</tspan></text><text x="7.4" y="13" class="w">0.22, 0.22, 0.22</text></g>
+<g transform="translate(75.0,255.0)"><rect y="5" width="14.8" height="9" fill="#383838" /><text><tspan x="7.4" y="4.2">grey22</tspan></text><text x="7.4" y="13" class="w">0.22, 0.22, 0.22</text></g>
+<g transform="translate(89.8,255.0)"><rect y="5" width="14.8" height="9" fill="#363636" /><text><tspan x="7.4" y="4.2">gray21</tspan></text><text x="7.4" y="13" class="w">0.21, 0.21, 0.21</text></g>
+<g transform="translate(104.6,255.0)"><rect y="5" width="14.8" height="9" fill="#363636" /><text><tspan x="7.4" y="4.2">grey21</tspan></text><text x="7.4" y="13" class="w">0.21, 0.21, 0.21</text></g>
+<g transform="translate(119.4,255.0)"><rect y="5" width="14.8" height="9" fill="#333333" /><text><tspan x="7.4" y="4.2">gray20</tspan></text><text x="7.4" y="13" class="w">0.2, 0.2, 0.2</text></g>
+<g transform="translate(134.2,255.0)"><rect y="5" width="14.8" height="9" fill="#333333" /><text><tspan x="7.4" y="4.2">grey20</tspan></text><text x="7.4" y="13" class="w">0.2, 0.2, 0.2</text></g>
+<g transform="translate(1.0,270.0)"><rect y="5" width="14.8" height="9" fill="#303030" /><text><tspan x="7.4" y="4.2">gray19</tspan></text><text x="7.4" y="13" class="w">0.19, 0.19, 0.19</text></g>
+<g transform="translate(15.8,270.0)"><rect y="5" width="14.8" height="9" fill="#303030" /><text><tspan x="7.4" y="4.2">grey19</tspan></text><text x="7.4" y="13" class="w">0.19, 0.19, 0.19</text></g>
+<g transform="translate(30.6,270.0)"><rect y="5" width="14.8" height="9" fill="#2E2E2E" /><text><tspan x="7.4" y="4.2">gray18</tspan></text><text x="7.4" y="13" class="w">0.18, 0.18, 0.18</text></g>
+<g transform="translate(45.4,270.0)"><rect y="5" width="14.8" height="9" fill="#2E2E2E" /><text><tspan x="7.4" y="4.2">grey18</tspan></text><text x="7.4" y="13" class="w">0.18, 0.18, 0.18</text></g>
+<g transform="translate(60.2,270.0)"><rect y="5" width="14.8" height="9" fill="#2B2B2B" /><text><tspan x="7.4" y="4.2">gray17</tspan></text><text x="7.4" y="13" class="w">0.17, 0.17, 0.17</text></g>
+<g transform="translate(75.0,270.0)"><rect y="5" width="14.8" height="9" fill="#2B2B2B" /><text><tspan x="7.4" y="4.2">grey17</tspan></text><text x="7.4" y="13" class="w">0.17, 0.17, 0.17</text></g>
+<g transform="translate(89.8,270.0)"><rect y="5" width="14.8" height="9" fill="#292929" /><text><tspan x="7.4" y="4.2">gray16</tspan></text><text x="7.4" y="13" class="w">0.16, 0.16, 0.16</text></g>
+<g transform="translate(104.6,270.0)"><rect y="5" width="14.8" height="9" fill="#292929" /><text><tspan x="7.4" y="4.2">grey16</tspan></text><text x="7.4" y="13" class="w">0.16, 0.16, 0.16</text></g>
+<g transform="translate(119.4,270.0)"><rect y="5" width="14.8" height="9" fill="#262626" /><text><tspan x="7.4" y="4.2">gray15</tspan></text><text x="7.4" y="13" class="w">0.15, 0.15, 0.15</text></g>
+<g transform="translate(134.2,270.0)"><rect y="5" width="14.8" height="9" fill="#262626" /><text><tspan x="7.4" y="4.2">grey15</tspan></text><text x="7.4" y="13" class="w">0.15, 0.15, 0.15</text></g>
+<g transform="translate(1.0,285.0)"><rect y="5" width="14.8" height="9" fill="#242424" /><text><tspan x="7.4" y="4.2">gray14</tspan></text><text x="7.4" y="13" class="w">0.14, 0.14, 0.14</text></g>
+<g transform="translate(15.8,285.0)"><rect y="5" width="14.8" height="9" fill="#242424" /><text><tspan x="7.4" y="4.2">grey14</tspan></text><text x="7.4" y="13" class="w">0.14, 0.14, 0.14</text></g>
+<g transform="translate(30.6,285.0)"><rect y="5" width="14.8" height="9" fill="#212121" /><text><tspan x="7.4" y="4.2">gray13</tspan></text><text x="7.4" y="13" class="w">0.13, 0.13, 0.13</text></g>
+<g transform="translate(45.4,285.0)"><rect y="5" width="14.8" height="9" fill="#212121" /><text><tspan x="7.4" y="4.2">grey13</tspan></text><text x="7.4" y="13" class="w">0.13, 0.13, 0.13</text></g>
+<g transform="translate(60.2,285.0)"><rect y="5" width="14.8" height="9" fill="#1F1F1F" /><text><tspan x="7.4" y="4.2">gray12</tspan></text><text x="7.4" y="13" class="w">0.12, 0.12, 0.12</text></g>
+<g transform="translate(75.0,285.0)"><rect y="5" width="14.8" height="9" fill="#1F1F1F" /><text><tspan x="7.4" y="4.2">grey12</tspan></text><text x="7.4" y="13" class="w">0.12, 0.12, 0.12</text></g>
+<g transform="translate(89.8,285.0)"><rect y="5" width="14.8" height="9" fill="#1C1C1C" /><text><tspan x="7.4" y="4.2">gray11</tspan></text><text x="7.4" y="13" class="w">0.11, 0.11, 0.11</text></g>
+<g transform="translate(104.6,285.0)"><rect y="5" width="14.8" height="9" fill="#1C1C1C" /><text><tspan x="7.4" y="4.2">grey11</tspan></text><text x="7.4" y="13" class="w">0.11, 0.11, 0.11</text></g>
+<g transform="translate(119.4,285.0)"><rect y="5" width="14.8" height="9" fill="#1A1A1A" /><text><tspan x="7.4" y="4.2">gray10</tspan></text><text x="7.4" y="13" class="w">0.1, 0.1, 0.1</text></g>
+<g transform="translate(134.2,285.0)"><rect y="5" width="14.8" height="9" fill="#1A1A1A" /><text><tspan x="7.4" y="4.2">grey10</tspan></text><text x="7.4" y="13" class="w">0.1, 0.1, 0.1</text></g>
+<g transform="translate(1.0,300.0)"><rect y="5" width="14.8" height="9" fill="#171717" /><text><tspan x="7.4" y="4.2">gray9</tspan></text><text x="7.4" y="13" class="w">0.09, 0.09, 0.09</text></g>
+<g transform="translate(15.8,300.0)"><rect y="5" width="14.8" height="9" fill="#171717" /><text><tspan x="7.4" y="4.2">grey9</tspan></text><text x="7.4" y="13" class="w">0.09, 0.09, 0.09</text></g>
+<g transform="translate(30.6,300.0)"><rect y="5" width="14.8" height="9" fill="#141414" /><text><tspan x="7.4" y="4.2">gray8</tspan></text><text x="7.4" y="13" class="w">0.08, 0.08, 0.08</text></g>
+<g transform="translate(45.4,300.0)"><rect y="5" width="14.8" height="9" fill="#141414" /><text><tspan x="7.4" y="4.2">grey8</tspan></text><text x="7.4" y="13" class="w">0.08, 0.08, 0.08</text></g>
+<g transform="translate(60.2,300.0)"><rect y="5" width="14.8" height="9" fill="#121212" /><text><tspan x="7.4" y="4.2">gray7</tspan></text><text x="7.4" y="13" class="w">0.07, 0.07, 0.07</text></g>
+<g transform="translate(75.0,300.0)"><rect y="5" width="14.8" height="9" fill="#121212" /><text><tspan x="7.4" y="4.2">grey7</tspan></text><text x="7.4" y="13" class="w">0.07, 0.07, 0.07</text></g>
+<g transform="translate(89.8,300.0)"><rect y="5" width="14.8" height="9" fill="#0F0F0F" /><text><tspan x="7.4" y="4.2">gray6</tspan></text><text x="7.4" y="13" class="w">0.06, 0.06, 0.06</text></g>
+<g transform="translate(104.6,300.0)"><rect y="5" width="14.8" height="9" fill="#0F0F0F" /><text><tspan x="7.4" y="4.2">grey6</tspan></text><text x="7.4" y="13" class="w">0.06, 0.06, 0.06</text></g>
+<g transform="translate(119.4,300.0)"><rect y="5" width="14.8" height="9" fill="#0D0D0D" /><text><tspan x="7.4" y="4.2">gray5</tspan></text><text x="7.4" y="13" class="w">0.05, 0.05, 0.05</text></g>
+<g transform="translate(134.2,300.0)"><rect y="5" width="14.8" height="9" fill="#0D0D0D" /><text><tspan x="7.4" y="4.2">grey5</tspan></text><text x="7.4" y="13" class="w">0.05, 0.05, 0.05</text></g>
+<g transform="translate(1.0,315.0)"><rect y="5" width="14.8" height="9" fill="#0A0A0A" /><text><tspan x="7.4" y="4.2">gray4</tspan></text><text x="7.4" y="13" class="w">0.04, 0.04, 0.04</text></g>
+<g transform="translate(15.8,315.0)"><rect y="5" width="14.8" height="9" fill="#0A0A0A" /><text><tspan x="7.4" y="4.2">grey4</tspan></text><text x="7.4" y="13" class="w">0.04, 0.04, 0.04</text></g>
+<g transform="translate(30.6,315.0)"><rect y="5" width="14.8" height="9" fill="#080808" /><text><tspan x="7.4" y="4.2">gray3</tspan></text><text x="7.4" y="13" class="w">0.03, 0.03, 0.03</text></g>
+<g transform="translate(45.4,315.0)"><rect y="5" width="14.8" height="9" fill="#080808" /><text><tspan x="7.4" y="4.2">grey3</tspan></text><text x="7.4" y="13" class="w">0.03, 0.03, 0.03</text></g>
+<g transform="translate(60.2,315.0)"><rect y="5" width="14.8" height="9" fill="#050505" /><text><tspan x="7.4" y="4.2">gray2</tspan></text><text x="7.4" y="13" class="w">0.02, 0.02, 0.02</text></g>
+<g transform="translate(75.0,315.0)"><rect y="5" width="14.8" height="9" fill="#050505" /><text><tspan x="7.4" y="4.2">grey2</tspan></text><text x="7.4" y="13" class="w">0.02, 0.02, 0.02</text></g>
+<g transform="translate(89.8,315.0)"><rect y="5" width="14.8" height="9" fill="#030303" /><text><tspan x="7.4" y="4.2">gray1</tspan></text><text x="7.4" y="13" class="w">0.01, 0.01, 0.01</text></g>
+<g transform="translate(104.6,315.0)"><rect y="5" width="14.8" height="9" fill="#030303" /><text><tspan x="7.4" y="4.2">grey1</tspan></text><text x="7.4" y="13" class="w">0.01, 0.01, 0.01</text></g>
+<g transform="translate(119.4,315.0)"><rect y="5" width="14.8" height="9" fill="#000000" /><text><tspan x="7.4" y="4.2">black</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.0</text></g>
+<g transform="translate(134.2,315.0)"><rect y="5" width="14.8" height="9" fill="#000000" /><text><tspan x="7.4" y="4.2">gray0</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.0</text></g>
+<g transform="translate(1.0,330.0)"><rect y="5" width="14.8" height="9" fill="#000000" /><text><tspan x="7.4" y="4.2">grey0</tspan></text><text x="7.4" y="13" class="w">0.0, 0.0, 0.0</text></g>
+</svg></body></html><div class="admonition is-info"><header class="admonition-header">Info</header><div class="admonition-body"><p>Colors.jl supports the CSS/SVG named colors and the X11 named colors. The CSS/SVG named colors come from the 16 colors defined in HTML3.2 and the X11 named colors. There are some unnatural definitions due to the different origins. For example, &quot;LightGray&quot; is lighter than &quot;Gray&quot;, but &quot;DarkGray&quot; is also lighter than &quot;Gray&quot;.</p></div></div><h2 id="Julia-logo-colors"><a class="docs-heading-anchor" href="#Julia-logo-colors">Julia logo colors</a><a id="Julia-logo-colors-1"></a><a class="docs-heading-anchor-permalink" href="#Julia-logo-colors" title="Permalink"></a></h2><p><a href="#Colors.JULIA_LOGO_COLORS"><code>Colors.JULIA_LOGO_COLORS</code></a> is a <code>NamedTuple</code> containing the julia logo colors defined in the <a href="https://github.com/JuliaLang/julia-logo-graphics#color-definitions">julia-logo-graphics</a>.</p><pre><code class="language-julia hljs">logocolors = Colors.JULIA_LOGO_COLORS
+[logocolors.blue, logocolors.red, logocolors.green, logocolors.purple]</code></pre><img src='data:image/svg+xml;utf-8,<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="100mm" height="25mm"
+     viewBox="0 0 4 1" preserveAspectRatio="none"
+     shape-rendering="crispEdges" stroke="none">
+<rect width=".96" height=".96" x="0" y="0" fill="%234063D8" />
+<rect width=".96" height=".96" x="1" y="0" fill="%23CB3C33" />
+<rect width=".96" height=".96" x="2" y="0" fill="%23389826" />
+<rect width=".96" height=".96" x="3" y="0" fill="%239558B2" />
+</svg>'/><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="Colors.JULIA_LOGO_COLORS" href="#Colors.JULIA_LOGO_COLORS"><code>Colors.JULIA_LOGO_COLORS</code></a> — <span class="docstring-category">Constant</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p>Colors used in the Julia logo as a <code>NamedTuple</code>.</p><p>The keys are approximate descriptions of the hue and do not include black.</p><p>Not exported, use as <code>JULIA_LOGO_COLORS.red</code> etc.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaGraphics/Colors.jl/blob/f143ad9e9e457d0b1c8f94cca60bbc67746402f7/src/Colors.jl#L38-L44">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../colormapsandcolorscales/">« Colormaps and Colorscales</a><a class="docs-footer-nextpage" href="../advancedfunctions/">Advanced Functions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.7.0 on <span class="colophon-date" title="Tuesday 22 October 2024 16:53">Tuesday 22 October 2024</span>. Using Julia version 1.10.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
