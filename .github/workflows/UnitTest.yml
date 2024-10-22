@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['1.6', '1']
+        version: ['1.8', '1']
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest # only test one 32-bit job
