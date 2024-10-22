@@ -63,37 +63,37 @@ using the [`@colorant_str`](@ref) macro and the [`parse`](@ref) function.
 julia> using Colors
 
 julia> colorant"red" # named color
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> parse(Colorant, "DeepSkyBlue") # color names are case-insensitive
-RGB{N0f8}(0.0,0.749,1.0)
+RGB{N0f8}(0.0, 0.749, 1.0)
 
 julia> colorant"#FF0000" # 6-digit hex notation
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> colorant"#f00" # 3-digit hex notation
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> colorant"rgb(255,0,0)" # rgb() notation with integers in [0, 255]
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> colorant"rgba(255,0,0,0.6)" # with alpha in [0, 1]
-RGBA{N0f8}(1.0,0.0,0.0,0.6)
+RGBA{N0f8}(1.0, 0.0, 0.0, 0.6)
 
 julia> colorant"rgba(100%,80%,0.0%,0.6)" # with percentages
-RGBA{N0f8}(1.0,0.8,0.0,0.6)
+RGBA{N0f8}(1.0, 0.8, 0.0, 0.6)
 
 julia> parse(ARGB, "rgba(255,0,0,0.6)") # you can specify the return type
-ARGB{N0f8}(1.0,0.0,0.0,0.6)
+ARGB{N0f8}(1.0, 0.0, 0.0, 0.6)
 
 julia> colorant"hsl(120, 100%, 25%)" # hsl() notation
-HSL{Float32}(120.0f0,1.0f0,0.25f0)
+HSL{Float32}(120.0, 1.0, 0.25)
 
 julia> colorant"hsla(120, 100%, 25%, 60%)" # hsla() notation
-HSLA{Float32}(120.0f0,1.0f0,0.25f0,0.6f0)
+HSLA{Float32}(120.0, 1.0, 0.25, 0.6)
 
 julia> colorant"transparent" # transparent "black"
-RGBA{N0f8}(0.0,0.0,0.0,0.0)
+RGBA{N0f8}(0.0, 0.0, 0.0, 0.0)
 ```
 
 All CSS/SVG named colors are supported, in addition to X11 named colors, when their definitions do not clash with SVG.
@@ -110,12 +110,12 @@ colors can be converted to `RGB{N0f16}` (for example) using:
 julia> using FixedPointNumbers
 
 julia> RGB{N0f16}(colorant"indianred")
-RGB{N0f16}(0.80392,0.36078,0.36078)
+RGB{N0f16}(0.80392, 0.36078, 0.36078)
 ```
 or
 ```jldoctest example
 julia> parse(RGB{N0f16}, "indianred")
-RGB{N0f16}(0.80392,0.36078,0.36078)
+RGB{N0f16}(0.80392, 0.36078, 0.36078)
 ```
 
 
@@ -124,7 +124,7 @@ Note that the conversion result does not have the prefix `"#"`.
 
 ```jldoctest example
 julia> col = colorant"#C0FFEE"
-RGB{N0f8}(0.753,1.0,0.933)
+RGB{N0f8}(0.753, 1.0, 0.933)
 
 julia> hex(col)
 "C0FFEE"
@@ -138,10 +138,10 @@ For example:
 
 ```jldoctest example
 julia> convert(RGB, HSL(270, 0.5, 0.5)) # without the element type
-RGB{Float64}(0.5,0.25,0.75)
+RGB{Float64}(0.5, 0.25, 0.75)
 
 julia> convert(RGB{N0f8}, HSL(270, 0.5, 0.5)) # with the element type
-RGB{N0f8}(0.502,0.251,0.749)
+RGB{N0f8}(0.502, 0.251, 0.749)
 ```
 
 Depending on the source and destination colorspace, this may not be perfectly lossless.
@@ -152,13 +152,13 @@ Colors.jl allows you to convert colors to transparent or opaque types.
 
 ```jldoctest example
 julia> col = colorant"yellow"
-RGB{N0f8}(1.0,1.0,0.0)
+RGB{N0f8}(1.0, 1.0, 0.0)
 
 julia> transparent = alphacolor(col, 0.5)  # or coloralpha(col)
-ARGB{N0f8}(1.0,1.0,0.0,0.502)
+ARGB{N0f8}(1.0, 1.0, 0.0, 0.502)
 
 julia> opaque = color(transparent)
-RGB{N0f8}(1.0,1.0,0.0)
+RGB{N0f8}(1.0, 1.0, 0.0)
 ```
 
 ---

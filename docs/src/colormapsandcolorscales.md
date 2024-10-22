@@ -17,30 +17,30 @@ to `stop`, inclusive, returning an `Array` of colors.
 julia> using Colors
 
 julia> c1 = colorant"red"
-RGB{N0f8}(1.0,0.0,0.0)
+RGB{N0f8}(1.0, 0.0, 0.0)
 
 julia> c2 = colorant"green"
-RGB{N0f8}(0.0,0.502,0.0)
+RGB{N0f8}(0.0, 0.502, 0.0)
 
 julia> range(c1, stop=c2, length=15)
-15-element Array{RGB{N0f8},1} with eltype RGB{FixedPointNumbers.N0f8}:
- RGB{N0f8}(1.0,0.0,0.0)
- RGB{N0f8}(0.929,0.035,0.0)
- RGB{N0f8}(0.859,0.071,0.0)
- RGB{N0f8}(0.784,0.106,0.0)
- RGB{N0f8}(0.714,0.145,0.0)
- RGB{N0f8}(0.643,0.18,0.0)
- RGB{N0f8}(0.573,0.216,0.0)
- RGB{N0f8}(0.502,0.251,0.0)
- RGB{N0f8}(0.427,0.286,0.0)
- RGB{N0f8}(0.357,0.322,0.0)
- RGB{N0f8}(0.286,0.357,0.0)
- RGB{N0f8}(0.216,0.396,0.0)
- RGB{N0f8}(0.141,0.431,0.0)
- RGB{N0f8}(0.071,0.467,0.0)
- RGB{N0f8}(0.0,0.502,0.0)
+15-element Vector{RGB{FixedPointNumbers.N0f8}}:
+ RGB(1.0, 0.0, 0.0)
+ RGB(0.929, 0.035, 0.0)
+ RGB(0.859, 0.071, 0.0)
+ RGB(0.784, 0.106, 0.0)
+ RGB(0.714, 0.145, 0.0)
+ RGB(0.643, 0.18, 0.0)
+ RGB(0.573, 0.216, 0.0)
+ RGB(0.502, 0.251, 0.0)
+ RGB(0.427, 0.286, 0.0)
+ RGB(0.357, 0.322, 0.0)
+ RGB(0.286, 0.357, 0.0)
+ RGB(0.216, 0.396, 0.0)
+ RGB(0.141, 0.431, 0.0)
+ RGB(0.071, 0.467, 0.0)
+ RGB(0.0, 0.502, 0.0)
 ```
-If you use Julia through Juno or IJulia, you can get the following color swatches.
+If you use Julia through VSCode or IJulia, you can get the following color swatches.
 ```@example range
 using Colors # hide
 showable(::MIME"text/plain", ::AbstractVector{C}) where {C<:Colorant} = false # hide
@@ -73,7 +73,7 @@ For example:
 
 ```jldoctest example
 julia> weighted_color_mean(0.8, colorant"red", colorant"green")
-RGB{N0f8}(0.8,0.102,0.0)
+RGB{N0f8}(0.8, 0.102, 0.0)
 ```
 You can also get the weighted mean of three or more colors by passing the
 collections of weights and colors. The following is an example of bilinear
