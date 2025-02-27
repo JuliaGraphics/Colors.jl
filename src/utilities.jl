@@ -395,14 +395,17 @@ When the hue difference is exactly 180 degrees, which of the two mean hues is
 returned depends on the implementation. In other words, it may vary by the color
 type and version.
 """
-function mean_hue(h1::T, h2::T) where {T <: Real}
+mean_hue(a, b) = _mean_hue(promote(a, b)...)
+
+_mean_hue(a, b) = error("input arguments to `mean_hue` could not promote to valid input types")
+function _mean_hue(h1::T, h2::T) where {T <: Real}
     @fastmath hmin, hmax = minmax(h1, h2)
     d = 180 - normalize_hue(hmin - hmax - 180)
     F = typeof(zero(T) / 2)
     mh = muladd(F(0.5), d, hmin)
     return mh < 0 ? mh + 360 : mh
 end
-@inline function mean_hue(a::C, b::C) where {Cb <: Union{Lab, Luv, Oklab},
+@inline function _mean_hue(a::C, b::C) where {Cb <: Union{Lab, Luv, Oklab},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
     a1, b1, a2, b2 = comp2(a), comp3(a), comp2(b), comp3(b)
     c1, c2 = chroma(a), chroma(b)
@@ -422,15 +425,14 @@ end
     mb = muladd(k2, b1, k1 * b2)
     hue(Cb(zero(ma), ma, mb))
 end
-function mean_hue(a::C, b::C) where {Cb <: Union{LCHab, LCHuv, Oklch},
+function _mean_hue(a::C, b::C) where {Cb <: Union{LCHab, LCHuv, Oklch},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
-    mean_hue(a.c == 0 ? b.h : a.h, b.c == 0 ? a.h : b.h)
+    _mean_hue(a.c == 0 ? b.h : a.h, b.c == 0 ? a.h : b.h)
 end
-function mean_hue(a::C, b::C) where {Cb <: Union{HSV, HSL, HSI},
+function _mean_hue(a::C, b::C) where {Cb <: Union{HSV, HSL, HSI},
                                      C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
-    mean_hue(a.s == 0 ? b.h : a.h, b.s == 0 ? a.h : b.h)
+    _mean_hue(a.s == 0 ? b.h : a.h, b.s == 0 ? a.h : b.h)
 end
-mean_hue(a, b) = mean_hue(promote(a, b)...)
 
 _delta_h_th(T) = zero(T)
 _delta_h_th(::Type{Float32}) = 0.1f0
