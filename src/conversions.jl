@@ -25,7 +25,7 @@ The original motivation for this arrangement was that Julia "did not" support
     convert(::Type{C{T}}, c) where {C, T}
 ```
 On Julia v0.6 or later, parameter constraints can refer to previous parameters.
-Threfore, we can use:
+Therefore, we can use:
 ```
     convert(::Type{C}, c) where {T, C <: Colorant{T}}
 ```
