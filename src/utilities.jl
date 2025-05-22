@@ -267,7 +267,7 @@ Convert a color to a hexadecimal string, optionally specifying its style.
 
 # Arguments
 - `c`: a target color.
-- `style`: a symbol to specify the hexadecimal notation. Spesifying the
+- `style`: a symbol to specify the hexadecimal notation. Specifying the
   uppercase symbols means the return values are in uppercase. The following
   symbols are available:
   - `:AUTO`: notation automatically selected according to the type of `c`

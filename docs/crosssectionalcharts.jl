@@ -9,7 +9,7 @@ struct CrossSectionalChartSVG <: Main.SVG
 end
 
 struct Axis
-    index::Int # compornent index
+    index::Int # component index
     label::String
     range::AbstractRange
 end

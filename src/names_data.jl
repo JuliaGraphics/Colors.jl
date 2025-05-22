@@ -1,4 +1,4 @@
-# This is the union of every color defined in X11 and in SVG, prefering the SVG
+# This is the union of every color defined in X11 and in SVG, preferring the SVG
 # definition when they clash.
 # You can find the color swatches in:
 # http://juliagraphics.github.io/Colors.jl/dev/namedcolors/
