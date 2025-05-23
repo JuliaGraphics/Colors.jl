@@ -1,3 +1,21 @@
+using Pkg
+dependents = ["ImageCore"] # direct
+idependents = ["WebP"] # indirect
+devdir = get(ENV, "JULIA_PKG_DEVDIR", nothing) # backup
+workdir = joinpath(@__DIR__, "work")
+ENV["JULIA_PKG_DEVDIR"] = workdir
+Pkg.activate(workdir)
+Pkg.develop(dependents, preserve=PRESERVE_DIRECT)
+ENV["JULIA_PKG_DEVDIR"] = devdir # restore
+for dep in dependents
+    Pkg.activate(joinpath(workdir, dep))
+    Pkg.compat("Colors", "< 1")
+end
+Pkg.activate(@__DIR__) # this project
+pkgspecs = [PackageSpec(path=joinpath(workdir, dep)) for dep in dependents]
+Pkg.develop(pkgspecs, preserve=PRESERVE_DIRECT)
+Pkg.add(idependents)
+
 using Documenter, Colors
 
 abstract type SVG end
@@ -39,3 +57,6 @@ makedocs(
 deploydocs(
     repo = "github.com/JuliaGraphics/Colors.jl.git",
     target = "build")
+
+
+Pkg.rm([idependents; dependents], io=devnull)
