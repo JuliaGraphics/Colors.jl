@@ -165,14 +165,14 @@ atan360(y, x) = (a = atand(y, x); signbit(a) ? oftype(a, a + 360) : a)
 @inline function atan360(y::T, x::T) where T <: Union{Float32, Float64}
     (isnan(x) | isnan(y)) && return T(NaN)
     ax, ay = abs(x), abs(y)
-    n, m = @fastmath minmax(ax, ay)
+    n, m = minmax(ax, ay)
     if m == T(Inf)
         d0 = n == T(Inf) ? T(45) : T(0)
     else
         m = m == T(0) ? T(0.5) : m
         ta = (n + n) > m ? T(0.5) : T(0) # 1-step CORDIC
         # ro=(n + n) > m ? T(atand(0.5) / 64) : T(0)
-        ro = @fastmath max(T(0), ta - T(0.5 - 0.4150789246418436))
+        ro = max(T(0), ta - T(0.5 - 0.4150789246418436))
         n1 = n - ta * m
         m1 = m + ta * n
         t = n1 / m1 # in [0, 0.5]
