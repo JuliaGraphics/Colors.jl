@@ -75,15 +75,13 @@ For example:
 julia> weighted_color_mean(0.8, colorant"red", colorant"green")
 RGB{N0f8}(0.8, 0.102, 0.0)
 ```
-You can also get the weighted mean of three or more colors by passing the
-collections of weights and colors. The following is an example of bilinear
-interpolation.
+You can also get the weighted mean of more than two colors using nested calls to `weighted_color_mean()`. The following is an example of bilinear interpolation of 4 colors.
 
 ```@example mean
 using Colors # hide
-[weighted_color_mean([(1-s)*(1-t), s*(1-t), (1-s)*t, s*t], # collection of weights
-                     Colors.JULIA_LOGO_COLORS)             # collection of colors
-                            for s = 0:0.2:1, t = 0:0.05:1]
+c1 = w1 -> weighted_color_mean(w1, Colors.JULIA_LOGO_COLORS[1], Colors.JULIA_LOGO_COLORS[2])
+c2 = w2 -> weighted_color_mean(w2, Colors.JULIA_LOGO_COLORS[3], Colors.JULIA_LOGO_COLORS[4])
+[weighted_color_mean(0.5, c1(w1), c2(w2)) for w1 = 0:0.2:1, w2 = 0:0.05:1]
 ```
 
 ```@docs
