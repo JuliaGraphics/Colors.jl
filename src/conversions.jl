@@ -213,6 +213,11 @@ cnvt(::Type{CV}, c::Union{DIN99d, DIN99o, DIN99}) where {CV<:AbstractRGB} = cnvt
     error("No conversion of ", c, " to ", CV, " has been defined")
 end
 
+function cnvt(::Type{CV}, c::CMY) where CV<:AbstractRGB
+    _one = one(c.c)
+    CV(_one - c.c, _one - c.m, _one - c.y)
+end
+
 # AbstractGray --> AbstractRGB conversions are implemented in ColorTypes.jl
 
 
@@ -811,6 +816,10 @@ end
 
 cnvt(::Type{YCbCr{T}}, c::Color) where {T} = cnvt(YCbCr{T}, convert(RGB{T}, c)::RGB{T})
 
+function cnvt(::Type{CMY{T}}, c::AbstractRGB) where T
+    _one = one(c.r)
+    CMY(_one - c.r, _one - c.g, _one - c.b)
+end
 
 # To Gray
 # -------
