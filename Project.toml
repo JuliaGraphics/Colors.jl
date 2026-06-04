@@ -9,7 +9,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 ColorTypes = "0.11.5, 0.12"
-FixedPointNumbers = "0.8"
+FixedPointNumbers = "0.8, 0.9"
 Reexport = "1"
 julia = "1"
 
