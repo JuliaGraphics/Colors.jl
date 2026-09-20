@@ -17,6 +17,9 @@ Pkg.develop(pkgspecs, preserve=PRESERVE_DIRECT)
 Pkg.add(idependents)
 
 using Documenter, Colors
+using FixedPointNumbers
+using WebP
+using Base64
 
 abstract type SVG end
 function Base.show(io::IO, ::MIME"text/html", svg::SVG)
@@ -25,7 +28,18 @@ function Base.show(io::IO, ::MIME"text/html", svg::SVG)
     write(io, "</body></html>")
     flush(io)
 end
-include("png16x16.jl")
+function write_webp_as_data(io, image::AbstractMatrix{C};
+                            quality=nothing) where C <: Colorant
+    write(io, "data:image/webp;base64,")
+    b64enc = Base64EncodePipe(io)
+    Cout = C <: TransparentColor ? ARGB{N0f8} : RGB{N0f8}
+    lossy = !isnothing(quality)
+    q = lossy ? quality : 100
+    webp = WebP.encode(Cout.(image), lossy=lossy, quality=q)
+    write(b64enc, webp)
+    close(b64enc)
+end
+
 include("crosssectionalcharts.jl")
 include("colordiffcharts.jl")
 include("colormaps.jl")

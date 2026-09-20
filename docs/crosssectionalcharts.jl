@@ -1,8 +1,7 @@
-
 module CrossSectionalCharts
 
 using Colors
-using Main.PNG16x16
+using Main: write_webp_as_data
 
 struct CrossSectionalChartSVG <: Main.SVG
     buf::IOBuffer
@@ -34,13 +33,6 @@ function crosssection(::Type{C}, x::Axis, y::Axis, z::Axis) where C <: Color
              viewBox="0 0 40 30" width="27.09mm" height="20.32mm"
              stroke="none" style="display:inline; margin-left:2em; margin-bottom:1em">
         <defs>
-        <filter id="filter_g_$id" filterUnits="userSpaceOnUse" x="0" y="-0.5" width="15.5" height="16">
-          <feGaussianBlur stdDeviation="0.1" result="blur"/>
-          <feMerge>
-            <feMergeNode in="SourceGraphic"/>
-            <feMergeNode in="blur"/>
-          </feMerge>
-        </filter>
         <style type="text/css"><![CDATA[
           #svg_$id g, #svg_$id image {
             transition: all 400ms ease 200ms;
@@ -53,7 +45,6 @@ function crosssection(::Type{C}, x::Axis, y::Axis, z::Axis) where C <: Color
           }
           #svg_$id image {
             opacity: 0;
-            filter:url(#filter_g_$id);
           }
           #svg_$id rect:active ~ image {
             opacity: 1;
@@ -90,8 +81,8 @@ function crosssection(::Type{C}, x::Axis, y::Axis, z::Axis) where C <: Color
         </defs>
         """)
 
-    xs = [xv for xv in range(first(x), stop=last(x), length=16)]
-    ys = [yv for yv in range(last(y), stop=first(y), length=16)]
+    xs = [xv for xv in range(first(x), stop=last(x), length=64)]
+    ys = [yv for yv in range(last(y), stop=first(y), length=64)]
     zs = [zv for zv in range(first(z), stop=last(z), length=11)]
     xmidf = (first(x) + last(x)) * 0.5
     ymidf = (first(y) + last(y)) * 0.5
@@ -105,13 +96,13 @@ function crosssection(::Type{C}, x::Axis, y::Axis, z::Axis) where C <: Color
         vec[z.index] = zv
         # TODO: Add more appropriate out-of-gamut color handling
         xyz = convert(XYZ, C(vec...))
-        rgb = convert(RGB, XYZ(max(xyz.x,0), max(xyz.y,0), max(xyz.z,0)))
+        rgb = convert(RGB, mapc(v -> max(v, 0), xyz))
     end
 
     # add swatches of color bar and planes by layer
     for i = 1:11
         zi = isodd(i) ? 6 - i÷2 : 6 + i÷2 # zigzag order
-        plane = [col(xs[xi], ys[yi], zs[zi]) for yi = 1:16, xi = 1:16]
+        plane = [col(xs[xi], ys[yi], zs[zi]) for yi = 1:64, xi = 1:64]
         ccolor = col(xmid, ymid, zs[zi]) # center color (for color bar)
         barh = i == 1 ? 30 : 16.5 - 3*(i÷2)
         op = i == 1 ? "style=\"opacity:1;\"" : ""
@@ -119,8 +110,8 @@ function crosssection(::Type{C}, x::Axis, y::Axis, z::Axis) where C <: Color
             """
             <g>
               <rect fill="#$(hex(ccolor))" width="4" height="$(barh)" x="36" y="$(isodd(i) ? 30 - barh : 0)" />
-              <image width="16" height="16" transform="scale(2) translate(-.5,0)" $op xlink:href=\"""")
-        write_png_as_data(io, plane)
+              <image width="30" height="30" $op xlink:href=\"""")
+        write_webp_as_data(io, plane)
         write(io, "\" />\n")
         write(io,
             """
