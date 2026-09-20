@@ -414,7 +414,8 @@ function _colordiff(a_xyz::XYZ{T}, b_xyz::XYZ{T}, m::DE_BFD) where T
     rt = rc * rh
 
     # Final calculation
-    sqrt((dl/F(m.kl))^2 + (dc/(F(m.kc)*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh)))
+    sqd = (dl/F(m.kl))^2 + (dc/(F(m.kc)*dcc))^2 + (dh/dhh)^2 + rt*((dc*dh)/(dcc*dhh))
+    sqrt(max(sqd, F(0))) # Clamping negative numbers might help the compiler
 end
 
 function _colordiff(ai::Color, bi::Color,
