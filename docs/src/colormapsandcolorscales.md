@@ -313,9 +313,9 @@ then dropped from the resulting array with `dropseed=true`.
 
 The `distinguishable_colors` returns a vector of length `n` regardless of the
 `dropseed` option. If `dropseed` is `true`, the leading seed colors will be
-dropped, and the succeeding values ​​of `length(seed)` will be appended to the
+dropped, and the succeeding values of `length(seed)` will be appended to the
 end.
-```@example dropseed;
+```@example dropseed
 using Colors #hide
 showable(::MIME"text/plain", ::AbstractMatrix{C}) where {C<:Colorant} = false # hide
 
