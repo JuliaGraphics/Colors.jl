@@ -119,27 +119,22 @@ using Colors # hide
 using Main: Colormaps, ColormapParams # hide
 Colormaps.ColormapSVG(colormap("Blues", 32)) # hide
 ```
-
-- "Greens"
-```@example colormap
-Colormaps.ColormapSVG(colormap("Greens", 32)) # hide
-```
-
 - "Grays"
 ```@example colormap
 Colormaps.ColormapSVG(colormap("Grays", 32)) # hide
 ```
-
+- "Greens"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Greens", 32)) # hide
+```
 - "Oranges"
 ```@example colormap
 Colormaps.ColormapSVG(colormap("Oranges", 32)) # hide
 ```
-
 - "Purples"
 ```@example colormap
 Colormaps.ColormapSVG(colormap("Purples", 32)) # hide
 ```
-
 - "Reds"
 ```@example colormap
 Colormaps.ColormapSVG(colormap("Reds", 32)) # hide
@@ -147,9 +142,29 @@ Colormaps.ColormapSVG(colormap("Reds", 32)) # hide
 
 #### Diverging
 
+- "BrBG" (from brown to blue green)
+```@example colormap
+Colormaps.ColormapSVG(colormap("BrBG", 32)) # hide
+```
+- "PiYG" (from pink to yellow green)
+```@example colormap
+Colormaps.ColormapSVG(colormap("PiYG", 32)) # hide
+```
+- "PRGn" (from purple red to green)
+```@example colormap
+Colormaps.ColormapSVG(colormap("PRGn", 32)) # hide
+```
 - "RdBu" (from red to blue)
 ```@example colormap
 Colormaps.ColormapSVG(colormap("RdBu", 32)) # hide
+```
+- "RdYlGn" (from red to green via yellow)
+```@example colormap
+Colormaps.ColormapSVG(colormap("RdYlGn", 32)) # hide
+```
+- "Spectral"
+```@example colormap
+Colormaps.ColormapSVG(colormap("Spectral", 32)) # hide
 ```
 
 ###

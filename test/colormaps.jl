@@ -29,6 +29,8 @@ using Test, Colors
 
     @test_throws ArgumentError colormap("Grays", N=10) # optional arguments, not keyword
 
+    @test_throws ArgumentError colormap("RdGy") # not supported
+
     # not return values to check here, just checking that keywords can be used
     # Sequential
     default_blues = colormap("Blues", 10)
@@ -73,6 +75,14 @@ using Test, Colors
     reds_old    = (0xFFF1EE, 0xFFC4B9, 0xFF8576, 0xE72823, 0x6D0B0C)
     rdbu_old    = (0x610102, 0xFF8D7B, 0xF9F8F9, 0x76B4E8, 0x092C58)
 
+    # ColorBrewer (based on 11-color palettes rather than 5-color ones)
+    brbg_cb     =(0x543005, 0xCFA255, 0xF5F5F5, 0x5DB2A8, 0x003C30)
+    piyg_cb     =(0x8E0152, 0xE897C5, 0xF7F7F7, 0x9CCE66, 0x276419)
+    prgn_cb     =(0x40004B, 0xAD8ABD, 0xF7F7F7, 0x82C480, 0x00441B)
+    rdbu_cb     =(0x67001F, 0xE68365, 0xF7F7F7, 0x6CACD0, 0x053061)
+    rdylgn_cb   =(0xA50026, 0xF98F4A, 0xFFFFBF, 0x87CB66, 0x006837)
+    spectral_cb =(0x9E0142, 0xF98F4A, 0xFFFFBF, 0x88D0A4, 0x5E4FA2)
+
     to_rgb(s) = reinterpret(RGB24, s)
     max_colordiff(a1, a2) = maximum(colordiff.(a1, a2))
     @test max_colordiff(colormap("Blues", 5), to_rgb.(blues_old)) < 1
@@ -82,6 +92,13 @@ using Test, Colors
     @test max_colordiff(colormap("Purples", 5), to_rgb.(purples_old)) < 1
     @test max_colordiff(colormap("Reds", 5), to_rgb.(reds_old)) < 1
     @test max_colordiff(colormap("RdBu", 5), to_rgb.(rdbu_old)) < 1
+
+    @test max_colordiff(colormap("BrBG", 5), to_rgb.(brbg_cb)) < 5
+    @test max_colordiff(colormap("PiYG", 5), to_rgb.(piyg_cb)) < 5
+    @test max_colordiff(colormap("PRGn", 5), to_rgb.(prgn_cb)) < 8
+    @test max_colordiff(colormap("RdBu", 5), to_rgb.(rdbu_cb)) < 9
+    @test max_colordiff(colormap("RdYlGn", 5), to_rgb.(rdylgn_cb)) < 6
+    @test max_colordiff(colormap("Spectral", 5), to_rgb.(spectral_cb)) < 9
 
     cyans = sequential_palette(192, w=1.0, d=1.0, wcolor=RGB(1,1,1), dcolor=RGB(0,0,0))
     @test all(c -> isapprox(green(c), blue(c), atol=1e-3), cyans)
