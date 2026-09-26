@@ -283,6 +283,9 @@ end
 Returns a predefined sequential or diverging colormap computed using
 the algorithm by Wijffelaars, M., et al. (2008).
 
+The colormaps defined here are similar, but not identical to the ColorBrewer
+colormaps of the same name.
+
 Sequential colormaps `cname` choices are:
 
 - `"Blues"`
@@ -292,7 +295,13 @@ Sequential colormaps `cname` choices are:
 - `"Purples"`
 - `"Reds"`
 
-Diverging colormap choices are `"RdBu"`.
+Diverging colormap choices are:
+- `"BrBG"`
+- `"PiYG"`
+- `"PRGn"`
+- `"RdBu"`
+- `"RdYlGn"`
+- `"Spectral"`
 
 Optionally, you can specify the number of colors `N` (default 100).
 
