@@ -430,12 +430,16 @@ end
 # Default to Delta E 2000
 """
     colordiff(a, b; metric=DE_2000())
+    colordiff(pair::Union{NTuple{2}, Pair}; metric=DE_2000())
 
 Compute an approximate measure of the perceptual difference between colors `a`
 and `b`. Optionally, a `metric` may be supplied, chosen among [`DE_2000`](@ref)
 (the default), [`DE_94`](@ref), [`DE_JPC79`](@ref), [`DE_CMC`](@ref),
 [`DE_BFD`](@ref), [`DE_AB`](@ref), [`DE_DIN99`](@ref), [`DE_DIN99d`](@ref) and
 [`DE_DIN99o`](@ref).
+
+The two colors can also be passed together as a single `Tuple` (e.g. `(a, b)`)
+or `Pair` (e.g. `a => b`) instead of as separate arguments.
 
 The return value is a non-negative number in a type depending on the colors and
 metric.
@@ -451,6 +455,10 @@ metric.
 colordiff(ai::Union{Number, Color},
           bi::Union{Number, Color};
           metric::DifferenceMetric=DE_2000()) = _colordiff(ai, bi, metric)
+
+colordiff(pair::Union{NTuple{2, Colorant}, Pair{<:Colorant, <:Colorant}};
+          metric::DifferenceMetric=DE_2000()) = _colordiff(first(pair), last(pair), metric)
+
 @deprecate colordiff(ai::Color, bi::Color, metric::DifferenceMetric) colordiff(ai, bi; metric=metric)
 
 function colordiff(ai::Colorant, bi::Colorant; metric::DifferenceMetric=DE_2000())
