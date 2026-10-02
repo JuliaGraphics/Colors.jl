@@ -72,7 +72,7 @@ using Colors: _de2000_t, _de2000_rot
     jl_blue   = HSV{Float64}(Colors.JULIA_LOGO_COLORS.blue)
     jl_purple = Lab{Float32}(Colors.JULIA_LOGO_COLORS.purple)
     colors = (jl_red, jl_green, jl_blue, jl_purple)
-    pairs = ((a, b) for a in colors for b in Iterators.filter(c -> c != a,colors))
+    pairs = ((a, b) for a in colors for b in Iterators.filter(c -> c != a, colors))
     tri = (colorant"navy", colorant"peru", colorant"gold")
 
     @testset "properties of metrics" begin
@@ -102,6 +102,29 @@ using Colors: _de2000_t, _de2000_rot
                       colordiff(tri[2], tri[3]; metric=metric)
             end
         end
+    end
+
+    @testset "colordiff with pairs" begin
+        vec_of_tuples = collect(pairs)
+        vec_of_pairs = map(p -> p[1] => p[2], vec_of_tuples)
+        tuple_of_pairs = Tuple(vec_of_pairs)
+        tuple_of_tuples = pairs
+
+        @test all(p -> colordiff(p) == colordiff(p[1], last(p); metric=DE_2000()), tuple_of_tuples)
+        @test all(p -> colordiff(p) == colordiff(p[1], p.second; metric=DE_2000()), tuple_of_pairs)
+
+        # broadcasting
+        # Note that the elements in `colors` are all different color types.
+        @test colordiff.(tuple_of_pairs) isa Tuple
+        @test colordiff.(tuple_of_tuples) isa Vector{<:AbstractFloat}
+        @test colordiff.(vec_of_pairs, metric=DE_AB()) == colordiff.(vec_of_tuples, metric=DE_AB())
+        @test size(colordiff.(Iterators.product(colors, tri))) == (length(colors), length(tri))
+
+        @test_throws MethodError colordiff(("red", "blue"))
+        @test_throws MethodError colordiff(("red" => "blue"))
+        @test_throws MethodError colordiff(colors)
+        @test_throws MethodError colordiff([colorant"red", colorant"blue"])
+
     end
 
     @testset "colordiff with grays" begin
