@@ -72,7 +72,7 @@ using Colors: _de2000_t, _de2000_rot
     jl_blue   = HSV{Float64}(Colors.JULIA_LOGO_COLORS.blue)
     jl_purple = Lab{Float32}(Colors.JULIA_LOGO_COLORS.purple)
     colors = (jl_red, jl_green, jl_blue, jl_purple)
-    pairs = ((a, b) for a in colors for b in Iterators.filter(c -> c != a,colors))
+    pairs = ((a, b) for a in colors for b in Iterators.filter(c -> c != a, colors))
     tri = (colorant"navy", colorant"peru", colorant"gold")
 
     @testset "properties of metrics" begin
@@ -104,6 +104,34 @@ using Colors: _de2000_t, _de2000_rot
         end
     end
 
+    @testset "colordiff with pairs" begin
+        vec_of_tuples = collect(pairs)
+        vec_of_pairs = map(p -> p[1] => p[2], vec_of_tuples)
+        tuple_of_pairs = Tuple(vec_of_pairs)
+        tuple_of_tuples = pairs
+
+        @test all(p -> colordiff(p) == colordiff(p[1], last(p); metric=DE_2000()), tuple_of_tuples)
+        @test all(p -> colordiff(p) == colordiff(p[1], p.second; metric=DE_2000()), tuple_of_pairs)
+        @test all(p -> colordiff(p, metric=DE_94()) ==
+                       colordiff(p[1], last(p); metric=DE_94()), tuple_of_tuples)
+        @test all(p -> colordiff(p, metric=DE_CMC()) ==
+                       colordiff(p[1], p.second; metric=DE_CMC()), tuple_of_pairs)
+
+
+        # broadcasting
+        # Note that the elements in `colors` are all different color types.
+        @test colordiff.(tuple_of_pairs) isa Tuple
+        @test colordiff.(tuple_of_tuples) isa Vector{<:AbstractFloat}
+        @test colordiff.(vec_of_pairs, metric=DE_CMC()) == colordiff.(vec_of_tuples, metric=DE_CMC())
+
+        @test size(colordiff.(Iterators.product(colors, tri))) == (length(colors), length(tri))
+
+        @test_throws MethodError colordiff(("red", "blue"))
+        @test_throws MethodError colordiff(("red" => "blue"))
+        @test_throws MethodError colordiff(colors)
+        @test_throws MethodError colordiff([colorant"red", colorant"blue"])
+    end
+
     @testset "colordiff with grays" begin
         a, b = rand(100), rand(100)
         @test all(@. colordiff(a, b) == colordiff(Gray(a), b) == colordiff(a, Gray(b)) == colordiff(Gray(a), Gray(b)))
@@ -116,5 +144,7 @@ using Colors: _de2000_t, _de2000_rot
         @test colordiff(RGBA(1,0,0,1), RGBA(1,0,0,1)) == 0
         @test_throws ArgumentError colordiff(RGBA(1,0,0,0.5), RGB(1,0,0))
         @test_throws ArgumentError colordiff(RGBA(1,0,0,0.5), RGBA(1,0,0,0.5))
+        @test_throws ArgumentError colordiff((RGBA(1,0,0,0.5), RGB(1,0,0)))
+        @test_throws ArgumentError colordiff(RGBA(1,0,0,0.5) => RGBA(1,0,0,0.5))
     end
 end
