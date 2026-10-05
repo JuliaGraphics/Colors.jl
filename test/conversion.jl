@@ -40,6 +40,19 @@ end
     @test Colors.invert_srgb_compand(0.7353569830524494) ≈ 0.5 atol=eps()
     @test Colors.invert_srgb_compand(0.735357f0) ≈ 0.5f0 atol=eps(Float32)
 
+    # Ensure a 0-ULP error for all Float32 values converted from N0f8.
+    for v in 0N0f8:eps(N0f8):1N0f8
+        if Float32(v) !== Float32(reinterpret(v) / 255)
+            @warn "Float32($v) is numerically inaccurate."
+            break
+        end
+        expected = Float32.(Colors.invert_srgb_compand(BigFloat(Float32(v))))
+        actual = Colors.invert_srgb_compand(Float32(v))
+        if actual !== expected
+            @warn "invert_srgb_compand(Float32($v)) = $actual, expected = $expected"
+        end
+    end
+
     fractional_types = (RGB, BGR, XRGB, RGBX)  # types that support Fractional
 
     redF64 = RGB{Float64}(1,0,0)
