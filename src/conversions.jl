@@ -299,26 +299,38 @@ cnvt(::Type{HSI{T}}, c::Color) where {T} = cnvt(HSI{T}, convert(RGB{T}, c)::RGB{
     vf > F(0.04045) ? pow12_5(muladd(F(1000/1055), vf, F(55/1055))) : F(100/1292) * vf
 end
 
-# lookup table for `N0f8` (the extra two elements are for `Float32` splines)
-const invert_srgb_compand_n0f8 = Float32[invert_srgb_compand(v/255.0) for v = 0:257]
+# lookup table for `N0f8`
+const invert_srgb_compand_n0f8 = Float32[invert_srgb_compand(v/255.0) for v in 0:255]
 
 function invert_srgb_compand(v::N0f8)
     @inbounds invert_srgb_compand_n0f8[reinterpret(v) + 1]
 end
 
-function invert_srgb_compand(v::Float32)
-    i = unsafe_trunc(Int32, v * 255)
-    (i < 13 || i > 255) && return Float32(invert_srgb_compand(Float64(v)))
-    @inbounds y = view(invert_srgb_compand_n0f8, i:i+3)
-    dv = v * 255.0f0 - i
-    dv == 0.0f0 && @inbounds return y[2]
-    if v < 0.38857287f0
-        return @fastmath(y[2]+0.5f0*dv*((-2/3f0*y[1]- y[2])+(2y[3]-1/3f0*y[4])+
-                                    dv*((       y[1]-2y[2])+  y[3]-
-                                    dv*(( 1/3f0*y[1]- y[2])+( y[3]-1/3f0*y[4]) ))))
-    else
-        return @fastmath(y[2]+0.5f0*dv*((4y[3]-3y[2])-y[4]+dv*((y[4]-y[3])+(y[2]-y[3]))))
+@noinline function invert_srgb_compand(v::Float32)
+    ss = 2.378414230005442 # 2^(3/2.4)
+    s = 1.7817974362806785 # 2^(2/2.4)
+    e = 0x2
+    if v < 0.38907406f0
+        e += 0x3
+        s *= ss # s = 2^(5/2.4)
     end
+    if v < 0.13171014f0
+        e += 0x3
+        s *= ss # s = 2^(8/2.4)
+    end
+    t = reinterpret(Float32, UInt32(0x7f - e) << 0x17) # 2^(-e)
+    x = muladd(1000 / 1055, Float64(v), 55 / 1055)
+    m = x * s
+    z = m + Float64(Int8(-1))
+
+    # m^2.4
+    m2_4 = @evalpoly(z, 0.9999999998100612,
+        2.4000000066726828, 1.6800000422089263, 0.22399936087080838,
+        -0.03360053050949402, 0.010768356626912876, -0.004687927635005098,
+        0.002306177943094927, -0.000977187074267818, 0.00022417966696920558)
+    yl = Float32(100 / 1292) * v
+    y = Float32(m2_4) * t
+    return v > 0.04045f0 ? y : yl
 end
 
 # the following matrix is based on the sRGB color primaries in `xy` and D65 whitepoint in `XYZ`
