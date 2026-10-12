@@ -451,6 +451,9 @@ metric.
     whitepoint CIE D65 (`Colors.WP_D65`). If you want to use another whitepoint,
     convert the colors into the colorspace used by metric (e.g. `Lab` for
     [`DE_2000`](@ref)) in advance.
+
+!!! compat "Colors v0.13.3"
+    `Tuple` and `Pair` inputs to `colordiff` require Colors.jl v0.13.3 or later.
 """
 colordiff(ai::Union{Number, Color},
           bi::Union{Number, Color};
