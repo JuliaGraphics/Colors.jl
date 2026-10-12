@@ -295,7 +295,7 @@ Sequential colormaps `cname` choices are:
 - `"Purples"`
 - `"Reds"`
 
-Diverging colormap choices are:
+Diverging colormaps `cname` choices are:
 - `"BrBG"`
 - `"PiYG"`
 - `"PRGn"`
@@ -310,6 +310,9 @@ Extra control is provided by keyword arguments.
 - `logscale=true` uses logarithmically-spaced steps in the colormap.
 You can also use keyword argument names that match the argument names in
 [`sequential_palette`](@ref) or [`diverging_palette`](@ref).
+
+!!! compat "Colors v0.13.3"
+    Diverging colormaps other than `"RdBu"` were added in Colors.jl v0.13.3.
 """
 function colormap(cname::AbstractString, N::Integer=100; kvs...)
     _colormap(String(cname), Int(N), kvs)
