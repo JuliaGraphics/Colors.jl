@@ -297,7 +297,7 @@ using InteractiveUtils # for `subtypes`
 
         # promotion
         @test weighted_color_mean(0.5, RGB{N0f8}(1,1,0), RGB{Float32}(0,1,1)) === RGB{Float32}(0.5,1,0.5)
-        @test_throws ArgumentError weighted_color_mean(0.5, RGB24(1,1,0), RGB{Float32}(0,1,1))
+        @test weighted_color_mean(0.5, RGB24(1,1,0), RGB{Float32}(0,1,1)) === RGB{Float32}(0.5,1,0.5)
 
         @test weighted_color_mean(0.5, HSV(-360.0,1,0), HSV(180.0,0,1)) === HSV{Float64}(270,0.5,0.5)
         alchab1 = ALCHab{Float32}(0,100,-360,1)
