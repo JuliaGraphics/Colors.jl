@@ -281,7 +281,8 @@ distinguishable_colors(n::Integer, seed::AbstractVector{<:Color};
     transform::Function = identity,
     lchoices::AbstractVector = range(0, stop=100, length=15),
     cchoices::AbstractVector = range(0, stop=100, length=15),
-    hchoices::AbstractVector = range(0, stop=342, length=20)
+    hchoices::AbstractVector = range(0, stop=342, length=20),
+    candidates::Union{AbstractVector{<:Color}, Nothing} = nothing
 )
 ```
 
@@ -343,6 +344,17 @@ permutedims(hcat(
 !!! compat "Colors v0.10"
     `dropseed` requires at least Colors v0.10. If you use an older version, drop
     the seed manually.
+
+You can also specify candidate colors directly with the `candidates` option.
+In this case, `lchoices`, `cchoices`, and `hchoices` are ignored.
+
+```@example candidates
+using Colors #hide
+distinguishable_colors(5, candidates=colormap("Spectral"))
+```
+
+!!! compat "Colors v0.13.5"
+    `candidates` requires at least Colors v0.13.5.
 
 ```@docs
 distinguishable_colors
