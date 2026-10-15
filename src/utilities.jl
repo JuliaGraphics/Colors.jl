@@ -529,7 +529,7 @@ function weighted_color_mean(weights, colors)
         throw(DimensionMismatch("`weights` and `colors` must be the same length."))
     end
     w1, c1 = first(weights), first(colors)
-    acc = mapc(_ -> zero(promote_type(typeof(w1), Float32)), c1)
+    acc = mapc(_ -> zero(promote_type(typeof(w1), Float32)), floattype(typeof(c1))(c1))
     for (w, c) in zip(weights, colors)
         acc = mapc((a, v) -> a + w * v, acc, c)
     end
