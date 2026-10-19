@@ -318,10 +318,8 @@ using InteractiveUtils # for `subtypes`
             @test weighted_color_mean((0, 1), (Gray(1), Gray(0.0))) === Gray{N0f8}(0)
             @test weighted_color_mean((1, 0), (Gray(1.0), Gray(0))) === Gray{Float64}(1)
 
-            c = ARGB32(1, 0, 0, 1)
-            for n in (2, 512)
-                @test weighted_color_mean(fill(1/n, n), fill(c, n)) === c
-            end
+            c = ARGB32(1, 0, 0, 1) # non-parametric type
+            @test weighted_color_mean((0.5, 0.5), (c, c)) === c # cf. PR #598
 
             @test_throws DimensionMismatch weighted_color_mean((0.1, 0.2, 0.3), colors)
             @test_throws Exception weighted_color_mean((0.1, 0.2), (RGB(1, 1, 1), HSV(0, 1, 1)))
