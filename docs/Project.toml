@@ -10,3 +10,4 @@ Colors = {path = ".."}
 [compat]
 Base64 = "1"
 Documenter = "1"
+FixedPointNumbers = "0.8"
