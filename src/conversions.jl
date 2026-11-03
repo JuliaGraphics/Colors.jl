@@ -90,12 +90,10 @@ correct_gamut(c::CV) where {T<:Union{N0f8,N0f16,N0f32,N0f64},
 correct_gamut(c::CV) where {CV<:TransparentRGB} =
     CV(clamp01(red(c)), clamp01(green(c)), clamp01(blue(c)), clamp01(alpha(c))) # for `hex`
 
+# TODO: remove `srgb_compand` and use `from_linear` directly
 @inline function srgb_compand(v::T) where T
     F = typeof(0.5f0v) === Float32 ? Float32 : promote_type(Float64, T)
-    vf = F(v)
-    vc = @fastmath max(vf, F(0.0031308))
-    # `pow5_12` is an optimized function to get `v^(1/2.4)`
-    vf > F(0.0031308) ? muladd(F(1.055), F(pow5_12(vc)), F(-0.055)) : F(12.92) * vf
+    return from_linear(F, v, SRGBTransferFunction)
 end
 
 function _hsx_to_rgb(im::UInt8, v, n, m)
@@ -291,46 +289,10 @@ cnvt(::Type{HSI{T}}, c::Color) where {T} = cnvt(HSI{T}, convert(RGB{T}, c)::RGB{
 
 # Everything to XYZ
 # -----------------
-
+# TODO: remove `invert_srgb_compand` and use `to_linear` directly
 @inline function invert_srgb_compand(v::T) where T
     F = typeof(0.5f0v) === Float32 ? Float32 : promote_type(Float64, T)
-    vf = F(v)
-    # `pow12_5` is an optimized function to get `x^2.4`
-    vf > F(0.04045) ? pow12_5(muladd(F(1000/1055), vf, F(55/1055))) : F(100/1292) * vf
-end
-
-# lookup table for `N0f8`
-const invert_srgb_compand_n0f8 = Float32[invert_srgb_compand(v/255.0) for v in 0:255]
-
-function invert_srgb_compand(v::N0f8)
-    @inbounds invert_srgb_compand_n0f8[reinterpret(v) + 1]
-end
-
-@noinline function invert_srgb_compand(v::Float32)
-    ss = 2.378414230005442 # 2^(3/2.4)
-    s = 1.7817974362806785 # 2^(2/2.4)
-    e = 0x2
-    if v < 0.38907406f0
-        e += 0x3
-        s *= ss # s = 2^(5/2.4)
-    end
-    if v < 0.13171014f0
-        e += 0x3
-        s *= ss # s = 2^(8/2.4)
-    end
-    t = reinterpret(Float32, UInt32(0x7f - e) << 0x17) # 2^(-e)
-    x = muladd(1000 / 1055, Float64(v), 55 / 1055)
-    m = x * s
-    z = m + Float64(Int8(-1))
-
-    # m^2.4
-    m2_4 = @evalpoly(z, 0.9999999998100612,
-        2.4000000066726828, 1.6800000422089263, 0.22399936087080838,
-        -0.03360053050949402, 0.010768356626912876, -0.004687927635005098,
-        0.002306177943094927, -0.000977187074267818, 0.00022417966696920558)
-    yl = Float32(100 / 1292) * v
-    y = Float32(m2_4) * t
-    return v > 0.04045f0 ? y : yl
+    return to_linear(F, v, SRGBTransferFunction)
 end
 
 # the following matrix is based on the sRGB color primaries in `xy` and D65 whitepoint in `XYZ`

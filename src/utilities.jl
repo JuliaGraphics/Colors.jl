@@ -89,7 +89,7 @@ end
 
 pow3_4(x) = (y = @fastmath(sqrt(x)); y*@fastmath(sqrt(y))) # x^(3/4)
 
-# `pow5_12` is called from `srgb_compand`.
+# `pow5_12` is used for `from_linear` of sRGB and Gamma 2.4 transfer functions.
 pow5_12(x) = pow3_4(x) / cbrt(x) # 5/12 == 1/2 + 1/4 - 1/3 == 3/4 - 1/3
 @inline function pow5_12(x::Float64)
     p3_4 = pow3_4(x)
@@ -130,7 +130,7 @@ end
     muladd(p3_4, rc, muladd(p3_4, rce, p3_4e * rc))
 end
 
-# `pow12_5` is called from `invert_srgb_compand`.
+# `pow12_5` is called from `to_linear` of sRGB and Gamma 2.4 transfer functions.
 pow12_5(x) = pow12_5(Float64(x))
 pow12_5(x::BigFloat) = x^big"2.4"
 @inline function pow12_5(x::Float64)
