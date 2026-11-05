@@ -161,6 +161,28 @@ julia> opaque = color(transparent)
 RGB{N0f8}(1.0, 1.0, 0.0)
 ```
 
+## Conversion to/from linear RGB
+
+By default, `RGB` is interpreted as representing the sRGB color space, but it
+can also be used to represent other RGB color spaces, such as Adobe RGB or
+DCI-P3.
+
+For interpolation in linear RGB or when working with other RGB color spaces,
+you can convert RGB colors to and from linear RGB.
+
+```jldoctest example
+julia> to_linear_rgb(RGB{Float32}(1.0, 0.5, 0.0)) # from sRGB to linear RGB
+RGB{Float32}(1.0, 0.21404114, 0.0)
+
+julia> from_linear_rgb(RGB{Float32}(1.0, 0.21404114, 0.0)) # from linear RGB to sRGB
+RGB{Float32}(1.0, 0.5, 0.0)
+```
+
+!!! note
+    `to_linear_rgb` and `from_linear_rgb` apply only a transfer function (or
+    its inverse).
+    They do not convert between RGB primaries or white points.
+
 ---
 
 ```@docs
@@ -169,4 +191,10 @@ parse
 hex
 normalize_hue
 mean_hue
+to_linear_rgb
+from_linear_rgb
+Colors.AbstractTransferFunction
+Colors.TransferFunction
+Colors.to_linear
+Colors.from_linear
 ```
