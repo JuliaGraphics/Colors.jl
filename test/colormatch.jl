@@ -2,6 +2,7 @@ using Colors, Test
 
 @testset "Colormatch" begin
     @test colormatch(500) === colormatch(CIE1931_CMF, 500)
+    @test colormatch(359.25) ≈ XYZ{Float64}(0.0001299, 0.000003917, 0.0006061) * 0.25
 
     cmfs = (CIE1931_CMF, CIE1964_CMF, CIE1931J_CMF, CIE1931JV_CMF, CIE2006_2_CMF, CIE2006_10_CMF)
     @testset "$cmf" for cmf in cmfs

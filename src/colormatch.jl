@@ -28,10 +28,10 @@ Evaluate the CIE standard observer color match function.
 Returns the XYZ value of perceived color.
 
 !!! note
-    As of February 2020, only `CIE1931_CMF` and `CIE1964_CMF` have been
-    standardized by the ISO/CIE. `CIE2006_2_CMF` and `CIE2006_10_CMF` are
-    proposals which have yet to be ratified by the CIE, even though they are
-    sometimes referred to as CIE 2012 CMFs.
+    As of November 2026, the only ISO/CIE-standardized CMFs provided here are
+    `CIE1931_CMF` and `CIE1964_CMF`. `CIE2006_2_CMF` and `CIE2006_10_CMF`
+    are documented in CIE 170-2:2015, a Technical Report rather than an
+    International Standard.
 
 """
 function colormatch(wavelen::Real)
@@ -44,21 +44,20 @@ end
 
 # Interpolate between values in a cmf table, where the table starts
 # at `start` nm and has `step` nm between entries.
-function interpolate_table(tbl, start, step, wavelen)
+function interpolate_table(tbl::AbstractMatrix{T}, start, step, wavelen) where T
     n = size(tbl, 1)
-    stop = start + step * (n - 1)
     i = (wavelen - start) / step
 
-    a = floor(Integer, i) + 1
-    @inbounds ac = 1 <= a <= n ? tbl[a,:] : [0.0, 0.0, 0.0]
+    ia = floor(Integer, i) + 1
+    ib = ceil(Integer, i) + 1
+    p = mod(i, 1.0)
 
-    b = ceil(Integer, i) + 1
-    @inbounds bc = 1 <= b <= n ? tbl[b,:] : [0.0, 0.0, 0.0]
+    function xyz(i)
+        1 <= i <= n || return XYZ{T}(0, 0, 0)
+        return @inbounds XYZ{T}(tbl[i, 1], tbl[i, 2], tbl[i, 3])
+    end
 
-    p = i % 1.0
-    ac = p * bc + (1.0 - p) * ac
-
-    return @inbounds XYZ(ac[1], ac[2], ac[3])
+    return mapc((a, b) -> muladd(p, b - a, a), xyz(ia), xyz(ib))
 end
 
 
@@ -1167,10 +1166,10 @@ const cie1931jv_cmf_table =
      2.353400e-006  9.109200e-007  2.175300e-010;
      1.637700e-006  6.356400e-007  1.547600e-010]
 
-# CIE2006 proposed XYZ CMFs[*]. Yet to be adopted by the CIE.
-# The according LMS CMFs got adopted by the CIE.
-# The original CIE datasets range from 390 to 830 nm
-# The new CIE CMFs are based on a much larger sample of observers,
+# CIE 2015 XYZ CMFs (documented in CIE 170-2:2015) based on the CIE 2006 LMS
+# cone fundamentals (documented in CIE 170-1:2006).
+# The original CIE datasets range from 390 to 830 nm.
+# The CIE 2015 CMFs are based on a much larger sample of observers,
 # and the main difference to the old data is the stronger weighting
 # in the short wavelength part of the visual spectrum.
 # One goal was to design a dataset where all three CMFs
@@ -1178,11 +1177,12 @@ const cie1931jv_cmf_table =
 # of 780 nm in the version presented here may lead to minor and insignificant
 # differences between the three integrals.
 
-# [*] http://cvrl.ioo.ucl.ac.uk/database/text/cienewxyz/cie2012xyz2.htm
+# cf. https://cvrl.ioo.ucl.ac.uk/ciexyzpr.htm
 
 # To be tested: differences between shortened and original dataset
 #               testing of the effect of extrapolation down to 380 nm
 
+# TODO: Rename CIE2006 to CIE2015, and make CIE2006 aliases for compatibility
 function colormatch(::Type{CIE2006_2_CMF}, wavelen::Real)
     return interpolate_table(cie2006_2deg_xyz_cmf_table, 380.0, 1.0, wavelen)
 end
