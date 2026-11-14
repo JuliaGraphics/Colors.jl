@@ -21,12 +21,14 @@ export weighted_color_mean,
        colordiff, DE_2000, DE_94, DE_JPC79, DE_CMC, DE_BFD, DE_AB, DE_DIN99, DE_DIN99d, DE_DIN99o,
        MSC, sequential_palette, diverging_palette, colormap,
        normalize_hue, mean_hue,
+       to_linear_rgb, from_linear_rgb,
        colormatch, CIE1931_CMF, CIE1964_CMF, CIE1931J_CMF, CIE1931JV_CMF, CIE2006_2_CMF, CIE2006_10_CMF
 
 # Early utilities
 include("utilities.jl")
 
 # Include other module components
+include("transfer_functions.jl")
 include("conversions.jl")
 include("algorithms.jl")
 include("parse.jl")

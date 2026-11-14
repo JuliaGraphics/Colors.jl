@@ -14,6 +14,7 @@ using Aqua
 end
 
 include("algorithms.jl")
+include("transfer_functions.jl")
 include("conversion.jl")
 include("colormaps.jl")
 include("colormatch.jl")
