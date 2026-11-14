@@ -15,32 +15,38 @@ function Base.showable(::MIME"image/svg+xml", cs::Union{AbstractVector{<:Coloran
     all(_isfinite, cs)
 end
 
-function Base.show(io::IO, mime::MIME"image/svg+xml", c::Color)
-    write_declaration(io, mime)
-    write(io,
-        """
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-             width="25mm" height="25mm" viewBox="0 0 1 1">
-            <rect width="1" height="1" fill="#$(hex(c))" stroke="none"/>
-        </svg>
-        """)
-    flush(io) # return nothing
+@noinline function Base.show(io::IO, mime::MIME"image/svg+xml", @nospecialize(c::Colorant))
+    if c isa Color
+        hexc = hex(RGB{N0f8}(c))
+        write_declaration(io, mime)
+        write(io,
+            """
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+                width="25mm" height="25mm" viewBox="0 0 1 1">
+                <rect width="1" height="1" fill="#$hexc" stroke="none"/>
+            </svg>
+            """)
+        flush(io)
+        return
+    end
+    _show_tcolorvec(io, mime, [c], default_max_swatches)
 end
 
-function Base.show(io::IO, mime::MIME"image/svg+xml", c::TransparentColor)
-    show(io, mime, [c], max_swatches=default_max_swatches)
+function Base.show(io::IO, mime::MIME"image/svg+xml",
+                   @nospecialize(cs::AbstractVector{<:Colorant});
+                   max_swatches::Integer=0)
+    if cs isa AbstractVector{<:Color}
+        mat = Base.ReshapedArray(cs, (1, length(cs)), ())
+        _show_colormat(io, mime, mat, Int(max_swatches))
+        return
+    end
+    _show_tcolorvec(io, mime, cs, Int(max_swatches))
+    return
 end
 
-
-function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractVector{T};
-                   max_swatches::Integer=0) where T <: Color
-    mat = Base.ReshapedArray(cs, (1, length(cs)), ())
-    show(io, mime, mat, max_swatches=max_swatches)
-end
-
-function Base.show(io::IO, mime::MIME"image/svg+xml",cs::AbstractVector{T};
-                   max_swatches::Integer=0) where T <: TransparentColor
-
+@noinline function _show_tcolorvec(io::IO, mime::MIME"image/svg+xml",
+                                   @nospecialize(cs::AbstractVector{<:Colorant}),
+                                   max_swatches::Int)
     # use random id to avoid id collision when the SVG is embedded inline
     id = "pat_" * string(rand(UInt32), base=62)
     n = length(cs)
@@ -82,7 +88,7 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",cs::AbstractVector{T};
         """)
     for (i, c) in enumerate(cs)
         i > actual_max_swatches && break
-        hexc = hex(color(c))
+        hexc = hex(RGB{N0f8}(color(c)))
         opacity = string(round(float(alpha(c)), digits=4))
         op = replace(opacity, r"(^0(?!\.0$))|(\.0$)"=>"")
         write(io,
@@ -96,12 +102,18 @@ function Base.show(io::IO, mime::MIME"image/svg+xml",cs::AbstractVector{T};
 end
 
 
-function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
-                   max_swatches::Integer=0) where T <: Color
+function Base.show(io::IO, mime::MIME"image/svg+xml",
+                   @nospecialize(cs::AbstractMatrix{<:Color}); max_swatches::Integer=0)
+    _show_colormat(io, mime, cs, Int(max_swatches))
+end
+
+@noinline function _show_colormat(io::IO, mime::MIME"image/svg+xml",
+                                  @nospecialize(cs::AbstractMatrix{<:Color}),
+                                  max_swatches::Int)
     m, n = size(cs)
     actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
     if m * n > actual_max_swatches
-        return show_strokes(io, mime, cs, max_swatches=max_swatches)
+        return _show_strokes(io, mime, cs, Int(max_swatches))
     end
     w = min(n * max_swatch_size, max_width)
     h = min(m * max_swatch_size, max_height)
@@ -115,10 +127,12 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
     sw = simplify(1 - (w / n < 3.6 ? 0 : n / w))
     sh = simplify(1 - (h / m < 3.6 ? 0 : m / h))
     if sw == "1" && sh == "1"
-        return show_strokes(io, mime, cs, max_swatches=max_swatches)
+        return _show_strokes(io, mime, cs, Int(max_swatches))
     end
 
-    comp(x) = round(x)==round(x, digits=2) ? Int(round(x)) : round(x, digits=2)
+    function comp(x)
+        round(x) == round(x, digits=2) ? string(round(Int, x)) : string(round(x, digits=2))
+    end
     write_declaration(io, mime)
     write(io,
         """
@@ -130,7 +144,7 @@ function Base.show(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
 
     i1, j1 = firstindex(cs, 1), firstindex(cs, 2)
     for i in 0:m-1, j in 0:n-1
-        c = hex(cs[i1 + i, j1 + j])
+        c = hex(RGB{N0f8}(cs[i1 + i, j1 + j]))
         write(io,
             """
             <rect width="$sw" height="$sh" x="$j" y="$i" fill="#$c" />
@@ -150,8 +164,9 @@ end
 #  - Area-average as reduction method is perceptually meaningless for alpha
 
 
-function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
-                      max_swatches::Integer=0) where T <: Color
+@noinline function _show_strokes(io::IO, mime::MIME"image/svg+xml",
+                                 @nospecialize(cs::AbstractMatrix{<:Color}),
+                                 max_swatches::Int)
     m, n = size(cs)
     actual_max_swatches = max_swatches > 0 ? max_swatches : default_max_swatches
     # When `max_swatches` is specified, the following warning is suppressed.
@@ -161,8 +176,8 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
             Load the ImageShow package for large images."""
         yield()
     end
-    w = max_width
-    h = max_height
+    w = Float64(max_width)
+    h = Float64(max_height)
     if max_width * m > max_height * n
         w = n / m * h
     else
@@ -170,9 +185,11 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
     end
 
     # decimation factor `d` is rounded to integer to simplify the SVG document
-    d = Int(ceil(sqrt(m * n / actual_max_swatches)))
-
-    comp(x) = round(x)==round(x, digits=2) ? Int(round(x)) : round(x, digits=2)
+    d = ceil(Int, sqrt(m * n / actual_max_swatches))
+    ds = string(d)
+    function comp(x)
+        round(x) == round(x, digits=2) ? string(round(Int, x)) : string(round(x, digits=2))
+    end
     write_declaration(io, mime)
     write(io,
         """
@@ -186,18 +203,20 @@ function show_strokes(io::IO, mime::MIME"image/svg+xml", cs::AbstractMatrix{T};
     for i in 0:d:m-1, j in 0:d:n-1
         # since there is no universal way,
         # calculate the mean color in "RGB space"
-        csum = RGB{Float32}(0, 0, 0)
+        accr, accg, accb = 0.0f0, 0.0f0, 0.0f0
         u = min(n - j, d) # cell width
         v = min(m - i, d) # cell height
         for x in j:j+u-1, y in i:i+v-1
-            rgb = convert(RGB, cs[i1 + y, j1 + x])
-            csum = mapc((s, a) -> s + Float32(a), csum, rgb)
+            rgb = RGB{Float32}(cs[i1 + y, j1 + x])::RGB{Float32}
+            accr += red(rgb)
+            accg += green(rgb)
+            accb += blue(rgb)
         end
-        c = hex(mapc(s -> s / (u * v), csum))
-        write(io,
-            """
-            <path d="M$j,$(i)h$d" stroke="#$c" />
-            """)
+        uv = u * v
+        c = hex(RGB{N0f8}(accr / uv, accg / uv, accb / uv))
+        is = string(i)
+        js = string(j)
+        write(io, "<path d=\"M", js, ",", is, "h", ds, "\" stroke=\"#", c, "\" />\n")
     end
 
     write(io, "</svg>")
