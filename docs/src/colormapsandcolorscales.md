@@ -7,11 +7,11 @@
 The [`range()`](@ref) function has a method that accepts colors:
 
 ```julia
-    Base.range(start::T; stop::T, length=100) where T<:Colorant
+    Base.range(start::C; stop::C, length=100) where C<:Colorant
 ```
 
 This generates N (=`length`) colors in a linearly interpolated ramp from `start`
-to `stop`, inclusive, returning an `Array` of colors.
+to `stop`, inclusive, returning a `Vector` of colors.
 
 ```jldoctest example
 julia> using Colors
@@ -22,7 +22,7 @@ RGB{N0f8}(1.0, 0.0, 0.0)
 julia> c2 = colorant"green"
 RGB{N0f8}(0.0, 0.502, 0.0)
 
-julia> range(c1, stop=c2, length=15)
+julia> collect(range(c1, stop=c2, length=15))
 15-element Vector{RGB{FixedPointNumbers.N0f8}}:
  RGB(1.0, 0.0, 0.0)
  RGB(0.929, 0.035, 0.0)
@@ -51,19 +51,19 @@ The intermediate colors depend on their colorspace. For example:
 range(HSL(colorant"red"), stop=HSL(colorant"green"), length=15)
 ```
 The [`range`](@ref) and [`weighted_color_mean`](@ref) described below support
-colors with hues which are out of the range [0, 360]. The hues of generated
-colors are normalized into [0, 360].
+colors with hues which are out of the range [0, 360]. To ensure that the hues of
+the generated colors with `range` are in the range [0, 360], use
+[`normalize_hue`](@ref).
 ```@example range
-range(HSV(0,1,1), stop=HSV(-360,1,1), length=90) # inverse rotation
+normalize_hue.(range(HSV(0,1,1), stop=HSV(-360,1,1), length=90)) # inverse rotation
 ```
 ```@example range
-range(LCHab(70,70,0), stop=LCHab(70,70,720), length=90) # multiple rotations
+normalize_hue.(range(LCHab(70,70,0), stop=LCHab(70,70,720), length=90)) # multiple rotations
 ```
-While sometimes useful in particular circumstances, typically it is recommended
-that the hue be within [0, 360]. See [`normalize_hue`](@ref).
 
 ```@docs
 Base.range
+Base.LinRange
 ```
 ### Weighted color means
 
