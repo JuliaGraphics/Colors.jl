@@ -23,8 +23,8 @@ Basic color arithmetic is available with `using ColorVectorSpace`; see [its docu
 [action-img]: https://github.com/JuliaGraphics/Colors.jl/workflows/Unit%20test/badge.svg
 [action-url]: https://github.com/JuliaGraphics/Colors.jl/actions
 
-[pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/C/Colors.svg
-[pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
+[pkgeval-img]: https://perf.julialang.org/badges/pkgeval/Colors.svg
+[pkgeval-url]: https://perf.julialang.org/?tab=eco-pkgeval&pkg=Colors
 
 [codecov-img]: https://codecov.io/gh/JuliaGraphics/Colors.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/JuliaGraphics/Colors.jl
