@@ -11,7 +11,7 @@ using Reexport
 
 
 import Base: +, -, *, / # for XYZ and LMS arithmetic
-import Base: convert, parse, range, show, showable
+import Base: convert, parse, range, LinRange, show, showable
 
 # Additional exports, not exported by ColorTypes
 export weighted_color_mean,

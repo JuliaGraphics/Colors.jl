@@ -381,6 +381,12 @@ normalize_hue(c::C) where C <: Union{LCHab, LCHuv, Oklch} = C(c.l, c.c, normaliz
 normalize_hue(c::C) where {Cb <: Union{LCHab, LCHuv, Oklch}, C <: Union{AlphaColor{Cb}, ColorAlpha{Cb}}} =
     C(c.l, c.c, normalize_hue(c.h), c.alpha)
 
+_may_normalize_hue(c::Colorant) = c
+function _may_normalize_hue(c::C) where {Cb <: Union{HSV, HSL, HSI, LCHab, LCHuv, Oklch},
+                                         C <: Union{Cb, AlphaColor{Cb}, ColorAlpha{Cb}}}
+    return normalize_hue(c)
+end
+
 """
     mean_hue(h1::Real, h2::Real)
     mean_hue(a::C, b::C) where {C <: Colorant}
@@ -537,27 +543,69 @@ function weighted_color_mean(weights, colors)
 end
 
 """
-    range(start::T; stop::T, length=100) where T<:Colorant
-    range(start::T, stop::T; length=100) where T<:Colorant
+    range(start::C; stop::C, length=100) where C<:Colorant
+    range(start::C, stop::C; length=100) where C<:Colorant
 
-Generates N (=`length`) >2 colors in a linearly interpolated ramp from `start` to `stop`,
-inclusive, returning an `Array` of colors.
+Generates N (=`length`) colors in a linearly interpolated ramp from `start`
+to `stop`, inclusive, returning a `Vector` of colors, rather than a `LinRange`.
 
-!!! compat "Julia 1.1"
-    `stop` as a positional argument requires at least Julia 1.1.
+See also [`LinRange`](@ref).
+
+!!! compat
+    In a future release, `range` will return a `LinRange` instead of a `Vector`.
+    Also, the `LinRange` returned will not apply hue normalization.
+    Use `collect` explicitly to get a `Vector` if you need one.
 """
-function range(start::T; stop::T, length::Integer=100) where T<:Colorant
-    return T[weighted_color_mean(w1, start, stop) for w1 in range(1.0,stop=0.0,length=length)]
+function range(start::C; stop::C, length::Integer=100) where C<:Colorant
+    return _range(start, stop, Int(length))
 end
 
-if VERSION >= v"1.1"
-    range(start::T, stop::T; kwargs...) where T<:Colorant = range(start; stop=stop, kwargs...)
+function range(start::C, stop::C; length::Integer=100) where C<:Colorant
+    return _range(start, stop, Int(length))
 end
 
-if VERSION < v"1.0.0-"
-import Base: linspace
-Base.@deprecate linspace(start::Colorant, stop::Colorant, n::Integer=100) range(start, stop=stop, length=n)
+# TODO: Change to return a `LinRange` instead of a `Vector`
+function _range(start::C, stop::C, length::Int) where C<:Colorant
+    return map(_may_normalize_hue, LinRange(start, stop, length))
 end
+
+"""
+    LinRange(start::C, stop::C, len::Integer=100) where C<:Colorant
+
+Constructs a `LinRange` of colors from `start` to `stop` with `len` elements.
+
+`step` is not supported for `LinRange{<:Colorant}` in Colors.jl.
+
+See also [`range`](@ref).
+"""
+function Base.LinRange(start::C, stop::C, len::Integer=100) where C<:Colorant
+    return LinRange{C}(start, stop, len)
+end
+
+if isdefined(Base, :unsafe_getindex)
+    function Base.unsafe_getindex(r::LinRange{C}, i::Integer) where {C<:Colorant}
+        # Note the argument positions of `stop` and `start`.
+        w = iszero(r.lendiv) ? 0.0 : Float64((i - 1) / r.lendiv)
+        return C(_weighted_color_mean(w, r.stop, r.start))
+    end
+else
+    Base.@propagate_inbounds function Base.getindex(r::LinRange{C}, i::Integer) where {C<:Colorant}
+        @boundscheck checkbounds(r, i)
+        w = iszero(r.lendiv) ? 0.0 : Float64((i - 1) / r.lendiv)
+        return C(_weighted_color_mean(w, r.stop, r.start))
+    end
+end
+
+
+# Linear operations on colors should be supported by ColorVectorSpace.jl, but
+# `AbstractRange` must implement `step`.
+# In order to support `step` "formally," we define a dedicated type here.
+struct ColorLinRangeStep{R <: LinRange}
+    r::R
+    ColorLinRangeStep(r::LinRange{<:Colorant}) = new{typeof(r)}(r)
+end
+
+Base.step(c::LinRange{<:Colorant}) = ColorLinRangeStep(c)
 
 # Double quadratic Bezier curve
 function bezier(t::T, p0::T, p2::T, q0::T, q1::T, q2::T) where T<:Real
