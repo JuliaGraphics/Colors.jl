@@ -15,6 +15,9 @@ using FixedPointNumbers
                                               XYZ(0, 0, 0) Luv(0, 0, 0)])
         @test showable("image/svg+xml", Color[RGB(0, 0, 0) HSV(0, 0, 0);
                                               XYZ(0, 0, 0) Luv(0, 0, NaN)]) === false
+        @test showable("image/svg+xml", Colorant[RGB(1, 0, 0),
+                                                 LabA(50, 40, 30, 0.5)])
+        @test showable("image/svg+xml", Union{Gray{Bool}, ARGB{N0f8}}[Gray(true), ARGB()])
     end
 
     function count_element(pattern::Regex, svg::AbstractString)
@@ -214,7 +217,7 @@ using FixedPointNumbers
     @test occursin(r"<svg[^>]+\sheight=\"25mm\"", tp_single)
     @test occursin(r"M1,0v1h-1z", tp_single) # triangle
     @test occursin(r"\sfill=\"#00FF00\"", tp_single)
-    @test occursin(r"\sfill-opacity=\".2\"", tp_single)
+    @test occursin(r"\sfill-opacity=\"\.2\"", tp_single)
     @test occursin(r"</svg>$", tp_single)
     @test count_transparently_filled(tp_single) == 1
 
@@ -228,7 +231,7 @@ using FixedPointNumbers
     @test occursin(r"<svg[^>]*\sheight=\"25mm\"", tp_vector3)
     @test occursin(r"M1,0v1h-1z", tp_vector3) # triangle
     @test occursin(r"\sfill-opacity=\"0\"", tp_vector3)
-    @test occursin(r"\sfill-opacity=\".5\"", tp_vector3)
+    @test occursin(r"\sfill-opacity=\"\.5\"", tp_vector3)
     @test occursin(r"\sfill-opacity=\"1\"", tp_vector3)
 
     @test count_transparently_filled(tp_vector3) == 3
@@ -241,6 +244,15 @@ using FixedPointNumbers
     # scale = 13.889 = 1 / 0.072
     @test occursin(r"M1,.46V1h-1V.54z", tp_vec100) # 0.5±(0.072/2), trapezoid
     @test count_transparently_filled(tp_vec100) == 100
+
+    # vectors with `Color`s and `TransparentColor`s (#issue 608)
+    show(buf, "image/svg+xml", Colorant[RGB(1, 0, 0), LabA(50, 40, 30, 0.5)])
+    colorant_v2 = String(take!(buf))
+    @test count_transparently_filled(colorant_v2) == 2
+
+    show(buf, "image/svg+xml", Union{Gray{Bool}, ARGB{N0f8}}[Gray(true), ARGB()])
+    union_v2 = String(take!(buf))
+    @test count_transparently_filled(union_v2) == 2
 
     # implicitly limits max swatches (but explicitly warns)
     # n > default_max_swatches
