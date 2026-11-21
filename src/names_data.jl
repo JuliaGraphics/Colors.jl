@@ -2,7 +2,7 @@
 # definition when they clash.
 # You can find the color swatches in:
 # http://juliagraphics.github.io/Colors.jl/dev/namedcolors/
-const color_names = Dict(
+const color_names = NamedColorDict(
     "aliceblue"            => (240, 248, 255),
     "antiquewhite"         => (250, 235, 215),
     "antiquewhite1"        => (255, 239, 219),
