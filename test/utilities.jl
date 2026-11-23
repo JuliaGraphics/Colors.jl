@@ -327,6 +327,14 @@ using InteractiveUtils # for `subtypes`
     end
 
     @testset "range" begin
+        let # TODO: Migrate to returning a `LinRange` instead of a `Vector`
+            c1 = LCHab{Float32}(30, 40, -30)
+            c2 = LCHab{Float32}(60, 10, 390)
+            rng = range(c1, c2, length=4)
+            @test rng isa Vector{LCHab{Float32}}
+            @test rng[1] ≈ LCHab{Float32}(30, 40, 330)
+            @test rng[4] ≈ LCHab{Float32}(60, 10, 30)
+        end
         # `range` uses `weighted_color_mean` which is extensively tested.
         # Therefore it suffices to test the function using gray colors.
         for T in colorElementTypes
@@ -338,9 +346,48 @@ using InteractiveUtils # for `subtypes`
             @test linc1c2[end] == c2
             @test linc1c2[22] == Gray(T(0.5))
             @test typeof(linc1c2) == Array{Gray{T},1}
-            if VERSION >= v"1.1"
-                @test range(c1,c2,length=43) == range(c1,stop=c2,length=43)
-            end
+            @test range(c1,c2,length=43) == range(c1,stop=c2,length=43)
         end
+    end
+
+    @testset "LinRange" begin
+        c1 = LCHab{Float32}(30, 40, -30)
+        c2 = LCHab{Float32}(60, 10, 390)
+        linr = LinRange(c1, c2, 4)
+        @test length(linr) == 4
+        @test eltype(linr) === LCHab{Float32}
+        @test first(linr) === linr[1] === LCHab{Float32}(30, 40, -30)
+        @test last(linr) === linr[end] === LCHab{Float32}(60, 10, 390)
+        @test linr[2] ≈ LCHab{Float32}(40, 30, 110)
+        @test linr[3] ≈ LCHab{Float32}(50, 20, 250)
+        @test_throws BoundsError linr[0]
+        @test_throws BoundsError linr[5]
+        @test_throws Exception linr[2] = LCHab{Float32}(0, 0, 0)
+        @test step(linr) isa Colors.ColorLinRangeStep{<:LinRange{LCHab{Float32}}}
+        @test linr[2:3] === LinRange(linr[2], linr[3], 2)
+        @test linr[:] === linr
+        subr = linr[1:3]
+        @test subr[1] ≈ linr[1]
+        @test subr[2] ≈ linr[2]
+        @test subr[3] ≈ linr[3]
+        @test linr != LinRange(normalize_hue(c1), normalize_hue(c2), 4)
+
+        @test length(LinRange(c1, c2)) == 100
+
+        linr0 = LinRange(c1, c2, 0)
+        @test length(linr0) == 0
+        @test first(linr0) === c1
+        @test last(linr0) === c2
+        @test_throws BoundsError linr0[0]
+        @test_throws BoundsError linr0[1]
+
+        @test_throws ArgumentError LinRange(c1, c2, 1)
+        linr1= LinRange(c1, c1, 1)
+        @test length(linr1) == 1
+        @test first(linr1) === last(linr1) === LCHab{Float32}(30, 40, -30)
+        @test linr1[1] ≈ LCHab{Float32}(30, 40, -30)
+        @test_throws BoundsError linr1[0]
+        @test_throws BoundsError linr1[2]
+
     end
 end
