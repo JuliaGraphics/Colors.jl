@@ -1,0 +1,26 @@
+name: TTFX comment
+
+on:
+  workflow_run:
+    workflows: [TTFX]
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: julia-ttfx-check-default
+          path: ttfx
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - uses: julia-actions/julia-ttfx-check/comment@131312fb4b6b76c0ed89643c17a1de62c8e56eef
+        with:
+          report_dir: ttfx
+          comment: changes

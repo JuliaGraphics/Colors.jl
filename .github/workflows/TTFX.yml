@@ -1,0 +1,28 @@
+name: TTFX
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ttfx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
+        with:
+          version: '1'
+      - uses: julia-actions/julia-ttfx-check@dfeb54b416aed200ab973d4c3fa750488b4e361a
+        with:
+          workload: 'test/ttfx.jl'
+          comment: 'never'
+          threshold_precompile: 4
+          floor_precompile: 0.10
