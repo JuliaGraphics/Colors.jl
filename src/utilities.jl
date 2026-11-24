@@ -463,7 +463,7 @@ function delta_h(a::C, b::C) where {Cb <: Union{Lab, Luv, Oklab},
         tn = dtf / dp #    tan(Δh) = Δh +  (1/3)*Δh^3 +   (2/15)*Δh^5 + ...
                       # 2sin(Δh/2) = Δh - (1/24)*Δh^3 + (1/1920)*Δh^5 - ...
                       #            ≈ tan(Δh) - (3/8)*tan(Δh)^3 + (31/128)*tan(Δh)^5
-        sn = tn * @evalpoly(tn^2, 1, oftype(tn, -3/8), oftype(tn, 31/128)) # 2sin(Δh/2)
+        sn = tn * @evalpoly(tn^2, oftype(tn, 1), oftype(tn, -3/8), oftype(tn, 31/128)) # 2sin(Δh/2)
         return @fastmath sqrt(c1 * c2) * sn
     end
 end
