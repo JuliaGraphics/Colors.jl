@@ -1,9 +1,9 @@
 function _precompile_()
     ccall(:jl_generating_output, Cint, ()) == 1 || return nothing
-    eltypes = (N0f8, N0f16, Float32, Float64)        # eltypes of parametric colors
-    feltypes = (Float32, Float64)                    # floating-point eltypes
-    pctypes = (Gray, RGB, AGray, GrayA, ARGB, RGBA)  # parametric colors
-    cctypes = (Gray24, AGray32, RGB24, ARGB32)       # non-parametric colors
+    eltypes = (N0f8, Float32, Float64) # eltypes of parametric colors
+    feltypes = (Float32, Float64) # floating-point eltypes
+    # pctypes = (Gray, RGB, AGray, GrayA, ARGB, RGBA)  # parametric colors
+    # cctypes = (Gray24, AGray32, RGB24, ARGB32)       # non-parametric colors
     # conversions
     ## from/to XYZ
     for T in feltypes, C in (HSV,LCHab,LCHuv,Lab,Luv,Oklab,Oklch)
