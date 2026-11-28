@@ -4,6 +4,37 @@ using FixedPointNumbers
 @testset "Parse" begin
     r8(x) = reinterpret(N0f8, x)
 
+    @testset "NamedColorDict" begin
+        names = collect(keys(Colors.color_names))
+        origins = map(k -> bswap(Colors.get_raw(Colors.color_names, k, -1)) % UInt8, names)
+        @test length(names) == length(origins) == 666 == (16 + 1 + 130 + 1) + 518
+        # 148 named colors in CSS (excluding "transparent")
+        # CSS Level 1
+        @test count(isequal(0x01), origins) == 16
+        # CSS Level 2
+        @test count(isequal(0x02), origins) == 1
+        # CSS Color Module Level 3 (SVG colors)
+        @test count(isequal(0x03), origins) == 130
+        # CSS Color Module Level 4
+        @test count(isequal(0x04), origins) == 1
+        # X11
+        @test count(isequal(0x40), origins) == 518
+
+        named_color_hashes = Colors.named_color_hash.(names)
+        @test all(h -> h < 0x1000, named_color_hashes)
+        @test length(unique(named_color_hashes)) == length(named_color_hashes)
+        @test all(p -> get(Colors.color_names, first(p), nothing) == last(p),
+                  Colors.color_names)
+        @test Colors.color_names["red"] === (255, 0, 0)
+        @test Colors.color_names["TeaL"] === (0, 128, 128) # case-insensitive
+        @test_throws KeyError Colors.color_names["transparent"]
+        @test Colors.named_color_hash("red") == Colors.named_color_hash("bed")
+        @test_throws KeyError Colors.color_names["bed"]
+        @test Colors.named_color_hash("palegoldenrod") == Colors.named_color_hash("world")
+        @test_throws KeyError Colors.color_names["world"]
+        @test Colors.named_color_hash("sépia") isa UInt16 # "sépia"[3] throws a StringIndexError
+    end
+
     # Color parsing
     # named-color
     redN0f8 = parse(Colorant, "red")

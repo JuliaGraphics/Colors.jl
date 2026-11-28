@@ -1,3 +1,97 @@
+# An immutable dictionary mapping color names to RGB tuples.
+# Unlike `Dict`, the key is case-insensitive, i.e., all keys are normalized to
+# lowercase.
+struct NamedColorDict <: AbstractDict{String, NTuple{3, Int}}
+    namedata::Vector{UInt8}
+    offsets::Vector{UInt16}
+    hashes::Vector{UInt16}
+    colors::Vector{UInt32}
+end
+
+function NamedColorDict(pairs::Vararg{Pair{String, NTuple{3, Int}}})
+    n = length(pairs)
+    io = IOBuffer()
+    ofs = Vector{UInt16}(undef, n + 1)
+    hashes = zeros(UInt16, 0x1000)
+    colors = Vector{UInt32}(undef, n)
+    @inbounds for i in 1:n
+        p = pairs[i]
+        name = first(p)
+        ofs[i] = UInt16(position(io) + 1)
+        write(io, name)
+        t = last(p)
+        orig = 0x40
+        if nothing !== findfirst(name,
+            "blacksilvergraywhitemaroonredpurplefuchsiagreenlimeoliveyellowbluenavytealaqua")
+            orig = 0x01 # CSS Level 1
+        elseif name == "orange"
+            orig = 0x02 # CSS Level 2
+        elseif name == "rebeccapurple"
+            orig = 0x04 # CSS Color Module Level 4
+        elseif !('0' <= name[end] <= '9' ||
+                 name in ("lightgoldenrod", "lightslateblue", "navyblue", "violetred"))
+            orig = 0x03 # CSS Color Module Level 3
+        end
+        colors[i] = bswap(orig % UInt32) | (t[1] << 0x10) | (t[2] << 0x8) | t[3]
+        hashes[named_color_hash(name) + 1] = i
+    end
+    ofs[end] = UInt16(position(io) + 1)
+    return NamedColorDict(take!(io), ofs, hashes, colors)
+end
+
+# A 12-bit perfect hash function for the 666 named colors.
+@inline function named_color_hash(s::AbstractString)
+    ss = s isa Union{String, SubString{String}} ? s : String(s)
+    cu = codeunits(ss)
+    n = length(cu)
+    n < 3 && return 0x0000
+    lc = Int32(0x20)
+    c1 = (Int32(cu[3]) | lc) * Int16(-3056)
+    c2 = (Int32(cu[n]) | lc) * Int16(-4166)
+    c3 = (Int32(cu[n - 1]) | lc) * Int16(169)
+    c4 = n > 5 ? (Int32(cu[n - 5]) | lc) * Int16(-2403) : Int32(0)
+    h0 = (Int16(2892) * n + c1 + c2 + c3 + c4) % UInt16
+    h0 == 0x9b13 && return 0x0001 # springgreen1
+    h0 == 0xc9b5 && return 0x0002 # dodgerblue1
+    h0 == 0x0cf7 && return 0x0003 # burlywood
+    h0 == 0x90e3 && return 0x0004 # firebrick3
+    h = ((h0 >> 0x1) & 0xfff + (iszero(h0 & 0x1) ? 0x0000 : 0x0359)) & 0x0fff
+    return h
+end
+
+function Base.iterate(d::NamedColorDict, state = 1)
+    state > length(d.colors) && return nothing
+    return (get_colorname(d, state) => _uint32_to_tuple3(d.colors[state])), state + 1
+end
+
+_uint32_to_tuple3(c) = (Int((c >> 0x10) % UInt8), Int((c >> 0x8) % UInt8), Int(c % UInt8))
+
+Base.length(d::NamedColorDict) = length(d.colors)
+
+function get_colorname(d::NamedColorDict, ind::Integer)
+    ofs1 = @inbounds d.offsets[ind]
+    ofs2 = @inbounds d.offsets[ind + 1]
+    return String(@inbounds d.namedata[ofs1:ofs2 - 1])
+end
+
+@inline function get_raw(d::NamedColorDict, key::AbstractString, default)
+    ind = @inbounds d.hashes[named_color_hash(key) + 1]
+    ind === 0x0000 && return default
+    ofs1 = @inbounds d.offsets[ind]
+    ofs2 = @inbounds d.offsets[ind + 1]
+    ncodeunits(key) == ofs2 - ofs1 || return default
+    cu = codeunits(key)
+    for i in eachindex(cu)
+        @inbounds d.namedata[ofs1 + i - 1] == (cu[i] | 0x20) || return default
+    end
+    return @inbounds d.colors[ind]
+end
+
+function Base.get(d::NamedColorDict, key::AbstractString, default)
+    raw = get_raw(d, key, nothing)
+    return isnothing(raw) ? default : _uint32_to_tuple3(raw)
+end
+
 # Helper data for color parsing
 include("names_data.jl")
 
@@ -148,20 +242,17 @@ function _parse_colorant(desc::String)
     end
 
     sdesc = strip(desc)
-    c = get(color_names, sdesc, nothing)
-    c !== nothing && return RGB{N0f8}(n0f8(c[1]), n0f8(c[2]), n0f8(c[3]))
+    c = get_raw(color_names, sdesc, nothing)
+    c !== nothing && return RGB{N0f8}(reinterpret(RGB24, c & 0xFFFFFF))
 
     # since `lowercase` is slightly slow, it is applied only when needed
     ldesc = lowercase(sdesc)
-    c = get(color_names, ldesc, nothing)
-    c !== nothing && return RGB{N0f8}(n0f8(c[1]), n0f8(c[2]), n0f8(c[3]))
-
     ldesc == "transparent" && return RGBA{N0f8}(0,0,0,0)
 
     wo_spaces = replace(ldesc, r"(?<=[^bfptuv ][^p ][adeghk-rtwy]) (?=[^efinq ][aeh-mo-rtuy][^kw \d][a-y]{0,7}\b)" => "")
-    c = get(color_names, wo_spaces, nothing)
+    c = get_raw(color_names, wo_spaces, nothing)
     if c !== nothing && sizeof(wo_spaces) > 6
-        return RGB{N0f8}(n0f8(c[1]), n0f8(c[2]), n0f8(c[3]))
+        return RGB{N0f8}(reinterpret(RGB24, c & 0xFFFFFF))
     end
 
     throw(ArgumentError("Unknown color: $desc"))
